@@ -1348,7 +1348,7 @@ export default function MoviePage({
                         key={id}
                         src={poster}
                         alt={title}
-                        className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
                       />
                     );
                   })}
