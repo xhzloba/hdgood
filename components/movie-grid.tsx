@@ -257,13 +257,17 @@ export function MovieGrid({ url }: MovieGridProps) {
 
       {!lastPageEmpty && (
         <div className="flex justify-center mt-4">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            className="px-4 py-2 text-[12px] border border-zinc-700/50 bg-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800 text-zinc-300 rounded-sm transition-all duration-200 disabled:opacity-60"
-          >
-            {isLoading ? "Загрузка..." : "Загрузить ещё"}
-          </button>
+          {isLoading ? (
+            // Анимированные синие три точки без обрамления (увеличенный размер)
+            <Loader size="lg" />
+          ) : (
+            <button
+              onClick={handleLoadMore}
+              className="px-4 py-2 text-[12px] border border-zinc-700/50 bg-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800 text-zinc-300 rounded-sm transition-all duration-200"
+            >
+              {"Загрузить ещё"}
+            </button>
+          )}
         </div>
       )}
     </div>
