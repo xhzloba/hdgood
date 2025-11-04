@@ -263,7 +263,7 @@ export function MovieGrid({ url }: MovieGridProps) {
           ) : (
             <button
               onClick={handleLoadMore}
-              className="px-4 py-2 text-[12px] border border-zinc-700/50 bg-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800 text-zinc-300 rounded-sm transition-all duration-200"
+              className="w-full md:w-auto px-4 py-2 text-[12px] border border-zinc-700/50 bg-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800 text-zinc-300 rounded-sm transition-all duration-200"
             >
               {"Загрузить ещё"}
             </button>
