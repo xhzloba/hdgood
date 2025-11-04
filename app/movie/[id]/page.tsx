@@ -1288,7 +1288,7 @@ export default function MoviePage({
               {Array.isArray(data.casts) && data.casts.length > 0 && (
                 <div className="space-y-2 md:pl-8">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-zinc-200">
+                    <h2 className="text-lg font-semibold text-zinc-200 mb-3">
                       В ролях
                     </h2>
                   </div>
@@ -1316,7 +1316,7 @@ export default function MoviePage({
                     return (
                       <div className="mt-6 space-y-2">
                         <div className="flex items-center justify-between">
-                          <h2 className="text-lg font-semibold text-zinc-200">Актёры дубляжа</h2>
+                          <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актёры дубляжа</h2>
                         </div>
                         <CastList casts={names.map((name) => ({ name }))} maxInitial={11} />
                       </div>
