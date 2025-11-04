@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 
 const fetcher = async (
@@ -205,7 +206,6 @@ export default function MoviePage({
   const [kpId, setKpId] = useState<string>("");
   const [showPlayerSelector, setShowPlayerSelector] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<number>(1);
-  const [isScrolled, setIsScrolled] = useState(false);
   const currentIdRef = useRef<string>(""); // Ref для отслеживания текущего id
   const [openSeasons, setOpenSeasons] = useState<Set<number>>(new Set([1])); // По умолчанию открыт только первый сезон
   const [playingEpisode, setPlayingEpisode] = useState<{
@@ -448,20 +448,7 @@ export default function MoviePage({
     };
   }, [id]);
 
-  // Отслеживание прокрутки для эффекта хедера
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 50); // Активируем эффект после прокрутки на 50px
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    
-    // Cleanup
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  // Убрали эффект прокрутки для хедера: чистый, без blur и границы
 
   if (loading) {
     return (
@@ -469,18 +456,14 @@ export default function MoviePage({
         {/* Background overlay */}
         <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 
-        {/* Header */}
-        <header className={`sticky top-0 z-10 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-transparent backdrop-blur-md border-b border-zinc-800/20' 
-            : 'bg-transparent backdrop-blur-none border-b-0'
-        }`}>
-          <div className="max-w-6xl mx-auto px-4 py-3">
+        <header className="relative z-10 bg-transparent">
+          <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
             <Link
               href="/"
-              className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
             >
-              ← Назад
+              <ArrowLeft size={16} />
+              <span>Назад</span>
             </Link>
           </div>
         </header>
@@ -788,18 +771,14 @@ export default function MoviePage({
       }
       className="min-h-[100dvh] min-h-screen"
     >
-      {/* Header */}
-      <header className={`sticky top-0 z-10 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-transparent backdrop-blur-md border-b border-zinc-800/20' 
-          : 'bg-transparent backdrop-blur-none border-b-0'
-      }`}>
-        <div className="max-w-6xl mx-auto px-4 py-3">
+      <header className="relative z-10 bg-transparent">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link
             href="/"
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
           >
-            ← Назад
+            <ArrowLeft size={16} />
+            <span>Назад</span>
           </Link>
         </div>
       </header>
