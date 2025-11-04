@@ -12,12 +12,13 @@ export const metadata: Metadata = {
   title: "v0 App",
   description: "Created with v0",
   generator: "v0.app",
-  // Включаем полноэкранный вьюпорт без ограничений safe area
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    viewportFit: "cover",
-  },
+};
+
+// Вынесенный viewport экспорт согласно Next.js App Router API
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
