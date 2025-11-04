@@ -4,6 +4,7 @@ import { useState } from "react"
 import { HeaderCategories } from "./header-categories"
 import { TrendingSection } from "./trending-section"
 import { UhdSection } from "./uhd-section"
+import FranchiseSlider from "./franchise-slider"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 
@@ -25,10 +26,14 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
 
   return (
     <div className="min-h-[100dvh] min-h-screen">
-      <main className="mx-auto max-w-7xl px-6 pt-6 pb-6">
+      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-6 pb-6">
         <div className="mb-4">
           <HeaderCategories variant="horizontal" onSelect={handleSelect} />
         </div>
+        {/* Слайдер франшиз сразу после хедера */}
+        <section className="mb-6">
+          <FranchiseSlider />
+        </section>
         <section>
           {isUhdMode ? <UhdSection /> : <TrendingSection />}
         </section>
