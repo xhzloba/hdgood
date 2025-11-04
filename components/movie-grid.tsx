@@ -4,7 +4,7 @@ import { Loader } from "./loader";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ratingColor } from "@/lib/utils";
+import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 
 interface Movie {
   id: string;
@@ -212,7 +212,7 @@ export function MovieGrid({ url }: MovieGridProps) {
             href={`/movie/${movie.id}`}
             className="bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center">
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
               {movie.poster ? (
                 <img
                   src={movie.poster || "/placeholder.svg"}
@@ -237,18 +237,20 @@ export function MovieGrid({ url }: MovieGridProps) {
                   Нет постера
                 </div>
               )}
+              {movie.rating && (
+                <div
+                  className={`absolute top-1 right-1 md:top-2 md:right-2 px-1.5 md:px-2 py-0.5 md:py-1 rounded-sm text-[10px] md:text-[12px] text-white font-medium ${ratingBgColor(movie.rating)}`}
+                >
+                  {formatRatingLabel(movie.rating)}
+                </div>
+              )}
             </div>
             <div className="p-2 md:p-3">
               <h3 className="text-[10px] md:text-[12px] font-medium line-clamp-2 mb-1 leading-tight text-zinc-200">
                 {movie.title || "Без названия"}
               </h3>
-              <div className="flex items-center justify-between text-[9px] md:text-[11px] text-zinc-500">
+              <div className="flex items-center justify-start text-[9px] md:text-[11px] text-zinc-500">
                 {movie.year && <span>{movie.year}</span>}
-                {movie.rating && (
-                  <span className={ratingColor(movie.rating)}>
-                    ★ {movie.rating}
-                  </span>
-                )}
               </div>
             </div>
           </Link>
