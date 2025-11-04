@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
+import CountryFlag from "@/lib/country-flags";
 
 interface Movie {
   id: string;
@@ -12,6 +13,7 @@ interface Movie {
   poster?: string;
   year?: string;
   rating?: string;
+  country?: string | string[];
 }
 
 interface MovieGridProps {
@@ -75,6 +77,7 @@ function extractMoviesFromData(data: any): any[] {
       poster: item.details?.poster || item.poster,
       year: item.details?.released || item.year,
       rating: item.details?.rating_kp || item.rating,
+      country: item.details?.country || item.country,
     }));
   } else if (data?.type === "category" && data?.channels) {
     movies = data.channels.map((item: any, index: number) => ({
@@ -246,11 +249,17 @@ export function MovieGrid({ url }: MovieGridProps) {
               )}
             </div>
             <div className="p-2 md:p-3">
-              <h3 className="text-[10px] md:text-[12px] font-medium line-clamp-2 mb-1 leading-tight text-zinc-200">
+              <h3
+                className="text-[10px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-200"
+                title={movie.title || "Без названия"}
+              >
                 {movie.title || "Без названия"}
               </h3>
-              <div className="flex items-center justify-start text-[9px] md:text-[11px] text-zinc-500">
+              <div className="flex items-center justify-start gap-1 text-[9px] md:text-[11px] text-zinc-500">
                 {movie.year && <span>{movie.year}</span>}
+                {movie.country && (
+                  <CountryFlag country={movie.country} size="sm" />
+                )}
               </div>
             </div>
           </Link>
