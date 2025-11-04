@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Loading() {
   return (
-    <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950">
+    <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950 safe-top safe-bottom">
       {/* Background overlay */}
       <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 

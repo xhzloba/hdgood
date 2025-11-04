@@ -118,6 +118,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Фон html используется Safari для областей за пределами safe-area */
+    background-color: #0f0f0f;
+  }
   body {
     @apply text-foreground;
     background: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
@@ -163,5 +167,27 @@
   /* Убираем фон с основного элемента на мобильных */
   .poster-background-mobile {
     background: none !important;
+  }
+}
+
+/* Утилиты для safe-area (iOS notch/Home Indicator) */
+@layer utilities {
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 0px);
+  }
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  .safe-left {
+    padding-left: max(env(safe-area-inset-left), 0px);
+  }
+  .safe-right {
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+  .safe-inset {
+    padding-top: max(env(safe-area-inset-top), 0px);
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
   }
 }
