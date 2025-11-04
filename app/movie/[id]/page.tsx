@@ -1157,9 +1157,45 @@ export default function MoviePage({
                   <span className="text-zinc-200">{movie.age || "—"}</span>
                 </div>
                 <div className="flex gap-2">
+                  <span className="text-zinc-400 min-w-[120px]">Рейтинг MPAA:</span>
+                  <span className="text-zinc-200">
+                    {(() => {
+                      const v = franchiseData?.rate_mpaa;
+                      return v && String(v).trim() !== "" ? v : "—";
+                    })()}
+                  </span>
+                </div>
+                <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Бюджет:</span>
                   <span className="text-zinc-200">
                     {franchiseData?.budget || movie.budget || "—"}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-zinc-400 min-w-[120px]">Сборы США:</span>
+                  <span className="text-zinc-200">
+                    {(() => {
+                      const v = franchiseData?.fees_use;
+                      return v && String(v).trim() !== "" ? v : "—";
+                    })()}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-zinc-400 min-w-[120px]">Сборы мир:</span>
+                  <span className="text-zinc-200">
+                    {(() => {
+                      const v = franchiseData?.fees_world;
+                      return v && String(v).trim() !== "" ? v : "—";
+                    })()}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-zinc-400 min-w-[120px]">Сборы РФ:</span>
+                  <span className="text-zinc-200">
+                    {(() => {
+                      const v = franchiseData?.fees_rus;
+                      return v && String(v).trim() !== "" ? v : "—";
+                    })()}
                   </span>
                 </div>
                 <div className="flex gap-2">
@@ -1203,12 +1239,6 @@ export default function MoviePage({
                         .join(" • ");
                       return combined || "—";
                     })()}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Перевод:</span>
-                  <span className="text-zinc-200">
-                    {movie.translation || movie.voice || movie.translate || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
