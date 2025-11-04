@@ -53,7 +53,7 @@ export function FranchiseSlider() {
                   className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 rounded-sm overflow-hidden transition-colors"
                   title={item.title}
                 >
-                  <div className="relative aspect-[2/1] bg-zinc-950">
+                  <div className="relative aspect-[1/1] md:aspect-[2/1] bg-zinc-950">
                     <img
                       src={posterSrc(item.poster)}
                       alt={item.title}
