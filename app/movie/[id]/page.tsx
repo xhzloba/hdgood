@@ -1259,38 +1259,7 @@ export default function MoviePage({
                     })()}
                   </span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">
-                    Актёры дубляжа:
-                  </span>
-                  <span className="text-zinc-200">
-                    {(() => {
-                      const val =
-                        franchiseData?.actors_dubl || movie.actors_dubl;
-                      if (!val) return "—";
-                      if (Array.isArray(val)) {
-                        const filtered = val.filter(
-                          (v) => v && String(v).trim()
-                        );
-                        return filtered.length > 0 ? filtered.join(", ") : "—";
-                      }
-                      const str = String(val).trim();
-                      if (
-                        !str ||
-                        str === "" ||
-                        str === "null" ||
-                        str === "undefined"
-                      )
-                        return "—";
-                      // Разделяем имена: вставляем запятую между строчной и заглавной буквой
-                      const formatted = str.replace(
-                        /([a-zа-яё])([A-ZА-ЯЁ])/g,
-                        "$1, $2"
-                      );
-                      return formatted;
-                    })()}
-                  </span>
-                </div>
+
                 {/* Количество сезонов для сериалов */}
                 {franchiseData?.seasons &&
                   Array.isArray(franchiseData.seasons) && (
@@ -1324,6 +1293,35 @@ export default function MoviePage({
                     </h2>
                   </div>
                   <CastList casts={data.casts} maxInitial={11} />
+                  {(() => {
+                    const raw = franchiseData?.actors_dubl ?? movie.actors_dubl;
+
+                    const toList = (val: any): string[] => {
+                      if (!val) return [];
+                      if (Array.isArray(val)) {
+                        return val.map((v) => String(v).trim()).filter(Boolean);
+                      }
+                      const str = String(val).trim();
+                      if (!str || str === "null" || str === "undefined") return [];
+                      const normalized = str.replace(/([a-zа-яё])([A-ZА-ЯЁ])/g, "$1, $2");
+                      return normalized
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                    };
+
+                    const names = toList(raw);
+                    if (names.length === 0) return null;
+
+                    return (
+                      <div className="mt-6 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-lg font-semibold text-zinc-200">Актёры дубляжа</h2>
+                        </div>
+                        <CastList casts={names.map((name) => ({ name }))} maxInitial={11} />
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
