@@ -118,13 +118,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+  :root {
+    /* Базовый фон приложения и его RGB-эквивалент для прозрачных градиентов */
+    --app-bg: #0f0f0f;
+    --app-bg-rgb: 15, 15, 15;
+  }
   html {
     /* Фон html используется Safari для областей за пределами safe-area */
-    background-color: #0f0f0f;
+    background-color: var(--app-bg);
   }
   body {
     @apply text-foreground;
-    background: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
+    background: linear-gradient(180deg, var(--app-bg) 0%, #1a1a1a 100%);
     background-attachment: fixed;
     font-family: Arial, Helvetica, sans-serif;
   }
@@ -132,41 +137,24 @@
 
 /* Фиксированный фон для мобильных устройств */
 @media (max-width: 768px) {
-  /* Отключаем background-attachment: fixed для основного элемента на мобильных */
+  /* Делаем фон контейнера основным источником бэкграунда на мобильных */
   .poster-background-mobile {
     background-attachment: scroll !important;
-    background: none !important;
-  }
-  
-  /* Создаем псевдоэлемент для фиксированного фона на мобильных */
-  .poster-background-mobile::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
-    z-index: -1;
-    background-image: var(--mobile-bg-image);
+    background-image: var(--mobile-bg-image) !important;
     background-size: cover, cover, cover, cover, cover !important;
     background-position: 60% center, 0% 0%, 0% 100%, 100% 100%, center !important;
     background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-    /* Принудительно фиксируем фон */
-    transform: translateZ(0);
-    will-change: transform;
-    /* Добавляем плавный переход для мобильного фона */
-    transition: background-image 0.5s ease-in-out;
   }
-  
-  /* Убираем background-attachment: fixed для body на мобильных */
+
+  /* Отключаем псевдоэлемент, чтобы не конфликтовал со слоями */
+  .poster-background-mobile::before {
+    content: none !important;
+  }
+
+  /* На мобильных body не перекрывает извлеченные цвета */
   body {
+    background: transparent !important;
     background-attachment: scroll;
-  }
-  
-  /* Убираем фон с основного элемента на мобильных */
-  .poster-background-mobile {
-    background: none !important;
   }
 }
 

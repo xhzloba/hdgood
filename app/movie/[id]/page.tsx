@@ -465,7 +465,7 @@ export default function MoviePage({
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950 safe-top safe-bottom">
+      <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950">
         {/* Background overlay */}
         <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 
@@ -575,7 +575,7 @@ export default function MoviePage({
 
   if (error || !data || !data.details) {
     return (
-      <div className="min-h-[100dvh] min-h-screen flex items-center justify-center p-4 safe-top safe-bottom">
+      <div className="min-h-[100dvh] min-h-screen flex items-center justify-center p-4">
         <div className="bg-red-950/50 border border-red-900/50 p-6 text-red-400 rounded backdrop-blur-sm max-w-md text-center">
           <h2 className="text-lg font-semibold mb-2">Ошибка загрузки</h2>
           <p className="text-sm text-red-300 mb-4">{errorDetails}</p>
@@ -786,7 +786,7 @@ export default function MoviePage({
       bgPosterUrl={
         (movie as any).bg_poster?.backdrop || (movie as any).backdrop
       }
-      className="min-h-[100dvh] min-h-screen safe-top safe-bottom"
+      className="min-h-[100dvh] min-h-screen"
     >
       {/* Header */}
       <header className={`sticky top-0 z-10 transition-all duration-300 ${
