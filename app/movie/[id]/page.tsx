@@ -1326,14 +1326,37 @@ export default function MoviePage({
               )}
             </div>
 
-            {/* Трейлеры */}
-            <div id="watch">
-              <TrailerPlayer
-                trailers={(movie as any).trailers ?? (data as any).trailers}
-              />
-            </div>
+            {/* Actors avatars (moved above description and trailers) */}
+            {Array.isArray(data.casts) && data.casts.length > 0 && (
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
+                <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
+                  {data.casts.map((actor: any, index: number) => {
+                    const id = actor?.id ?? index;
+                    const poster =
+                      actor?.poster ??
+                      actor?.photo ??
+                      actor?.image ??
+                      actor?.avatar ??
+                      actor?.picture ??
+                      actor?.pic ??
+                      actor?.url ??
+                      "/placeholder-user.jpg";
+                    const title = actor?.title ?? actor?.name ?? "Без имени";
+                    return (
+                      <img
+                        key={id}
+                        src={poster}
+                        alt={title}
+                        className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-            {/* Description */}
+            {/* Description (now before trailers) */}
             {movie.about && (
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold text-zinc-200">
@@ -1344,6 +1367,13 @@ export default function MoviePage({
                 </p>
               </div>
             )}
+
+            {/* Трейлеры (moved after description) */}
+            <div id="watch">
+              <TrailerPlayer
+                trailers={(movie as any).trailers ?? (data as any).trailers}
+              />
+            </div>
 
             {/* Сезоны и эпизоды */}
             {franchiseData?.seasons &&
@@ -1644,35 +1674,7 @@ export default function MoviePage({
               return <TriviaSection trivia={triviaStr} />;
             })()}
 
-            {/* Cast cards below description */}
-            {Array.isArray(data.casts) && data.casts.length > 0 && (
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-zinc-200">Актеры</h2>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                  {data.casts.slice(0, 12).map((actor: any, index: number) => {
-                    const id = actor?.id ?? index;
-                    const poster =
-                      actor?.poster ??
-                      actor?.photo ??
-                      actor?.image ??
-                      actor?.avatar ??
-                      actor?.picture ??
-                      actor?.pic ??
-                      actor?.url ??
-                      null;
-                    const title = actor?.title ?? actor?.name ?? "Без имени";
-                    return (
-                      <ActorCard
-                        key={id}
-                        id={id}
-                        title={title}
-                        poster={poster}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            
 
             {/* Sequels & Prequels */}
             {Array.isArray(seqList) && seqList.length > 0 && (
