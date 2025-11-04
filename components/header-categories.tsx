@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import NProgress from "nprogress"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
@@ -70,6 +71,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
     } else if (pathname === "/") {
       setActiveIndex(null)
     }
+    // Останавливаем верхний лоадер после завершения навигации
+    NProgress.done()
   }, [pathname, index4k])
 
   const containerBase = variant === "vertical"
@@ -109,6 +112,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
                 onClick={() => {
                   setActiveIndex(idx)
                   if (cat.title === "4K UHD") {
+                    // Запускаем верхний лоадер и выполняем навигацию
+                    NProgress.start()
                     router.push("/uhd")
                   } else {
                     onSelect?.(cat, idx)
@@ -152,6 +157,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
                 onClick={() => {
                   setActiveIndex(idx)
                   if (cat.title === "4K UHD") {
+                    // Запускаем верхний лоадер и выполняем навигацию
+                    NProgress.start()
                     router.push("/uhd")
                   } else {
                     onSelect?.(cat, idx)
