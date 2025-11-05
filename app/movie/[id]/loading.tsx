@@ -7,8 +7,8 @@ export default function Loading() {
       {/* Background overlay */}
       <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 
-      {/* Header */}
-      <header className="border-b border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm sticky top-0 z-10">
+      {/* Header (transparent, без границы и blur) */}
+      <header className="relative z-10 bg-transparent">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <Link
             href="/"
