@@ -120,7 +120,7 @@ export function FranchiseSlider() {
               <CarouselItem key={item.href ?? idx} className="basis-full pl-0">
                 <Link
                   href={item.href}
-                  className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 rounded-sm overflow-hidden transition-colors"
+          className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 rounded-sm overflow-hidden transition-colors"
                   title={item.title}
                   onClick={(e) => {
                     const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null

@@ -170,7 +170,7 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
                 >
                   <Link
                     href={`/movie/${movie.id}`}
-                    className="block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
+                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
                     onClick={(e) => {
                       const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
                       if (api?.clickAllowed && !api.clickAllowed()) {
@@ -242,12 +242,12 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
                     </div>
                     <div className="p-2 md:p-3">
                       <h3
-                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-200"
+                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
                         title={movie.title || "Без названия"}
                       >
                         {movie.title || "Без названия"}
                       </h3>
-                      <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-500">
+                      <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
                         {movie.year && <span>{movie.year}</span>}
                         {movie.country && <CountryFlag country={movie.country} size="sm" />}
                       </div>

@@ -244,7 +244,7 @@ export function MovieGrid({ url }: MovieGridProps) {
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}
-            className="bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            className="group bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
               {movie.poster ? (
@@ -315,12 +315,12 @@ export function MovieGrid({ url }: MovieGridProps) {
             </div>
             <div className="p-2 md:p-3">
               <h3
-                className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-200"
+                className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
                 title={movie.title || "Без названия"}
               >
                 {movie.title || "Без названия"}
               </h3>
-              <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-500">
+              <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
                 {movie.year && <span>{movie.year}</span>}
                 {movie.country && (
                   <CountryFlag country={movie.country} size="sm" />
