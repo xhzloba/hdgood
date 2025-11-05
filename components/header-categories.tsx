@@ -25,6 +25,8 @@ type HeaderCategoriesProps = {
   variant?: "horizontal" | "vertical"
   className?: string
   onSelect?: (category: Category | null, index: number | null) => void
+  activeIndex?: number | null
+  onActiveIndexChange?: (index: number | null) => void
 }
 
 function CategoryIcon({ name, className = "" }: { name: string; className?: string }) {
@@ -57,16 +59,17 @@ function CategoryIcon({ name, className = "" }: { name: string; className?: stri
   }
 }
 
-export function HeaderCategories({ variant = "horizontal", className, onSelect }: HeaderCategoriesProps) {
+export function HeaderCategories({ variant = "horizontal", className, onSelect, activeIndex: activeIndexProp, onActiveIndexChange }: HeaderCategoriesProps) {
   const router = useRouter()
   const pathname = usePathname()
   // Универсальная инициализация активной вкладки по route категории
   const indexFromRoute = CATEGORIES.findIndex((c) => c.route && pathname.startsWith(c.route))
-  const [activeIndex, setActiveIndex] = useState<number | null>(() => {
+  const [stateActiveIndex, setStateActiveIndex] = useState<number | null>(() => {
     if (pathname === "/") return null
     if (indexFromRoute !== -1) return indexFromRoute
     return null
   })
+  const activeIndex = activeIndexProp ?? stateActiveIndex
   const isHomeActive = activeIndex === null
 
   // Останавливаем верхний лоадер после завершения навигации
@@ -93,7 +96,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
               aria-current={isHomeActive ? "page" : undefined}
               onClick={(e) => {
                 // Keep navigation to home, but also reset local active state and notify parent
-                setActiveIndex(null)
+                setStateActiveIndex(null)
+                onActiveIndexChange?.(null)
                 onSelect?.(null, null)
               }}
               className={`${buttonBase} ${
@@ -109,12 +113,14 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
               <button
                 key={idx}
                 onClick={() => {
-                  setActiveIndex(idx)
-                  if (cat.title === "4K UHD") {
-                    // Запускаем верхний лоадер и выполняем навигацию
+                  setStateActiveIndex(idx)
+                  onActiveIndexChange?.(idx)
+                  if (cat.route) {
+                    // Если для категории есть маршрут — навигируем туда
                     NProgress.start()
-                    router.push("/uhd")
+                    router.push(cat.route)
                   } else {
+                    // Иначе — локально выбираем категорию (главная/нестатичная)
                     onSelect?.(cat, idx)
                   }
                 }}
@@ -138,7 +144,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
               href="/"
               aria-current={isHomeActive ? "page" : undefined}
               onClick={() => {
-                setActiveIndex(null)
+                setStateActiveIndex(null)
+                onActiveIndexChange?.(null)
                 onSelect?.(null, null)
               }}
               className={`${buttonBase} ${
@@ -154,7 +161,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
               <button
                 key={idx}
                 onClick={() => {
-                  setActiveIndex(idx)
+                  setStateActiveIndex(idx)
+                  onActiveIndexChange?.(idx)
                   if (cat.route) {
                     // Если для категории есть маршрут — навигируем туда
                     NProgress.start()

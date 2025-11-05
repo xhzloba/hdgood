@@ -23,6 +23,18 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   }
 
   const isUhdMode = selected?.title === "4K UHD"
+  const activeIndex = selected ? CATEGORIES.findIndex((c) => c.title === selected.title) : null
+  const handleActiveIndexChange = (index: number | null) => {
+    if (index == null) {
+      setSelected(null)
+      return
+    }
+    const cat = CATEGORIES[index]
+    // Только локально управляемые категории без маршрута должны менять selected сразу
+    if (!cat.route) {
+      setSelected(cat)
+    }
+  }
 
   return (
     <div className="min-h-[100dvh] min-h-screen">
@@ -33,7 +45,12 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
         </section>
         {/* Хедер категорий сразу после баннера */}
         <div className="mb-4">
-          <HeaderCategories variant="horizontal" onSelect={handleSelect} />
+          <HeaderCategories
+            variant="horizontal"
+            onSelect={handleSelect}
+            activeIndex={activeIndex}
+            onActiveIndexChange={handleActiveIndexChange}
+          />
         </div>
         <section>
           {isUhdMode ? <UhdSection /> : <TrendingSection />}
