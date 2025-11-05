@@ -217,7 +217,7 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
                         }
                         const tags = collected.slice(0, 2);
                         return tags.length > 0 ? (
-                          <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col items-start gap-1">
+                          <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex flex-col items-start gap-1">
                             {tags.map((t, i) => (
                               <Badge
                                 key={`${t}-${i}`}
