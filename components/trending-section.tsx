@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useRef, useLayoutEffect } from "react"
-import { MovieGrid } from "./movie-grid"
+import MovieSlider from "./movie-slider"
 
 interface TrendingItem {
   title: string
@@ -28,48 +27,15 @@ const TRENDING_SECTIONS: TrendingItem[] = [
 ]
 
 export function TrendingSection() {
-  const [activeSection, setActiveSection] = useState(0)
-  const prevYRef = useRef<number | null>(null)
-  const preserveScroll = (cb: () => void) => {
-    if (typeof window !== "undefined") {
-      prevYRef.current = window.scrollY
-    }
-    cb()
-  }
-
-  useLayoutEffect(() => {
-    const y = prevYRef.current
-    if (typeof window !== "undefined" && y != null) {
-      prevYRef.current = null
-      requestAnimationFrame(() => window.scrollTo({ top: y }))
-    }
-  }, [activeSection])
-
   return (
     <section>
       <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 p-5 rounded-sm">
-        {/* Sticky header with trending tabs */}
-        <div
-          className="sticky top-0 z-20 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800/50 rounded-t-sm"
-        >
-          <div className="flex gap-3 flex-wrap md:flex-nowrap min-h-[40px]">
-            {TRENDING_SECTIONS.map((section, index) => (
-              <button
-                key={index}
-                onClick={() => preserveScroll(() => setActiveSection(index))}
-                className={`h-10 px-4 text-[13px] border transition-all duration-200 rounded-sm inline-flex items-center font-medium ${
-                  activeSection === index
-                    ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20"
-                    : "bg-zinc-800/50 border-zinc-700/50 text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800"
-                }`}
-              >
-                {section.title}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="mt-4 overflow-anchor-none">
-          <MovieGrid url={TRENDING_SECTIONS[activeSection].playlist_url} />
+        <div className="space-y-6">
+          {TRENDING_SECTIONS.map((section) => (
+            <div key={section.title} className="space-y-3">
+              <MovieSlider url={section.playlist_url} title={section.title} />
+            </div>
+          ))}
         </div>
       </div>
     </section>

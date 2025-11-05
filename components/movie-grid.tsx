@@ -151,7 +151,7 @@ export function MovieGrid({ url }: MovieGridProps) {
   if ((isLoading || isValidating) && pagesData.length === 0) {
     const skeletonCount = expectedSkeletonCountForUrl(url) ?? perPage;
     return (
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
@@ -239,7 +239,7 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {display.map((movie: any, index: number) => (
           <Link
             key={movie.id || index}

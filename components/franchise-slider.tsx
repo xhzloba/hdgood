@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Carousel,
@@ -7,6 +8,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -52,18 +54,25 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
 
 export function FranchiseSlider() {
   const posterSrc = (p?: string | null) => p || "/placeholder.jpg";
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-0">
+        <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
+          <CarouselContent className="-ml-0 cursor-grab active:cursor-grabbing">
             {FRANCHISE_ITEMS.map((item, idx: number) => (
               <CarouselItem key={idx} className="basis-full pl-0">
                 <Link
                   href={item.href}
                   className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 rounded-sm overflow-hidden transition-colors"
                   title={item.title}
+                  onClick={(e) => {
+                    const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
+                    if (api?.clickAllowed && !api.clickAllowed()) {
+                      e.preventDefault()
+                    }
+                  }}
                 >
                   <div className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[7/3] lg:aspect-[3/1] bg-zinc-950">
                     <img

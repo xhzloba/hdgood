@@ -42,7 +42,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
 
   return (
     <div className="min-h-[100dvh] min-h-screen">
-      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-6 pb-6">
+      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-6">
         {/* Баннер франшизы сверху */}
         <section className="mb-6">
           <FranchiseSlider />
