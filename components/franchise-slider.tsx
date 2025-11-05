@@ -54,38 +54,13 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-// Стабильный порядок: сохраняем в sessionStorage на уровне роута
-function orderFranchiseItems(pathname: string): typeof FRANCHISE_ITEMS {
-  const key = `franchiseOrder:${pathname}`
+// Рандомный порядок: тасуем на каждом монтировании/смене роута (без sessionStorage)
+function orderFranchiseItems(_pathname: string): typeof FRANCHISE_ITEMS {
   if (typeof window !== "undefined") {
-    try {
-      const raw = window.sessionStorage.getItem(key)
-      if (raw) {
-        const hrefs = JSON.parse(raw) as string[]
-        if (Array.isArray(hrefs) && hrefs.length) {
-          const map = new Map(FRANCHISE_ITEMS.map((it) => [it.href, it]))
-          const ordered: typeof FRANCHISE_ITEMS = []
-          hrefs.forEach((h) => {
-            const found = map.get(h)
-            if (found) ordered.push(found)
-          })
-          // Добавить новые элементы, если появились
-          FRANCHISE_ITEMS.forEach((it) => {
-            if (!ordered.some((o) => o.href === it.href)) ordered.push(it)
-          })
-          return ordered
-        }
-      }
-    } catch {}
-    // Нет сохранённого — перемешать и сохранить
-    const shuffled = shuffleArray(FRANCHISE_ITEMS)
-    try {
-      window.sessionStorage.setItem(key, JSON.stringify(shuffled.map((it) => it.href)))
-    } catch {}
-    return shuffled
+    return shuffleArray(FRANCHISE_ITEMS);
   }
   // На сервере возвращаем исходный порядок (избежать SSR рассинхронизации)
-  return FRANCHISE_ITEMS
+  return FRANCHISE_ITEMS;
 }
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -152,6 +127,9 @@ export function FranchiseSlider() {
                     {item.title === "Джон Уик" && (
                       <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
                     )}
+                    {item.title === "Веном" && (
+                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
+                    )}
                     {/* Текст под логотипом для Джона Уика */}
                     {item.title === "Джон Уик" && (
                       <div className="pointer-events-none absolute left-1/2 top-[78%] md:top-[74%] -translate-x-1/2 max-w-[60%] md:max-w-[45%] z-10">
@@ -162,8 +140,20 @@ export function FranchiseSlider() {
                         </div>
                       </div>
                     )}
+                    {item.title === "Веном" && (
+                      <div className="pointer-events-none absolute left-1/2 top-[78%] md:top-[74%] -translate-x-1/2 max-w-[60%] md:max-w-[45%] z-10">
+                        <div className="bg-transparent p-3 md:p-4">
+                          <p className="text-[12px] md:text-[14px] leading-relaxed text-zinc-100 text-center">
+                            Антигерой Marvel с симбиотом: хоррор-эстетика, экшен и фирменный юмор Тома Харди. История Венома получила продолжения и расширяет вселенную.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {/* Правая растушовка для Джона Уика */}
                     {item.title === "Джон Уик" && (
+                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
+                    )}
+                    {item.title === "Веном" && (
                       <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
                     )}
                   </div>
