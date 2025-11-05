@@ -52,17 +52,72 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
   },
 ];
 
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+// Стабильный порядок: сохраняем в sessionStorage на уровне роута
+function orderFranchiseItems(pathname: string): typeof FRANCHISE_ITEMS {
+  const key = `franchiseOrder:${pathname}`
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.sessionStorage.getItem(key)
+      if (raw) {
+        const hrefs = JSON.parse(raw) as string[]
+        if (Array.isArray(hrefs) && hrefs.length) {
+          const map = new Map(FRANCHISE_ITEMS.map((it) => [it.href, it]))
+          const ordered: typeof FRANCHISE_ITEMS = []
+          hrefs.forEach((h) => {
+            const found = map.get(h)
+            if (found) ordered.push(found)
+          })
+          // Добавить новые элементы, если появились
+          FRANCHISE_ITEMS.forEach((it) => {
+            if (!ordered.some((o) => o.href === it.href)) ordered.push(it)
+          })
+          return ordered
+        }
+      }
+    } catch {}
+    // Нет сохранённого — перемешать и сохранить
+    const shuffled = shuffleArray(FRANCHISE_ITEMS)
+    try {
+      window.sessionStorage.setItem(key, JSON.stringify(shuffled.map((it) => it.href)))
+    } catch {}
+    return shuffled
+  }
+  // На сервере возвращаем исходный порядок (избежать SSR рассинхронизации)
+  return FRANCHISE_ITEMS
+}
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export function FranchiseSlider() {
   const posterSrc = (p?: string | null) => p || "/placeholder.jpg";
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const pathname = usePathname();
+  const [items, setItems] = useState<typeof FRANCHISE_ITEMS>(FRANCHISE_ITEMS);
+  const [ready, setReady] = useState(false)
+
+  // Перемешивать элементы при первом рендере и каждой смене роута
+  useEffect(() => {
+    const ordered = orderFranchiseItems(pathname)
+    setItems(ordered)
+    setReady(true)
+  }, [pathname]);
 
   return (
     <div className="space-y-3">
       <div className="relative">
         <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
-          <CarouselContent className="-ml-0 cursor-grab active:cursor-grabbing">
-            {FRANCHISE_ITEMS.map((item, idx: number) => (
-              <CarouselItem key={idx} className="basis-full pl-0">
+          <CarouselContent className={"-ml-0 cursor-grab active:cursor-grabbing transition-opacity duration-200 " + (ready ? "opacity-100" : "opacity-0") }>
+            {items.map((item, idx: number) => (
+              <CarouselItem key={item.href ?? idx} className="basis-full pl-0">
                 <Link
                   href={item.href}
                   className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 rounded-sm overflow-hidden transition-colors"
