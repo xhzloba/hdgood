@@ -112,7 +112,7 @@ export function MovieGrid({ url }: MovieGridProps) {
   }, [url]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
-  const { data, error, isLoading } = useSWR<string>(currentUrl, fetcher);
+  const { data, error, isLoading, isValidating } = useSWR<string>(currentUrl, fetcher);
 
   // Append fetched page data
   useEffect(() => {
@@ -129,7 +129,9 @@ export function MovieGrid({ url }: MovieGridProps) {
     });
   }, [data, page, lastPageEmpty]);
 
-  if (isLoading && pagesData.length === 0) {
+  // Показываем скелетоны не только при первоначальной загрузке,
+  // но и во время валидации (смены вкладки/URL), чтобы избежать флэша «Нет данных»
+  if ((isLoading || isValidating) && pagesData.length === 0) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {Array.from({ length: perPage }).map((_, i) => (
@@ -179,7 +181,8 @@ export function MovieGrid({ url }: MovieGridProps) {
     return true;
   });
 
-  if (movies.length === 0) {
+  // «Нет данных» показываем только если точно не идёт загрузка/валидация
+  if (!isLoading && !isValidating && movies.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="inline-block bg-zinc-800/50 border border-zinc-700/50 p-4 text-zinc-400 backdrop-blur-sm rounded">

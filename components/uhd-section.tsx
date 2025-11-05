@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useLayoutEffect } from "react"
 import { MovieGrid } from "./movie-grid"
 
 interface Channel {
@@ -34,6 +34,21 @@ const UHD_CHANNELS: Channel[] = [
 
 export function UhdSection() {
   const [active, setActive] = useState(0)
+  const prevYRef = useRef<number | null>(null)
+  const preserveScroll = (cb: () => void) => {
+    if (typeof window !== "undefined") {
+      prevYRef.current = window.scrollY
+    }
+    cb()
+  }
+
+  useLayoutEffect(() => {
+    const y = prevYRef.current
+    if (typeof window !== "undefined" && y != null) {
+      prevYRef.current = null
+      requestAnimationFrame(() => window.scrollTo({ top: y }))
+    }
+  }, [active])
 
   return (
     <section>
@@ -45,7 +60,7 @@ export function UhdSection() {
             {UHD_CHANNELS.map((ch, idx) => (
               <button
                 key={idx}
-                onClick={() => setActive(idx)}
+                onClick={() => preserveScroll(() => setActive(idx))}
                 className={`h-10 px-4 text-[13px] border transition-all duration-200 rounded-sm inline-flex items-center font-medium ${
                   active === idx
                     ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20"
@@ -57,8 +72,8 @@ export function UhdSection() {
             ))}
           </div>
         </div>
-        <div className="mt-4">
-          <MovieGrid key={UHD_CHANNELS[active].playlist_url} url={UHD_CHANNELS[active].playlist_url} />
+        <div className="mt-4 overflow-anchor-none">
+          <MovieGrid url={UHD_CHANNELS[active].playlist_url} />
         </div>
       </div>
     </section>

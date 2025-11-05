@@ -179,4 +179,8 @@
     padding-left: max(env(safe-area-inset-left), 0px);
     padding-right: max(env(safe-area-inset-right), 0px);
   }
+  /* Disable scroll anchoring to prevent unexpected scroll jumps when content updates */
+  .overflow-anchor-none {
+    overflow-anchor: none;
+  }
 }

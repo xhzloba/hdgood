@@ -27,13 +27,14 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   return (
     <div className="min-h-[100dvh] min-h-screen">
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-6 pb-6">
-        <div className="mb-4">
-          <HeaderCategories variant="horizontal" onSelect={handleSelect} />
-        </div>
-        {/* Слайдер франшиз сразу после хедера */}
+        {/* Баннер франшизы сверху */}
         <section className="mb-6">
           <FranchiseSlider />
         </section>
+        {/* Хедер категорий сразу после баннера */}
+        <div className="mb-4">
+          <HeaderCategories variant="horizontal" onSelect={handleSelect} />
+        </div>
         <section>
           {isUhdMode ? <UhdSection /> : <TrendingSection />}
         </section>
