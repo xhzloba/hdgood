@@ -111,6 +111,16 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   const perPage = 15;
 
+  // Для страниц франшиз хотим более точное количество скелетонов
+  // до получения данных, чтобы не было ощущения "лишних" карточек.
+  function expectedSkeletonCountForUrl(u: string): number | null {
+    const base = (u || "").split("?")[0];
+    if (base.endsWith("/api/franchise-venom")) return 3;
+    if (base.endsWith("/api/franchise-johnwick")) return 7;
+    if (base.endsWith("/api/franchise-by-id")) return 6; // эвристика на детальной франшизе
+    return null;
+  }
+
   // Restore paging state on mount/url change (не трогаем loadedImages, чтобы не ломать fade-in при возврате)
   useEffect(() => {
     setPage(1);
@@ -139,9 +149,10 @@ export function MovieGrid({ url }: MovieGridProps) {
   // Показываем скелетоны не только при первоначальной загрузке,
   // но и во время валидации (смены вкладки/URL), чтобы избежать флэша «Нет данных»
   if ((isLoading || isValidating) && pagesData.length === 0) {
+    const skeletonCount = expectedSkeletonCountForUrl(url) ?? perPage;
     return (
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {Array.from({ length: perPage }).map((_, i) => (
+        {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
             className="bg-zinc-900/60 border-2 md:border border-zinc-800/50 rounded-sm overflow-hidden"
@@ -215,11 +226,21 @@ export function MovieGrid({ url }: MovieGridProps) {
   };
 
   const displayMovies = movies.slice(0, perPage * pagesData.length);
+  
+  // На детальной странице франшизы (api/franchise-by-id) не нужна пагинация:
+  // скрываем кнопку «Загрузить ещё» и показываем все карточки сразу.
+  const hideLoadMore = (() => {
+    const base = (url || "").split("?")[0];
+    // На всех эндпойнтах франшиз (by-id, johnwick, venom, generic) кнопка не нужна
+    return base.includes("/api/franchise");
+  })();
+
+  const display = hideLoadMore ? movies : displayMovies;
 
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {displayMovies.map((movie: any, index: number) => (
+        {display.map((movie: any, index: number) => (
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}
@@ -310,7 +331,7 @@ export function MovieGrid({ url }: MovieGridProps) {
         ))}
       </div>
 
-      {!lastPageEmpty && (
+      {!lastPageEmpty && !hideLoadMore && (
         <div className="flex justify-center mt-4">
           {isLoading ? (
             // Анимированные синие три точки без обрамления (увеличенный размер)
