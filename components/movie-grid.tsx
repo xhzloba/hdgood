@@ -4,6 +4,7 @@ import { Loader } from "./loader";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag from "@/lib/country-flags";
 
@@ -14,6 +15,8 @@ interface Movie {
   year?: string;
   rating?: string;
   country?: string | string[];
+  quality?: string;
+  tags?: string[] | string;
 }
 
 interface MovieGridProps {
@@ -78,6 +81,8 @@ function extractMoviesFromData(data: any): any[] {
       year: item.details?.released || item.year,
       rating: item.details?.rating_kp || item.rating,
       country: item.details?.country || item.country,
+      quality: item.details?.quality || item.quality,
+      tags: item.details?.tags || item.tags,
     }));
   } else if (data?.type === "category" && data?.channels) {
     movies = data.channels.map((item: any, index: number) => ({
@@ -93,6 +98,8 @@ function extractMoviesFromData(data: any): any[] {
   }
   return movies;
 }
+
+// Бейдж качества: белый фон, чёрный текст, нейтральный бело‑серый бордер
 
 export function MovieGrid({ url }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -243,6 +250,40 @@ export function MovieGrid({ url }: MovieGridProps) {
                   Нет постера
                 </div>
               )}
+              {/* Tags / Quality on the left, opposite rating */}
+              {(() => {
+                const collected: string[] = [];
+                if (movie.quality) collected.push(String(movie.quality));
+                const tv = movie.tags as any;
+                if (Array.isArray(tv)) {
+                  collected.push(
+                    ...tv
+                      .filter(Boolean)
+                      .map((t: any) => String(t))
+                  );
+                } else if (typeof tv === "string") {
+                  collected.push(
+                    ...tv
+                      .split(",")
+                      .map((t) => t.trim())
+                      .filter(Boolean)
+                  );
+                }
+                const display = collected.slice(0, 2);
+                return display.length > 0 ? (
+                  <div className="absolute top-1 left-1 md:top-2 md:left-2 flex flex-col items-start gap-1">
+                    {display.map((t, i) => (
+                      <Badge
+                        key={`${t}-${i}`}
+                        variant="secondary"
+                        className={"px-1.5 py-[2px] text-[9px] md:text-[10px] rounded-sm/2 bg-white text-black border border-zinc-300"}
+                      >
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
               {movie.rating && (
                 <div
                   className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium ${ratingBgColor(movie.rating)}`}
