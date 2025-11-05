@@ -2,6 +2,7 @@ export interface Category {
   title: string
   ico: string
   playlist_url: string
+  route?: string
 }
 
 export const CATEGORIES: Category[] = [
@@ -14,6 +15,7 @@ export const CATEGORIES: Category[] = [
     title: "4K UHD",
     ico: "4k",
     playlist_url: "https://api.vokino.pro/v2/category4k",
+    route: "/uhd",
   },
   {
     title: "Фильмы",

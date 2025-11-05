@@ -58,22 +58,21 @@ function CategoryIcon({ name, className = "" }: { name: string; className?: stri
 }
 
 export function HeaderCategories({ variant = "horizontal", className, onSelect }: HeaderCategoriesProps) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  // Универсальная инициализация активной вкладки по route категории
+  const indexFromRoute = CATEGORIES.findIndex((c) => c.route && pathname.startsWith(c.route))
+  const [activeIndex, setActiveIndex] = useState<number | null>(() => {
+    if (pathname === "/") return null
+    if (indexFromRoute !== -1) return indexFromRoute
+    return null
+  })
   const isHomeActive = activeIndex === null
 
-  // Sync active state with route
-  const index4k = CATEGORIES.findIndex((c) => c.title === "4K UHD")
+  // Останавливаем верхний лоадер после завершения навигации
   useEffect(() => {
-    if (pathname === "/uhd" && index4k !== -1) {
-      setActiveIndex(index4k)
-    } else if (pathname === "/") {
-      setActiveIndex(null)
-    }
-    // Останавливаем верхний лоадер после завершения навигации
     NProgress.done()
-  }, [pathname, index4k])
+  }, [pathname])
 
   const containerBase = variant === "vertical"
     ? "flex flex-col gap-1 items-stretch"
@@ -156,11 +155,12 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect }
                 key={idx}
                 onClick={() => {
                   setActiveIndex(idx)
-                  if (cat.title === "4K UHD") {
-                    // Запускаем верхний лоадер и выполняем навигацию
+                  if (cat.route) {
+                    // Если для категории есть маршрут — навигируем туда
                     NProgress.start()
-                    router.push("/uhd")
+                    router.push(cat.route)
                   } else {
+                    // Иначе — локально выбираем категорию (главная/нестатичная)
                     onSelect?.(cat, idx)
                   }
                 }}
