@@ -40,7 +40,7 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
     title: "Джон Уик",
     poster:
       "https://imagetmdb.com/t/p/original/tHkujDqdPC9VQoFpEWU0QgWIZyM.jpg",
-    href: "/franshise-hdgood",
+    href: "/franshise-john-wick",
     overlay: JOHN_WICK_OVERLAY,
   },
   {
@@ -136,9 +136,9 @@ export function FranchiseSlider() {
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
-                    {/* Оверлей: оставляем только первый логотип */}
+                    {/* Оверлей: оставляем только первый логотип, поверх градиента */}
                     {item.overlay?.[0] && (
-                      <div className="pointer-events-none absolute left-1/2 top-[60%] md:top-[58%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%]">
+                      <div className="pointer-events-none absolute left-1/2 top-[56%] md:top-[54%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%] z-20">
                         <img
                           src={item.overlay[0]}
                           alt={`${item.title} logo`}
@@ -147,6 +147,24 @@ export function FranchiseSlider() {
                           className="h-12 md:h-14 lg:h-16 w-auto drop-shadow-lg"
                         />
                       </div>
+                    )}
+                    {/* Левый верхний угол: растушевка (градиент) для Джона Уика */}
+                    {item.title === "Джон Уик" && (
+                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
+                    )}
+                    {/* Текст под логотипом для Джона Уика */}
+                    {item.title === "Джон Уик" && (
+                      <div className="pointer-events-none absolute left-1/2 top-[78%] md:top-[74%] -translate-x-1/2 max-w-[60%] md:max-w-[45%] z-10">
+                        <div className="bg-transparent p-3 md:p-4">
+                          <p className="text-[12px] md:text-[14px] leading-relaxed text-zinc-100 text-center">
+                            Серия боевиков с Киану Ривзом в главной роли, которая вернула актера в стан больших кинозвезд, попала в список главных фильмов десятилетия по версии Time и дала зрителю четкую установку: Киану потрясающий.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {/* Правая растушовка для Джона Уика */}
+                    {item.title === "Джон Уик" && (
+                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
                     )}
                   </div>
                 </Link>
