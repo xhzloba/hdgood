@@ -4,6 +4,8 @@ import { useState } from "react"
 import { HeaderCategories } from "./header-categories"
 import { TrendingSection } from "./trending-section"
 import { UhdSection } from "./uhd-section"
+import { MoviesSection } from "./movies-section"
+import { SerialsSection } from "./serials-section"
 import FranchiseSlider from "./franchise-slider"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
@@ -23,6 +25,8 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   }
 
   const isUhdMode = selected?.title === "4K UHD"
+  const isMoviesMode = selected?.title === "Фильмы"
+  const isSerialsMode = selected?.title === "Сериалы"
   const activeIndex = selected ? CATEGORIES.findIndex((c) => c.title === selected.title) : null
   const handleActiveIndexChange = (index: number | null) => {
     if (index == null) {
@@ -53,7 +57,15 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           />
         </div>
         <section>
-          {isUhdMode ? <UhdSection /> : <TrendingSection />}
+          {isUhdMode ? (
+            <UhdSection />
+          ) : isMoviesMode ? (
+            <MoviesSection />
+          ) : isSerialsMode ? (
+            <SerialsSection />
+          ) : (
+            <TrendingSection />
+          )}
         </section>
       </main>
     </div>

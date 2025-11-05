@@ -21,11 +21,13 @@ export const CATEGORIES: Category[] = [
     title: "Фильмы",
     ico: "movie",
     playlist_url: "https://api.vokino.pro/v2/category?type=movie",
+    route: "/movies",
   },
   {
     title: "Сериалы",
     ico: "serial",
     playlist_url: "https://api.vokino.pro/v2/category?type=serial",
+    route: "/serials",
   },
   {
     title: "Мультфильмы",
