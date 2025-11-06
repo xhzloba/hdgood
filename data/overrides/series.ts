@@ -1,4 +1,7 @@
-// Overrides для сериалов: ключ — id из /serials/[id] (на будущее)
+// Overrides для сериалов: ключ — id из /movie/[id] (детальная страница сериалов тоже /movie)
 export const seriesOverrides: Record<string, { backdrop?: string; bg_poster?: { backdrop?: string } }> = {
-  // Примеры добавим позже
+  // Комбэк 
+  "68e43c01704f07b2131a8034": {
+    bg_poster: { backdrop: "/series/comeback.webp" },
+  },
 };

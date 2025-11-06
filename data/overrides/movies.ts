@@ -8,4 +8,8 @@ export const moviesOverrides: Record<string, { backdrop?: string; bg_poster?: { 
   "680179e10d9f8c659d28ffd9": {
     bg_poster: { backdrop: "/movies/greshniki.jpg" },
   },
+  // Август
+  "68d5bcbdc8c62006017914a8": {
+    bg_poster: { backdrop: "/movies/august.webp" },
+  },
 };
