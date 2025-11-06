@@ -620,44 +620,33 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     }
   }, [colors, bgPosterUrl, dominants])
 
-  // Определяем адаптивный режим подгонки постера: по ширине или по высоте (только на мобиле)
-  const isMobile = useIsMobile()
-  const [bgFit, setBgFit] = React.useState<"fit_width" | "fit_height" | null>(null)
-  React.useEffect(() => {
-    if (!bgPosterUrl || !isMobile) return
-    const img = new Image()
-    img.src = bgPosterUrl
-    img.onload = () => {
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      const imgAspect = img.width / img.height
-      const vpAspect = vw / vh
-      // Если постер относительно вьюпорта шире — лучше фит по ширине, иначе по высоте
-      setBgFit(imgAspect >= vpAspect ? "fit_width" : "fit_height")
-    }
-  }, [bgPosterUrl, isMobile])
-
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
     if (!bgPosterUrl) return {}
     
-    // На мобильных всегда показываем фон сразу (без ожидания извлечения цветов),
-    // затем по готовности обновляем слои градиентов
-    const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
-    // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
-    const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-    // На мобильных: градиенты — cover;
-    // постер: адаптивно — 100vw auto (фит по ширине) или auto 100svh (фит по высоте)
-    const posterSize = bgFit === 'fit_height' ? 'auto 100svh' : '100vw auto'
-    const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}${posterSize}`
-    const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center center`
+    // Показываем мобильный фон только когда цвета готовы или posterUrl отсутствует
+    const shouldShowBackground = !posterUrl || ready
+    
+    if (shouldShowBackground) {
+      // Получаем полный backgroundImage из style для мобильных
+      const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
+      // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
+      const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
+      // Для всех градиентов используем cover, для последнего слоя (url) — авто по высоте вьюпорта
+      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}auto 100svh`
+      const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
+      
+      return {
+        ['--mobile-bg-image' as any]: fullBackgroundImage,
+        ['--mobile-bg-size' as any]: mobileSizes,
+        ['--mobile-bg-position' as any]: mobilePositions,
+      }
+    }
     
     return {
-      ['--mobile-bg-image' as any]: fullBackgroundImage,
-      ['--mobile-bg-size' as any]: mobileSizes,
-      ['--mobile-bg-position' as any]: mobilePositions,
+      ['--mobile-bg-image' as any]: 'none',
     }
-  }, [bgPosterUrl, style.backgroundImage, bgFit])
+  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready])
 
   const combinedClassName = React.useMemo(() => {
     const classes = []
@@ -666,33 +655,8 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     return classes.join(' ')
   }, [className, bgPosterUrl])
 
+  const isMobile = useIsMobile()
   const showFixedMobileBackdrop = !!bgPosterUrl && isMobile
-
-  // На мобильных переносим фон на корневой html, чтобы он покрывал область за пределами safe-area (iOS notch)
-  React.useEffect(() => {
-    if (!showFixedMobileBackdrop) return
-
-    const root = document.documentElement
-    root.classList.add('mobile-bg-fixed-active')
-
-    // Применяем CSS-переменные на корень, чтобы фон рисовался в html
-    const img = (mobileBackgroundStyle as any)['--mobile-bg-image']
-    const size = (mobileBackgroundStyle as any)['--mobile-bg-size']
-    const pos = (mobileBackgroundStyle as any)['--mobile-bg-position']
-    const accent = (style as any)['--poster-accent-rgb']
-    if (img) root.style.setProperty('--mobile-bg-image', String(img))
-    if (size) root.style.setProperty('--mobile-bg-size', String(size))
-    if (pos) root.style.setProperty('--mobile-bg-position', String(pos))
-    if (accent) root.style.setProperty('--mobile-accent-rgb', String(accent))
-
-    return () => {
-      root.classList.remove('mobile-bg-fixed-active')
-      root.style.removeProperty('--mobile-bg-image')
-      root.style.removeProperty('--mobile-bg-size')
-      root.style.removeProperty('--mobile-bg-position')
-      root.style.removeProperty('--mobile-accent-rgb')
-    }
-  }, [showFixedMobileBackdrop, mobileBackgroundStyle, style])
 
   return (
     <div 
@@ -706,10 +670,21 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
         transition: 'background-image 0.5s ease-in-out, background-color 0.5s ease-in-out'
       }}
     >
-      {/* Фиксированный слой как fallback можно оставить отключенным,
-          т.к. фон переносится на html и покрывает область над safe-area */}
-     {children}
-     {!ready && <div style={{ height: 0, width: 0 }} />}
+      {showFixedMobileBackdrop && (
+        <div
+          aria-hidden
+          role="presentation"
+          className="poster-background-mobile-fixed"
+          style={{
+            backgroundImage: 'var(--mobile-bg-image)',
+            backgroundSize: 'var(--mobile-bg-size, auto 100svh)',
+            backgroundPosition: 'var(--mobile-bg-position, center top)',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      )}
+      {children}
+      {!ready && <div style={{ height: 0, width: 0 }} />}
     </div>
   )
 }
