@@ -152,6 +152,7 @@ import { TrailerPlayer } from "@/components/trailer-player";
 import { ratingColor } from "@/lib/utils";
 import { PosterBackground } from "@/components/poster-background";
 import { TriviaSection } from "@/components/trivia-section";
+import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 // Inline SVG icons to avoid external icon dependencies
 function IconThumbUp({ className = "" }: { className?: string }) {
   return (
@@ -573,7 +574,35 @@ export default function MoviePage({
     );
   }
 
-  const movie = data.details;
+  let movie = data.details;
+
+  // Мердж локальных оверрайдов (например, bg_poster/backdrop)
+  // Определяем тип контента и выбираем соответствующий набор оверрайдов
+  const typeRawForOverride = (movie as any).type ?? (data as any).type ?? "";
+  const tForOverride = String(typeRawForOverride).toLowerCase();
+  const isSerialForOverride =
+    tForOverride.includes("serial") ||
+    tForOverride.includes("series") ||
+    tForOverride.includes("tv") ||
+    tForOverride.includes("сериал");
+  const override = isSerialForOverride ? getSeriesOverride(id) : getMovieOverride(id);
+  if (override) {
+    const hasApiBackdrop = (movie as any).backdrop != null && String((movie as any).backdrop).trim() !== "";
+    const overrideBackdrop = override.bg_poster?.backdrop ?? override.backdrop;
+    movie = {
+      ...movie,
+      // Fallback только если из API нет backdrop
+      ...(!hasApiBackdrop && overrideBackdrop ? { backdrop: overrideBackdrop } : {}),
+      ...(override.bg_poster
+        ? {
+            bg_poster: {
+              ...(((movie as any).bg_poster) ?? {}),
+              ...override.bg_poster,
+            },
+          }
+        : {}),
+    };
+  }
 
   const seqList = Array.isArray((movie as any).sequelsAndPrequels)
     ? (movie as any).sequelsAndPrequels
@@ -766,9 +795,8 @@ export default function MoviePage({
   return (
     <PosterBackground
       posterUrl={movie.poster}
-      bgPosterUrl={
-        (movie as any).bg_poster?.backdrop || (movie as any).backdrop
-      }
+      // Сначала используем API backdrop, если есть; иначе — локальный из overrides
+      bgPosterUrl={(movie as any).backdrop || (movie as any).bg_poster?.backdrop}
       className="min-h-[100dvh] min-h-screen"
     >
       <header className="relative z-10 bg-transparent">
