@@ -151,7 +151,7 @@ export function MovieGrid({ url }: MovieGridProps) {
   if ((isLoading || isValidating) && pagesData.length === 0) {
     const skeletonCount = expectedSkeletonCountForUrl(url) ?? perPage;
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
@@ -239,12 +239,12 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {display.map((movie: any, index: number) => (
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}
-            className="group bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            className="group block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
               {movie.poster ? (
