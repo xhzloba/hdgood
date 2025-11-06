@@ -142,8 +142,26 @@
   .poster-background-mobile {
     background-attachment: scroll !important;
     background-image: var(--mobile-bg-image) !important;
-    background-size: cover, cover, cover, cover, cover !important;
-    background-position: 60% center, 0% 0%, 0% 100%, 100% 100%, center !important;
+    /* Используем пер-слойные размеры: градиенты — cover, постер — auto 100svh */
+    background-size: var(--mobile-bg-size, auto 100svh) !important;
+    background-position: var(--mobile-bg-position, center top) !important;
+    background-repeat: no-repeat !important;
+    min-height: 100svh;
+  }
+
+  /* Режим фиксированного фона на мобильных: переносим фон в отдельный слой */
+  .poster-background-mobile.mobile-fixed {
+    background-image: none !important;
+  }
+
+  .poster-background-mobile-fixed {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: var(--mobile-bg-image) !important;
+    background-size: var(--mobile-bg-size, auto 100svh) !important;
+    background-position: var(--mobile-bg-position, center top) !important;
     background-repeat: no-repeat !important;
   }
 
@@ -158,6 +176,8 @@
     background-attachment: scroll;
   }
 }
+
+/* При необходимости можно детализировать брейкпоинты, но базовая адаптация выше работает стабильно */
 
 /* Утилиты для safe-area (iOS notch/Home Indicator) */
 @layer utilities {

@@ -475,7 +475,7 @@ export default function MoviePage({
             {/* Poster Skeleton */}
             <div className="space-y-4 md:sticky md:top-20 md:self-start">
               <div
-                className="aspect-[2/3] bg-zinc-900 rounded overflow-hidden"
+                className="aspect-[2/3] bg-zinc-900 rounded overflow-hidden w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none"
                 style={{ boxShadow: "0 6px 18px rgba(0,0,0,0.28)" }}
               >
                 <Skeleton className="w-full h-full" />
@@ -491,7 +491,7 @@ export default function MoviePage({
               </div>
 
               {/* Ratings */}
-              <div className="grid md:grid-cols-2 gap-16">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-16">
                 <div className="flex items-center gap-4">
                   <Skeleton className="w-16 h-6 rounded" />
                   <Skeleton className="w-16 h-6 rounded" />
@@ -502,7 +502,7 @@ export default function MoviePage({
               </div>
 
               {/* Meta + Cast */}
-              <div className="grid md:grid-cols-2 gap-16">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-16">
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-32 mb-4" />
                   {Array.from({ length: 15 }).map((_, i) => (
@@ -817,7 +817,7 @@ export default function MoviePage({
           {/* Poster */}
           <div className="space-y-4 md:sticky md:top-20 md:self-start">
             <div
-              className="aspect-[2/3] bg-zinc-950 rounded overflow-hidden"
+              className="aspect-[2/3] bg-zinc-950 rounded overflow-hidden w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none"
               style={{ boxShadow: "0 6px 18px rgba(0,0,0,0.28)" }}
             >
               {movie.poster ? (

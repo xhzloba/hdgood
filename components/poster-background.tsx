@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { useIsMobile } from "@/components/ui/use-mobile"
 
 type PosterBackgroundProps = {
   posterUrl?: string | null
@@ -629,9 +630,16 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     if (shouldShowBackground) {
       // Получаем полный backgroundImage из style для мобильных
       const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
+      // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
+      const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
+      // Для всех градиентов используем cover, для последнего слоя (url) — авто по высоте вьюпорта
+      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}auto 100svh`
+      const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
       
       return {
         ['--mobile-bg-image' as any]: fullBackgroundImage,
+        ['--mobile-bg-size' as any]: mobileSizes,
+        ['--mobile-bg-position' as any]: mobilePositions,
       }
     }
     
@@ -647,9 +655,14 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     return classes.join(' ')
   }, [className, bgPosterUrl])
 
+  const isMobile = useIsMobile()
+  const showFixedMobileBackdrop = !!bgPosterUrl && isMobile
+
   return (
     <div 
-      className={combinedClassName || undefined} 
+      className={
+        ((combinedClassName || '') + (showFixedMobileBackdrop ? ' mobile-fixed' : '')).trim() || undefined
+      }
       style={{
         ...style, 
         ...mobileBackgroundStyle,
@@ -657,6 +670,19 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
         transition: 'background-image 0.5s ease-in-out, background-color 0.5s ease-in-out'
       }}
     >
+      {showFixedMobileBackdrop && (
+        <div
+          aria-hidden
+          role="presentation"
+          className="poster-background-mobile-fixed"
+          style={{
+            backgroundImage: 'var(--mobile-bg-image)',
+            backgroundSize: 'var(--mobile-bg-size, auto 100svh)',
+            backgroundPosition: 'var(--mobile-bg-position, center top)',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      )}
       {children}
       {!ready && <div style={{ height: 0, width: 0 }} />}
     </div>
