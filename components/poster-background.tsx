@@ -632,7 +632,7 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
       const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
       // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
       const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-      // Для всех градиентов используем cover, для последнего слоя (url) — авто по высоте вьюпорта
+      // На мобильных: градиенты — cover, сам постер — auto 100svh (сохранение пропорций по высоте)
       const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}auto 100svh`
       const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
       
@@ -658,6 +658,29 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
   const isMobile = useIsMobile()
   const showFixedMobileBackdrop = !!bgPosterUrl && isMobile
 
+  // На мобильных переносим фон на корневой html, чтобы он покрывал область за пределами safe-area (iOS notch)
+  React.useEffect(() => {
+    if (!showFixedMobileBackdrop) return
+
+    const root = document.documentElement
+    root.classList.add('mobile-bg-fixed-active')
+
+    // Применяем CSS-переменные на корень, чтобы фон рисовался в html
+    const img = (mobileBackgroundStyle as any)['--mobile-bg-image']
+    const size = (mobileBackgroundStyle as any)['--mobile-bg-size']
+    const pos = (mobileBackgroundStyle as any)['--mobile-bg-position']
+    if (img) root.style.setProperty('--mobile-bg-image', String(img))
+    if (size) root.style.setProperty('--mobile-bg-size', String(size))
+    if (pos) root.style.setProperty('--mobile-bg-position', String(pos))
+
+    return () => {
+      root.classList.remove('mobile-bg-fixed-active')
+      root.style.removeProperty('--mobile-bg-image')
+      root.style.removeProperty('--mobile-bg-size')
+      root.style.removeProperty('--mobile-bg-position')
+    }
+  }, [showFixedMobileBackdrop, mobileBackgroundStyle])
+
   return (
     <div 
       className={
@@ -670,21 +693,10 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
         transition: 'background-image 0.5s ease-in-out, background-color 0.5s ease-in-out'
       }}
     >
-      {showFixedMobileBackdrop && (
-        <div
-          aria-hidden
-          role="presentation"
-          className="poster-background-mobile-fixed"
-          style={{
-            backgroundImage: 'var(--mobile-bg-image)',
-            backgroundSize: 'var(--mobile-bg-size, auto 100svh)',
-            backgroundPosition: 'var(--mobile-bg-position, center top)',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-      )}
-      {children}
-      {!ready && <div style={{ height: 0, width: 0 }} />}
+      {/* Фиксированный слой как fallback можно оставить отключенным,
+          т.к. фон переносится на html и покрывает область над safe-area */}
+     {children}
+     {!ready && <div style={{ height: 0, width: 0 }} />}
     </div>
   )
 }

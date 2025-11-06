@@ -138,12 +138,22 @@
 
 /* Фиксированный фон для мобильных устройств */
 @media (max-width: 768px) {
+  /* Когда активирован режим фиксированного фона на мобильных — переносим фон на html,
+     чтобы он покрывал область над safe-area (display cutout) */
+  html.mobile-bg-fixed-active {
+    background-image: var(--mobile-bg-image) !important;
+    background-size: var(--mobile-bg-size, cover) !important;
+    background-position: var(--mobile-bg-position, center top) !important;
+    background-repeat: no-repeat !important;
+    /* фон у корня и так фиксированный относительно вьюпорта */
+  }
+
   /* Делаем фон контейнера основным источником бэкграунда на мобильных */
   .poster-background-mobile {
     background-attachment: scroll !important;
     background-image: var(--mobile-bg-image) !important;
-    /* Используем пер-слойные размеры: градиенты — cover, постер — auto 100svh */
-    background-size: var(--mobile-bg-size, auto 100svh) !important;
+    /* Используем пер-слойные размеры: все слои — cover */
+    background-size: var(--mobile-bg-size, cover) !important;
     background-position: var(--mobile-bg-position, center top) !important;
     background-repeat: no-repeat !important;
     min-height: 100svh;
@@ -160,7 +170,7 @@
     z-index: -1;
     pointer-events: none;
     background-image: var(--mobile-bg-image) !important;
-    background-size: var(--mobile-bg-size, auto 100svh) !important;
+    background-size: var(--mobile-bg-size, cover) !important;
     background-position: var(--mobile-bg-position, center top) !important;
     background-repeat: no-repeat !important;
   }
