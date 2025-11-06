@@ -193,9 +193,9 @@
     content: "";
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: env(safe-area-inset-top);
+    height: calc(env(safe-area-inset-top) + 1px);
     pointer-events: none;
-    z-index: 0;
+    z-index: 9999;
     /* Мягкое затухание вниз, чтобы аккуратно слить с основным фоном */
     background: linear-gradient(
       to bottom,

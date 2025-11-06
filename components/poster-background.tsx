@@ -641,31 +641,23 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
   const mobileBackgroundStyle = React.useMemo(() => {
     if (!bgPosterUrl) return {}
     
-    // Показываем мобильный фон только когда цвета готовы или posterUrl отсутствует
-    const shouldShowBackground = !posterUrl || ready
-    
-    if (shouldShowBackground) {
-      // Получаем полный backgroundImage из style для мобильных
-      const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
-      // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
-      const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-      // На мобильных: градиенты — cover;
-      // постер: адаптивно — 100vw auto (фит по ширине) или auto 100svh (фит по высоте)
-      const posterSize = bgFit === 'fit_height' ? 'auto 100svh' : '100vw auto'
-      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}${posterSize}`
-      const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center center`
-      
-      return {
-        ['--mobile-bg-image' as any]: fullBackgroundImage,
-        ['--mobile-bg-size' as any]: mobileSizes,
-        ['--mobile-bg-position' as any]: mobilePositions,
-      }
-    }
+    // На мобильных всегда показываем фон сразу (без ожидания извлечения цветов),
+    // затем по готовности обновляем слои градиентов
+    const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
+    // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
+    const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
+    // На мобильных: градиенты — cover;
+    // постер: адаптивно — 100vw auto (фит по ширине) или auto 100svh (фит по высоте)
+    const posterSize = bgFit === 'fit_height' ? 'auto 100svh' : '100vw auto'
+    const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}${posterSize}`
+    const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center center`
     
     return {
-      ['--mobile-bg-image' as any]: 'none',
+      ['--mobile-bg-image' as any]: fullBackgroundImage,
+      ['--mobile-bg-size' as any]: mobileSizes,
+      ['--mobile-bg-position' as any]: mobilePositions,
     }
-  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready, bgFit])
+  }, [bgPosterUrl, style.backgroundImage, bgFit])
 
   const combinedClassName = React.useMemo(() => {
     const classes = []
