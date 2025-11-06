@@ -157,6 +157,7 @@
     background-position: var(--mobile-bg-position, center top) !important;
     background-repeat: no-repeat !important;
     min-height: 100svh;
+    min-width: 100vw;
   }
 
   /* Режим фиксированного фона на мобильных: переносим фон в отдельный слой */
@@ -184,6 +185,23 @@
   body {
     background: transparent !important;
     background-attachment: scroll;
+  }
+
+  /* Заливаем область выреза (notch) сверху мягким акцентом постера,
+     чтобы фон «начинался» от самых краёв дисплея на iOS */
+  html.mobile-bg-fixed-active body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: env(safe-area-inset-top);
+    pointer-events: none;
+    z-index: 0;
+    /* Мягкое затухание вниз, чтобы аккуратно слить с основным фоном */
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--mobile-accent-rgb, 15,15,15), 0.85),
+      rgba(var(--mobile-accent-rgb, 15,15,15), 0.0)
+    );
   }
 }
 
