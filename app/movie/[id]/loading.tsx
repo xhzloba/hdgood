@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function Loading() {
   return (
@@ -7,14 +8,15 @@ export default function Loading() {
       {/* Background overlay */}
       <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 
-      {/* Header (transparent, без границы и blur) */}
+      {/* Header (синхронизирован с финальным состоянием, чтобы избежать LAYOUT SHIFT) */}
       <header className="relative z-10 bg-transparent">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link
             href="/"
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
           >
-            ← Назад
+            <ArrowLeft size={16} />
+            <span>Назад</span>
           </Link>
         </div>
       </header>
