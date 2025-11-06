@@ -69,6 +69,207 @@ function refineColor(rgb: [number, number, number]): [number, number, number] {
   return hslToRgb(h, s, l)
 }
 
+// --- Hue helpers for more accurate dominant selection ---
+function hueDistance(a: number, b: number): number {
+  const d = Math.abs(a - b) % 360
+  return d > 180 ? 360 - d : d
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, v))
+}
+
+function classifyHueFamily(h: number):
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "cyan"
+  | "blue"
+  | "purple"
+  | "magenta" {
+  const hh = ((h % 360) + 360) % 360
+  if (hh >= 345 || hh < 15) return "red"
+  if (hh >= 15 && hh < 45) return "orange"
+  if (hh >= 45 && hh < 75) return "yellow"
+  if (hh >= 75 && hh < 165) return "green"
+  if (hh >= 165 && hh < 195) return "cyan"
+  if (hh >= 195 && hh < 255) return "blue"
+  if (hh >= 255 && hh < 285) return "purple"
+  return "magenta"
+}
+
+function enhanceDominantHsl(h: number, s: number, l: number): [number, number, number] {
+  const fam = classifyHueFamily(h)
+  let ns = s
+  let nl = l
+  switch (fam) {
+    case "red":
+      ns = clamp(s + 0.15, 0, 1)
+      nl = clamp(l + 0.08, 0, 0.85)
+      break
+    case "orange":
+      ns = clamp(s + 0.12, 0, 1)
+      nl = clamp(l + 0.06, 0, 0.85)
+      break
+    case "yellow":
+      ns = clamp(s + 0.05, 0, 1)
+      nl = clamp(l - 0.04, 0.15, 0.78)
+      break
+    case "green":
+      ns = clamp(s + 0.1, 0, 1)
+      nl = clamp(l + 0.05, 0, 0.85)
+      break
+    case "cyan":
+      ns = clamp(s + 0.08, 0, 1)
+      nl = clamp(l + 0.05, 0, 0.85)
+      break
+    case "blue":
+      ns = clamp(s + 0.1, 0, 1)
+      nl = clamp(l + 0.12, 0, 0.82)
+      break
+    case "purple":
+      ns = clamp(s + 0.12, 0, 1)
+      nl = clamp(l + 0.08, 0, 0.83)
+      break
+    case "magenta":
+      ns = clamp(s + 0.12, 0, 1)
+      nl = clamp(l + 0.06, 0, 0.83)
+      break
+  }
+  return [h, ns, nl]
+}
+
+// Глобальная палитра: выделение двух доминирующих цветов на всём постере
+function getDominantColors(img: HTMLImageElement): [[number, number, number], [number, number, number]] | null {
+  const canvas = document.createElement("canvas")
+  const ctx = canvas.getContext("2d")
+  const w = 128
+  const h = 128
+  canvas.width = w
+  canvas.height = h
+  if (!ctx) return null
+  // @ts-ignore
+  ctx.imageSmoothingEnabled = false
+  ctx.drawImage(img, 0, 0, w, h)
+  const image = ctx.getImageData(0, 0, w, h)
+  const data = image.data
+
+  const H_BINS = 36 // 10° шаг
+  const S_BINS = 6
+  const L_BINS = 6
+  type Cluster = {
+    count: number
+    weight: number
+    rSum: number
+    gSum: number
+    bSum: number
+    hSum: number
+    sSum: number
+    lSum: number
+  }
+  const clusters = new Map<string, Cluster>()
+  let total = 0
+  let colored = 0
+
+  const sWeight = (s: number) => (s < 0.12 ? 0.25 + s * 0.5 : Math.pow(s, 0.85))
+  const lWeight = (l: number) => clamp(1 - Math.abs(l - 0.56) * 1.8, 0.25, 1)
+  const hueWeightFn = (h: number) => {
+    switch (classifyHueFamily(h)) {
+      case "red":
+      case "blue":
+      case "purple":
+      case "magenta":
+        return 1.12
+      case "green":
+        return 1.06
+      case "cyan":
+        return 1.02
+      case "orange":
+        return 1.04
+      case "yellow":
+        return 0.95
+      default:
+        return 1
+    }
+  }
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const idx = (y * w + x) * 4
+      const a = data[idx + 3]
+      if (a < 128) continue
+      const r = data[idx]
+      const g = data[idx + 1]
+      const b = data[idx + 2]
+      const [hh, ss, ll] = rgbToHsl(r, g, b)
+      total++
+      // Отбрасываем явные белые/серые и почти чёрные
+      if (ss < 0.08 && ll > 0.92) continue
+      if (ss < 0.06 && ll < 0.12) continue
+
+      const wS = sWeight(ss)
+      const wL = lWeight(ll)
+      const wH = hueWeightFn(hh)
+      const wgt = wS * wL * wH
+      if (ss > 0.12) colored++
+
+      const hIdx = Math.floor((((hh % 360) + 360) % 360) / 10)
+      const sIdx = Math.min(S_BINS - 1, Math.floor(ss * S_BINS))
+      const lIdx = Math.min(L_BINS - 1, Math.floor(ll * L_BINS))
+      const key = `${hIdx}|${sIdx}|${lIdx}`
+      let c = clusters.get(key)
+      if (!c) {
+        c = { count: 0, weight: 0, rSum: 0, gSum: 0, bSum: 0, hSum: 0, sSum: 0, lSum: 0 }
+        clusters.set(key, c)
+      }
+      c.count += 1
+      c.weight += wgt
+      c.rSum += r * wgt
+      c.gSum += g * wgt
+      c.bSum += b * wgt
+      c.hSum += hh * wgt
+      c.sSum += ss * wgt
+      c.lSum += ll * wgt
+    }
+  }
+
+  if (clusters.size === 0 || total === 0) return null
+
+  const arr = Array.from(clusters.entries()).sort((a, b) => b[1].weight - a[1].weight)
+  const MIN_HUE_SEP = 35
+
+  const pickRGB = (entry: [string, Cluster]) => {
+    const c = entry[1]
+    const wgt = c.weight || c.count || 1
+    const h = c.hSum / wgt
+    const s = c.sSum / wgt
+    const l = c.lSum / wgt
+    const [eh, es, el] = enhanceDominantHsl(h, s, l)
+    return hslToRgb(eh, es, el)
+  }
+
+  const first = arr[0]
+  const firstHue = first[1].hSum / (first[1].weight || first[1].count || 1)
+  const firstFam = classifyHueFamily(firstHue)
+  const d1 = pickRGB(first)
+
+  let second: [string, Cluster] | null = null
+  for (let i = 1; i < arr.length; i++) {
+    const cand = arr[i]
+    const h2 = cand[1].hSum / (cand[1].weight || cand[1].count || 1)
+    const fam2 = classifyHueFamily(h2)
+    if (hueDistance(firstHue, h2) >= MIN_HUE_SEP && fam2 !== firstFam) {
+      second = cand
+      break
+    }
+  }
+  if (!second) second = arr[1] || first
+  const d2 = pickRGB(second!)
+
+  return [d1, d2]
+}
+
 function getCornerColors(img: HTMLImageElement): { tl: [number, number, number]; br: [number, number, number]; bl: [number, number, number] } {
   const canvas = document.createElement("canvas")
   const ctx = canvas.getContext("2d")
@@ -262,6 +463,7 @@ function getCornerColors(img: HTMLImageElement): { tl: [number, number, number];
 
 export function PosterBackground({ posterUrl, bgPosterUrl, children, className }: PosterBackgroundProps) {
   const [colors, setColors] = React.useState<{ tl: [number, number, number]; br: [number, number, number]; bl: [number, number, number] } | null>(null)
+  const [dominants, setDominants] = React.useState<[[number, number, number], [number, number, number]] | null>(null)
   const [ready, setReady] = React.useState(false)
 
   React.useEffect(() => {
@@ -271,6 +473,8 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     img.onload = () => {
       const colors = getCornerColors(img)
       setColors(colors)
+      const dom = getDominantColors(img)
+      if (dom) setDominants(dom)
       setReady(true)
     }
     img.onerror = () => {
@@ -342,6 +546,18 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
             `linear-gradient(180deg, ${accentSoft}, rgba(24,24,27,0.2) 60%)`
           )
           
+          // Если посчитали два доминирующих — добавим мягкий линейный градиент между ними
+          if (dominants) {
+            const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = dominants
+            const [ed1r, ed1g, ed1b] = enhanceColor(d1r, d1g, d1b)
+            const [ed2r, ed2g, ed2b] = enhanceColor(d2r, d2g, d2b)
+            overlayGradients.push(
+              `linear-gradient(90deg, rgba(${ed1r}, ${ed1g}, ${ed1b}, 0.35), rgba(${ed2r}, ${ed2g}, ${ed2b}, 0.35))`
+            )
+            ;(baseStyle as any)["--poster-dominant-1-rgb"] = `${ed1r}, ${ed1g}, ${ed1b}`
+            ;(baseStyle as any)["--poster-dominant-2-rgb"] = `${ed2r}, ${ed2g}, ${ed2b}`
+          }
+
           // Expose accent color for children via CSS variable
           ;(baseStyle as any)["--poster-accent-rgb"] = `${ar}, ${ag}, ${ab}`
           ;(baseStyle as any)["--poster-accent-tl-rgb"] = `${ertl}, ${egtl}, ${ebtl}`
@@ -370,14 +586,23 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     const ag = Math.round((gtl + gbr + gbl) / 3)
     const ab = Math.round((btl + bbr + bbl2) / 3)
     const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`
+    // Базовые слои
+    const layers = [
+      `radial-gradient( 1600px 800px at 0% 0%, ${accentTL}, transparent )`,
+      `radial-gradient( 1600px 800px at 0% 100%, ${accentBL}, transparent )`,
+      `radial-gradient( 1600px 800px at 100% 100%, ${accentBR}, transparent )`,
+      `linear-gradient(180deg, ${accentSoft}, rgba(24,24,27,0.4) 60%)`,
+    ]
+
+    // Добавим доминирующие, если есть
+    if (dominants) {
+      const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = dominants
+      layers.push(`linear-gradient(90deg, rgba(${d1r}, ${d1g}, ${d1b}, 0.35), rgba(${d2r}, ${d2g}, ${d2b}, 0.35))`)
+    }
+
     return {
       ...baseStyle,
-      backgroundImage: [
-        `radial-gradient( 1600px 800px at 0% 0%, ${accentTL}, transparent )`,
-        `radial-gradient( 1600px 800px at 0% 100%, ${accentBL}, transparent )`,
-        `radial-gradient( 1600px 800px at 100% 100%, ${accentBR}, transparent )`,
-        `linear-gradient(180deg, ${accentSoft}, rgba(24,24,27,0.4) 60%)`,
-      ].join(", "),
+      backgroundImage: layers.join(", "),
       // Убираем backgroundAttachment: "fixed" для мобильных устройств
       backgroundRepeat: "no-repeat, no-repeat, no-repeat, no-repeat",
       // Expose accent color for children via CSS variable
@@ -385,8 +610,14 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
       ["--poster-accent-tl-rgb" as any]: `${rtl}, ${gtl}, ${btl}`,
       ["--poster-accent-br-rgb" as any]: `${rbr}, ${gbr}, ${bbr}`,
       ["--poster-accent-bl-rgb" as any]: `${rbl}, ${gbl}, ${bbl2}`,
+      ...(dominants
+        ? {
+            ["--poster-dominant-1-rgb" as any]: `${dominants[0][0]}, ${dominants[0][1]}, ${dominants[0][2]}`,
+            ["--poster-dominant-2-rgb" as any]: `${dominants[1][0]}, ${dominants[1][1]}, ${dominants[1][2]}`,
+          }
+        : {}),
     }
-  }, [colors, bgPosterUrl])
+  }, [colors, bgPosterUrl, dominants])
 
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
