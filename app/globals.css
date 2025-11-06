@@ -156,13 +156,20 @@
 
   .poster-background-mobile-fixed {
     position: fixed;
-    inset: 0;
+    /* Расширяем фон за пределы безопасной зоны сверху (iOS notch) */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: calc(-1 * env(safe-area-inset-top));
     z-index: -1;
     pointer-events: none;
     background-image: var(--mobile-bg-image) !important;
+    /* Увеличиваем высоту на safe-area сверху, чтобы изображение начиналось под notch */
     background-size: var(--mobile-bg-size, auto 100svh) !important;
     background-position: var(--mobile-bg-position, center top) !important;
     background-repeat: no-repeat !important;
+    /* Компенсируем смещение: растягиваем слой по высоте с учётом safe-area */
+    height: calc(100svh + env(safe-area-inset-top));
   }
 
   /* Отключаем псевдоэлемент, чтобы не конфликтовал со слоями */
