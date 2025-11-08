@@ -1372,7 +1372,18 @@ export default function MoviePage({
               )}
             </div>
 
-            {/* Actors avatars (moved above description and trailers) */}
+            {/* Description (moved above actors avatars) */}
+            {movie.about && (
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-zinc-200">
+                  Описание
+                </h2>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  {movie.about}
+                </p>
+              </div>
+            )}
+
             {Array.isArray(data.casts) && data.casts.length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
@@ -1399,18 +1410,6 @@ export default function MoviePage({
                     );
                   })}
                 </div>
-              </div>
-            )}
-
-            {/* Description (now before trailers) */}
-            {movie.about && (
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-zinc-200">
-                  Описание
-                </h2>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  {movie.about}
-                </p>
               </div>
             )}
 
