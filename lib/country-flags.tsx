@@ -173,6 +173,40 @@ export function extractCountryCodes(
   return Array.from(new Set(codes));
 }
 
+// Локальные переопределения названий стран (RU)
+const COUNTRY_LABEL_OVERRIDES_RU: Record<string, string> = {
+  us: "США",
+};
+
+export function getCountryLabel(
+  country: string | string[] | undefined | null,
+  locale: string = "ru"
+): string | null {
+  const codes = extractCountryCodes(country);
+  if (codes.length > 0) {
+    try {
+      const code = codes[0].toLowerCase();
+      // Сначала пробуем локальные переопределения
+      if (locale === "ru" && COUNTRY_LABEL_OVERRIDES_RU[code]) {
+        return COUNTRY_LABEL_OVERRIDES_RU[code];
+      }
+      const regionNames = new Intl.DisplayNames([locale], { type: "region" });
+      const name = regionNames.of(code.toUpperCase());
+      if (name) return name;
+    } catch (_) {
+      // noop
+    }
+  }
+  if (!country) return null;
+  const values = Array.isArray(country)
+    ? country
+    : String(country)
+        .split(/[,/|]/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+  return values[0] || null;
+}
+
 type CountryFlagProps = {
   country?: string | string[] | null;
   size?: "sm" | "md" | "lg";

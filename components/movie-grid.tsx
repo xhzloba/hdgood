@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
-import CountryFlag from "@/lib/country-flags";
+import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 
 interface Movie {
   id: string;
@@ -322,8 +322,16 @@ export function MovieGrid({ url }: MovieGridProps) {
               </h3>
               <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
                 {movie.year && <span>{movie.year}</span>}
+                {movie.year && movie.country && (
+                  <span className="text-zinc-500/60"> / </span>
+                )}
                 {movie.country && (
-                  <CountryFlag country={movie.country} size="sm" />
+                  <>
+                    <CountryFlag country={movie.country} size="sm" />
+                    {getCountryLabel(movie.country) && (
+                      <span>{getCountryLabel(movie.country) as string}</span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
