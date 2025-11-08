@@ -14,16 +14,16 @@ const TRENDING_SECTIONS: TrendingItem[] = [
     playlist_url: "https://api.vokino.pro/v2/list?sort=popular",
   },
   {
+    title: "Сейчас смотрят",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=watching",
+  },
+  {
     title: "Новинки",
     playlist_url: "https://api.vokino.pro/v2/list?sort=new&page=1",
   },
   {
     title: "Обновления",
     playlist_url: "https://api.vokino.pro/v2/list?sort=updatings",
-  },
-  {
-    title: "Сейчас смотрят",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=watching",
   },
 ]
 
