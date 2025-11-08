@@ -1062,7 +1062,7 @@ export default function MoviePage({
             </div>
 
             {/* Desktop header with toggle placed right next to title */}
-            <div className="hidden md:flex items-center gap-3 mb-2">
+            <div className="hidden md:flex items-center gap-3 mb-4">
               <h2 className="text-lg font-semibold text-zinc-200">{detailsTitle}</h2>
               <button
                 type="button"
@@ -1082,7 +1082,7 @@ export default function MoviePage({
             <div className={`grid md:grid-cols-2 gap-16 ${detailsOpen ? "" : "md:hidden"}`}>
               {/* Meta Info */}
               <div className="space-y-2 text-sm">
-                <h2 className="text-lg font-semibold text-zinc-200 md:hidden">
+                <h2 className="text-lg font-semibold text-zinc-200 mb-3 md:hidden">
                   {detailsTitle}
                 </h2>
                 <div className="flex gap-2">
