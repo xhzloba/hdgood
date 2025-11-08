@@ -19,19 +19,13 @@ type FranchiseItem = {
   overlay?: string[];
 };
 
-// Мини-постеры-логотипы для оверлея
+// Мини-постеры-логотипы для оверлея (локальные из public/movies/logo)
 const JOHN_WICK_OVERLAY: string[] = [
-  "https://imagetmdb.com/t/p/w300/cfTgzNAP83WcbnZD4nRZuUgFNkF.png",
-  "https://imagetmdb.com/t/p/w300/nuGV6mwU8frjFwEC7IglcCzEMPm.png",
-  "https://imagetmdb.com/t/p/w300/yGSkH3OPENnRZncjSXQ1arP8TxV.png",
-  "https://imagetmdb.com/t/p/w300/sWkArTph8sTQjGfCatO8hBL5mtB.png",
-  "https://imagetmdb.com/t/p/w300/lXrfZhIwGVcrmfhwPLcQwkw8gg9.png",
+  "/movies/logo/logo-jonh.png",
 ];
 
 const VENOM_OVERLAY: string[] = [
-  "https://imagetmdb.com/t/p/w300/wzJo39PJigshbG7h3i51srByN58.png",
-  "https://imagetmdb.com/t/p/w300/AoampNtf9uCCY8qWub8vXzEuJ9v.png",
-  "https://imagetmdb.com/t/p/w300/7fXlkfavVPDxdLb7QT9RxdYeQNn.png",
+  "/movies/logo/venom-logo.png",
 ];
 
 // Список франшиз в слайдере
