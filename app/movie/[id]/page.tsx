@@ -214,6 +214,7 @@ export default function MoviePage({
     url: string;
     title: string;
   } | null>(null); // Для inline iframe
+  const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
 
   // Функция переключения открытия/закрытия сезона
   const toggleSeason = (seasonNumber: number) => {
@@ -862,7 +863,7 @@ export default function MoviePage({
             {/* Player Selector - показывается только после клика на "Смотреть" */}
             {showPlayerSelector && (
               <PlayerSelector
-                onPlayerSelect={(playerId) => setSelectedPlayer(playerId)}
+                onPlayerSelect={(playerId: number) => setSelectedPlayer(playerId)}
                 iframeUrl={franchiseData?.iframe_url}
                 kpId={kpId}
                 className="mb-4"
@@ -1060,11 +1061,28 @@ export default function MoviePage({
               )}
             </div>
 
+            {/* Desktop header with toggle placed right next to title */}
+            <div className="hidden md:flex items-center gap-3 mb-2">
+              <h2 className="text-lg font-semibold text-zinc-200">{detailsTitle}</h2>
+              <button
+                type="button"
+                onClick={() => setDetailsOpen((prev) => !prev)}
+                aria-label={detailsOpen ? "Скрыть раздел" : "Показать раздел"}
+                className="inline-flex items-center justify-center w-5 h-5 rounded-full text-zinc-900 border border-white/60 shadow-sm hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(165deg, rgba(255,255,255,0.98) 18%, rgba(245,245,245,0.90) 60%, rgba(255,255,255,0.98) 100%)",
+                }}
+              >
+                <span className="text-[12px] leading-none">{detailsOpen ? "−" : "+"}</span>
+              </button>
+            </div>
+
             {/* Meta + Cast side-by-side */}
-            <div className="grid md:grid-cols-2 gap-16">
+            <div className={`grid md:grid-cols-2 gap-16 ${detailsOpen ? "" : "md:hidden"}`}>
               {/* Meta Info */}
               <div className="space-y-2 text-sm">
-                <h2 className="text-lg font-semibold text-zinc-200">
+                <h2 className="text-lg font-semibold text-zinc-200 md:hidden">
                   {detailsTitle}
                 </h2>
                 <div className="flex gap-2">
