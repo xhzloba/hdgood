@@ -1,6 +1,7 @@
 "use client"
 
 import MovieSlider from "./movie-slider"
+import FranchiseSlider from "./franchise-slider"
 
 interface TrendingItem {
   title: string
@@ -34,6 +35,12 @@ export function TrendingSection() {
           {TRENDING_SECTIONS.map((section) => (
             <div key={section.title} className="space-y-3">
               <MovieSlider url={section.playlist_url} title={section.title} />
+              {/* Баннер франшизы сразу после слайдера "В тренде" */}
+              {section.title === "В тренде" && (
+                <div className="space-y-3">
+                  <FranchiseSlider />
+                </div>
+              )}
             </div>
           ))}
         </div>
