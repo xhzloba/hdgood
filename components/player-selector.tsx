@@ -30,86 +30,92 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
     return `https://looking.as.newplayjj.com:9443/?kp=${kpId}&token=5af6e7af5ffb19f2ddb300d28d90f8&season=1&episode=1`;
   };
 
+  // Доступность плееров
+  const player1Available = Boolean(iframeUrl);
+  const player2Available = Boolean(kpId);
+  const player3Available = Boolean(kpId);
 
+  const getPlayerUrl = (playerId: number | null) => {
+    if (playerId === 1) return iframeUrl ?? null;
+    if (playerId === 2) return getPlayer2Url();
+    if (playerId === 3) return getPlayer3Url();
+    return null;
+  };
+
+  const selectedUrl = getPlayerUrl(selectedPlayer);
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <h3 className="text-sm font-medium text-zinc-300">Выбор плеера</h3>
-      <div className="flex gap-2">
-        {[1, 2, 3].map((playerId) => (
-          <Button
-            key={playerId}
-            variant={selectedPlayer === playerId ? "default" : "outline"}
-            size="sm"
-            onClick={() => handlePlayerSelect(playerId)}
-            className={`
-              text-xs px-3 py-1.5 h-auto transition-all duration-200 border-0
-              ${
-                selectedPlayer === playerId
-                  ? "text-white hover:opacity-95"
-                  : "bg-transparent hover:bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-600"
-              }
-            `}
-            style={
-          selectedPlayer === playerId
-            ? {
+      <div className="group relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+        {selectedUrl ? (
+          <iframe
+            src={selectedUrl}
+            className="w-full h-full border-0"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="Movie Player"
+          />
+        ) : null}
+
+        {/* До выбора: центрированный прозрачный оверлей с меткой "Выберите источник" и кнопками */}
+        {!selectedUrl && (
+          <div className="absolute inset-0 z-10 p-2 flex items-center justify-center pointer-events-none">
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-sm md:text-base text-white/90">
+                Выберите источник
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {[1, 2, 3].map((playerId) => (
+                  <Button
+                    key={playerId}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handlePlayerSelect(playerId)}
+                    className="pointer-events-auto text-xs px-3 py-1.5 h-auto transition-all duration-200 border-0 text-white bg-zinc-800/60 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
+                    }}
+                    disabled={
+                      (playerId === 1 && !player1Available) ||
+                      (playerId === 2 && !player2Available) ||
+                      (playerId === 3 && !player3Available)
+                    }
+                  >
+                    Плеер {playerId}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* После выбора: кнопки под iframe, вне фрейма, выравнены слева */}
+      {selectedUrl && (
+        <div className="flex flex-wrap gap-2 justify-start">
+          {[1, 2, 3].map((playerId) => (
+            <Button
+              key={playerId}
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePlayerSelect(playerId)}
+              className="text-xs px-3 py-1.5 h-auto transition-all duration-200 border-0 text-white bg-zinc-800/60 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
                 backgroundImage:
                   "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
+              }}
+              disabled={
+                (playerId === 1 && !player1Available) ||
+                (playerId === 2 && !player2Available) ||
+                (playerId === 3 && !player3Available)
               }
-            : {}
-        }
-          >
-            Плеер {playerId}
-          </Button>
-        ))}
-      </div>
-      
-      {/* Отображение iframe при выборе плеера 1 */}
-      {selectedPlayer === 1 && iframeUrl && (
-        <div className="mt-4">
-          <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-            <iframe
-              src={iframeUrl}
-              className="w-full h-full border-0"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              title="Movie Player 1"
-            />
-          </div>
+            >
+              Плеер {playerId}
+            </Button>
+          ))}
         </div>
       )}
-
-      {/* Отображение iframe при выборе плеера 2 */}
-      {selectedPlayer === 2 && getPlayer2Url() && (
-        <div className="mt-4">
-          <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-            <iframe
-              src={getPlayer2Url()!}
-              className="w-full h-full border-0"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              title="Movie Player 2"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Отображение iframe при выборе плеера 3 */}
-      {selectedPlayer === 3 && getPlayer3Url() && (
-        <div className="mt-4">
-          <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-            <iframe
-              src={getPlayer3Url()!}
-              className="w-full h-full border-0"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              title="Movie Player 3"
-            />
-          </div>
-        </div>
-      )}
-
-
     </div>
   );
 }
