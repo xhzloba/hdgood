@@ -38,15 +38,13 @@ const VENOM_OVERLAY: string[] = [
 const FRANCHISE_ITEMS: FranchiseItem[] = [
   {
     title: "Джон Уик",
-    poster:
-      "https://imagetmdb.com/t/p/original/tHkujDqdPC9VQoFpEWU0QgWIZyM.jpg",
+    poster: "/movies/franshise-jon.jpg",
     href: "/franchise/john-wick",
     overlay: JOHN_WICK_OVERLAY,
   },
   {
     title: "Веном",
-    poster:
-      "https://imagetmdb.com/t/p/original/3V4kLQg0kSqPLctI5ziYWabAZYF.jpg",
+    poster: "/movies/venom-franshise.jpg",
     href: "/franchise/venom",
     overlay: VENOM_OVERLAY,
   },

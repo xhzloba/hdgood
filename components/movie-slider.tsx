@@ -141,23 +141,33 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
           </div>
         </div>
       ) : isLoading && display.length === 0 ? (
+        // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
         <div className="relative">
-          <div className="flex gap-3 overflow-hidden">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="w-40 md:w-44">
-                <div className="aspect-[2/3] bg-zinc-950 rounded-sm overflow-hidden">
-                  <Skeleton className="w-full h-full" />
-                </div>
-                <div className="mt-2">
-                  <Skeleton className="h-3 w-3/4 mb-2" />
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-2 w-16" />
-                    <Skeleton className="h-2 w-12" />
+          <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }}>
+            <CarouselContent className="-ml-2">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <CarouselItem
+                  key={i}
+                  className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                >
+                  <div className="block bg-zinc-900/60 border-2 md:border border-zinc-800/50 overflow-hidden rounded-sm">
+                    <div className="aspect-[2/3] bg-zinc-950">
+                      <Skeleton className="w-full h-full" />
+                    </div>
+                    <div className="p-2 md:p-3">
+                      <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-2 md:h-3 w-16" />
+                        <Skeleton className="h-2 md:h-3 w-12" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
         </div>
       ) : (
         <div className="relative">
