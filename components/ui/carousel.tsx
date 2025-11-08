@@ -173,7 +173,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
 
 function CarouselPrevious({
   className,
-  variant = 'outline',
+  variant = 'ghost',
   size = 'icon',
   ...props
 }: React.ComponentProps<typeof Button>) {
@@ -185,9 +185,9 @@ function CarouselPrevious({
       variant={variant}
       size={size}
       className={cn(
-        'absolute size-8 rounded-full',
+        'absolute size-8 rounded-full z-10 bg-gradient-to-b from-white via-zinc-100 to-zinc-300 text-black ring-1 ring-white/30 shadow-md transition-colors hover:to-zinc-400 hover:ring-white/40',
         orientation === 'horizontal'
-          ? 'top-1/2 -left-12 -translate-y-1/2'
+          ? 'top-1/2 left-2 -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -195,7 +195,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft />
+      <ArrowLeft className="text-black" />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -203,7 +203,7 @@ function CarouselPrevious({
 
 function CarouselNext({
   className,
-  variant = 'outline',
+  variant = 'ghost',
   size = 'icon',
   ...props
 }: React.ComponentProps<typeof Button>) {
@@ -215,9 +215,9 @@ function CarouselNext({
       variant={variant}
       size={size}
       className={cn(
-        'absolute size-8 rounded-full',
+        'absolute size-8 rounded-full z-10 bg-gradient-to-b from-white via-zinc-100 to-zinc-300 text-black ring-1 ring-white/30 shadow-md transition-colors hover:to-zinc-400 hover:ring-white/40',
         orientation === 'horizontal'
-          ? 'top-1/2 -right-12 -translate-y-1/2'
+          ? 'top-1/2 right-2 -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -225,7 +225,7 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight />
+      <ArrowRight className="text-black" />
       <span className="sr-only">Next slide</span>
     </Button>
   )
