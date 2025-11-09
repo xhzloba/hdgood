@@ -135,6 +135,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 <span>{cat.title}</span>
               </button>
             ))}
+            {/* Админ ссылка скрыта: доступ через хоткей Space+K */}
           </div>
         </div>
       ) : (
@@ -183,6 +184,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 <span>{cat.title}</span>
               </button>
             ))}
+            {/* Админ ссылка скрыта: доступ через хоткей Space+K */}
           </div>
         </div>
       )}

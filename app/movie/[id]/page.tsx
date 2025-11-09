@@ -215,6 +215,7 @@ export default function MoviePage({
     title: string;
   } | null>(null); // Для inline iframe
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
+  const [overrideData, setOverrideData] = useState<any>(null);
 
   // Функция переключения открытия/закрытия сезона
   const toggleSeason = (seasonNumber: number) => {
@@ -245,6 +246,25 @@ export default function MoviePage({
     };
     loadParams();
   }, [params]);
+
+  // Загружаем динамический override из JSON API
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/overrides/movies/${id}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) setOverrideData(data || null);
+      } catch {
+        if (!cancelled) setOverrideData(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -576,6 +596,8 @@ export default function MoviePage({
   }
 
   let movie = data.details;
+  // Локальная копия данных франшизы для отображения
+  let franchise = franchiseData;
 
   // Мердж локальных оверрайдов (например, bg_poster/backdrop)
   // Определяем тип контента и выбираем соответствующий набор оверрайдов
@@ -586,23 +608,44 @@ export default function MoviePage({
     tForOverride.includes("series") ||
     tForOverride.includes("tv") ||
     tForOverride.includes("сериал");
-  const override = isSerialForOverride ? getSeriesOverride(id) : getMovieOverride(id);
+  // Применяем override приоритетно ко всем полям
+  const override = overrideData ?? (isSerialForOverride ? getSeriesOverride(id) : getMovieOverride(id));
   if (override) {
-    const hasApiBackdrop = (movie as any).backdrop != null && String((movie as any).backdrop).trim() !== "";
-    const overrideBackdrop = override.bg_poster?.backdrop ?? override.backdrop;
-    movie = {
-      ...movie,
-      // Fallback только если из API нет backdrop
-      ...(!hasApiBackdrop && overrideBackdrop ? { backdrop: overrideBackdrop } : {}),
-      ...(override.bg_poster
-        ? {
-            bg_poster: {
-              ...(((movie as any).bg_poster) ?? {}),
-              ...override.bg_poster,
-            },
-          }
-        : {}),
+    const deepMergePreferOverride = (base: any, ov: any) => {
+      if (!ov || typeof ov !== "object") return base;
+      const result: any = Array.isArray(base) ? [...base] : { ...base };
+      for (const key of Object.keys(ov)) {
+        const ovVal = (ov as any)[key];
+        const baseVal = (base as any)?.[key];
+        if (ovVal && typeof ovVal === "object" && !Array.isArray(ovVal)) {
+          result[key] = deepMergePreferOverride(baseVal || {}, ovVal);
+        } else {
+          result[key] = ovVal; // override имеет приоритет
+        }
+      }
+      return result;
     };
+
+    movie = deepMergePreferOverride(movie, override);
+
+    // Применяем оверрайды франшизы, если есть
+    if (override?.franchise) {
+      const deepMergePreferOverrideFr = (base: any, ov: any) => {
+        if (!ov || typeof ov !== "object") return base;
+        const result: any = Array.isArray(base) ? [...base] : { ...base };
+        for (const key of Object.keys(ov)) {
+          const ovVal = (ov as any)[key];
+          const baseVal = (base as any)?.[key];
+          if (ovVal && typeof ovVal === "object" && !Array.isArray(ovVal)) {
+            result[key] = deepMergePreferOverrideFr(baseVal || {}, ovVal);
+          } else {
+            result[key] = ovVal; // override имеет приоритет
+          }
+        }
+        return result;
+      };
+      franchise = deepMergePreferOverrideFr(franchise || {}, override.franchise);
+    }
   }
 
   const seqList = Array.isArray((movie as any).sequelsAndPrequels)
@@ -864,7 +907,7 @@ export default function MoviePage({
             {showPlayerSelector && (
               <PlayerSelector
                 onPlayerSelect={(playerId: number) => setSelectedPlayer(playerId)}
-                iframeUrl={franchiseData?.iframe_url}
+                iframeUrl={franchise?.iframe_url}
                 kpId={kpId}
                 className="mb-4"
               />
@@ -1121,7 +1164,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Продюсер:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const val = franchiseData?.producer || movie.producer;
+                      const val = franchise?.producer || movie.producer;
                       if (!val) return "—";
                       if (Array.isArray(val)) return val.join(", ");
                       const str = String(val);
@@ -1140,8 +1183,7 @@ export default function MoviePage({
                   </span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const val =
-                        franchiseData?.screenwriter || movie.screenwriter;
+                      const val = franchise?.screenwriter || movie.screenwriter;
                       if (!val) return "—";
                       if (Array.isArray(val)) return val.join(", ");
                       const str = String(val);
@@ -1158,7 +1200,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Художник:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const val = franchiseData?.design || movie.design;
+                      const val = franchise?.design || movie.design;
                       if (!val || String(val).trim() === "" || val === "null" || val === "undefined") return "—";
                       if (Array.isArray(val)) {
                         const filtered = val.filter(v => v && String(v).trim() !== "");
@@ -1180,7 +1222,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Оператор:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const val = franchiseData?.operator || movie.operator;
+                      const val = franchise?.operator || movie.operator;
                       if (!val || String(val).trim() === "" || val === "null" || val === "undefined") return "—";
                       if (Array.isArray(val)) {
                         const filtered = val.filter(v => v && String(v).trim() !== "");
@@ -1206,7 +1248,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Рейтинг MPAA:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const v = franchiseData?.rate_mpaa;
+                      const v = franchise?.rate_mpaa;
                       return v && String(v).trim() !== "" ? v : "—";
                     })()}
                   </span>
@@ -1214,14 +1256,14 @@ export default function MoviePage({
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Бюджет:</span>
                   <span className="text-zinc-200">
-                    {franchiseData?.budget || movie.budget || "—"}
+                    {franchise?.budget || movie.budget || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Сборы США:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const v = franchiseData?.fees_use;
+                      const v = franchise?.fees_use;
                       return v && String(v).trim() !== "" ? v : "—";
                     })()}
                   </span>
@@ -1230,7 +1272,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Сборы мир:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const v = franchiseData?.fees_world;
+                      const v = franchise?.fees_world;
                       return v && String(v).trim() !== "" ? v : "—";
                     })()}
                   </span>
@@ -1239,7 +1281,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Сборы РФ:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const v = franchiseData?.fees_rus;
+                      const v = franchise?.fees_rus;
                       return v && String(v).trim() !== "" ? v : "—";
                     })()}
                   </span>
@@ -1247,7 +1289,7 @@ export default function MoviePage({
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Премьера:</span>
                   <span className="text-zinc-200">
-                    {formatDate(franchiseData?.premier || movie.premier)}
+                    {formatDate(franchise?.premier || movie.premier)}
                   </span>
                 </div>
                 <div className="flex gap-2">
@@ -1255,28 +1297,26 @@ export default function MoviePage({
                     Премьера РФ:
                   </span>
                   <span className="text-zinc-200">
-                    {formatDate(
-                      franchiseData?.premier_rus || movie.premier_rus
-                    )}
+                    {formatDate(franchise?.premier_rus || movie.premier_rus)}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Статус:</span>
                   <span className="text-zinc-200">
-                    {franchiseData?.serial_status || movie.serial_status || "—"}
+                    {franchise?.serial_status || movie.serial_status || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Слоган:</span>
                   <span className="text-zinc-200">
-                    {franchiseData?.slogan || movie.slogan || "—"}
+                    {franchise?.slogan || movie.slogan || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Качество:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const quality = franchiseData?.quality || movie.quality;
+                      const quality = franchise?.quality || movie.quality;
                       const tags = Array.isArray(movie.tags)
                         ? movie.tags.join(", ")
                         : movie.tags ?? "";
@@ -1291,8 +1331,7 @@ export default function MoviePage({
                   <span className="text-zinc-400 min-w-[120px]">Озвучка:</span>
                   <span className="text-zinc-200">
                     {(() => {
-                      const val =
-                        franchiseData?.voiceActing || movie.voiceActing;
+                      const val = franchise?.voiceActing || movie.voiceActing;
                       if (!val) return "—";
                       if (Array.isArray(val)) return val.join(", ");
                       const str = String(val);
@@ -1307,14 +1346,14 @@ export default function MoviePage({
                 </div>
 
                 {/* Количество сезонов для сериалов */}
-                {franchiseData?.seasons &&
-                  Array.isArray(franchiseData.seasons) && (
+                {franchise?.seasons &&
+                  Array.isArray(franchise?.seasons) && (
                     <div className="flex gap-2">
                       <span className="text-zinc-400 min-w-[120px]">
                         Сезонов:
                       </span>
                       <span className="text-zinc-200">
-                        {franchiseData.seasons.length}
+                        {franchise?.seasons.length}
                       </span>
                     </div>
                   )}
@@ -1340,7 +1379,7 @@ export default function MoviePage({
                   </div>
                   <CastList casts={data.casts} maxInitial={11} />
                   {(() => {
-                    const raw = franchiseData?.actors_dubl ?? movie.actors_dubl;
+                    const raw = franchise?.actors_dubl ?? movie.actors_dubl;
 
                     const toList = (val: any): string[] => {
                       if (!val) return [];
@@ -1421,15 +1460,15 @@ export default function MoviePage({
             </div>
 
             {/* Сезоны и эпизоды */}
-            {franchiseData?.seasons &&
-              Array.isArray(franchiseData.seasons) &&
-              franchiseData.seasons.length > 0 && (
+            {franchise?.seasons &&
+              Array.isArray(franchise?.seasons) &&
+              franchise?.seasons.length > 0 && (
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold text-zinc-200">
                     Сезоны
                   </h2>
                   <div className="space-y-4">
-                    {franchiseData.seasons.map((season: any) => {
+                    {franchise?.seasons.map((season: any) => {
                       const isOpen = openSeasons.has(season.season);
                       return (
                         <div
@@ -1709,7 +1748,7 @@ export default function MoviePage({
 
             {/* Факты */}
             {(() => {
-              const trivia = franchiseData?.trivia;
+              const trivia = franchise?.trivia;
               if (!trivia) return null;
               const triviaStr =
                 typeof trivia === "string"

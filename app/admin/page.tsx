@@ -1,0 +1,416 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { getKpIdFromTimeline } from "../../lib/api";
+
+type Primitive = string | number | boolean | null;
+
+type FlatField = {
+  path: string; // dot path
+  value: Primitive | Primitive[] | Record<string, any> | any;
+  type: "string" | "number" | "boolean" | "array" | "object" | "null";
+};
+
+function isPrimitive(v: any): v is Primitive {
+  return v === null || ["string", "number", "boolean"].includes(typeof v);
+}
+
+function flatten(obj: any, basePath: string = ""): FlatField[] {
+  const res: FlatField[] = [];
+  if (!obj || typeof obj !== "object") return res;
+  for (const key of Object.keys(obj)) {
+    const val = obj[key];
+    const path = basePath ? `${basePath}.${key}` : key;
+    if (isPrimitive(val)) {
+      res.push({ path, value: val, type: val === null ? "null" : (typeof val as any) });
+    } else if (Array.isArray(val)) {
+      // Показываем только массивы примитивов как строку
+      const isPrimArray = val.every(isPrimitive);
+      res.push({ path, value: val, type: "array" });
+      if (!isPrimArray) {
+        // Для сложных массивов — отдельный JSON-редактор ниже
+      }
+    } else if (typeof val === "object") {
+      // Добавляем узел-объект и раскрываем
+      res.push({ path, value: val, type: "object" });
+      res.push(...flatten(val, path));
+    }
+  }
+  return res;
+}
+
+function setDeep(obj: Record<string, any>, path: string, value: any) {
+  const parts = path.split(".");
+  let cursor = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const p = parts[i];
+    if (!(p in cursor) || typeof cursor[p] !== "object" || cursor[p] == null) {
+      cursor[p] = {};
+    }
+    cursor = cursor[p];
+  }
+  cursor[parts[parts.length - 1]] = value;
+}
+
+function parseIdent(input: string): string | null {
+  const s = input.trim();
+  if (!s) return null;
+  // Если это прямо 24-х символный идентификатор (hex-like) — принимаем
+  if (/^[a-zA-Z0-9]{24}$/.test(s)) return s;
+  try {
+    // Пытаемся извлечь из URL параметры `ident`
+    const url = new URL(s);
+    const ident = url.searchParams.get("ident");
+    if (ident && /^[a-zA-Z0-9]{24}$/.test(ident)) return ident;
+    // Иногда идентификатор может быть в пути
+    const m = url.href.match(/([a-zA-Z0-9]{24})/);
+    if (m) return m[1];
+  } catch {}
+  // Как fallback — пробуем найти 24-символную подстроку
+  const m = s.match(/([a-zA-Z0-9]{24})/);
+  return m ? m[1] : null;
+}
+
+export default function AdminOverridesPage() {
+  const [isAuthed, setIsAuthed] = useState<boolean>(false);
+  const [login, setLogin] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rawInput, setRawInput] = useState<string>("");
+  const [ident, setIdent] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const [details, setDetails] = useState<any>(null);
+  const [franchise, setFranchise] = useState<any>(null);
+  const [kpId, setKpId] = useState<string>("");
+  const [existingOverride, setExistingOverride] = useState<Record<string, any> | null>(null);
+  const [formValues, setFormValues] = useState<Record<string, string>>( {} );
+  const [jsonOverrideText, setJsonOverrideText] = useState<string>("{}");
+
+  useEffect(() => {
+    // Простая локальная авторизация через localStorage
+    const ok = localStorage.getItem("hdgood_admin_ok") === "1";
+    setIsAuthed(ok);
+  }, []);
+
+  // Поля из details (как прежде)
+  const detailsFields: FlatField[] = useMemo(() => {
+    if (!details || !details.details) return [];
+    return flatten(details.details);
+  }, [details]);
+
+  // Ключи franchise, которые реально используются на странице фильма
+  const franchiseKeys = useMemo(
+    () => [
+      "iframe_url",
+      "producer",
+      "screenwriter",
+      "design",
+      "operator",
+      "rate_mpaa",
+      "budget",
+      "fees_use",
+      "fees_world",
+      "fees_rus",
+      "premier",
+      "premier_rus",
+      "serial_status",
+      "slogan",
+      "quality",
+      "voiceActing",
+      "seasons",
+      "actors_dubl",
+      "trivia",
+    ],
+    []
+  );
+
+  // Только используемые поля из franchise, с базовым путём 'franchise'
+  const franchiseFields: FlatField[] = useMemo(() => {
+    if (!franchise) return [];
+    const used: Record<string, any> = {};
+    for (const k of franchiseKeys) {
+      if (k in franchise) used[k] = (franchise as any)[k];
+    }
+    return flatten(used, "franchise");
+  }, [franchise, franchiseKeys]);
+
+  // Все поля для таблицы
+  const fields: FlatField[] = useMemo(() => {
+    return [...detailsFields, ...franchiseFields];
+  }, [detailsFields, franchiseFields]);
+
+  async function doLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (login.trim() === "user" && password.trim() === "user") {
+      localStorage.setItem("hdgood_admin_ok", "1");
+      setIsAuthed(true);
+    } else {
+      setError("Неверные логин/пароль (используй user/user)");
+    }
+  }
+
+  async function searchByInput(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const id = parseIdent(rawInput);
+    if (!id) {
+      setError("Не удалось извлечь ident из строки");
+      return;
+    }
+    setIdent(id);
+    setLoading(true);
+    try {
+      const viewUrl = `https://api.vokino.pro/v2/view/${id}`;
+      const res = await fetch(viewUrl);
+      const data = await res.json();
+      setDetails(data);
+      // Определяем kpId для franchise
+      const localKpId =
+        data?.details?.kp_id || data?.details?.kinopoisk_id || data?.kp_id || "";
+      // Фоллбек: пробуем получить kp_id из timeline, если не найден в view
+      let kpParam = localKpId && String(localKpId).trim() !== "" ? String(localKpId) : "";
+      if (!kpParam) {
+        try {
+          const kpFromTimeline = await getKpIdFromTimeline(id);
+          if (kpFromTimeline != null) {
+            kpParam = String(kpFromTimeline);
+          }
+        } catch (err) {
+          console.warn("Не удалось получить kp_id из timeline:", err);
+        }
+      }
+
+      setKpId(kpParam);
+      setFranchise(null);
+      if (kpParam) {
+        try {
+          const fRes = await fetch(`/api/franchise?kinopoisk_id=${kpParam}`);
+          if (fRes.ok) {
+            const fData = await fRes.json();
+            setFranchise(fData || null);
+          } else {
+            console.warn("Franchise API вернул статус:", fRes.status);
+          }
+        } catch (err) {
+          console.warn("Ошибка запроса Franchise API:", err);
+        }
+      }
+      // Загружаем текущий override
+      const oRes = await fetch(`/api/overrides/movies/${id}`);
+      const oData = await oRes.json();
+      setExistingOverride(oData || null);
+      setJsonOverrideText(JSON.stringify(oData || {}, null, 2));
+      setFormValues({});
+    } catch (err: any) {
+      setError(err?.message || "Ошибка загрузки");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function updateField(path: string, rawVal: string) {
+    setFormValues((prev) => ({ ...prev, [path]: rawVal }));
+  }
+
+  async function saveOverride() {
+    if (!ident) {
+      setError("Сначала укажи ident");
+      return;
+    }
+    const overrideObj: Record<string, any> = {};
+    // Составляем nested объект из формы
+    for (const [path, raw] of Object.entries(formValues)) {
+      if (!raw || raw.trim() === "") continue;
+      // Пытаемся разобрать тип
+      let val: any = raw;
+      if (/^\d+$/.test(raw)) {
+        val = parseInt(raw, 10);
+      } else if (/^\d+\.\d+$/.test(raw)) {
+        val = parseFloat(raw);
+      } else if (raw === "true" || raw === "false") {
+        val = raw === "true";
+      } else if (raw.includes(",")) {
+        // Простая обработка массивов строк по запятым
+        val = raw.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+      setDeep(overrideObj, path, val);
+    }
+
+    // Дополнительно учитываем JSON-редактор для сложных структур
+    try {
+      const jsonExtra = JSON.parse(jsonOverrideText || "{}");
+      // Глубокий мердж: jsonExtra имеет приоритет
+      const deepMerge = (dst: any, src: any) => {
+        if (src && typeof src === "object" && !Array.isArray(src)) {
+          for (const k of Object.keys(src)) {
+            if (src[k] && typeof src[k] === "object" && !Array.isArray(src[k])) {
+              dst[k] = deepMerge(dst[k] || {}, src[k]);
+            } else {
+              dst[k] = src[k];
+            }
+          }
+          return dst;
+        }
+        return src;
+      };
+      deepMerge(overrideObj, jsonExtra);
+    } catch (e) {
+      // Игнорируем, если JSON невалиден
+    }
+
+    try {
+      const res = await fetch(`/api/overrides/movies/${ident}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(overrideObj),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setExistingOverride(overrideObj);
+    } catch (e: any) {
+      setError(e?.message || "Ошибка сохранения");
+    }
+  }
+
+  if (!isAuthed) {
+    return (
+      <div className="min-h-[100dvh] min-h-screen bg-zinc-950 text-zinc-100">
+        <header className="border-b border-zinc-800/60">
+          <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+            <Link href="/" className="text-sm text-zinc-300 hover:text-white">← Назад</Link>
+            <div className="text-sm">Админка Overrides</div>
+          </div>
+        </header>
+        <main className="max-w-5xl mx-auto px-4 py-8">
+          <form onSubmit={doLogin} className="max-w-sm mx-auto bg-zinc-900/70 border border-zinc-800 rounded p-4 space-y-3">
+            <div className="text-lg font-semibold">Вход</div>
+            {error && <div className="text-red-400 text-sm">{error}</div>}
+            <div>
+              <label className="block text-xs text-zinc-400 mb-1">Логин</label>
+              <input className="w-full h-9 rounded bg-zinc-800 border border-zinc-700 px-2 text-sm"
+                value={login} onChange={(e) => setLogin(e.target.value)} placeholder="user" />
+            </div>
+            <div>
+              <label className="block text-xs text-zinc-400 mb-1">Пароль</label>
+              <input type="password" className="w-full h-9 rounded bg-zinc-800 border border-zinc-700 px-2 text-sm"
+                value={password} onChange={(e) => setPassword(e.target.value)} placeholder="user" />
+            </div>
+            <button className="w-full h-9 bg-blue-600 hover:bg-blue-500 rounded text-sm" type="submit">Войти</button>
+          </form>
+        </main>
+      </div>
+    );
+  }
+
+  function getDeep(obj: any, path: string): any {
+    if (!obj || typeof obj !== "object") return undefined;
+    const parts = path.split(".");
+    let cur: any = obj;
+    for (const p of parts) {
+      if (cur == null) return undefined;
+      cur = cur[p];
+    }
+    return cur;
+  }
+
+  return (
+    <div className="min-h-[100dvh] min-h-screen bg-zinc-950 text-zinc-100">
+      <header className="border-b border-zinc-800/60">
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+          <Link href="/" className="text-sm text-zinc-300 hover:text-white">← Назад</Link>
+          <div className="text-sm">Админка Overrides</div>
+        </div>
+      </header>
+      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+        <section className="bg-zinc-900/70 border border-zinc-800 rounded p-4">
+          <div className="text-sm mb-2">Найти фильм по ссылке или ident</div>
+          {error && <div className="text-red-400 text-sm mb-2">{error}</div>}
+          <form onSubmit={searchByInput} className="flex gap-2">
+            <input
+              className="flex-1 h-9 rounded bg-zinc-800 border border-zinc-700 px-2 text-sm"
+              placeholder="Вставь ссылку или ident (например 68fff9749630419905edf217)"
+              value={rawInput}
+              onChange={(e) => setRawInput(e.target.value)}
+            />
+            <button className="h-9 px-4 bg-blue-600 hover:bg-blue-500 rounded text-sm" type="submit" disabled={loading}>
+              {loading ? "Загрузка..." : "Искать"}
+            </button>
+          </form>
+          {ident && (
+            <div className="text-xs text-zinc-400 mt-2">Текущий ident: {ident}</div>
+          )}
+        </section>
+
+        {details?.details && (
+          <section className="bg-zinc-900/70 border border-zinc-800 rounded p-4">
+            <div className="text-sm font-medium mb-3">Поля для переопределения</div>
+            <div className="text-xs text-zinc-400 mb-4">
+              Доступны поля из details и franchise (только используемые на странице фильма). Любое значение из формы перекрывает данные из API.
+              Для сложных структур используй JSON-редактор ниже. Путь вида <code>franchise.*</code> относится к данным франшизы.
+            </div>
+
+            <div className="max-h-[420px] overflow-auto border border-zinc-800 rounded">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-zinc-800/40">
+                    <th className="text-left p-2 w-[28%]">Путь</th>
+                    <th className="text-left p-2 w-[36%]">Текущее значение</th>
+                    <th className="text-left p-2">Override</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fields.map((f, idx) => (
+                    <tr key={idx} className="border-t border-zinc-800/60 align-top">
+                      <td className="p-2 font-mono text-[12px] text-zinc-300">{f.path}</td>
+                      <td className="p-2 text-zinc-400">
+                        {f.type === "array"
+                          ? Array.isArray(f.value)
+                            ? (f.value as any[]).length > 0
+                              ? (f.value as any[]).join(", ")
+                              : "[]"
+                            : String(f.value)
+                          : typeof f.value === "object" && f.value !== null
+                          ? "{...}"
+                          : String(f.value)}
+                      </td>
+                      <td className="p-2">
+                        <input
+                          className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                          placeholder={(() => {
+                            const v = existingOverride ? getDeep(existingOverride, f.path) : undefined;
+                            return v == null ? "" : String(v);
+                          })()}
+                          value={formValues[f.path] ?? ""}
+                          onChange={(e) => updateField(f.path, e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-4">
+              <div className="text-sm mb-2">JSON-редактор (для сложных структур)</div>
+              <textarea
+                className="w-full min-h-32 h-40 rounded bg-zinc-800 border border-zinc-700 px-2 py-2 text-xs font-mono"
+                value={jsonOverrideText}
+                onChange={(e) => setJsonOverrideText(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <button className="h-9 px-4 bg-green-600 hover:bg-green-500 rounded text-sm" onClick={saveOverride}>
+                Сохранить override
+              </button>
+              {existingOverride && (
+                <span className="text-xs text-zinc-400">Override загружен, изменения будут применяться на детальной странице.</span>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
