@@ -3,5 +3,29 @@
     "bg_poster": {
       "backdrop": "https://avatars.mds.yandex.net/get-kinopoisk-image/4486362/98395260-5107-436a-bbde-ae9864229590/3840x"
     }
+  },
+  "6593f9118914c04deaead1f3": {
+    "poster_colors": {
+      "dominant1": [
+        60,
+        58,
+        63
+      ],
+      "accentTl": [
+        64,
+        64,
+        66
+      ],
+      "accentBr": [
+        162,
+        148,
+        132
+      ],
+      "accentBl": [
+        121,
+        107,
+        95
+      ]
+    }
   }
 }
