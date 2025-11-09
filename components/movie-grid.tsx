@@ -146,8 +146,70 @@ export function MovieGrid({ url }: MovieGridProps) {
     });
   }, [data, page, lastPageEmpty]);
 
-  // Показываем скелетоны не только при первоначальной загрузке,
-  // но и во время валидации (смены вкладки/URL), чтобы избежать флэша «Нет данных»
+  // NOTE: Avoid early returns before all hooks to keep hook order stable.
+
+  let movies: any[] = [];
+  pagesData
+    .sort((a, b) => a.page - b.page)
+    .forEach((ds) => {
+      movies = movies.concat(extractMoviesFromData(ds.data));
+    });
+
+  // Remove duplicates by id
+  const seen = new Set<string>();
+  movies = movies.filter((m) => {
+    const id = String(m.id);
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+
+  // Compute display set and overrides BEFORE any conditional returns.
+  const displayMovies = movies.slice(0, perPage * pagesData.length);
+  const hideLoadMore = (() => {
+    const base = (url || "").split("?")[0];
+    return base.includes("/api/franchise");
+  })();
+  const display = hideLoadMore ? movies : displayMovies;
+
+  // Batch-load overrides for current display ids.
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
+  const idsString = useMemo(
+    () => (display || []).map((m: any) => String(m.id)).join(","),
+    [display]
+  );
+
+  useEffect(() => {
+    if (!idsString) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/overrides/movies?ids=${encodeURIComponent(idsString)}`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+            headers: { Accept: "application/json" },
+          }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        setOverridesMap(data || {});
+      } catch {}
+    })();
+    return () => controller.abort();
+  }, [idsString]);
+
+  const finalDisplay = useMemo(() => {
+    return (display || []).map((m: any) => {
+      const ov = overridesMap[String(m.id)] || null;
+      const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
+      return { ...m, poster: patchedPoster };
+    });
+  }, [display, overridesMap]);
+
+  // Conditional returns AFTER all hooks
+  // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
     const skeletonCount = expectedSkeletonCountForUrl(url) ?? perPage;
     return (
@@ -173,6 +235,7 @@ export function MovieGrid({ url }: MovieGridProps) {
     );
   }
 
+  // Error state (only when no page data yet)
   if (error && pagesData.length === 0) {
     return (
       <div className="text-center py-8">
@@ -183,32 +246,8 @@ export function MovieGrid({ url }: MovieGridProps) {
     );
   }
 
-  let movies: any[] = [];
-  pagesData
-    .sort((a, b) => a.page - b.page)
-    .forEach((ds) => {
-      movies = movies.concat(extractMoviesFromData(ds.data));
-    });
-
-  // Remove duplicates by id
-  const seen = new Set<string>();
-  movies = movies.filter((m) => {
-    const id = String(m.id);
-    if (seen.has(id)) return false;
-    seen.add(id);
-    return true;
-  });
-
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
-  if (!isLoading && !isValidating && movies.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <div className="inline-block bg-zinc-800/50 border border-zinc-700/50 p-4 text-zinc-400 backdrop-blur-sm rounded">
-          Нет данных
-        </div>
-      </div>
-    );
-  }
+  // (handled below just before rendering the grid)
 
   const handleImageLoad = (id: string | number) => {
     const key = String(id);
@@ -225,47 +264,16 @@ export function MovieGrid({ url }: MovieGridProps) {
     setPage((p) => p + 1);
   };
 
-  const displayMovies = movies.slice(0, perPage * pagesData.length);
-  
-  // На детальной странице франшизы (api/franchise-by-id) не нужна пагинация:
-  // скрываем кнопку «Загрузить ещё» и показываем все карточки сразу.
-  const hideLoadMore = (() => {
-    const base = (url || "").split("?")[0];
-    // На всех эндпойнтах франшиз (by-id, johnwick, venom, generic) кнопка не нужна
-    return base.includes("/api/franchise");
-  })();
-
-  const display = hideLoadMore ? movies : displayMovies;
-
-  // Загружаем overrides для текущих карточек (батчем по ids)
-  const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
-  const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
-
-  useEffect(() => {
-    if (!idsString) return;
-    const controller = new AbortController();
-    (async () => {
-      try {
-        const res = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(idsString)}`, {
-          signal: controller.signal,
-          cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        setOverridesMap(data || {});
-      } catch {}
-    })();
-    return () => controller.abort();
-  }, [idsString]);
-
-  const finalDisplay = useMemo(() => {
-    return (display || []).map((m: any) => {
-      const ov = overridesMap[String(m.id)] || null;
-      const patchedPoster = (ov && ov.poster) ? ov.poster : m.poster;
-      return { ...m, poster: patchedPoster };
-    });
-  }, [display, overridesMap]);
+  // «Нет данных» показываем только если точно не идёт загрузка/валидация
+  if (!isLoading && !isValidating && movies.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <div className="inline-block bg-zinc-800/50 border border-zinc-700/50 p-4 text-zinc-400 backdrop-blur-sm rounded">
+          Нет данных
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

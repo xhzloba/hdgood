@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getKpIdFromTimeline } from "../../lib/api";
+import { PosterBackground } from "@/components/poster-background";
 
 type Primitive = string | number | boolean | null;
 
@@ -239,6 +240,20 @@ export default function AdminOverridesPage() {
         val = parseInt(raw, 10);
       } else if (/^\d+\.\d+$/.test(raw)) {
         val = parseFloat(raw);
+      } else if (/^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/.test(raw)) {
+        // Формат RGB тройки: "r,g,b" или "r g b"
+        const m = raw.match(/^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/)!;
+        const r = Math.min(255, Math.max(0, parseInt(m[1], 10)));
+        const g = Math.min(255, Math.max(0, parseInt(m[2], 10)));
+        const b = Math.min(255, Math.max(0, parseInt(m[3], 10)));
+        val = [r, g, b];
+      } else if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+        // Формат HEX: "#rrggbb" или "rrggbb"
+        const hex = raw.replace('#', '');
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        val = [r, g, b];
       } else if (raw === "true" || raw === "false") {
         val = raw === "true";
       } else if (raw.includes(",")) {
@@ -351,6 +366,130 @@ export default function AdminOverridesPage() {
             <div className="text-xs text-zinc-400 mt-2">Текущий ident: {ident}</div>
           )}
         </section>
+
+        {details?.details && (
+          <section className="bg-zinc-900/70 border border-zinc-800 rounded p-4">
+            <div className="text-sm font-medium mb-3">Превью постера и цвета</div>
+            <div className="text-xs text-zinc-400 mb-4">
+              Слева загружается постер по текущему ident. Цвета извлекаются автоматически, как на детальной странице. Ниже можно задать свои цвета для 3 углов и 2 доминантов.
+            </div>
+
+            <div className="grid md:grid-cols-[320px_1fr] gap-4">
+              {/* Левая колонка: постер + фон */}
+              <div>
+                {(() => {
+                  const posterUrl = (details as any)?.details?.poster || (existingOverride as any)?.poster || null;
+                  const bgPosterUrl = (existingOverride as any)?.bg_poster?.backdrop || (details as any)?.details?.backdrop || null;
+
+                  // Собираем colorOverrides из формы
+                  const parseColor = (s?: string): [number, number, number] | undefined => {
+                    if (!s) return undefined;
+                    const sm = s.match(/^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/);
+                    if (sm) {
+                      const r = Math.min(255, Math.max(0, parseInt(sm[1], 10)));
+                      const g = Math.min(255, Math.max(0, parseInt(sm[2], 10)));
+                      const b = Math.min(255, Math.max(0, parseInt(sm[3], 10)));
+                      return [r, g, b];
+                    }
+                    const hex = s.replace('#', '');
+                    if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+                      const r = parseInt(hex.slice(0, 2), 16);
+                      const g = parseInt(hex.slice(2, 4), 16);
+                      const b = parseInt(hex.slice(4, 6), 16);
+                      return [r, g, b];
+                    }
+                    return undefined;
+                  };
+
+                  const colorOverrides = {
+                    dominant1: parseColor(formValues['poster_colors.dominant1']) || (existingOverride as any)?.poster_colors?.dominant1,
+                    dominant2: parseColor(formValues['poster_colors.dominant2']) || (existingOverride as any)?.poster_colors?.dominant2,
+                    accentTl: parseColor(formValues['poster_colors.accentTl']) || (existingOverride as any)?.poster_colors?.accentTl,
+                    accentBr: parseColor(formValues['poster_colors.accentBr']) || (existingOverride as any)?.poster_colors?.accentBr,
+                    accentBl: parseColor(formValues['poster_colors.accentBl']) || (existingOverride as any)?.poster_colors?.accentBl,
+                  } as any;
+
+                  return (
+                    <div className="rounded border border-zinc-800 overflow-hidden">
+                      <PosterBackground posterUrl={posterUrl} bgPosterUrl={bgPosterUrl} colorOverrides={colorOverrides} className="h-[420px]">
+                        <div className="relative z-10 w-full h-full grid grid-rows-[1fr_auto]">
+                          <div className="flex items-center justify-center">
+                            {posterUrl ? (
+                              <img src={posterUrl} alt="Постер" className="h-[360px] w-auto rounded-sm shadow" />
+                            ) : (
+                              <div className="h-[360px] w-[240px] flex items-center justify-center text-zinc-400">Нет постера</div>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-zinc-900/40">
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">Dominant #1</div>
+                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-dominant-1-rgb), 1)" }} />
+                            </div>
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">Dominant #2</div>
+                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-dominant-2-rgb), 1)" }} />
+                            </div>
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">Accent TL</div>
+                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-tl-rgb), 1)" }} />
+                            </div>
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">Accent BR</div>
+                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-br-rgb), 1)" }} />
+                            </div>
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">Accent BL</div>
+                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-bl-rgb), 1)" }} />
+                            </div>
+                          </div>
+                        </div>
+                      </PosterBackground>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Правая колонка: поля оверрайда цветов */}
+              <div>
+                <div className="text-sm font-medium mb-2">Цвета постера (override)</div>
+                <div className="text-xs text-zinc-400 mb-3">Вводи как "r,g,b" или HEX "#rrggbb". Пустые поля — берутся из авто-извлечения.</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">Dominant #1</label>
+                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant1'] ?? ''} onChange={(e) => updateField('poster_colors.dominant1', e.target.value)} placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_colors?.dominant1; return Array.isArray(v) ? v.join(',') : '';
+                    })()} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">Dominant #2</label>
+                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant2'] ?? ''} onChange={(e) => updateField('poster_colors.dominant2', e.target.value)} placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_colors?.dominant2; return Array.isArray(v) ? v.join(',') : '';
+                    })()} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">Accent TL (верх-лево)</label>
+                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentTl'] ?? ''} onChange={(e) => updateField('poster_colors.accentTl', e.target.value)} placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_colors?.accentTl; return Array.isArray(v) ? v.join(',') : '';
+                    })()} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">Accent BR (низ-право)</label>
+                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBr'] ?? ''} onChange={(e) => updateField('poster_colors.accentBr', e.target.value)} placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_colors?.accentBr; return Array.isArray(v) ? v.join(',') : '';
+                    })()} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">Accent BL (низ-лево)</label>
+                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBl'] ?? ''} onChange={(e) => updateField('poster_colors.accentBl', e.target.value)} placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_colors?.accentBl; return Array.isArray(v) ? v.join(',') : '';
+                    })()} />
+                  </div>
+                </div>
+                <div className="mt-3 text-xs text-zinc-400">Совет: ты можешь задать только часть цветов — остальные возьмутся из авто-извлечения.</div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {details?.details && (
           <section className="bg-zinc-900/70 border border-zinc-800 rounded p-4">

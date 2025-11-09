@@ -1,13 +1,30 @@
 "use client"
 
 import React from "react"
-import { useIsMobile } from "@/components/ui/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile"
+
+type RGB = [number, number, number]
+
+type ColorOverrides = {
+  dominant1?: RGB
+  dominant2?: RGB
+  accentTl?: RGB
+  accentBr?: RGB
+  accentBl?: RGB
+  // Альтернативные ключи с подчёркиваниями (на случай других форматов)
+  dominant_1?: RGB
+  dominant_2?: RGB
+  accent_tl?: RGB
+  accent_br?: RGB
+  accent_bl?: RGB
+}
 
 type PosterBackgroundProps = {
   posterUrl?: string | null
   bgPosterUrl?: string | null
   children?: React.ReactNode
   className?: string
+  colorOverrides?: ColorOverrides | null
 }
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
@@ -462,7 +479,7 @@ function getCornerColors(img: HTMLImageElement): { tl: [number, number, number];
   return { tl, br, bl }
 }
 
-export function PosterBackground({ posterUrl, bgPosterUrl, children, className }: PosterBackgroundProps) {
+export function PosterBackground({ posterUrl, bgPosterUrl, children, className, colorOverrides }: PosterBackgroundProps) {
   const [colors, setColors] = React.useState<{ tl: [number, number, number]; br: [number, number, number]; bl: [number, number, number] } | null>(null)
   const [dominants, setDominants] = React.useState<[[number, number, number], [number, number, number]] | null>(null)
   const [ready, setReady] = React.useState(false)
@@ -496,6 +513,49 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     img.src = src
   }, [posterUrl, bgPosterUrl])
 
+  // Нормализуем colorOverrides в формат RGB-массивов
+  const normalizedOverrides: ColorOverrides | null = React.useMemo(() => {
+    if (!colorOverrides) return null
+    const norm = (c: any): RGB | null => {
+      if (!c) return null
+      if (Array.isArray(c) && c.length === 3) {
+        const nums = c.map((v) => Number(v))
+        if (nums.every((n) => Number.isFinite(n))) return [nums[0], nums[1], nums[2]]
+      }
+      if (typeof c === 'string') {
+        const s = c.trim()
+        const rgbMatch = s.match(/^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/)
+        if (rgbMatch) {
+          const r = Math.min(255, Math.max(0, parseInt(rgbMatch[1], 10)))
+          const g = Math.min(255, Math.max(0, parseInt(rgbMatch[2], 10)))
+          const b = Math.min(255, Math.max(0, parseInt(rgbMatch[3], 10)))
+          return [r, g, b]
+        }
+        const hex = s.replace('#', '')
+        if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+          const r = parseInt(hex.slice(0, 2), 16)
+          const g = parseInt(hex.slice(2, 4), 16)
+          const b = parseInt(hex.slice(4, 6), 16)
+          return [r, g, b]
+        }
+      }
+      return null
+    }
+    const pick = (key: keyof ColorOverrides): RGB | undefined => {
+      const v = (colorOverrides as any)[key]
+      const out = norm(v)
+      return out == null ? undefined : out
+    }
+    const result: ColorOverrides = {
+      dominant1: pick('dominant1') ?? pick('dominant_1'),
+      dominant2: pick('dominant2') ?? pick('dominant_2'),
+      accentTl: pick('accentTl') ?? pick('accent_tl'),
+      accentBr: pick('accentBr') ?? pick('accent_br'),
+      accentBl: pick('accentBl') ?? pick('accent_bl'),
+    }
+    return result
+  }, [colorOverrides])
+
   const style: React.CSSProperties = React.useMemo(() => {
     const baseStyle: React.CSSProperties = {}
     
@@ -520,10 +580,13 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
           'radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%)'
         ]
         
-        if (colors) {
-          const [rtl, gtl, btl] = colors.tl
-          const [rbr, gbr, bbr] = colors.br
-          const [rbl, gbl, bbl2] = colors.bl
+        if (colors || normalizedOverrides) {
+          const useTl = normalizedOverrides?.accentTl ?? (colors ? colors.tl : null)
+          const useBr = normalizedOverrides?.accentBr ?? (colors ? colors.br : null)
+          const useBl = normalizedOverrides?.accentBl ?? (colors ? colors.bl : null)
+          const [rtl, gtl, btl] = (useTl || [0,0,0])
+          const [rbr, gbr, bbr] = (useBr || [0,0,0])
+          const [rbl, gbl, bbl2] = (useBl || [0,0,0])
           
           // Увеличиваем яркость и насыщенность цветов для лучшей видимости
           const enhanceColor = (r: number, g: number, b: number) => {
@@ -560,8 +623,18 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
           )
           
           // Если посчитали два доминирующих — добавим мягкий линейный градиент между ними
-          if (dominants) {
-            const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = dominants
+          const domPair: [[number, number, number], [number, number, number]] | null = (() => {
+            if (normalizedOverrides?.dominant1 || normalizedOverrides?.dominant2) {
+              const d1 = normalizedOverrides?.dominant1 ?? (dominants ? dominants[0] : null)
+              const d2 = normalizedOverrides?.dominant2 ?? (dominants ? dominants[1] : null)
+              if (d1 && d2) return [d1, d2]
+              return null
+            }
+            return dominants
+          })()
+
+          if (domPair) {
+            const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = domPair
             const [ed1r, ed1g, ed1b] = enhanceColor(d1r, d1g, d1b)
             const [ed2r, ed2g, ed2b] = enhanceColor(d2r, d2g, d2b)
             overlayGradients.push(
@@ -588,10 +661,13 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     }
     
     // Если нет bg_poster, используем старую логику
-    if (!colors) return baseStyle
-    const [rtl, gtl, btl] = colors.tl
-    const [rbr, gbr, bbr] = colors.br
-    const [rbl, gbl, bbl2] = colors.bl
+    if (!colors && !normalizedOverrides) return baseStyle
+    const useTl2 = normalizedOverrides?.accentTl ?? (colors ? colors.tl : null)
+    const useBr2 = normalizedOverrides?.accentBr ?? (colors ? colors.br : null)
+    const useBl2 = normalizedOverrides?.accentBl ?? (colors ? colors.bl : null)
+    const [rtl, gtl, btl] = (useTl2 || [0,0,0])
+    const [rbr, gbr, bbr] = (useBr2 || [0,0,0])
+    const [rbl, gbl, bbl2] = (useBl2 || [0,0,0])
     const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.6)`
     const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.6)`
     const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.6)`
@@ -608,8 +684,18 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
     ]
 
     // Добавим доминирующие, если есть
-    if (dominants) {
-      const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = dominants
+    const domPair2: [[number, number, number], [number, number, number]] | null = (() => {
+      if (normalizedOverrides?.dominant1 || normalizedOverrides?.dominant2) {
+        const d1 = normalizedOverrides?.dominant1 ?? (dominants ? dominants[0] : null)
+        const d2 = normalizedOverrides?.dominant2 ?? (dominants ? dominants[1] : null)
+        if (d1 && d2) return [d1, d2]
+        return null
+      }
+      return dominants
+    })()
+
+    if (domPair2) {
+      const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = domPair2
       layers.push(`linear-gradient(90deg, rgba(${d1r}, ${d1g}, ${d1b}, 0.35), rgba(${d2r}, ${d2g}, ${d2b}, 0.35))`)
     }
 
@@ -623,14 +709,14 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
       ["--poster-accent-tl-rgb" as any]: `${rtl}, ${gtl}, ${btl}`,
       ["--poster-accent-br-rgb" as any]: `${rbr}, ${gbr}, ${bbr}`,
       ["--poster-accent-bl-rgb" as any]: `${rbl}, ${gbl}, ${bbl2}`,
-      ...(dominants
+      ...(domPair2
         ? {
-            ["--poster-dominant-1-rgb" as any]: `${dominants[0][0]}, ${dominants[0][1]}, ${dominants[0][2]}`,
-            ["--poster-dominant-2-rgb" as any]: `${dominants[1][0]}, ${dominants[1][1]}, ${dominants[1][2]}`,
+            ["--poster-dominant-1-rgb" as any]: `${domPair2[0][0]}, ${domPair2[0][1]}, ${domPair2[0][2]}`,
+            ["--poster-dominant-2-rgb" as any]: `${domPair2[1][0]}, ${domPair2[1][1]}, ${domPair2[1][2]}`,
           }
         : {}),
     }
-  }, [colors, bgPosterUrl, dominants])
+  }, [colors, bgPosterUrl, dominants, normalizedOverrides])
 
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {

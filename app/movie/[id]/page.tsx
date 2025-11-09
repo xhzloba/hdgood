@@ -841,6 +841,7 @@ export default function MoviePage({
       posterUrl={movie.poster}
       // Сначала используем API backdrop, если есть; иначе — локальный из overrides
       bgPosterUrl={(movie as any).backdrop || (movie as any).bg_poster?.backdrop}
+      colorOverrides={(movie as any).poster_colors || null}
       className="min-h-[100dvh] min-h-screen"
     >
       <header className="relative z-10 bg-transparent">
