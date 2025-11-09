@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { getKpIdFromTimeline } from "../../lib/api";
 import { PosterBackground } from "@/components/poster-background";
@@ -74,6 +74,86 @@ function parseIdent(input: string): string | null {
 }
 
 export default function AdminOverridesPage() {
+  const posterImgRef = useRef<HTMLImageElement | null>(null);
+  const previewVarsRef = useRef<HTMLDivElement | null>(null);
+  const [activePickField, setActivePickField] = useState<string | null>(null);
+  const [pipetteMessage, setPipetteMessage] = useState<string | null>(null);
+
+  const anyWin = typeof window !== "undefined" ? (window as any) : null;
+
+  async function pickWithEyedropper(): Promise<string | null> {
+    if (anyWin?.EyeDropper) {
+      try {
+        const ed = new anyWin.EyeDropper();
+        const res = await ed.open();
+        return res?.sRGBHex ?? null;
+      } catch (err) {
+        console.warn("Eyedropper cancelled or failed", err);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  function setFieldFromCssVar(field: string, varName: string) {
+    try {
+      const el = previewVarsRef.current;
+      if (!el) return;
+      const val = getComputedStyle(el).getPropertyValue(varName).trim();
+      if (!val) return;
+      updateField(field, val);
+    } catch (err) {
+      console.warn("Failed to read CSS variable", varName, err);
+    }
+  }
+
+  async function handlePosterClick(e: React.MouseEvent<HTMLImageElement>) {
+    if (!activePickField) return;
+    e.stopPropagation();
+    e.preventDefault();
+    setPipetteMessage(null);
+
+    // Prefer system EyeDropper when available (CORS-safe)
+    const hex = await pickWithEyedropper();
+    if (hex) {
+      updateField(activePickField, hex);
+      setActivePickField(null);
+      return;
+    }
+
+    const img = posterImgRef.current;
+    if (!img) {
+      setActivePickField(null);
+      return;
+    }
+
+    try {
+      const rect = img.getBoundingClientRect();
+      const scaleX = img.naturalWidth / img.clientWidth;
+      const scaleY = img.naturalHeight / img.clientHeight;
+      const x = Math.floor((e.clientX - rect.left) * scaleX);
+      const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("No 2d context");
+      ctx.drawImage(img, 0, 0);
+      const d = ctx.getImageData(x, y, 1, 1).data;
+      const hexPick = `#${d[0].toString(16).padStart(2, "0")}${d[1]
+        .toString(16)
+        .padStart(2, "0")}${d[2].toString(16).padStart(2, "0")}`;
+      updateField(activePickField, hexPick);
+    } catch (err) {
+      console.warn("Canvas sampling failed (likely CORS)", err);
+      setPipetteMessage(
+        "Не удалось считать пиксель с постера (CORS). Используй системную пипетку."
+      );
+    } finally {
+      setActivePickField(null);
+    }
+  }
   const [isAuthed, setIsAuthed] = useState<boolean>(false);
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -415,31 +495,69 @@ export default function AdminOverridesPage() {
                         <div className="relative z-10 w-full h-full grid grid-rows-[1fr_auto]">
                           <div className="flex items-center justify-center">
                             {posterUrl ? (
-                              <img src={posterUrl} alt="Постер" className="h-[360px] w-auto rounded-sm shadow" />
+                              <img
+                                ref={posterImgRef}
+                                src={posterUrl}
+                                crossOrigin="anonymous"
+                                onClick={handlePosterClick}
+                                alt="Постер"
+                                className="h-[360px] w-auto rounded-sm shadow cursor-crosshair"
+                                title={activePickField ? "Кликни по постеру, чтобы выбрать цвет" : undefined}
+                              />
                             ) : (
                               <div className="h-[360px] w-[240px] flex items-center justify-center text-zinc-400">Нет постера</div>
                             )}
                           </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-zinc-900/40">
+                          <div ref={previewVarsRef} className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-zinc-900/40">
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">Dominant #1</div>
-                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-dominant-1-rgb), 1)" }} />
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{ backgroundColor: "rgba(var(--poster-dominant-1-rgb), 1)" }}
+                                title="Кликни, чтобы подставить в Dominant #1"
+                                onClick={() => setFieldFromCssVar('poster_colors.dominant1', '--poster-dominant-1-rgb')}
+                              />
                             </div>
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">Dominant #2</div>
-                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-dominant-2-rgb), 1)" }} />
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{ backgroundColor: "rgba(var(--poster-dominant-2-rgb), 1)" }}
+                                title="Кликни, чтобы подставить в Dominant #2"
+                                onClick={() => setFieldFromCssVar('poster_colors.dominant2', '--poster-dominant-2-rgb')}
+                              />
                             </div>
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">Accent TL</div>
-                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-tl-rgb), 1)" }} />
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{ backgroundColor: "rgba(var(--poster-accent-tl-rgb), 1)" }}
+                                title="Кликни, чтобы подставить в Accent TL"
+                                onClick={() => setFieldFromCssVar('poster_colors.accentTl', '--poster-accent-tl-rgb')}
+                              />
                             </div>
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">Accent BR</div>
-                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-br-rgb), 1)" }} />
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{ backgroundColor: "rgba(var(--poster-accent-br-rgb), 1)" }}
+                                title="Кликни, чтобы подставить в Accent BR"
+                                onClick={() => setFieldFromCssVar('poster_colors.accentBr', '--poster-accent-br-rgb')}
+                              />
                             </div>
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">Accent BL</div>
-                              <div style={{ width: 44, height: 44, backgroundColor: "rgba(var(--poster-accent-bl-rgb), 1)" }} />
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{ backgroundColor: "rgba(var(--poster-accent-bl-rgb), 1)" }}
+                                title="Кликни, чтобы подставить в Accent BL"
+                                onClick={() => setFieldFromCssVar('poster_colors.accentBl', '--poster-accent-bl-rgb')}
+                              />
                             </div>
                           </div>
                         </div>
@@ -456,35 +574,73 @@ export default function AdminOverridesPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">Dominant #1</label>
-                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant1'] ?? ''} onChange={(e) => updateField('poster_colors.dominant1', e.target.value)} placeholder={(() => {
-                      const v = (existingOverride as any)?.poster_colors?.dominant1; return Array.isArray(v) ? v.join(',') : '';
-                    })()} />
+                    <div className="flex gap-2">
+                      <input className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant1'] ?? ''} onChange={(e) => updateField('poster_colors.dominant1', e.target.value)} placeholder={(() => {
+                        const v = (existingOverride as any)?.poster_colors?.dominant1; return Array.isArray(v) ? v.join(',') : '';
+                      })()} />
+                      <button type="button" className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={async () => {
+                        const hex = await pickWithEyedropper();
+                        if (hex) updateField('poster_colors.dominant1', hex);
+                      }}>Пипетка</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant1' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant1' ? null : 'poster_colors.dominant1')}>С постера</button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">Dominant #2</label>
-                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant2'] ?? ''} onChange={(e) => updateField('poster_colors.dominant2', e.target.value)} placeholder={(() => {
-                      const v = (existingOverride as any)?.poster_colors?.dominant2; return Array.isArray(v) ? v.join(',') : '';
-                    })()} />
+                    <div className="flex gap-2">
+                      <input className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.dominant2'] ?? ''} onChange={(e) => updateField('poster_colors.dominant2', e.target.value)} placeholder={(() => {
+                        const v = (existingOverride as any)?.poster_colors?.dominant2; return Array.isArray(v) ? v.join(',') : '';
+                      })()} />
+                      <button type="button" className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={async () => {
+                        const hex = await pickWithEyedropper();
+                        if (hex) updateField('poster_colors.dominant2', hex);
+                      }}>Пипетка</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant2' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant2' ? null : 'poster_colors.dominant2')}>С постера</button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">Accent TL (верх-лево)</label>
-                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentTl'] ?? ''} onChange={(e) => updateField('poster_colors.accentTl', e.target.value)} placeholder={(() => {
-                      const v = (existingOverride as any)?.poster_colors?.accentTl; return Array.isArray(v) ? v.join(',') : '';
-                    })()} />
+                    <div className="flex gap-2">
+                      <input className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentTl'] ?? ''} onChange={(e) => updateField('poster_colors.accentTl', e.target.value)} placeholder={(() => {
+                        const v = (existingOverride as any)?.poster_colors?.accentTl; return Array.isArray(v) ? v.join(',') : '';
+                      })()} />
+                      <button type="button" className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={async () => {
+                        const hex = await pickWithEyedropper();
+                        if (hex) updateField('poster_colors.accentTl', hex);
+                      }}>Пипетка</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentTl' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentTl' ? null : 'poster_colors.accentTl')}>С постера</button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">Accent BR (низ-право)</label>
-                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBr'] ?? ''} onChange={(e) => updateField('poster_colors.accentBr', e.target.value)} placeholder={(() => {
-                      const v = (existingOverride as any)?.poster_colors?.accentBr; return Array.isArray(v) ? v.join(',') : '';
-                    })()} />
+                    <div className="flex gap-2">
+                      <input className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBr'] ?? ''} onChange={(e) => updateField('poster_colors.accentBr', e.target.value)} placeholder={(() => {
+                        const v = (existingOverride as any)?.poster_colors?.accentBr; return Array.isArray(v) ? v.join(',') : '';
+                      })()} />
+                      <button type="button" className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={async () => {
+                        const hex = await pickWithEyedropper();
+                        if (hex) updateField('poster_colors.accentBr', hex);
+                      }}>Пипетка</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBr' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBr' ? null : 'poster_colors.accentBr')}>С постера</button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">Accent BL (низ-лево)</label>
-                    <input className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBl'] ?? ''} onChange={(e) => updateField('poster_colors.accentBl', e.target.value)} placeholder={(() => {
-                      const v = (existingOverride as any)?.poster_colors?.accentBl; return Array.isArray(v) ? v.join(',') : '';
-                    })()} />
+                    <div className="flex gap-2">
+                      <input className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs" value={formValues['poster_colors.accentBl'] ?? ''} onChange={(e) => updateField('poster_colors.accentBl', e.target.value)} placeholder={(() => {
+                        const v = (existingOverride as any)?.poster_colors?.accentBl; return Array.isArray(v) ? v.join(',') : '';
+                      })()} />
+                      <button type="button" className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={async () => {
+                        const hex = await pickWithEyedropper();
+                        if (hex) updateField('poster_colors.accentBl', hex);
+                      }}>Пипетка</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBl' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBl' ? null : 'poster_colors.accentBl')}>С постера</button>
+                    </div>
                   </div>
                 </div>
+                {pipetteMessage && (
+                  <div className="mt-2 text-xs text-amber-400">{pipetteMessage}</div>
+                )}
                 <div className="mt-3 text-xs text-zinc-400">Совет: ты можешь задать только часть цветов — остальные возьмутся из авто-извлечения.</div>
               </div>
             </div>
