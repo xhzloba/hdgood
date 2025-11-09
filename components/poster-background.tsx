@@ -468,21 +468,33 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className }
   const [ready, setReady] = React.useState(false)
 
   React.useEffect(() => {
-    if (!posterUrl) return
+    // Выбираем источник для извлечения цветов: приоритетно постер, иначе фоновый постер
+    const src = posterUrl || bgPosterUrl
+    if (!src) return
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.onload = () => {
-      const colors = getCornerColors(img)
-      setColors(colors)
-      const dom = getDominantColors(img)
-      if (dom) setDominants(dom)
-      setReady(true)
+      try {
+        const computedColors = getCornerColors(img)
+        setColors(computedColors)
+        const dom = getDominantColors(img)
+        if (dom) setDominants(dom)
+      } catch (e) {
+        // Если canvas «tainted» из-за отсутствия CORS — просто пропускаем извлечение цветов
+        // и продолжаем с готовностью, чтобы сразу показать фон
+        console.warn("PosterBackground: не удалось извлечь цвета (CORS/tainted)", e)
+        setColors(null)
+        setDominants(null)
+      } finally {
+        setReady(true)
+      }
     }
     img.onerror = () => {
+      // Даже при ошибке загрузки выставляем ready, чтобы можно было показать статичный фон
       setReady(true)
     }
-    img.src = posterUrl
-  }, [posterUrl])
+    img.src = src
+  }, [posterUrl, bgPosterUrl])
 
   const style: React.CSSProperties = React.useMemo(() => {
     const baseStyle: React.CSSProperties = {}

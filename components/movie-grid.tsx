@@ -237,10 +237,40 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   const display = hideLoadMore ? movies : displayMovies;
 
+  // Загружаем overrides для текущих карточек (батчем по ids)
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
+  const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
+
+  useEffect(() => {
+    if (!idsString) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(idsString)}`, {
+          signal: controller.signal,
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setOverridesMap(data || {});
+      } catch {}
+    })();
+    return () => controller.abort();
+  }, [idsString]);
+
+  const finalDisplay = useMemo(() => {
+    return (display || []).map((m: any) => {
+      const ov = overridesMap[String(m.id)] || null;
+      const patchedPoster = (ov && ov.poster) ? ov.poster : m.poster;
+      return { ...m, poster: patchedPoster };
+    });
+  }, [display, overridesMap]);
+
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-        {display.map((movie: any, index: number) => (
+        {finalDisplay.map((movie: any, index: number) => (
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}

@@ -120,6 +120,35 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
 
   const display = movies.slice(0, perPage);
 
+  // Загружаем overrides для текущих карточек (батчем по ids)
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
+  const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
+
+  useEffect(() => {
+    if (!idsString) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(idsString)}`, {
+          signal: controller.signal,
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setOverridesMap(data || {});
+      } catch {}
+    })();
+    return () => controller.abort();
+  }, [idsString]);
+
+  const finalDisplay = useMemo(() => {
+    return (display || []).map((m: any) => {
+      const ov = overridesMap[String(m.id)] || null;
+      const patchedPoster = (ov && ov.poster) ? ov.poster : m.poster;
+      return { ...m, poster: patchedPoster };
+    });
+  }, [display, overridesMap]);
   const handleImageLoad = (id: string | number) => {
     const key = String(id);
     setLoadedImages((prev) => {
@@ -173,7 +202,7 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
         <div className="relative">
           <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
-              {display.map((movie: any, index: number) => (
+              {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
                   className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"

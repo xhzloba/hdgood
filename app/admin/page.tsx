@@ -128,13 +128,23 @@ export default function AdminOverridesPage() {
 
   // Только используемые поля из franchise, с базовым путём 'franchise'
   const franchiseFields: FlatField[] = useMemo(() => {
-    if (!franchise) return [];
-    const used: Record<string, any> = {};
+    // Делаем поля франшизы видимыми всегда:
+    // 1) берем override.franchise если он есть,
+    // 2) иначе берем загруженные данные франшизы,
+    // 3) иначе заполняем null, чтобы поле появилось в форме.
+    const source: Record<string, any> = {};
+    const overrideFr = (existingOverride as any)?.franchise || {};
     for (const k of franchiseKeys) {
-      if (k in franchise) used[k] = (franchise as any)[k];
+      if (overrideFr && Object.prototype.hasOwnProperty.call(overrideFr, k)) {
+        source[k] = overrideFr[k];
+      } else if (franchise && Object.prototype.hasOwnProperty.call(franchise, k)) {
+        source[k] = (franchise as any)[k];
+      } else {
+        source[k] = null; // отображаем как пустое значение, но поле есть
+      }
     }
-    return flatten(used, "franchise");
-  }, [franchise, franchiseKeys]);
+    return flatten(source, "franchise");
+  }, [franchise, franchiseKeys, existingOverride]);
 
   // Все поля для таблицы
   const fields: FlatField[] = useMemo(() => {
@@ -364,7 +374,9 @@ export default function AdminOverridesPage() {
                     <tr key={idx} className="border-t border-zinc-800/60 align-top">
                       <td className="p-2 font-mono text-[12px] text-zinc-300">{f.path}</td>
                       <td className="p-2 text-zinc-400">
-                        {f.type === "array"
+                        {f.type === "null"
+                          ? ""
+                          : f.type === "array"
                           ? Array.isArray(f.value)
                             ? (f.value as any[]).length > 0
                               ? (f.value as any[]).join(", ")
