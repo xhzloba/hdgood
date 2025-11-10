@@ -217,6 +217,28 @@ export default function MoviePage({
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
 
+  // Копирование ident (id из маршрута) в буфер обмена по клику на постер
+  const copyIdentToClipboard = async () => {
+    if (!id) return;
+    try {
+      await navigator.clipboard.writeText(id);
+    } catch {
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = id;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      } catch (e) {
+        console.warn("Не удалось скопировать ident:", e);
+      }
+    }
+  };
+
   // Функция переключения открытия/закрытия сезона
   const toggleSeason = (seasonNumber: number) => {
     setOpenSeasons((prev) => {
@@ -870,6 +892,7 @@ export default function MoviePage({
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.name}
                   className="w-full h-full object-cover"
+                  onClick={copyIdentToClipboard}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-zinc-600">

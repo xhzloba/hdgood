@@ -458,7 +458,9 @@ export default function AdminOverridesPage() {
               {/* Левая колонка: постер + фон */}
               <div>
                 {(() => {
-                  const posterUrl = (details as any)?.details?.poster || (existingOverride as any)?.poster || null;
+                  // В превью в админке приоритетно используем постер из override,
+                  // чтобы локальные пути из public/ работали и цвета извлекались без CORS.
+                  const posterUrl = (existingOverride as any)?.poster || (details as any)?.details?.poster || null;
                   const bgPosterUrl = (existingOverride as any)?.bg_poster?.backdrop || (details as any)?.details?.backdrop || null;
 
                   // Собираем colorOverrides из формы

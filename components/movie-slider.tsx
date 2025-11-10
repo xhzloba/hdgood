@@ -145,8 +145,11 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
   const finalDisplay = useMemo(() => {
     return (display || []).map((m: any) => {
       const ov = overridesMap[String(m.id)] || null;
-      const patchedPoster = (ov && ov.poster) ? ov.poster : m.poster;
-      return { ...m, poster: patchedPoster };
+      const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
+      // Если в override задано название, используем его:
+      // поддерживаем как `name`, так и `title` на случай разных источников
+      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
+      return { ...m, poster: patchedPoster, title: patchedTitle };
     });
   }, [display, overridesMap]);
   const handleImageLoad = (id: string | number) => {

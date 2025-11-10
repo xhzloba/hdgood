@@ -204,7 +204,9 @@ export function MovieGrid({ url }: MovieGridProps) {
     return (display || []).map((m: any) => {
       const ov = overridesMap[String(m.id)] || null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
-      return { ...m, poster: patchedPoster };
+      // Применяем переопределённое название, если задано (поддержка name/title)
+      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
+      return { ...m, poster: patchedPoster, title: patchedTitle };
     });
   }, [display, overridesMap]);
 
