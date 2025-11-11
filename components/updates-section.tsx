@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type UpdateEntry = {
   id: string
@@ -22,6 +23,7 @@ export function UpdatesSection() {
   const [hasMore, setHasMore] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({})
+  const [columns, setColumns] = useState<number>(2)
 
   const FIELD_LABELS: Record<string, string> = {
     // Основные
@@ -111,6 +113,19 @@ export function UpdatesSection() {
     loadPage(1)
   }, [])
 
+  useEffect(() => {
+    const updateColumns = () => {
+      const w = typeof window !== "undefined" ? window.innerWidth : 1024
+      if (w >= 1280) setColumns(6)
+      else if (w >= 1024) setColumns(5)
+      else if (w >= 768) setColumns(4)
+      else setColumns(2)
+    }
+    updateColumns()
+    window.addEventListener("resize", updateColumns)
+    return () => window.removeEventListener("resize", updateColumns)
+  }, [])
+
   const handleLoadMore = () => {
     const next = page + 1
     setPage(next)
@@ -131,6 +146,25 @@ export function UpdatesSection() {
       <div className="space-y-6">
         {groups.length === 0 && !loading && (
           <div className="text-sm text-zinc-400">Нет данных об обновлениях</div>
+        )}
+
+        {groups.length === 0 && loading && (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+            {Array.from({ length: Math.min(15, columns * 3) }).map((_, idx) => (
+              <div
+                key={`skeleton-${idx}`}
+                className="group block bg-zinc-900/60 border-2 md:border border-transparent overflow-hidden rounded-sm"
+              >
+                <div className="aspect-[2/3] bg-zinc-950">
+                  <Skeleton className="w-full h-full" />
+                </div>
+                <div className="p-2 md:p-3 space-y-2">
+                  <Skeleton className="h-3 w-5/6" />
+                  <Skeleton className="h-3 w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {groups.map((group) => (
