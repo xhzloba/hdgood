@@ -118,11 +118,14 @@ export async function GET(request: NextRequest) {
 
     async function enrichItem(it: UpdateEntry): Promise<UpdateEntry> {
       const dyn = overrides[it.id] || {};
+      const posterChanged = Boolean((it.addedPaths || []).includes("poster") || (it.changedPaths || []).includes("poster"));
       let title = (dyn?.title as any) ?? (dyn?.name as any) ?? it.title ?? null;
-      let poster = (dyn?.poster as any) ?? (dyn?.bg_poster?.backdrop as any) ?? it.poster ?? null;
+      // Если poster НЕ менялся в этом апдейте — показываем дефолтный постер из view‑API, а не overrides
+      let poster: string | null = posterChanged ? ((dyn?.poster as any) ?? it.poster ?? null) : null;
       if (!title || !poster) {
         const fallback = await fetchViewDetails(it.id);
         title = title ?? fallback.title;
+        // poster: если не менялся — берём дефолтный (fallback.poster)
         poster = poster ?? fallback.poster;
       }
       return { ...it, title, poster };

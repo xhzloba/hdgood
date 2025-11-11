@@ -181,7 +181,7 @@ export async function PUT(
     // Append update log entry
     try {
       const updates = await readUpdates();
-      const poster = (body?.poster as any) || (body?.bg_poster?.backdrop as any) || null;
+      const poster = (body?.poster as any) ?? null; // не используем bg_poster/backdrop как постер
       const title = (body?.title as any) || (body?.name as any) || null;
       let addedPaths: string[] = [];
       let changedPaths: string[] = [];

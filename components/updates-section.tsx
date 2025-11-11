@@ -140,10 +140,9 @@ export function UpdatesSection() {
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
               {(expandedDates[group.date] ? group.items : group.items.slice(0, 15)).map((item) => {
                 const time = formatTime(item.timestamp)
+                // Показываем постер всегда, если он доступен (если poster не менялся — API вернёт дефолт из view‑API)
                 const poster = item.poster ?? null
                 const title = item.title ?? "Без названия"
-                const changed = (item.changedPaths || []).map(humanizePath)
-                const added = (item.addedPaths || []).map(humanizePath)
                 return (
                   <div
                     key={`${item.id}-${item.timestamp}`}
@@ -177,16 +176,6 @@ export function UpdatesSection() {
                       </h3>
                       <div className="text-[10px] md:text-[11px] text-zinc-400/60 mb-1">
                         {time}
-                      </div>
-                      <div className="text-[10px] md:text-[11px] text-zinc-300">
-                        {added.length > 0 && (
-                          <div>
-                            <span className="text-zinc-400">Добавлено:</span> {added.join(", ")}
-                          </div>
-                        )}
-                        <div>
-                          <span className="text-zinc-400">Изменено:</span> {changed.length ? changed.join(", ") : (added.length === 0 ? "—" : "")}
-                        </div>
                       </div>
                     </div>
                   </div>
