@@ -94,6 +94,16 @@ export default function AdminOverridesPage() {
     }
     return null;
   }
+  
+  // Преобразует значение override в строку для инпутов
+  function toDisplayString(val: any): string {
+    if (val == null) return "";
+    if (Array.isArray(val)) return val.map((v) => (v == null ? "" : String(v))).join(",");
+    if (typeof val === "object") {
+      try { return JSON.stringify(val); } catch { return String(val); }
+    }
+    return String(val);
+  }
 
   function setFieldFromCssVar(field: string, varName: string) {
     try {
@@ -301,6 +311,43 @@ export default function AdminOverridesPage() {
     }
   }
 
+  // Загружает существующий override в поля формы для удобного редактирования
+  function loadOverrideIntoForm() {
+    if (!existingOverride) return;
+    const next: Record<string, string> = {};
+    // Проходим только по видимым полям таблицы
+    for (const f of fields) {
+      const v = getDeep(existingOverride, f.path);
+      if (v !== undefined) next[f.path] = toDisplayString(v);
+    }
+    // И отдельные поля цветов постера
+    const pc = (existingOverride as any)?.poster_colors || {};
+    const asCsv = (arr: any) => Array.isArray(arr) ? arr.join(",") : toDisplayString(arr);
+    if (pc?.dominant1 != null) next['poster_colors.dominant1'] = asCsv(pc.dominant1);
+    if (pc?.dominant2 != null) next['poster_colors.dominant2'] = asCsv(pc.dominant2);
+    if (pc?.accentTl != null) next['poster_colors.accentTl'] = asCsv(pc.accentTl);
+    if (pc?.accentBr != null) next['poster_colors.accentBr'] = asCsv(pc.accentBr);
+    if (pc?.accentBl != null) next['poster_colors.accentBl'] = asCsv(pc.accentBl);
+    setFormValues(next);
+  }
+
+  // Удаляет текущий override
+  async function deleteOverride() {
+    if (!ident) {
+      setError("Сначала укажи ident");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/overrides/movies/${ident}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setExistingOverride(null);
+      setJsonOverrideText("{}");
+      setFormValues({});
+    } catch (e: any) {
+      setError(e?.message || "Ошибка удаления override");
+    }
+  }
+
   function updateField(path: string, rawVal: string) {
     setFormValues((prev) => ({ ...prev, [path]: rawVal }));
   }
@@ -360,7 +407,11 @@ export default function AdminOverridesPage() {
         }
         return src;
       };
-      deepMerge(overrideObj, jsonExtra);
+      // База — JSON-редактор, но значения из формы имеют приоритет
+      // То есть при конфликте значение из формы переигрывает JSON
+      const merged = deepMerge({} as any, jsonExtra);
+      deepMerge(merged, overrideObj);
+      Object.assign(overrideObj, merged);
     } catch (e) {
       // Игнорируем, если JSON невалиден
     }
@@ -656,6 +707,17 @@ export default function AdminOverridesPage() {
               Доступны поля из details и franchise (только используемые на странице фильма). Любое значение из формы перекрывает данные из API.
               Для сложных структур используй JSON-редактор ниже. Путь вида <code>franchise.*</code> относится к данным франшизы.
             </div>
+
+            {existingOverride && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                <button type="button" className="h-8 px-3 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs" onClick={loadOverrideIntoForm}>
+                  Заполнить поля из override
+                </button>
+                <button type="button" className="h-8 px-3 bg-red-600 hover:bg-red-500 rounded text-xs" onClick={deleteOverride}>
+                  Удалить override
+                </button>
+              </div>
+            )}
 
             <div className="max-h-[420px] overflow-auto border border-zinc-800 rounded">
               <table className="w-full text-sm">

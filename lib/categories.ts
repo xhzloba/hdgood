@@ -12,6 +12,12 @@ export const CATEGORIES: Category[] = [
     playlist_url: "https://api.vokino.pro/v2/timeline/list",
   },
   {
+    title: "Последние обновления",
+    ico: "clock",
+    playlist_url: "",
+    route: "/updates",
+  },
+  {
     title: "4K UHD",
     ico: "4k",
     playlist_url: "https://api.vokino.pro/v2/category4k",
