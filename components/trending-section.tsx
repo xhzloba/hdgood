@@ -43,6 +43,14 @@ export function TrendingSection() {
               )}
             </div>
           ))}
+          {/* Отдельный блок: Топ 250 фильмов — после списка секций */}
+          <div className="space-y-3">
+            <MovieSlider
+              url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+              title="Топ 250 фильмов"
+              viewAllHref="/top250"
+            />
+          </div>
         </div>
       </div>
     </section>

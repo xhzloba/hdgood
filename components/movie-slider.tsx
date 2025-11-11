@@ -18,6 +18,8 @@ import {
 type MovieSliderProps = {
   url: string;
   title?: string;
+  viewAllHref?: string;
+  viewAllLabel?: string;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -78,7 +80,7 @@ function extractMoviesFromData(data: any): any[] {
   return movies;
 }
 
-export default function MovieSlider({ url, title }: MovieSliderProps) {
+export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все" }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -163,8 +165,22 @@ export default function MovieSlider({ url, title }: MovieSliderProps) {
 
   return (
     <div className="space-y-3">
-      {title && (
-        <h2 className="text-lg md:text-xl font-semibold text-zinc-200">{title}</h2>
+      {(title || viewAllHref) && (
+        <div className="flex items-center justify-between">
+          {title ? (
+            <h2 className="text-lg md:text-xl font-semibold text-zinc-200">{title}</h2>
+          ) : (
+            <div />
+          )}
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="text-[12px] md:text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
+            >
+              {viewAllLabel}
+            </Link>
+          )}
+        </div>
       )}
       {error && display.length === 0 ? (
         <div className="text-center py-6">
