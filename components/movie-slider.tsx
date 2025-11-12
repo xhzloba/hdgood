@@ -204,7 +204,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
         <div className="relative">
-          <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }}>
+          <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2">
               {Array.from({ length: 12 }).map((_, i) => (
                 <CarouselItem
@@ -229,6 +229,14 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
+          <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+            {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+              <span
+                key={i}
+                className={`w-2 h-2 rounded-full ${i === 0 ? "bg-blue-500/50" : "bg-blue-500/30"}`}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="relative">
@@ -340,20 +348,18 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
-          {carouselApi && (
-            <div className="flex items-center justify-center gap-1 mt-3">
-              {carouselApi.scrollSnapList().map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`К слайду ${i + 1}`}
-                  aria-current={selectedIndex === i}
-                  onClick={() => carouselApi.scrollTo(i)}
-                  className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
-                />
-              ))}
-            </div>
-          )}
+          <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+            {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`К слайду ${i + 1}`}
+                aria-current={selectedIndex === i}
+                onClick={() => carouselApi?.scrollTo?.(i)}
+                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

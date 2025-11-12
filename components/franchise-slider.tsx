@@ -136,25 +136,7 @@ export function FranchiseSlider() {
                     {item.title === "Веном" && (
                       <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
                     )}
-                    {/* Текст под логотипом для Джона Уика */}
-                    {item.title === "Джон Уик" && (
-                      <div className="pointer-events-none absolute left-1/2 top-[78%] md:top-[74%] -translate-x-1/2 max-w-[60%] md:max-w-[45%] z-10">
-                        <div className="bg-transparent p-3 md:p-4">
-                          <p className="text-[12px] md:text-[14px] leading-relaxed text-zinc-100 text-center">
-                            Серия боевиков с Киану Ривзом в главной роли, которая вернула актера в стан больших кинозвезд, попала в список главных фильмов десятилетия по версии Time и дала зрителю четкую установку: Киану потрясающий.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    {item.title === "Веном" && (
-                      <div className="pointer-events-none absolute left-1/2 top-[78%] md:top-[74%] -translate-x-1/2 max-w-[60%] md:max-w-[45%] z-10">
-                        <div className="bg-transparent p-3 md:p-4">
-                          <p className="text-[12px] md:text-[14px] leading-relaxed text-zinc-100 text-center">
-                            Антигерой Marvel с симбиотом: хоррор-эстетика, экшен и фирменный юмор Тома Харди. История Венома получила продолжения и расширяет вселенную.
-                          </p>
-                        </div>
-                      </div>
-                    )}
+                    
                     {/* Правая растушовка для Джона Уика */}
                     {item.title === "Джон Уик" && (
                       <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
@@ -170,20 +152,18 @@ export function FranchiseSlider() {
           <CarouselPrevious className="hidden md:flex" />
           <CarouselNext className="hidden md:flex" />
         </Carousel>
-        {carouselApi && (
-          <div className="flex items-center justify-center gap-1 mt-3">
-            {carouselApi.scrollSnapList().map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`К слайду ${i + 1}`}
-                aria-current={selectedIndex === i}
-                onClick={() => carouselApi.scrollTo(i)}
-                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
-              />
-            ))}
-          </div>
-        )}
+        <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+          {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`К слайду ${i + 1}`}
+              aria-current={selectedIndex === i}
+              onClick={() => carouselApi?.scrollTo?.(i)}
+              className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
