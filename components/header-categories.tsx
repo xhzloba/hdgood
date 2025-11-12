@@ -20,6 +20,8 @@ import {
   IconMicrophone,
   IconCategory,
   IconHome,
+  IconMaximize,
+  IconMinimize,
 } from "@tabler/icons-react"
 
 type HeaderCategoriesProps = {
@@ -77,6 +79,29 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   useEffect(() => {
     NProgress.done()
   }, [pathname])
+
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener("fullscreenchange", onChange)
+    return () => document.removeEventListener("fullscreenchange", onChange)
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        const el: any = document.documentElement
+        if (el.requestFullscreen) await el.requestFullscreen()
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+        setIsFullscreen(true)
+      } else {
+        const d: any = document
+        if (d.exitFullscreen) await d.exitFullscreen()
+        else if (d.webkitExitFullscreen) d.webkitExitFullscreen()
+        setIsFullscreen(false)
+      }
+    } catch {}
+  }
 
   const containerBase = variant === "vertical"
     ? "flex flex-col gap-1 items-stretch"
@@ -141,59 +166,79 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         </div>
       ) : (
         <div className={`bg-zinc-900/40 border border-zinc-800/50 rounded-sm p-1 ${className ?? ""}`.trim()}>
-          <div className={`${containerBase}`}>
-            <Link
-              href="/"
-              aria-current={isHomeActive ? "page" : undefined}
-              onClick={() => {
-                setStateActiveIndex(null)
-                onActiveIndexChange?.(null)
-                onSelect?.(null, null)
-              }}
-              className={`${buttonBase} ${
-                isHomeActive
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                  : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-              }`}
-            >
-              <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.5} />
-              <span>Главная</span>
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className={`${buttonBase} ${
-                    activeIndex !== null
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                      : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                  }`}
-                >
-                  <IconCategory className="w-4 h-4 shrink-0" />
-                  <span>Категории</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="min-w-[12rem]">
-                {CATEGORIES.map((cat, idx) => (
-                  <DropdownMenuItem
-                    key={idx}
-                    onClick={() => {
-                      setStateActiveIndex(idx)
-                      onActiveIndexChange?.(idx)
-                      if (cat.route) {
-                        NProgress.start()
-                        router.push(cat.route)
-                      } else {
-                        onSelect?.(cat, idx)
-                      }
-                    }}
+          <div className="flex items-center justify-between">
+            <div className={`${containerBase}`}>
+              <Link
+                href="/"
+                aria-current={isHomeActive ? "page" : undefined}
+                onClick={() => {
+                  setStateActiveIndex(null)
+                  onActiveIndexChange?.(null)
+                  onSelect?.(null, null)
+                }}
+                className={`${buttonBase} ${
+                  isHomeActive
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
+                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
+                }`}
+              >
+                <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.5} />
+                <span>Главная</span>
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className={`${buttonBase} ${
+                      activeIndex !== null
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
+                        : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
+                    }`}
                   >
-                    <CategoryIcon name={cat.ico} className="w-4 h-4" />
-                    <span className="text-sm">{cat.title}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <IconCategory className="w-4 h-4 shrink-0" />
+                    <span>Категории</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-[12rem]">
+                  {CATEGORIES.map((cat, idx) => (
+                    <DropdownMenuItem
+                      key={idx}
+                      onClick={() => {
+                        setStateActiveIndex(idx)
+                        onActiveIndexChange?.(idx)
+                        if (cat.route) {
+                          NProgress.start()
+                          router.push(cat.route)
+                        } else {
+                          onSelect?.(cat, idx)
+                        }
+                      }}
+                    >
+                      <CategoryIcon name={cat.ico} className="w-4 h-4" />
+                      <span className="text-sm">{cat.title}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="hidden md:flex items-center">
+              <button
+                type="button"
+                aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
+                onClick={toggleFullscreen}
+                className={`${buttonBase} ${
+                  isFullscreen
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
+                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
+                }`}
+              >
+                {isFullscreen ? (
+                  <IconMinimize className="w-5 h-5" size={20} stroke={1.5} />
+                ) : (
+                  <IconMaximize className="w-5 h-5" size={20} stroke={1.5} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
