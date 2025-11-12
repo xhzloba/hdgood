@@ -37,7 +37,7 @@ export function TrendingSection() {
               <MovieSlider url={section.playlist_url} title={section.title} />
               {/* Баннер франшизы сразу после слайдера "В тренде" */}
               {section.title === "В тренде" && (
-                <div className="space-y-3 mt-8 md:mt-10">
+                <div className="mt-12 md:mt-12">
                   <FranchiseSlider />
                 </div>
               )}

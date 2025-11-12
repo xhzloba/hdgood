@@ -87,6 +87,14 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const perPage = 15;
+  const getItemsPerView = () => {
+    if (typeof window === "undefined") return 2;
+    if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 6;
+    if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches) return 5;
+    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches) return 4;
+    return 2;
+  };
+  const [itemsPerView, setItemsPerView] = useState<number>(2);
 
   useEffect(() => {
     setPage(1);
@@ -167,6 +175,13 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
       api.off("reInit", update);
     };
   }, [carouselApi]);
+
+  useEffect(() => {
+    const compute = () => setItemsPerView(getItemsPerView());
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
   const handleImageLoad = (id: string | number) => {
     const key = String(id);
     setLoadedImages((prev) => {
@@ -206,7 +221,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
         <div className="relative">
           <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2">
-              {Array.from({ length: 12 }).map((_, i) => (
+              {Array.from({ length: perPage }).map((_, i) => (
                 <CarouselItem
                   key={i}
                   className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
@@ -215,11 +230,11 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
                     <div className="aspect-[2/3] bg-zinc-950">
                       <Skeleton className="w-full h-full" />
                     </div>
-                    <div className="p-2 md:p-3">
-                      <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
+                    <div className="p-2 md:p-3 min-h-[48px] md:min-h-[56px]">
+                      <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
                       <div className="flex items-center justify-between">
-                        <Skeleton className="h-2 md:h-3 w-16" />
-                        <Skeleton className="h-2 md:h-3 w-12" />
+                        <Skeleton className="h-3 md:h-4 w-16" />
+                        <Skeleton className="h-3 md:h-4 w-12" />
                       </div>
                     </div>
                   </div>
@@ -229,11 +244,11 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
-          <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-            {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+          <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+            {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
               <span
                 key={i}
-                className={`w-2 h-2 rounded-full ${i === 0 ? "bg-blue-500/50" : "bg-blue-500/30"}`}
+                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
               />
             ))}
           </div>
@@ -319,7 +334,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
                         </div>
                       )}
                     </div>
-                    <div className="p-2 md:p-3">
+                    <div className="p-2 md:p-3 min-h-[48px] md:min-h-[56px]">
                       <h3
                         className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
                         title={movie.title || "Без названия"}
@@ -348,15 +363,15 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
-          <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-            {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+          <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+            {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
               <button
                 key={i}
                 type="button"
                 aria-label={`К слайду ${i + 1}`}
                 aria-current={selectedIndex === i}
                 onClick={() => carouselApi?.scrollTo?.(i)}
-                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
               />
             ))}
           </div>

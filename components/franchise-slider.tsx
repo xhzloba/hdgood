@@ -68,6 +68,7 @@ export function FranchiseSlider() {
   const posterSrc = (p?: string | null) => p || "/placeholder.jpg";
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const pathname = usePathname();
   const [items, setItems] = useState<typeof FRANCHISE_ITEMS>(FRANCHISE_ITEMS);
   const [ready, setReady] = useState(false)
@@ -78,6 +79,14 @@ export function FranchiseSlider() {
     setItems(ordered)
     setReady(true)
   }, [pathname]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const t = setTimeout(() => {
+      setLoadedImages(new Set(items.map((it) => it.href)));
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [ready, items]);
 
   useEffect(() => {
     const api = carouselApi;
@@ -96,7 +105,7 @@ export function FranchiseSlider() {
     <div className="space-y-3">
       <div className="relative">
         <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
-          <CarouselContent className={"-ml-0 cursor-grab active:cursor-grabbing transition-opacity duration-200 " + (ready ? "opacity-100" : "opacity-0") }>
+          <CarouselContent className="-ml-0 cursor-grab active:cursor-grabbing">
             {items.map((item, idx: number) => (
               <CarouselItem key={item.href ?? idx} className="basis-full pl-0">
                 <Link
@@ -111,14 +120,22 @@ export function FranchiseSlider() {
                   }}
                 >
                   <div className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[7/3] lg:aspect-[3/1] bg-zinc-950">
+                    {!loadedImages.has(item.href) && (
+                      <Skeleton className="absolute inset-0 w-full h-full" />
+                    )}
                     <img
                       src={posterSrc(item.poster)}
                       alt={item.title}
                       loading="lazy"
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-cover transition-opacity duration-500 ${loadedImages.has(item.href) ? "opacity-100" : "opacity-0"}`}
+                      onLoad={() => setLoadedImages((prev) => {
+                        const next = new Set(prev);
+                        next.add(item.href);
+                        return next;
+                      })}
                     />
                     {/* Оверлей: оставляем только первый логотип, поверх градиента */}
-                    {item.overlay?.[0] && (
+                    {loadedImages.has(item.href) && item.overlay?.[0] && (
                       <div className="pointer-events-none absolute left-1/2 top-[56%] md:top-[54%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%] z-20">
                         <img
                           src={item.overlay[0]}
@@ -152,15 +169,15 @@ export function FranchiseSlider() {
           <CarouselPrevious className="hidden md:flex" />
           <CarouselNext className="hidden md:flex" />
         </Carousel>
-        <div className="flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-          {(carouselApi?.scrollSnapList() || Array.from({ length: 6 })).map((_: any, i: number) => (
+        <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+          {(carouselApi?.scrollSnapList() || Array.from({ length: items.length })).map((_: any, i: number) => (
             <button
               key={i}
               type="button"
               aria-label={`К слайду ${i + 1}`}
               aria-current={selectedIndex === i}
               onClick={() => carouselApi?.scrollTo?.(i)}
-              className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+              className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
             />
           ))}
         </div>
