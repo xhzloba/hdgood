@@ -53,8 +53,8 @@ export function MoviesSection() {
 
   return (
     <section>
-      <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 p-5 rounded-sm">
-        <div className="sticky top-0 z-20 -mx-5 -mt-5 px-5 pt-5 pb-3 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800/50 rounded-t-sm">
+      <div className="md:bg-zinc-900/40 md:backdrop-blur-sm md:border border-zinc-800/50 p-5 rounded-sm">
+        <div className="sticky top-0 z-20 -mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 md:bg-zinc-900/80 md:backdrop-blur-sm md:border-b md:border-zinc-800/50 rounded-t-sm">
           <div className="flex gap-3 flex-wrap md:flex-nowrap min-h-[40px]">
             {MOVIE_CHANNELS.map((ch, idx) => (
               <button

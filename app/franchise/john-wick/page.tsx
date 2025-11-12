@@ -11,8 +11,8 @@ export default function JohnWickFranchisePage() {
         </div>
         {/* На странице франшизы слайдер скрыт — он только на главной */}
         <section>
-          <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 p-5 rounded-sm">
-            <div className="-mx-5 -mt-5 px-5 pt-5 pb-3 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800/50 rounded-t-sm">
+          <div className="bg-zinc-900/40 backdrop-blur-sm md:border border-zinc-800/50 p-5 rounded-sm">
+            <div className="-mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 md:bg-zinc-900/80 md:backdrop-blur-sm md:border-b md:border-zinc-800/50 rounded-t-sm">
               <div className="space-y-2">
                 <h1 className="text-lg md:text-xl font-semibold text-zinc-200">
                   Франшиза: Джон Уик

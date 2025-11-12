@@ -30,7 +30,7 @@ const TRENDING_SECTIONS: TrendingItem[] = [
 export function TrendingSection() {
   return (
     <section>
-      <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 p-5 rounded-sm">
+      <div className="bg-zinc-900/40 backdrop-blur-sm md:border border-zinc-800/50 p-5 rounded-sm">
         <div className="space-y-6">
           {TRENDING_SECTIONS.map((section) => (
             <div key={section.title} className="space-y-3">
