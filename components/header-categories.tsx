@@ -6,6 +6,7 @@ import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import {
   IconClock,
   IconBadge4k,
@@ -158,33 +159,41 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.5} />
               <span>Главная</span>
             </Link>
-            {CATEGORIES.map((cat, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setStateActiveIndex(idx)
-                  onActiveIndexChange?.(idx)
-                  if (cat.route) {
-                    // Если для категории есть маршрут — навигируем туда
-                    NProgress.start()
-                    router.push(cat.route)
-                  } else {
-                    // Иначе — локально выбираем категорию (главная/нестатичная)
-                    onSelect?.(cat, idx)
-                  }
-                }}
-                aria-current={activeIndex === idx ? "page" : undefined}
-                className={`${buttonBase} ${
-                  activeIndex === idx
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                }`}
-              >
-                <CategoryIcon name={cat.ico} className="w-4 h-4 shrink-0" />
-                <span>{cat.title}</span>
-              </button>
-            ))}
-            {/* Админ ссылка скрыта: доступ через хоткей Space+K */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className={`${buttonBase} ${
+                    activeIndex !== null
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
+                      : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
+                  }`}
+                >
+                  <IconCategory className="w-4 h-4 shrink-0" />
+                  <span>Категории</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="min-w-[12rem]">
+                {CATEGORIES.map((cat, idx) => (
+                  <DropdownMenuItem
+                    key={idx}
+                    onClick={() => {
+                      setStateActiveIndex(idx)
+                      onActiveIndexChange?.(idx)
+                      if (cat.route) {
+                        NProgress.start()
+                        router.push(cat.route)
+                      } else {
+                        onSelect?.(cat, idx)
+                      }
+                    }}
+                  >
+                    <CategoryIcon name={cat.ico} className="w-4 h-4" />
+                    <span className="text-sm">{cat.title}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       )}
