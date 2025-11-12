@@ -20,6 +20,10 @@ export default function MobileBottomNav() {
   const isSerialsMode = pathname === "/serials"
   const isUhdMode = pathname === "/uhd"
 
+  const isDetailPage = pathname?.startsWith("/movie/")
+
+  if (isDetailPage) return null
+
   return (
     <>
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50 rounded-t-[50px] shadow-[0_-10px_28px_rgba(0,0,0,0.45)]">
@@ -153,4 +157,3 @@ export default function MobileBottomNav() {
     </>
   )
 }
-
