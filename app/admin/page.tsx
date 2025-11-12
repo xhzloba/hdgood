@@ -720,19 +720,19 @@ export default function AdminOverridesPage() {
             )}
 
             <div className="max-h-[420px] overflow-auto border border-zinc-800 rounded">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm table-fixed">
                 <thead>
                   <tr className="bg-zinc-800/40">
                     <th className="text-left p-2 w-[28%]">Путь</th>
-                    <th className="text-left p-2 w-[36%]">Текущее значение</th>
-                    <th className="text-left p-2">Override</th>
+                    <th className="text-left p-2 w-[32%]">Текущее значение</th>
+                    <th className="text-left p-2 w-[40%]">Override</th>
                   </tr>
                 </thead>
                 <tbody>
                   {fields.map((f, idx) => (
                     <tr key={idx} className="border-t border-zinc-800/60 align-top">
                       <td className="p-2 font-mono text-[12px] text-zinc-300">{f.path}</td>
-                      <td className="p-2 text-zinc-400">
+                      <td className="p-2 text-zinc-400 break-words text-xs">
                         {f.type === "null"
                           ? ""
                           : f.type === "array"

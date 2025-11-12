@@ -67,6 +67,7 @@ function shuffleArray<T>(arr: T[]): T[] {
 export function FranchiseSlider() {
   const posterSrc = (p?: string | null) => p || "/placeholder.jpg";
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const pathname = usePathname();
   const [items, setItems] = useState<typeof FRANCHISE_ITEMS>(FRANCHISE_ITEMS);
   const [ready, setReady] = useState(false)
@@ -77,6 +78,19 @@ export function FranchiseSlider() {
     setItems(ordered)
     setReady(true)
   }, [pathname]);
+
+  useEffect(() => {
+    const api = carouselApi;
+    if (!api) return;
+    const update = () => setSelectedIndex(api.selectedScrollSnap());
+    update();
+    api.on("select", update);
+    api.on("reInit", update);
+    return () => {
+      api.off("select", update);
+      api.off("reInit", update);
+    };
+  }, [carouselApi]);
 
   return (
     <div className="space-y-3">
@@ -156,6 +170,20 @@ export function FranchiseSlider() {
           <CarouselPrevious className="hidden md:flex" />
           <CarouselNext className="hidden md:flex" />
         </Carousel>
+        {carouselApi && (
+          <div className="flex items-center justify-center gap-1 mt-3">
+            {carouselApi.scrollSnapList().map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`К слайду ${i + 1}`}
+                aria-current={selectedIndex === i}
+                onClick={() => carouselApi.scrollTo(i)}
+                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

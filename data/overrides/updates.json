@@ -8,5 +8,15 @@
     "addedPaths": [
       "poster_colors.accentTl"
     ]
+  },
+  {
+    "id": "671ac361e53f3a2b5f41840d",
+    "timestamp": "2025-11-11T14:28:39.633Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "franchise.budget"
+    ]
   }
 ]

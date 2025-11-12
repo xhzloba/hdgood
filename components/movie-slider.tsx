@@ -85,6 +85,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const perPage = 15;
 
   useEffect(() => {
@@ -154,6 +155,18 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
       return { ...m, poster: patchedPoster, title: patchedTitle };
     });
   }, [display, overridesMap]);
+  useEffect(() => {
+    const api = carouselApi;
+    if (!api) return;
+    const update = () => setSelectedIndex(api.selectedScrollSnap());
+    update();
+    api.on("select", update);
+    api.on("reInit", update);
+    return () => {
+      api.off("select", update);
+      api.off("reInit", update);
+    };
+  }, [carouselApi]);
   const handleImageLoad = (id: string | number) => {
     const key = String(id);
     setLoadedImages((prev) => {
@@ -327,6 +340,20 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
+          {carouselApi && (
+            <div className="flex items-center justify-center gap-1 mt-3">
+              {carouselApi.scrollSnapList().map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`К слайду ${i + 1}`}
+                  aria-current={selectedIndex === i}
+                  onClick={() => carouselApi.scrollTo(i)}
+                  className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-blue-500/40"} h-2 rounded-full transition-all duration-300`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
