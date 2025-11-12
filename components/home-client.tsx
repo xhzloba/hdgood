@@ -8,16 +8,23 @@ import { MoviesSection } from "./movies-section"
 import { SerialsSection } from "./serials-section"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
+import { IconHome, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { MovieGrid } from "./movie-grid"
+import { useRouter } from "next/navigation"
 
 type HomeClientProps = {
   initialSelectedTitle?: string
 }
 
 export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
+  const router = useRouter()
   const [selected, setSelected] = useState<Category | null>(() => {
     if (!initialSelectedTitle) return null
     return CATEGORIES.find((c) => c.title === initialSelectedTitle) ?? null
   })
+  const [isMoreOpen, setIsMoreOpen] = useState(false)
+  const [moreSelectedIndex, setMoreSelectedIndex] = useState<number | null>(null)
 
   const handleSelect = (cat: Category | null) => {
     setSelected(cat)
@@ -41,9 +48,8 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
 
   return (
     <div className="min-h-[100dvh] min-h-screen">
-      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-6">
-        {/* Хедер категорий */}
-        <div className="mb-4">
+      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
+        <div className="mb-4 hidden md:block">
           <HeaderCategories
             variant="horizontal"
             onSelect={handleSelect}
@@ -63,6 +69,97 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           )}
         </section>
       </main>
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50">
+        <div className="mx-auto max-w-7xl px-4 py-2">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              aria-label="Главная"
+              onClick={() => setSelected(null)}
+              className={`${!selected ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconHome className="w-6 h-6" stroke={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="Фильмы"
+              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "Фильмы") ?? null)}
+              className={`${isMoviesMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconMovie className="w-6 h-6" stroke={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="Сериалы"
+              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "Сериалы") ?? null)}
+              className={`${isSerialsMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconDeviceTv className="w-6 h-6" stroke={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="4K UHD"
+              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "4K UHD") ?? null)}
+              className={`${isUhdMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconBadge4k className="w-6 h-6" stroke={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="Избранное"
+              className={`text-zinc-300 flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconHeart className="w-6 h-6" stroke={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="Ещё"
+              onClick={() => setIsMoreOpen(true)}
+              className={`text-zinc-300 flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            >
+              <IconCategory className="w-6 h-6" stroke={1.5} />
+            </button>
+          </div>
+        </div>
+      </nav>
+      <Drawer open={isMoreOpen} onOpenChange={(o) => { setIsMoreOpen(o); if (!o) setMoreSelectedIndex(null) }}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Категории</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            <div className="grid grid-cols-3 gap-2">
+              {CATEGORIES.filter((c) => !["4K UHD", "Фильмы", "Сериалы"].includes(c.title)).map((cat, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (cat.route) {
+                      setIsMoreOpen(false)
+                      router.push(cat.route)
+                    } else {
+                      setMoreSelectedIndex(idx)
+                    }
+                  }}
+                  className={`p-3 border text-left transition-all duration-200 rounded-sm ${moreSelectedIndex === idx ? "bg-blue-600 text-white border-blue-600" : "bg-zinc-900/40 border-zinc-800/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/60"}`}
+                >
+                  <div className="text-[11px] font-medium">{cat.title}</div>
+                </button>
+              ))}
+            </div>
+            {(() => {
+              const extras = CATEGORIES.filter((c) => !["4K UHD", "Фильмы", "Сериалы"].includes(c.title))
+              if (moreSelectedIndex == null) return null
+              const chosen = extras[moreSelectedIndex]
+              if (!chosen) return null
+              return (
+                <div className="mt-4">
+                  <MovieGrid url={chosen.playlist_url} />
+                </div>
+              )
+            })()}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   )
 }
