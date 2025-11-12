@@ -75,7 +75,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           )}
         </section>
       </main>
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50 rounded-t-[50px] shadow-[0_-10px_28px_rgba(0,0,0,0.45)]">
         <div className="mx-auto max-w-7xl px-4 py-2">
           <div className="flex items-center justify-between">
             <button
