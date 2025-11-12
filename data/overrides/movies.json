@@ -48,6 +48,12 @@
     }
   },
   "690e6be00aaa1df50b8ae075": {
+    "franchise": {
+      "budget": "$3 000 000"
+    },
+    "bg_poster": {
+      "backdrop": "/movies/exit_protocolbg.webp"
+    },
     "about": [
       "Наемный убийца",
       "чья специальность убивать других убийц",

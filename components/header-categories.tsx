@@ -22,6 +22,7 @@ import {
   IconHome,
   IconMaximize,
   IconMinimize,
+  IconSearch,
 } from "@tabler/icons-react"
 
 type HeaderCategoriesProps = {
@@ -221,7 +222,14 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center gap-1">
+              <Link
+                href="/search"
+                className={`${buttonBase} bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50`}
+              >
+                <IconSearch className="w-4 h-4" size={16} stroke={1.5} />
+                <span>Поиск</span>
+              </Link>
               <button
                 type="button"
                 aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}

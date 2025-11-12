@@ -18,5 +18,27 @@
     "addedPaths": [
       "franchise.budget"
     ]
+  },
+  {
+    "id": "690e6be00aaa1df50b8ae075",
+    "timestamp": "2025-11-12T11:25:40.943Z",
+    "poster": "/movies/protocol.jpg",
+    "title": "Протокол выхода",
+    "changedPaths": [],
+    "addedPaths": [
+      "franchise.budget"
+    ]
+  },
+  {
+    "id": "690e6be00aaa1df50b8ae075",
+    "timestamp": "2025-11-12T11:27:44.731Z",
+    "poster": "/movies/protocol.jpg",
+    "title": "Протокол выхода",
+    "changedPaths": [
+      "franchise.budget"
+    ],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]
