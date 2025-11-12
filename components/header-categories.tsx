@@ -74,7 +74,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     return null
   })
   const activeIndex = activeIndexProp ?? stateActiveIndex
-  const isHomeActive = activeIndex === null
+  const isHomeActive = pathname === "/" && activeIndex === null
+  const isSearchActive = pathname.startsWith("/search")
 
   // Останавливаем верхний лоадер после завершения навигации
   useEffect(() => {
@@ -225,7 +226,11 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
             <div className="hidden md:flex items-center gap-1">
               <Link
                 href="/search"
-                className={`${buttonBase} bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50`}
+                className={`${buttonBase} ${
+                  isSearchActive
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
+                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
+                }`}
               >
                 <IconSearch className="w-4 h-4" size={16} stroke={1.5} />
                 <span>Поиск</span>
