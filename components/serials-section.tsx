@@ -53,7 +53,7 @@ export function SerialsSection() {
 
   return (
     <section>
-      <div className="md:bg-zinc-900/40 md:backdrop-blur-sm md:border border-zinc-800/50 p-5 rounded-sm">
+      <div className="md:bg-zinc-900/40 md:backdrop-blur-sm md:border md:border-zinc-800/50 p-5 rounded-sm">
         <div className="sticky top-0 z-20 -mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 md:bg-zinc-900/80 md:backdrop-blur-sm md:border-b md:border-zinc-800/50 rounded-t-sm">
           <div className="flex gap-3 flex-wrap md:flex-nowrap min-h-[40px]">
             {SERIAL_CHANNELS.map((ch, idx) => (

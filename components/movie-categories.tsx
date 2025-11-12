@@ -91,7 +91,7 @@ export function MovieCategories() {
       </div>
 
       {selectedCategory !== null && (
-        <div className="bg-zinc-900/40 backdrop-blur-sm md:border border-zinc-800/50 p-5 rounded-sm">
+        <div className="md:bg-zinc-900/40 md:backdrop-blur-sm md:border md:border-zinc-800/50 p-5 rounded-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-bold text-zinc-200">{CATEGORIES[selectedCategory].title}</h3>
             <button
