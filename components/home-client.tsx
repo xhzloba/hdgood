@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { HeaderCategories } from "./header-categories"
 import { TrendingSection } from "./trending-section"
 import { UhdSection } from "./uhd-section"
@@ -11,7 +11,8 @@ import type { Category } from "@/lib/categories"
 import { IconHome, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { MovieGrid } from "./movie-grid"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
+import NProgress from "nprogress"
 
 type HomeClientProps = {
   initialSelectedTitle?: string
@@ -19,6 +20,7 @@ type HomeClientProps = {
 
 export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const [selected, setSelected] = useState<Category | null>(() => {
     if (!initialSelectedTitle) return null
     return CATEGORIES.find((c) => c.title === initialSelectedTitle) ?? null
@@ -45,6 +47,10 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
       setSelected(cat)
     }
   }
+
+  useEffect(() => {
+    NProgress.done()
+  }, [pathname])
 
   return (
     <div className="min-h-[100dvh] min-h-screen">
@@ -75,7 +81,14 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             <button
               type="button"
               aria-label="Главная"
-              onClick={() => setSelected(null)}
+              onClick={() => {
+                setSelected(null)
+                const href = "/"
+                if (pathname !== href) {
+                  NProgress.start()
+                  router.push(href)
+                }
+              }}
               className={`${!selected ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
             >
               <IconHome className="w-6 h-6" stroke={1.5} />
@@ -83,7 +96,18 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             <button
               type="button"
               aria-label="Фильмы"
-              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "Фильмы") ?? null)}
+              onClick={() => {
+                const cat = CATEGORIES.find((c) => c.title === "Фильмы")
+                if (cat?.route) {
+                  const href = cat.route
+                  if (pathname !== href) {
+                    NProgress.start()
+                    router.push(href)
+                  }
+                } else {
+                  setSelected(cat ?? null)
+                }
+              }}
               className={`${isMoviesMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
             >
               <IconMovie className="w-6 h-6" stroke={1.5} />
@@ -91,7 +115,18 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             <button
               type="button"
               aria-label="Сериалы"
-              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "Сериалы") ?? null)}
+              onClick={() => {
+                const cat = CATEGORIES.find((c) => c.title === "Сериалы")
+                if (cat?.route) {
+                  const href = cat.route
+                  if (pathname !== href) {
+                    NProgress.start()
+                    router.push(href)
+                  }
+                } else {
+                  setSelected(cat ?? null)
+                }
+              }}
               className={`${isSerialsMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
             >
               <IconDeviceTv className="w-6 h-6" stroke={1.5} />
@@ -99,7 +134,18 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             <button
               type="button"
               aria-label="4K UHD"
-              onClick={() => setSelected(CATEGORIES.find((c) => c.title === "4K UHD") ?? null)}
+              onClick={() => {
+                const cat = CATEGORIES.find((c) => c.title === "4K UHD")
+                if (cat?.route) {
+                  const href = cat.route
+                  if (pathname !== href) {
+                    NProgress.start()
+                    router.push(href)
+                  }
+                } else {
+                  setSelected(cat ?? null)
+                }
+              }}
               className={`${isUhdMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
             >
               <IconBadge4k className="w-6 h-6" stroke={1.5} />
@@ -134,8 +180,12 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
                   key={idx}
                   onClick={() => {
                     if (cat.route) {
+                      const href = cat.route
                       setIsMoreOpen(false)
-                      router.push(cat.route)
+                      if (pathname !== href) {
+                        NProgress.start()
+                        router.push(href)
+                      }
                     } else {
                       setMoreSelectedIndex(idx)
                     }
