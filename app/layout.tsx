@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ShortcutNavigator } from "@/components/shortcut-navigator";
+import MobileBottomNav from "@/components/mobile-bottom-nav";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -46,6 +47,7 @@ export default function RootLayout({
         {/* Глобальный хоткей: Space+K для открытия /admin */}
         <ShortcutNavigator />
         {children}
+        <MobileBottomNav />
         <Analytics />
       </body>
     </html>
