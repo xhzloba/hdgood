@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import NProgress from "nprogress"
-import { IconHome, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
+import { IconHome, IconSearch, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
@@ -16,6 +16,7 @@ export default function MobileBottomNav() {
   const [moreSelectedIndex, setMoreSelectedIndex] = useState<number | null>(null)
 
   const isHome = pathname === "/"
+  const isSearchMode = pathname?.startsWith("/search")
   const isMoviesMode = pathname === "/movies"
   const isSerialsMode = pathname === "/serials"
   const isUhdMode = pathname === "/uhd"
@@ -29,19 +30,33 @@ export default function MobileBottomNav() {
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50 rounded-t-[50px] shadow-[0_-10px_28px_rgba(0,0,0,0.45)]">
         <div className="mx-auto max-w-7xl px-4 py-2">
           <div className="flex items-center justify-between">
+          <button
+            type="button"
+            aria-label="Главная"
+            onClick={() => {
+              const href = "/"
+              if (pathname !== href) {
+                NProgress.start()
+                router.push(href)
+              }
+            }}
+            className={`${isHome ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+          >
+            <IconHome className="w-6 h-6" stroke={1.5} />
+          </button>
             <button
               type="button"
-              aria-label="Главная"
+              aria-label="Поиск"
               onClick={() => {
-                const href = "/"
+                const href = "/search"
                 if (pathname !== href) {
                   NProgress.start()
                   router.push(href)
                 }
               }}
-              className={`${isHome ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+              className={`${isSearchMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
             >
-              <IconHome className="w-6 h-6" stroke={1.5} />
+              <IconSearch className="w-6 h-6" stroke={1.5} />
             </button>
             <button
               type="button"
