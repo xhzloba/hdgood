@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Play } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 
 const fetcher = async (
@@ -901,27 +902,29 @@ export default function MoviePage({
               )}
             </div>
             <div
-              className="w-full border"
+              className="w-full border rounded-lg overflow-hidden"
               style={{ borderColor: "rgba(var(--poster-accent-tl-rgb), 0.35)" }}
             >
-              <button
+              <Button
+                id="watch-button"
+                size="lg"
                 onClick={() => {
                   const newShowPlayerSelector = !showPlayerSelector;
                   setShowPlayerSelector(newShowPlayerSelector);
-                  
-                  // Прокрутка к началу страницы при показе источников
                   if (newShowPlayerSelector) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className="block w-full bg-zinc-800/60 text-white text-center pt-[14px] pb-[14px] pl-[16px] pr-[28px] text-sm font-medium transition-all duration-200 hover:opacity-95"
+                className="w-full h-12 text-white font-semibold tracking-wide rounded-lg transition-all duration-300 hover:brightness-110 active:brightness-95"
                 style={{
                   backgroundImage:
-                    "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
+                    "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.85), rgba(var(--poster-accent-br-rgb), 0.85))",
                 }}
+                aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
               >
-                {showPlayerSelector ? "Скрыть источники" : "Смотреть"}
-              </button>
+                <Play className="size-5 opacity-90" />
+                <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
+              </Button>
             </div>
           </div>
 
