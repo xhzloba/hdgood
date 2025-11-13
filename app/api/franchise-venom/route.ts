@@ -10,48 +10,72 @@ export async function GET(_request: NextRequest) {
   ];
 
   try {
-    const results = await Promise.all(
-      idents.map(async (ident) => {
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0 (compatible; HDGood/1.0)",
+    };
+    async function fetchView(ident: string) {
+      const url = `https://api.vokino.pro/v2/view/${ident}`;
+      const resp = await fetch(url, { method: "GET", headers });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return await resp.json();
+    }
+    async function fetchWithRetry(ident: string, attempts = 3, delayMs = 200) {
+      let lastErr: any = null;
+      for (let i = 0; i < attempts; i++) {
         try {
-          const url = `https://api.vokino.pro/v2/view/${ident}`;
-          const resp = await fetch(url, {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "User-Agent": "Mozilla/5.0 (compatible; HDGood/1.0)",
-            },
-          });
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-          const data = await resp.json();
-          const d = data?.details ?? data;
-          const id = d?.id ?? ident;
-          const title = d?.name ?? d?.title ?? "Без названия";
-          const poster = d?.poster ?? null;
-          const year = d?.released ?? null;
-          const rating = d?.rating_kp ?? d?.rating ?? null;
-          const country = d?.country ?? null;
-          return {
-            id: String(id),
-            title,
-            poster,
-            year: year ? String(year) : undefined,
-            rating: rating != null ? String(rating) : undefined,
-            country,
-          };
-        } catch (_e) {
-          // Фоллбек — вернём stub, чтобы карточка переходила на страницу фильма
-          return {
-            id: String(ident),
-            title: "Веном",
-            poster: null,
-            year: undefined,
-            rating: undefined,
-            country: undefined,
-          };
+          return await fetchView(ident);
+        } catch (e) {
+          lastErr = e;
+          if (i < attempts - 1) {
+            await new Promise((r) => setTimeout(r, delayMs));
+          }
         }
-      })
-    );
+      }
+      throw lastErr;
+    }
+    const results: any[] = [];
+    for (const ident of idents) {
+      try {
+        const data = await fetchWithRetry(ident);
+        const d = data?.details ?? data;
+        const id = d?.id ?? ident;
+        const titleRaw =
+          (d?.name && String(d?.name).trim() !== "" ? d?.name : null) ??
+          (d?.title && String(d?.title).trim() !== "" ? d?.title : null) ??
+          (d?.originalname && String(d?.originalname).trim() !== "" ? d?.originalname : null) ??
+          null;
+        const title = titleRaw ?? "Без названия";
+        const posterRaw =
+          d?.poster ??
+          (d as any)?.cover ??
+          (d as any)?.image ??
+          (d as any)?.details?.poster ??
+          null;
+        const poster = posterRaw && String(posterRaw).trim() !== "" ? posterRaw : null;
+        const year = d?.released ?? null;
+        const rating = d?.rating_kp ?? d?.rating ?? null;
+        const country = d?.country ?? null;
+        results.push({
+          id: String(id),
+          title,
+          poster,
+          year: year ? String(year) : undefined,
+          rating: rating != null ? String(rating) : undefined,
+          country,
+        });
+      } catch (_e) {
+        results.push({
+          id: String(ident),
+          title: "Без названия",
+          poster: null,
+          year: undefined,
+          rating: undefined,
+          country: undefined,
+        });
+      }
+    }
 
     return NextResponse.json(results, {
       headers: {

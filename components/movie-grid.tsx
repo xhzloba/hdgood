@@ -117,6 +117,7 @@ export function MovieGrid({ url }: MovieGridProps) {
     const base = (u || "").split("?")[0];
     if (base.endsWith("/api/franchise-venom")) return 3;
     if (base.endsWith("/api/franchise-johnwick")) return 7;
+    if (base.endsWith("/api/franchise-lyudi-x")) return 13;
     if (base.endsWith("/api/franchise-by-id")) return 6; // эвристика на детальной франшизе
     return null;
   }
@@ -307,9 +308,7 @@ export function MovieGrid({ url }: MovieGridProps) {
                   }}
                 />
               ) : (
-                <div className="text-zinc-600 text-[10px] text-center p-1">
-                  Нет постера
-                </div>
+                <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
               )}
               {/* Tags / Quality on the left, opposite rating */}
               {(() => {

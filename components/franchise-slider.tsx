@@ -28,6 +28,10 @@ const VENOM_OVERLAY: string[] = [
   "/movies/logo/venom-logo.png",
 ];
 
+const X_MEN_OVERLAY: string[] = [
+  "/movies/logo/lyudi-x-logo.png",
+];
+
 // Список франшиз в слайдере
 const FRANCHISE_ITEMS: FranchiseItem[] = [
   {
@@ -41,6 +45,12 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
     poster: "/movies/venom-franshise.jpg",
     href: "/franchise/venom",
     overlay: VENOM_OVERLAY,
+  },
+  {
+    title: "Люди Икс",
+    poster: "/movies/lyudi-x.jpg",
+    href: "/franchise/lyudi-x",
+    overlay: X_MEN_OVERLAY,
   },
 ];
 
@@ -153,12 +163,18 @@ export function FranchiseSlider() {
                     {item.title === "Веном" && (
                       <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
                     )}
+                    {item.title === "Люди Икс" && (
+                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
+                    )}
                     
                     {/* Правая растушовка для Джона Уика */}
                     {item.title === "Джон Уик" && (
                       <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
                     )}
                     {item.title === "Веном" && (
+                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
+                    )}
+                    {item.title === "Люди Икс" && (
                       <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
                     )}
                   </div>
