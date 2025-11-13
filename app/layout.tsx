@@ -12,9 +12,28 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  metadataBase: new URL("https://hdgood.vercel.app"),
+  title: {
+    default: "HDGood",
+    template: "%s — HDGood",
+  },
+  applicationName: "HDGood",
+  description: "Смотреть фильмы и сериалы онлайн в хорошем качестве",
+  openGraph: {
+    title: "HDGood",
+    description: "Смотреть фильмы и сериалы онлайн в хорошем качестве",
+    url: "/",
+    siteName: "HDGood",
+    locale: "ru_RU",
+    type: "website",
+    images: [{ url: "/placeholder-logo.png", alt: "HDGood" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HDGood",
+    description: "Смотреть фильмы и сериалы онлайн в хорошем качестве",
+    images: ["/placeholder-logo.png"],
+  },
 };
 
 // Вынесенный viewport экспорт согласно Next.js App Router API
@@ -30,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ru" className="dark">
       <head>
         {/* DNS prefetch для ускорения запросов к API */}
         <link rel="dns-prefetch" href="https://api.bhcesh.me" />
