@@ -9,17 +9,29 @@ interface CastListProps {
 
 export function CastList({ casts, maxInitial = 11 }: CastListProps) {
   const [expanded, setExpanded] = useState(false)
-  const hasMore = Array.isArray(casts) && casts.length > maxInitial
-  const visible = expanded || !hasMore ? casts : casts.slice(0, maxInitial)
+  const normalized = Array.isArray(casts)
+    ? casts.filter((actor: any) => {
+        const title = String(actor?.title ?? '').trim()
+        const name = String(actor?.name ?? '').trim()
+        return !!(title || name)
+      })
+    : []
+  const hasMore = normalized.length > maxInitial
+  const visible = expanded || !hasMore ? normalized : normalized.slice(0, maxInitial)
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-x-3 gap-y-1 md:flex-col md:gap-1">
-        {visible.map((actor: any, index: number) => (
-          <div key={actor?.id ?? index} className="text-sm text-zinc-300">
-            {actor?.title ?? actor?.name ?? "Без имени"}
-          </div>
-        ))}
+        {visible.map((actor: any, index: number) => {
+          const title = String(actor?.title ?? '').trim()
+          const name = String(actor?.name ?? '').trim()
+          const display = title || name
+          return (
+            <div key={actor?.id ?? index} className="text-sm text-zinc-300">
+              {display}
+            </div>
+          )
+        })}
       </div>
       {hasMore && (
         <button

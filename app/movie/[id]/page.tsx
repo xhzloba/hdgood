@@ -1457,27 +1457,54 @@ export default function MoviePage({
               <div className="space-y-3 hidden md:block">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
                 <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
-                  {data.casts.map((actor: any, index: number) => {
-                    const id = actor?.id ?? index;
-                    const poster =
-                      actor?.poster ??
-                      actor?.photo ??
-                      actor?.image ??
-                      actor?.avatar ??
-                      actor?.picture ??
-                      actor?.pic ??
-                      actor?.url ??
-                      "/placeholder-user.jpg";
-                    const title = actor?.title ?? actor?.name ?? "Без имени";
-                    return (
-                      <img
-                        key={id}
-                        src={poster}
-                        alt={title}
-                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
-                      />
-                    );
-                  })}
+                  {data.casts
+                    .filter((actor: any) => {
+                      const title = String(actor?.title ?? '').trim()
+                      const name = String(actor?.name ?? '').trim()
+                      return !!(title || name)
+                    })
+                    .map((actor: any, index: number) => {
+                      const id = actor?.id ?? index
+                      const title = String(actor?.title ?? '').trim() || String(actor?.name ?? '').trim()
+                      const posterCandidate =
+                        actor?.poster ??
+                        actor?.photo ??
+                        actor?.image ??
+                        actor?.avatar ??
+                        actor?.picture ??
+                        actor?.pic
+                      const src = String(posterCandidate ?? '').trim()
+                      const invalids = ['null','undefined','—','none','n/a','no-image']
+                      const isImageLike = src.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) || src.startsWith('/') || src.startsWith('http')
+                      const hasPoster = !!src && !invalids.includes(src.toLowerCase()) && isImageLike
+                      return hasPoster ? (
+                        <img
+                          key={id}
+                          src={src}
+                          alt={title}
+                          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
+                          onError={(e) => {
+                            const parent = e.currentTarget.parentElement
+                            if (parent) {
+                              e.currentTarget.style.display = 'none'
+                              const fallback = document.createElement('div')
+                              fallback.setAttribute('aria-label', 'нет фото')
+                              fallback.className = 'w-16 h-16 md:w-20 md:h-20 rounded-full ring-2 ring-zinc-800 bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none'
+                              fallback.textContent = 'нет фото'
+                              parent.appendChild(fallback)
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div
+                          key={id}
+                          className="w-16 h-16 md:w-20 md:h-20 rounded-full ring-2 ring-zinc-800 bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
+                          aria-label="нет фото"
+                        >
+                          нет фото
+                        </div>
+                      )
+                    })}
                 </div>
               </div>
             )}
