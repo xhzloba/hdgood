@@ -134,6 +134,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
   // Загружаем overrides для текущих карточек (батчем по ids)
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
   const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
+  const [failedSrcById, setFailedSrcById] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!idsString) return;
@@ -273,21 +274,27 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
                     }}
                   >
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
-                      {movie.poster ? (
+                      {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
                         <img
+                          key={movie.poster || "placeholder"}
                           src={movie.poster || "/placeholder.svg"}
                           alt={movie.title || "Постер"}
                           className={`w-full h-full object-cover transition-opacity duration-500 ${
                             loadedImages.has(String(movie.id)) ? "opacity-100" : "opacity-0"
                           }`}
-                          onLoad={() => handleImageLoad(movie.id)}
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              parent.innerHTML =
-                                '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
-                            }
+                          onLoad={() => {
+                            handleImageLoad(movie.id);
+                            const key = String(movie.id);
+                            setFailedSrcById((prev) => {
+                              const next = { ...prev };
+                              if (next[key]) delete next[key];
+                              return next;
+                            });
+                          }}
+                          onError={() => {
+                            const key = String(movie.id);
+                            const src = movie.poster || "";
+                            setFailedSrcById((prev) => ({ ...prev, [key]: src }));
                           }}
                         />
                       ) : (
