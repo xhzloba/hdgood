@@ -93,5 +93,11 @@
         50
       ]
     }
+  },
+  "690e6be89cfe849a3323b2de": {
+    "poster": "/movies/izmnogix-poster.jpg",
+    "bg_poster": {
+      "backdrop": "/movies/izmnogix.webp"
+    }
   }
 }

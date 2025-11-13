@@ -40,5 +40,47 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-13T14:21:07.207Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop",
+      "trailers"
+    ]
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-13T14:22:13.709Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop",
+      "trailers"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-13T14:23:00.167Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-13T14:25:34.502Z",
+    "poster": "/movies/izmnogix-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
   }
 ]
