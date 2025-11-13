@@ -238,10 +238,11 @@ export default function MoviePage({
     if (hasWebShare && isSecure && isTopLevel) {
       try {
         const canShareFiles = files && (navigator as any).canShare && (navigator as any).canShare({ files });
-        const payload: any = canShareFiles
-          ? { title, text, files, url: shareUrl }
-          : { title, text, url: shareUrl };
-        await (navigator as any).share(payload);
+        if (canShareFiles) {
+          await (navigator as any).share({ title, text, files });
+        } else {
+          await (navigator as any).share({ title, text, url: shareUrl });
+        }
         toast({ title: "Ссылка отправлена" });
       } catch (e: any) {
         const msg = String(e?.name || e || "")
@@ -334,7 +335,19 @@ export default function MoviePage({
                   return;
                 }
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob((b) => resolve(b || null), preferredType, 0.92);
+                if (typeof (canvas as any).toBlob === "function") {
+                  (canvas as any).toBlob((b: Blob | null) => resolve(b || null), preferredType, 0.92);
+                } else {
+                  try {
+                    const dataUrl = canvas.toDataURL(preferredType, 0.92);
+                    fetch(dataUrl)
+                      .then((r) => r.blob())
+                      .then((b) => resolve(b))
+                      .catch(() => resolve(null));
+                  } catch {
+                    resolve(null);
+                  }
+                }
               };
               img.onerror = () => {
                 URL.revokeObjectURL(url);
