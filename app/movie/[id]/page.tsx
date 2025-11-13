@@ -227,9 +227,26 @@ export default function MoviePage({
     const desc = Array.isArray(descRaw)
       ? descRaw.filter(Boolean).join(" ")
       : String(descRaw || "").trim();
-    const title = name || "";
-    const subtitle = "Смотреть онлайн в 4K качестве";
-    const text = [subtitle, desc || null, shareUrl].filter(Boolean).join("\n\n");
+    
+    // Получаем год из данных фильма
+    const movie = data || overrideData;
+    const yearRaw = 
+      (movie as any)?.year ??
+      (movie as any)?.released ??
+      (movie as any)?.release_year ??
+      (movie as any)?.releaseYear;
+    let yearPart = "";
+    if (yearRaw != null) {
+      const s = String(yearRaw).trim();
+      if (s && s !== "0") {
+        const match = s.match(/\d{4}/);
+        if (match) yearPart = ` (${match[0]})`;
+      }
+    }
+    
+    // Формируем заголовок с названием и годом
+    const title = name ? `Смотреть онлайн: ${name}${yearPart}` : "Смотреть онлайн в 4K качестве";
+    const text = [desc || null, shareUrl].filter(Boolean).join("\n\n");
     const files: File[] | undefined = shareFiles;
 
     const hasWebShare = typeof navigator !== "undefined" && typeof (navigator as any).share === "function";
