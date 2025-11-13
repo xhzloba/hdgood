@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Play } from "lucide-react";
+import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 
 const fetcher = async (
@@ -217,6 +217,63 @@ export default function MoviePage({
   } | null>(null); // Для inline iframe
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
+
+  const handleShare = async () => {
+    const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+    const name = (data?.name ?? overrideData?.name ?? "") || (typeof (data as any)?.movie === "object" ? (data as any).movie?.name ?? "" : "");
+    const desc = (data?.about ?? (data as any)?.description ?? overrideData?.about ?? "") as string;
+    const title = name ? `${name} — Смотреть онлайн в 4K качестве` : `Смотреть онлайн в 4K качестве`;
+    const text = desc ? `${title}\n\n${desc}` : title;
+
+    let files: File[] | undefined = undefined;
+    const posterUrl = (data as any)?.poster ?? (data as any)?.movie?.poster ?? (overrideData as any)?.poster ?? (typeof movie === "object" ? (movie as any).poster : undefined);
+    if (posterUrl && typeof posterUrl === "string" && posterUrl.trim() !== "") {
+      try {
+        const res = await fetch(posterUrl, { cache: "force-cache" });
+        if (res.ok) {
+          const blob = await res.blob();
+          const ext = (blob.type.split("/")[1] || "jpg").toLowerCase();
+          files = [new File([blob], `poster-${id || "movie"}.${ext}`, { type: blob.type })];
+        }
+      } catch {}
+    }
+
+    const hasWebShare = typeof navigator !== "undefined" && typeof (navigator as any).share === "function";
+    if (hasWebShare) {
+      try {
+        const canShareFiles = files && (navigator as any).canShare && (navigator as any).canShare({ files });
+        if (canShareFiles) {
+          await (navigator as any).share({ title, text, files });
+        } else {
+          await (navigator as any).share({ title, text, url: shareUrl });
+        }
+      } catch (e: any) {
+        const msg = String(e?.name || e || "")
+          .toLowerCase();
+        if (msg.includes("aborterror")) {
+          return; // пользователь отменил шаринг — ничего не копируем
+        }
+        console.warn("Share error", e);
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(`${title}\n\n${shareUrl}`);
+    } catch {
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = `${title}\n\n${shareUrl}`;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      } catch {}
+    }
+  };
 
   // Копирование ident (id из маршрута) в буфер обмена по клику на постер
   const copyIdentToClipboard = async () => {
@@ -926,6 +983,7 @@ export default function MoviePage({
                 <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
               </Button>
             </div>
+            
           </div>
 
           {/* Info */}
@@ -940,10 +998,18 @@ export default function MoviePage({
               />
             )}
             
-            <div>
-              <h1 className="text-3xl font-bold text-zinc-100 mb-2">
-                {movie.name}
-                {titleYear ? ` (${titleYear})` : ""}
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold text-zinc-100">
+                <span>{movie.name}{titleYear ? ` (${titleYear})` : ""}</span>
+                <Button
+                  onClick={handleShare}
+                  variant="ghost"
+                  size="icon-sm"
+                  className="hidden md:inline-flex align-middle ml-2 text-zinc-200 hover:text-white hover:bg-transparent focus-visible:ring-0"
+                  aria-label="Поделиться"
+                >
+                  <Share2 className="size-4" />
+                </Button>
               </h1>
               {movie.originalname && movie.originalname !== movie.name && (
                 <p className="text-sm text-zinc-500">{movie.originalname}</p>
