@@ -1045,7 +1045,7 @@ export default function MoviePage({
                 className="w-full h-12 text-white font-semibold tracking-wide rounded-lg transition-all duration-300 hover:brightness-110 active:brightness-95"
                 style={{
                   backgroundImage:
-                    "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.85), rgba(var(--poster-accent-br-rgb), 0.85))",
+                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgb(var(--poster-accent-tl-rgb)), rgb(var(--poster-accent-br-rgb)))",
                 }}
                 aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
               >
