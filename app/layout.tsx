@@ -5,6 +5,7 @@ import NextTopLoader from "nextjs-toploader";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ShortcutNavigator } from "@/components/shortcut-navigator";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -48,6 +49,7 @@ export default function RootLayout({
         <ShortcutNavigator />
         {children}
         <MobileBottomNav />
+        <Toaster />
         <Analytics />
       </body>
     </html>

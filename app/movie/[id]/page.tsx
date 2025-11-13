@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
+import { toast } from "@/hooks/use-toast";
 
 const fetcher = async (
   url: string,
@@ -217,6 +218,7 @@ export default function MoviePage({
   } | null>(null); // Для inline iframe
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
+  const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
 
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -224,22 +226,12 @@ export default function MoviePage({
     const desc = (data?.about ?? (data as any)?.description ?? overrideData?.about ?? "") as string;
     const title = name ? `${name} — Смотреть онлайн в 4K качестве` : `Смотреть онлайн в 4K качестве`;
     const text = desc ? `${title}\n\n${desc}` : title;
-
-    let files: File[] | undefined = undefined;
-    const posterUrl = (data as any)?.poster ?? (data as any)?.movie?.poster ?? (overrideData as any)?.poster ?? (typeof movie === "object" ? (movie as any).poster : undefined);
-    if (posterUrl && typeof posterUrl === "string" && posterUrl.trim() !== "") {
-      try {
-        const res = await fetch(posterUrl, { cache: "force-cache" });
-        if (res.ok) {
-          const blob = await res.blob();
-          const ext = (blob.type.split("/")[1] || "jpg").toLowerCase();
-          files = [new File([blob], `poster-${id || "movie"}.${ext}`, { type: blob.type })];
-        }
-      } catch {}
-    }
+    const files: File[] | undefined = shareFiles;
 
     const hasWebShare = typeof navigator !== "undefined" && typeof (navigator as any).share === "function";
-    if (hasWebShare) {
+    const isSecure = typeof window !== "undefined" && (window as any).isSecureContext === true;
+    const isTopLevel = typeof window !== "undefined" && window.top === window.self;
+    if (hasWebShare && isSecure && isTopLevel) {
       try {
         const canShareFiles = files && (navigator as any).canShare && (navigator as any).canShare({ files });
         if (canShareFiles) {
@@ -247,13 +239,29 @@ export default function MoviePage({
         } else {
           await (navigator as any).share({ title, text, url: shareUrl });
         }
+        toast({ title: "Ссылка отправлена" });
       } catch (e: any) {
         const msg = String(e?.name || e || "")
           .toLowerCase();
         if (msg.includes("aborterror")) {
           return; // пользователь отменил шаринг — ничего не копируем
         }
-        console.warn("Share error", e);
+        try {
+          await navigator.clipboard.writeText(`${title}\n\n${shareUrl}`);
+        } catch {
+          try {
+            const textarea = document.createElement("textarea");
+            textarea.value = `${title}\n\n${shareUrl}`;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+          } catch {}
+        }
+        toast({ title: "Ссылка скопирована" });
       }
       return;
     }
@@ -273,6 +281,7 @@ export default function MoviePage({
         document.body.removeChild(textarea);
       } catch {}
     }
+    toast({ title: "Ссылка скопирована" });
   };
 
   // Копирование ident (id из маршрута) в буфер обмена по клику на постер
@@ -296,6 +305,31 @@ export default function MoviePage({
       }
     }
   };
+
+  useEffect(() => {
+    const posterUrl = (overrideData as any)?.poster ?? (data as any)?.poster ?? (data as any)?.details?.poster ?? (data as any)?.movie?.poster;
+    if (!posterUrl || typeof posterUrl !== "string" || !posterUrl.trim()) {
+      setShareFiles(undefined);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(posterUrl, { cache: "force-cache" });
+        if (!res.ok) {
+          if (!cancelled) setShareFiles(undefined);
+          return;
+        }
+        const blob = await res.blob();
+        const ext = (blob.type.split("/")[1] || "jpg").toLowerCase();
+        const files = [new File([blob], `poster-${id || "movie"}.${ext}`, { type: blob.type })];
+        if (!cancelled) setShareFiles(files);
+      } catch {
+        if (!cancelled) setShareFiles(undefined);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [id, overrideData, data]);
 
   // Функция переключения открытия/закрытия сезона
   const toggleSeason = (seasonNumber: number) => {
