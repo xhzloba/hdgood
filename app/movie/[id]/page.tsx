@@ -223,9 +223,13 @@ export default function MoviePage({
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
     const name = (data?.name ?? overrideData?.name ?? "") || (typeof (data as any)?.movie === "object" ? (data as any).movie?.name ?? "" : "");
-    const desc = (data?.about ?? (data as any)?.description ?? overrideData?.about ?? "") as string;
-    const title = name ? `${name} — Смотреть онлайн в 4K качестве` : `Смотреть онлайн в 4K качестве`;
-    const text = desc ? `${title}\n\n${desc}` : title;
+    const descRaw = (data?.about ?? (data as any)?.description ?? overrideData?.about ?? "") as any;
+    const desc = Array.isArray(descRaw)
+      ? descRaw.filter(Boolean).join(" ")
+      : String(descRaw || "").trim();
+    const title = name || "";
+    const subtitle = "Смотреть онлайн в 4K качестве";
+    const text = [subtitle, desc || null, shareUrl].filter(Boolean).join("\n\n");
     const files: File[] | undefined = shareFiles;
 
     const hasWebShare = typeof navigator !== "undefined" && typeof (navigator as any).share === "function";
@@ -234,44 +238,30 @@ export default function MoviePage({
     if (hasWebShare && isSecure && isTopLevel) {
       try {
         const canShareFiles = files && (navigator as any).canShare && (navigator as any).canShare({ files });
-        if (canShareFiles) {
-          await (navigator as any).share({ title, text, files });
-        } else {
-          await (navigator as any).share({ title, text, url: shareUrl });
-        }
+        const payload: any = canShareFiles
+          ? { title, text, files, url: shareUrl }
+          : { title, text, url: shareUrl };
+        await (navigator as any).share(payload);
         toast({ title: "Ссылка отправлена" });
       } catch (e: any) {
         const msg = String(e?.name || e || "")
           .toLowerCase();
         if (msg.includes("aborterror")) {
-          return; // пользователь отменил шаринг — ничего не копируем
+          return; // пользователь отменил — ничего не делаем
         }
-        try {
-          await navigator.clipboard.writeText(`${title}\n\n${shareUrl}`);
-        } catch {
-          try {
-            const textarea = document.createElement("textarea");
-            textarea.value = `${title}\n\n${shareUrl}`;
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-          } catch {}
-        }
-        toast({ title: "Ссылка скопирована" });
+        // Если Web Share поддерживается, но произошла ошибка — не копируем в буфер,
+        // чтобы не было двойных действий и дублирования.
+        toast({ title: "Не удалось поделиться" });
       }
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(`${title}\n\n${shareUrl}`);
+      await navigator.clipboard.writeText(`${title ? title + "\n\n" : ""}${text}`);
     } catch {
       try {
         const textarea = document.createElement("textarea");
-        textarea.value = `${title}\n\n${shareUrl}`;
+        textarea.value = `${title ? title + "\n\n" : ""}${text}`;
         textarea.style.position = "fixed";
         textarea.style.opacity = "0";
         document.body.appendChild(textarea);
