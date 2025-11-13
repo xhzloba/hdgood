@@ -1146,7 +1146,7 @@ export default function MoviePage({
             </div>
 
             {/* Meta + Cast side-by-side */}
-            <div className={`grid md:grid-cols-2 gap-16 ${detailsOpen ? "" : "md:hidden"}`}>
+              <div className={`grid md:grid-cols-2 gap-16 ${detailsOpen ? "" : "md:hidden"}`}>
               {/* Meta Info */}
               <div className="space-y-2 text-sm">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3 md:hidden">
@@ -1391,11 +1391,17 @@ export default function MoviePage({
                     {movie.type || data.type || "—"}
                   </span>
                 </div>
+                {movie.about && (
+                  <div className="mt-6 space-y-2 md:hidden">
+                    <h2 className="text-lg font-semibold text-zinc-200">Описание</h2>
+                    <p className="text-sm text-zinc-400 leading-relaxed">{movie.about}</p>
+                  </div>
+                )}
               </div>
 
               {/* Cast column list with "Показать ещё" */}
               {Array.isArray(data.casts) && data.casts.length > 0 && (
-                <div className="space-y-2 md:pl-8">
+                <div className="space-y-2 md:pl-8 hidden md:block">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-zinc-200 mb-3">
                       В ролях
@@ -1437,7 +1443,7 @@ export default function MoviePage({
 
             {/* Description (moved above actors avatars) */}
             {movie.about && (
-              <div className="space-y-2">
+              <div className="space-y-2 hidden md:block">
                 <h2 className="text-lg font-semibold text-zinc-200">
                   Описание
                 </h2>
@@ -1448,7 +1454,7 @@ export default function MoviePage({
             )}
 
             {Array.isArray(data.casts) && data.casts.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3 hidden md:block">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
                 <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
                   {data.casts.map((actor: any, index: number) => {
