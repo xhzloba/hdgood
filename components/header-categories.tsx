@@ -84,9 +84,17 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
 
   const [isFullscreen, setIsFullscreen] = useState(false)
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement)
+    const onChange = () => {
+      const d: any = document
+      setIsFullscreen(!!(d.fullscreenElement || d.webkitFullscreenElement))
+    }
     document.addEventListener("fullscreenchange", onChange)
-    return () => document.removeEventListener("fullscreenchange", onChange)
+    document.addEventListener("webkitfullscreenchange", onChange)
+    onChange()
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange)
+      document.removeEventListener("webkitfullscreenchange", onChange)
+    }
   }, [])
 
   const toggleFullscreen = async () => {
