@@ -315,15 +315,51 @@ export default function MoviePage({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(posterUrl, { cache: "force-cache" });
+        const proxyUrl = `/api/share-poster?url=${encodeURIComponent(posterUrl)}`;
+        const res = await fetch(proxyUrl, { cache: "force-cache" });
         if (!res.ok) {
           if (!cancelled) setShareFiles(undefined);
           return;
         }
         const blob = await res.blob();
-        const ext = (blob.type.split("/")[1] || "jpg").toLowerCase();
-        const files = [new File([blob], `poster-${id || "movie"}.${ext}`, { type: blob.type })];
-        if (!cancelled) setShareFiles(files);
+        let outBlob: Blob = blob;
+        let outExt = (blob.type.split("/")[1] || "jpg").toLowerCase();
+        const canShare = typeof navigator !== "undefined" && (navigator as any).canShare;
+        if (canShare) {
+          const testFile = new File([blob], `poster.${outExt}` , { type: blob.type });
+          const ok = (navigator as any).canShare({ files: [testFile] });
+          const preferredType = "image/jpeg";
+          if (!ok && blob.type !== preferredType) {
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            const converted: Blob | null = await new Promise((resolve) => {
+              img.onload = () => {
+                URL.revokeObjectURL(url);
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth || img.width || 600;
+                canvas.height = img.naturalHeight || img.height || 900;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) {
+                  resolve(null);
+                  return;
+                }
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((b) => resolve(b || null), preferredType, 0.92);
+              };
+              img.onerror = () => {
+                URL.revokeObjectURL(url);
+                resolve(null);
+              };
+              img.src = url;
+            });
+            if (converted) {
+              outBlob = converted;
+              outExt = "jpg";
+            }
+          }
+        }
+        const file = new File([outBlob], `poster-${id || "movie"}.${outExt}`, { type: outBlob.type || "image/jpeg" });
+        if (!cancelled) setShareFiles([file]);
       } catch {
         if (!cancelled) setShareFiles(undefined);
       }
