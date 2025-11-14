@@ -1054,6 +1054,7 @@ export default function MoviePage({
             >
               <Button
                 id="watch-button"
+                variant="secondary"
                 size="lg"
                 onClick={() => {
                   const newShowPlayerSelector = !showPlayerSelector;
@@ -1065,7 +1066,7 @@ export default function MoviePage({
                 className="w-full h-12 text-white font-semibold tracking-wide rounded-lg transition-all duration-300 hover:brightness-110 active:brightness-95"
                 style={{
                   backgroundImage:
-                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgb(var(--poster-accent-tl-rgb)), rgb(var(--poster-accent-br-rgb)))",
+                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgb(var(--poster-accent-tl-rgb, var(--app-bg-rgb))), rgb(var(--poster-accent-br-rgb, var(--app-bg-rgb))))",
                 }}
                 aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
               >
