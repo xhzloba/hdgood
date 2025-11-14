@@ -190,5 +190,15 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "690925e29cfe849a33eb3dfa",
+    "timestamp": "2025-11-14T12:21:32.117Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]
