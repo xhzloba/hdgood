@@ -328,6 +328,8 @@ export default function AdminOverridesPage() {
     if (pc?.accentTl != null) next['poster_colors.accentTl'] = asCsv(pc.accentTl);
     if (pc?.accentBr != null) next['poster_colors.accentBr'] = asCsv(pc.accentBr);
     if (pc?.accentBl != null) next['poster_colors.accentBl'] = asCsv(pc.accentBl);
+    const posterLogo = (existingOverride as any)?.poster_logo;
+    if (posterLogo != null) next['poster_logo'] = String(posterLogo);
     setFormValues(next);
   }
 
@@ -695,6 +697,18 @@ export default function AdminOverridesPage() {
                   <div className="mt-2 text-xs text-amber-400">{pipetteMessage}</div>
                 )}
                 <div className="mt-3 text-xs text-zinc-400">Совет: ты можешь задать только часть цветов — остальные возьмутся из авто-извлечения.</div>
+                <div className="mt-4">
+                  <label className="block text-xs text-zinc-400 mb-1">Логотип для главной (poster_logo)</label>
+                  <input
+                    className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                    placeholder={(() => {
+                      const v = (existingOverride as any)?.poster_logo; return v == null ? '' : String(v);
+                    })()}
+                    value={formValues['poster_logo'] ?? ''}
+                    onChange={(e) => updateField('poster_logo', e.target.value)}
+                  />
+                  <div className="mt-1 text-xs text-zinc-500">Можно указывать путь из public/, например "/logos/movie.png"</div>
+                </div>
               </div>
             </div>
           </section>

@@ -1,5 +1,5 @@
 // Overrides для фильмов: ключ — id из /movie/[id]
-export const moviesOverrides: Record<string, { backdrop?: string; bg_poster?: { backdrop?: string } }> = {
+export const moviesOverrides: Record<string, { backdrop?: string; bg_poster?: { backdrop?: string }; poster_logo?: string }> = {
   // Долгая прогулка
   "68c497e0af41faf6fd964f3a": {
     bg_poster: { backdrop: "/movies/dolgaya-progulka.jpg" },

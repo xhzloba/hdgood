@@ -195,16 +195,16 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
   return (
     <div className="space-y-3">
       {(title || viewAllHref) && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative z-20">
           {title ? (
-            <h2 className="text-lg md:text-xl font-semibold text-zinc-200">{title}</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-zinc-200 relative z-20">{title}</h2>
           ) : (
             <div />
           )}
           {viewAllHref && (
             <Link
               href={viewAllHref}
-              className="text-[12px] md:text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
+              className="text-[12px] md:text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors relative z-20"
             >
               {viewAllLabel}
             </Link>
@@ -219,7 +219,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
         </div>
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
-        <div className="relative">
+        <div className="relative z-10">
           <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2">
               {Array.from({ length: perPage }).map((_, i) => (

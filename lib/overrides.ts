@@ -5,6 +5,7 @@ export type BgPoster = { backdrop?: string };
 export type ContentOverride = {
   backdrop?: string;
   bg_poster?: BgPoster;
+  poster_logo?: string;
 };
 
 // Импортируем данные из отдельных файлов

@@ -480,34 +480,28 @@ function getCornerColors(img: HTMLImageElement): { tl: [number, number, number];
 }
 
 export function PosterBackground({ posterUrl, bgPosterUrl, children, className, colorOverrides }: PosterBackgroundProps) {
-  const [colors, setColors] = React.useState<{ tl: [number, number, number]; br: [number, number, number]; bl: [number, number, number] } | null>(null)
-  const [dominants, setDominants] = React.useState<[[number, number, number], [number, number, number]] | null>(null)
+  type Palette = { corners: { tl: RGB; br: RGB; bl: RGB } | null; dominants: [RGB, RGB] | null }
+  const [palette, setPalette] = React.useState<Palette>({ corners: null, dominants: null })
   const [ready, setReady] = React.useState(false)
 
   React.useEffect(() => {
-    // Выбираем источник для извлечения цветов: приоритетно постер, иначе фоновый постер
     const src = posterUrl || bgPosterUrl
     if (!src) return
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.onload = () => {
       try {
-        const computedColors = getCornerColors(img)
-        setColors(computedColors)
-        const dom = getDominantColors(img)
-        if (dom) setDominants(dom)
+        const corners = getCornerColors(img)
+        const doms = getDominantColors(img)
+        setPalette({ corners, dominants: doms })
       } catch (e) {
-        // Если canvas «tainted» из-за отсутствия CORS — просто пропускаем извлечение цветов
-        // и продолжаем с готовностью, чтобы сразу показать фон
         console.warn("PosterBackground: не удалось извлечь цвета (CORS/tainted)", e)
-        setColors(null)
-        setDominants(null)
+        setPalette({ corners: null, dominants: null })
       } finally {
         setReady(true)
       }
     }
     img.onerror = () => {
-      // Даже при ошибке загрузки выставляем ready, чтобы можно было показать статичный фон
       setReady(true)
     }
     img.src = src
@@ -563,12 +557,13 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
     if (bgPosterUrl) {
       // Если цвета еще не готовы, показываем только базовые темные оверлеи
       // Если цвета готовы или posterUrl отсутствует, показываем полный фон
-      const shouldShowBackground = !posterUrl || ready
+      const paletteReady = !!palette.corners || !!normalizedOverrides
+      const shouldShowBackground = !posterUrl || paletteReady
       
       if (shouldShowBackground) {
         baseStyle.backgroundImage = `url(${bgPosterUrl})`
         baseStyle.backgroundSize = 'cover'
-        baseStyle.backgroundPosition = '60% center' // Смещение вправо
+        baseStyle.backgroundPosition = 'center 20%'
         baseStyle.backgroundRepeat = 'no-repeat'
         // Добавляем backgroundAttachment: 'fixed' для десктопа (будет отключено на мобильных через CSS)
         baseStyle.backgroundAttachment = 'fixed'
@@ -576,14 +571,13 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
         // Добавляем полупрозрачный оверлей поверх bg_poster
         const overlayGradients = [
           'linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.6) 100%)',
-          // Дополнительное затемнение в центре для читаемости текста
           'radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%)'
         ]
         
-        if (colors || normalizedOverrides) {
-          const useTl = normalizedOverrides?.accentTl ?? (colors ? colors.tl : null)
-          const useBr = normalizedOverrides?.accentBr ?? (colors ? colors.br : null)
-          const useBl = normalizedOverrides?.accentBl ?? (colors ? colors.bl : null)
+        if (palette.corners || normalizedOverrides) {
+          const useTl = normalizedOverrides?.accentTl ?? (palette.corners ? palette.corners.tl : null)
+          const useBr = normalizedOverrides?.accentBr ?? (palette.corners ? palette.corners.br : null)
+          const useBl = normalizedOverrides?.accentBl ?? (palette.corners ? palette.corners.bl : null)
           const [rtl, gtl, btl] = (useTl || [0,0,0])
           const [rbr, gbr, bbr] = (useBr || [0,0,0])
           const [rbl, gbl, bbl2] = (useBl || [0,0,0])
@@ -607,39 +601,42 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
           const [erbr, egbr, ebbr] = enhanceColor(rbr, gbr, bbr)
           const [erbl, egbl, ebbl2] = enhanceColor(rbl, gbl, bbl2)
           
-          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.9)`
+          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.75)`
           const accentBR = `rgba(${erbr}, ${egbr}, ${ebbr}, 0.9)`
           const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.9)`
           const ar = Math.round((ertl + erbr + erbl) / 3)
           const ag = Math.round((egtl + egbr + egbl) / 3)
           const ab = Math.round((ebtl + ebbr + ebbl2) / 3)
-          const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.5)`
+          const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.35)`
+          const accentBase = `${ar}, ${ag}, ${ab}`
           
           overlayGradients.push(
-            `radial-gradient( 1600px 800px at 0% 0%, ${accentTL}, transparent )`,
-            `radial-gradient( 1600px 800px at 0% 100%, ${accentBL}, transparent )`,
-            `radial-gradient( 1600px 800px at 100% 100%, ${accentBR}, transparent )`,
-            `linear-gradient(180deg, ${accentSoft}, rgba(24,24,27,0.2) 60%)`
+            `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
+            `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${accentBase}, 0.22) 62%, transparent 86% )`,
+            `linear-gradient( to right, rgba(${accentBase}, 0.42) 0%, rgba(${accentBase}, 0) 24% )`,
+            `radial-gradient( 2400px 1200px at 100% 100%, ${accentBR} 0%, transparent 78% )`,
+            `radial-gradient( 2600px 1300px at 50% 100%, rgba(${accentBase}, 0.35) 0%, rgba(${accentBase}, 0.22) 50%, transparent 90% )`,
+            `linear-gradient(to bottom, rgba(${accentBase}, 0) 58%, rgba(${accentBase}, 0.42) 86%, rgba(${accentBase}, 0.62) 100%)`
+          )
+          overlayGradients.push(
+            'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 40%, var(--app-bg, rgba(24,24,27,1)) 80%, var(--app-bg, rgba(24,24,27,1)) 100%)'
           )
           
           // Если посчитали два доминирующих — добавим мягкий линейный градиент между ними
           const domPair: [[number, number, number], [number, number, number]] | null = (() => {
             if (normalizedOverrides?.dominant1 || normalizedOverrides?.dominant2) {
-              const d1 = normalizedOverrides?.dominant1 ?? (dominants ? dominants[0] : null)
-              const d2 = normalizedOverrides?.dominant2 ?? (dominants ? dominants[1] : null)
+              const d1 = normalizedOverrides?.dominant1 ?? (palette.dominants ? palette.dominants[0] : null)
+              const d2 = normalizedOverrides?.dominant2 ?? (palette.dominants ? palette.dominants[1] : null)
               if (d1 && d2) return [d1, d2]
               return null
             }
-            return dominants
+            return palette.dominants
           })()
 
           if (domPair) {
             const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = domPair
             const [ed1r, ed1g, ed1b] = enhanceColor(d1r, d1g, d1b)
             const [ed2r, ed2g, ed2b] = enhanceColor(d2r, d2g, d2b)
-            overlayGradients.push(
-              `linear-gradient(90deg, rgba(${ed1r}, ${ed1g}, ${ed1b}, 0.35), rgba(${ed2r}, ${ed2g}, ${ed2b}, 0.35))`
-            )
             ;(baseStyle as any)["--poster-dominant-1-rgb"] = `${ed1r}, ${ed1g}, ${ed1b}`
             ;(baseStyle as any)["--poster-dominant-2-rgb"] = `${ed2r}, ${ed2g}, ${ed2b}`
           }
@@ -651,7 +648,22 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
           ;(baseStyle as any)["--poster-accent-bl-rgb"] = `${erbl}, ${egbl}, ${ebbl2}`
         }
         
-        baseStyle.backgroundImage = `${overlayGradients.join(', ')}, url(${bgPosterUrl})`
+        const compositeImage = `${overlayGradients.join(', ')}, url(${bgPosterUrl})`
+        const gradientCount = overlayGradients.length
+        const bgHeightStr = `100% 100vh`
+        const urlPos = 'center top'
+        const compositeSize = `${Array(gradientCount).fill('cover').join(', ')}, ${bgHeightStr}`
+        const compositePos = `${Array(gradientCount).fill('center top').join(', ')}, ${urlPos}`
+        ;(baseStyle as any).backgroundImage = compositeImage
+        ;(baseStyle as any).backgroundSize = compositeSize
+        ;(baseStyle as any).backgroundPosition = compositePos
+        ;(baseStyle as any).__gradientLayers = overlayGradients.join(', ')
+        ;(baseStyle as any).__gradientSize = Array(gradientCount).fill('cover').join(', ')
+        ;(baseStyle as any).__gradientPosition = Array(gradientCount).fill('center top').join(', ')
+        ;(baseStyle as any).__compositeImage = compositeImage
+        ;(baseStyle as any).__compositeSize = compositeSize
+        ;(baseStyle as any).__compositePosition = compositePos
+        ;(baseStyle as any).__bgUrl = bgPosterUrl
       } else {
         // Пока цвета не готовы, показываем только темный фон
         baseStyle.backgroundColor = 'rgba(0, 0, 0, 0.98)'
@@ -661,37 +673,40 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
     }
     
     // Если нет bg_poster, используем старую логику
-    if (!colors && !normalizedOverrides) return baseStyle
-    const useTl2 = normalizedOverrides?.accentTl ?? (colors ? colors.tl : null)
-    const useBr2 = normalizedOverrides?.accentBr ?? (colors ? colors.br : null)
-    const useBl2 = normalizedOverrides?.accentBl ?? (colors ? colors.bl : null)
+    if (!palette.corners && !normalizedOverrides) return baseStyle
+    const useTl2 = normalizedOverrides?.accentTl ?? (palette.corners ? palette.corners.tl : null)
+    const useBr2 = normalizedOverrides?.accentBr ?? (palette.corners ? palette.corners.br : null)
+    const useBl2 = normalizedOverrides?.accentBl ?? (palette.corners ? palette.corners.bl : null)
     const [rtl, gtl, btl] = (useTl2 || [0,0,0])
     const [rbr, gbr, bbr] = (useBr2 || [0,0,0])
     const [rbl, gbl, bbl2] = (useBl2 || [0,0,0])
-    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.6)`
-    const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.6)`
-    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.6)`
+    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.75)`
+    const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.9)`
+    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.9)`
     const ar = Math.round((rtl + rbr + rbl) / 3)
     const ag = Math.round((gtl + gbr + gbl) / 3)
     const ab = Math.round((btl + bbr + bbl2) / 3)
-    const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`
+    const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.35)`
     // Базовые слои
     const layers = [
-      `radial-gradient( 1600px 800px at 0% 0%, ${accentTL}, transparent )`,
-      `radial-gradient( 1600px 800px at 0% 100%, ${accentBL}, transparent )`,
-      `radial-gradient( 1600px 800px at 100% 100%, ${accentBR}, transparent )`,
-      `linear-gradient(180deg, ${accentSoft}, rgba(24,24,27,0.4) 60%)`,
+      `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
+      `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 62%, transparent 86% )`,
+      `linear-gradient( to right, rgba(${ar}, ${ag}, ${ab}, 0.42) 0%, rgba(${ar}, ${ag}, ${ab}, 0) 24% )`,
+      `radial-gradient( 2400px 1200px at 100% 100%, ${accentBR} 0%, transparent 78% )`,
+      `radial-gradient( 2600px 1300px at 50% 100%, rgba(${ar}, ${ag}, ${ab}, 0.35) 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 50%, transparent 90% )`,
+      `linear-gradient(to bottom, rgba(${ar}, ${ag}, ${ab}, 0) 58%, rgba(${ar}, ${ag}, ${ab}, 0.42) 86%, rgba(${ar}, ${ag}, ${ab}, 0.62) 100%)`,
+      'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 42%, var(--app-bg, rgba(24,24,27,1)) 82%, var(--app-bg, rgba(24,24,27,1)) 100%)',
     ]
 
     // Добавим доминирующие, если есть
     const domPair2: [[number, number, number], [number, number, number]] | null = (() => {
       if (normalizedOverrides?.dominant1 || normalizedOverrides?.dominant2) {
-        const d1 = normalizedOverrides?.dominant1 ?? (dominants ? dominants[0] : null)
-        const d2 = normalizedOverrides?.dominant2 ?? (dominants ? dominants[1] : null)
+        const d1 = normalizedOverrides?.dominant1 ?? (palette.dominants ? palette.dominants[0] : null)
+        const d2 = normalizedOverrides?.dominant2 ?? (palette.dominants ? palette.dominants[1] : null)
         if (d1 && d2) return [d1, d2]
         return null
       }
-      return dominants
+      return palette.dominants
     })()
 
     if (domPair2) {
@@ -699,9 +714,10 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
       layers.push(`linear-gradient(90deg, rgba(${d1r}, ${d1g}, ${d1b}, 0.35), rgba(${d2r}, ${d2g}, ${d2b}, 0.35))`)
     }
 
+    const bg = layers.join(", ")
     return {
       ...baseStyle,
-      backgroundImage: layers.join(", "),
+      backgroundImage: bg,
       // Убираем backgroundAttachment: "fixed" для мобильных устройств
       backgroundRepeat: "no-repeat, no-repeat, no-repeat, no-repeat",
       // Expose accent color for children via CSS variable
@@ -715,15 +731,65 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
             ["--poster-dominant-2-rgb" as any]: `${domPair2[1][0]}, ${domPair2[1][1]}, ${domPair2[1][2]}`,
           }
         : {}),
+      __gradientLayers: bg,
+      __gradientSize: Array(6).fill('cover').join(', '),
+      __gradientPosition: Array(6).fill('center top').join(', '),
     }
-  }, [colors, bgPosterUrl, dominants, normalizedOverrides])
+  }, [bgPosterUrl, normalizedOverrides, palette])
+
+  const [lastCompImg, setLastCompImg] = React.useState<string | undefined>(undefined)
+  const [lastCompSize, setLastCompSize] = React.useState<string | undefined>(undefined)
+  const [lastCompPos, setLastCompPos] = React.useState<string | undefined>(undefined)
+  const [lastCompUrl, setLastCompUrl] = React.useState<string | undefined>(undefined)
+
+  React.useEffect(() => {
+    const newImg = (style as any).__compositeImage as string | undefined
+    const newSize = (style as any).__compositeSize as string | undefined
+    const newPos = (style as any).__compositePosition as string | undefined
+    const newUrl = (style as any).__bgUrl as string | undefined
+    if (!newImg) return
+    if (!lastCompImg) {
+      setLastCompImg(newImg)
+      setLastCompSize(newSize)
+      setLastCompPos(newPos)
+      setLastCompUrl(newUrl)
+      return
+    }
+    const changed = newImg !== lastCompImg || newSize !== lastCompSize || newPos !== lastCompPos
+    if (changed) {
+      if (newUrl && newUrl !== lastCompUrl) {
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        img.onload = () => {
+          setLastCompImg(newImg)
+          setLastCompSize(newSize)
+          setLastCompPos(newPos)
+          setLastCompUrl(newUrl)
+        }
+        img.onerror = () => {
+          setLastCompImg(newImg)
+          setLastCompSize(newSize)
+          setLastCompPos(newPos)
+          setLastCompUrl(newUrl)
+        }
+        img.src = newUrl
+        return
+      }
+      setLastCompImg(newImg)
+      setLastCompSize(newSize)
+      setLastCompPos(newPos)
+      setLastCompUrl(newUrl)
+      return
+    }
+  }, [(style as any).__compositeImage, (style as any).__compositeSize, (style as any).__compositePosition, (style as any).__bgUrl])
 
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
     if (!bgPosterUrl) return {}
     
     // Показываем мобильный фон только когда цвета готовы или posterUrl отсутствует
-    const shouldShowBackground = !posterUrl || ready
+    const paletteReadyMobile = !!palette.corners || !!normalizedOverrides
+    const shouldShowBackground = !posterUrl || paletteReadyMobile
     
     if (shouldShowBackground) {
       // Получаем полный backgroundImage из style для мобильных
@@ -731,7 +797,7 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
       // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
       const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
       // Для всех градиентов используем cover, для последнего слоя (url) — авто по высоте вьюпорта
-      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}auto 100svh`
+      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
       const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
       
       return {
@@ -762,12 +828,15 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
         ((combinedClassName || '') + (showFixedMobileBackdrop ? ' mobile-fixed' : '')).trim() || undefined
       }
       style={{
-        ...style, 
+        ...style,
+        backgroundImage: lastCompImg || style.backgroundImage,
+        backgroundSize: lastCompSize || (style as any).backgroundSize,
+        backgroundPosition: lastCompPos || (style as any).backgroundPosition,
         ...mobileBackgroundStyle,
-        // Добавляем плавный переход для фона
-        transition: 'background-image 0.5s ease-in-out, background-color 0.5s ease-in-out'
+        transition: 'none'
       }}
     >
+      
       {showFixedMobileBackdrop && (
         <div
           aria-hidden
