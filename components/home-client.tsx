@@ -91,8 +91,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           } catch {}
         }
 
-        const seen = new Set<string>()
-        const pairs: { bg: string; poster: string; colors?: any; logo?: string | null; id?: string | null }[] = []
+        const pairsMap = new Map<string, { bg: string; poster: string; colors?: any; logo?: string | null; id?: string | null }>()
         for (const it of items) {
           const d = it?.details || it
           const id = d?.id || it?.id
@@ -115,17 +114,22 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             bg
           if (typeof bg === "string" && bg.trim().length > 0) {
             const key = bg.trim()
-            if (!seen.has(key)) {
-              seen.add(key)
-              const p = typeof poster === "string" && poster.trim().length > 0 ? poster.trim() : key
-              const colors = (ov as any)?.poster_colors || (ov as any)?.colors || undefined
-              const logo = (ov as any)?.poster_logo ?? null
-              const gid = id ? String(id) : null
-              pairs.push({ bg: key, poster: p, colors, logo, id: gid })
+            const p = typeof poster === "string" && poster.trim().length > 0 ? poster.trim() : key
+            const colors = (ov as any)?.poster_colors || (ov as any)?.colors || undefined
+            const logo = (ov as any)?.poster_logo ?? null
+            const gid = id ? String(id) : null
+            const next = { bg: key, poster: p, colors, logo, id: gid }
+            const prev = pairsMap.get(key)
+            if (!prev) {
+              pairsMap.set(key, next)
+            } else {
+              const shouldReplace = (!!logo && !prev.logo) || (!!colors && !prev.colors)
+              if (shouldReplace) pairsMap.set(key, next)
             }
           }
         }
-        if (!cancelled) setBgPairs(pairs)
+        const resultPairs = Array.from(pairsMap.values())
+        if (!cancelled) setBgPairs(resultPairs)
         if (!cancelled) setBgIndex(0)
       } catch {}
     })()
@@ -155,9 +159,9 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           />
         </div>
         {currentLogo && currentId && (
-          <div className="relative z-30 flex justify-center mt-[22vh] md:mt-[30vh]">
+          <div className="relative z-30 flex justify-center mt-[16vh] md:mt-[24vh]">
             <Link href={`/movie/${currentId}`} className="block">
-              <img src={currentLogo} alt="Логотип" className="max-h-[16vh] md:max-h-[20vh] w-auto" />
+              <img src={currentLogo} alt="Логотип" className="h-[64px] md:h-[96px] w-auto max-w-[80vw]" />
             </Link>
           </div>
         )}
@@ -169,7 +173,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           ) : isSerialsMode ? (
             <SerialsSection />
           ) : (
-            <div className="relative z-20 mt-[28vh] md:mt-[38vh]">
+            <div className={`relative z-20 ${currentLogo && currentId ? 'mt-[6vh] md:mt-[14vh]' : 'mt-[28vh] md:mt-[38vh]'}`}>
               <TrendingSection />
             </div>
           )}

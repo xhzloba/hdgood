@@ -1,5 +1,6 @@
 {
   "68fff9749630419905edf217": {
+    "poster_logo": "/movies/logo/alica-logo.webp",
     "bg_poster": {
       "backdrop": "https://avatars.mds.yandex.net/get-kinopoisk-image/4486362/98395260-5107-436a-bbde-ae9864229590/3840x"
     }
@@ -29,6 +30,7 @@
     }
   },
   "68fea7f1b935d9900a3bce1a": {
+    "poster_logo": "/movies/logo/frankestein-logo.webp",
     "bg_poster": {
       "backdrop": "/movies/frankenstein.webp"
     },
@@ -98,9 +100,16 @@
     }
   },
   "690e6be89cfe849a3323b2de": {
+    "poster_logo": "/movies/logo/odna-iz-mnogix-logo.webp",
     "poster": "/movies/izmnogix-poster.jpg",
     "bg_poster": {
       "backdrop": "/movies/izmnogix.webp"
+    }
+  },
+  "68e43c01704f07b2131a8034": {
+    "poster_logo": "/movies/logo/comeback-logo.webp",
+    "bg_poster": {
+      "backdrop": "/series/comeback.webp"
     }
   }
 }

@@ -92,5 +92,93 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-14T11:43:18.603Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-14T11:46:20.899Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-14T11:46:33.593Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-14T11:49:54.277Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-11-14T11:53:00.852Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-11-14T11:53:37.049Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68e43c01704f07b2131a8034",
+    "timestamp": "2025-11-14T12:05:26.730Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68e43c01704f07b2131a8034",
+    "timestamp": "2025-11-14T12:07:48.482Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-14T12:10:54.584Z",
+    "poster": "/movies/izmnogix-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
