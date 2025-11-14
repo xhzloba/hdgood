@@ -20,6 +20,11 @@ type MovieSliderProps = {
   title?: string;
   viewAllHref?: string;
   viewAllLabel?: string;
+  autoplay?: boolean;
+  autoplayIntervalMs?: number;
+  hoverPause?: boolean;
+  perPageOverride?: number;
+  loop?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -80,13 +85,13 @@ function extractMoviesFromData(data: any): any[] {
   return movies;
 }
 
-export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все" }: MovieSliderProps) {
+export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все", autoplay = false, autoplayIntervalMs = 10000, hoverPause = true, perPageOverride, loop = false }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const perPage = 15;
+  const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
     if (typeof window === "undefined") return 2;
     if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 6;
@@ -177,6 +182,22 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
     };
   }, [carouselApi]);
 
+  const [paused, setPaused] = useState<boolean>(false);
+  useEffect(() => {
+    if (!autoplay) return;
+    const api = carouselApi;
+    if (!api) return;
+    const id = setInterval(() => {
+      if (paused) return;
+      if (loop) {
+        if (api.canScrollNext()) api.scrollNext(); else api.scrollTo(0);
+      } else {
+        if (api.canScrollNext()) api.scrollNext();
+      }
+    }, Math.max(1000, autoplayIntervalMs));
+    return () => clearInterval(id);
+  }, [autoplay, carouselApi, paused, loop, autoplayIntervalMs]);
+
   useEffect(() => {
     const compute = () => setItemsPerView(getItemsPerView());
     compute();
@@ -255,8 +276,8 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
           </div>
         </div>
       ) : (
-        <div className="relative">
-          <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
+        <div className="relative" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
+          <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem

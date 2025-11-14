@@ -2,6 +2,7 @@
 
 import MovieSlider from "./movie-slider"
 import FranchiseSlider from "./franchise-slider"
+import { APP_SETTINGS } from "@/lib/settings"
 
 interface TrendingItem {
   title: string
@@ -34,7 +35,19 @@ export function TrendingSection() {
         <div className="space-y-6">
           {TRENDING_SECTIONS.map((section) => (
             <div key={section.title} className="space-y-3">
-              <MovieSlider url={section.playlist_url} title={section.title} />
+              {section.title === "В тренде" ? (
+                <MovieSlider
+                  url={section.playlist_url}
+                  title={section.title}
+                  autoplay={APP_SETTINGS.slider.trending.autoplay}
+                  autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
+                  hoverPause={APP_SETTINGS.slider.trending.hoverPause}
+                  perPageOverride={APP_SETTINGS.slider.trending.perPage}
+                  loop={APP_SETTINGS.slider.trending.loop}
+                />
+              ) : (
+                <MovieSlider url={section.playlist_url} title={section.title} />
+              )}
               {/* Баннер франшизы сразу после слайдера "В тренде" */}
               {section.title === "В тренде" && (
                 <div className="mt-12 md:mt-12">

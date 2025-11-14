@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import NProgress from "nprogress"
 import { PosterBackground } from "@/components/poster-background"
+import { APP_SETTINGS } from "@/lib/settings"
 
 type HomeClientProps = {
   initialSelectedTitle?: string
@@ -129,7 +130,10 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           }
         }
         const resultPairs = Array.from(pairsMap.values())
-        if (!cancelled) setBgPairs(resultPairs)
+        const finalPairs = APP_SETTINGS.backdrop.showOnlyTopTrendingMovie
+          ? resultPairs.slice(0, Math.max(1, APP_SETTINGS.backdrop.topTrendingCount))
+          : resultPairs
+        if (!cancelled) setBgPairs(finalPairs)
         if (!cancelled) setBgIndex(0)
       } catch {}
     })()
@@ -142,12 +146,12 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
     if (bgPairs.length === 0) return
     const id = setInterval(() => {
       setBgIndex((i) => (i + 1) % bgPairs.length)
-    }, 9000)
+    }, Math.max(1000, (APP_SETTINGS.backdrop.rotationIntervalSeconds ?? 10) * 1000))
     return () => clearInterval(id)
   }, [bgPairs])
 
   return (
-    <PosterBackground posterUrl={currentPoster} bgPosterUrl={currentBg} colorOverrides={currentColors} className="min-h-[100dvh] min-h-screen">
+    <PosterBackground posterUrl={currentPoster} bgPosterUrl={currentBg} colorOverrides={currentColors} disableMobileBackdrop className="min-h-[100dvh] min-h-screen">
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
         <div className="mb-4 hidden md:block">
           <HeaderCategories
@@ -158,10 +162,10 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             onActiveIndexChange={handleActiveIndexChange}
           />
         </div>
-        <div className="relative z-30 flex justify-center mt-[14vh] md:mt-[22vh] h-[64px] md:h-[96px]">
+        <div className="relative z-30 hidden md:flex justify-center mt-[22vh] h-[96px]">
           {currentLogo && currentId ? (
             <Link href={`/movie/${currentId}`} className="block">
-              <img src={currentLogo} alt="Логотип" className="h-[64px] md:h-[96px] w-auto max-w-[80vw]" />
+              <img src={currentLogo} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
             </Link>
           ) : null}
         </div>
@@ -173,7 +177,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           ) : isSerialsMode ? (
             <SerialsSection />
           ) : (
-            <div className={`relative z-20 mt-[6vh] md:mt-[14vh]`}>
+            <div className={`relative z-20 mt-[4vh] md:mt-[14vh]`}>
               <TrendingSection />
             </div>
           )}
