@@ -158,13 +158,13 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             onActiveIndexChange={handleActiveIndexChange}
           />
         </div>
-        {currentLogo && currentId && (
-          <div className="relative z-30 flex justify-center mt-[16vh] md:mt-[24vh]">
+        <div className="relative z-30 flex justify-center mt-[14vh] md:mt-[22vh] h-[64px] md:h-[96px]">
+          {currentLogo && currentId ? (
             <Link href={`/movie/${currentId}`} className="block">
               <img src={currentLogo} alt="Логотип" className="h-[64px] md:h-[96px] w-auto max-w-[80vw]" />
             </Link>
-          </div>
-        )}
+          ) : null}
+        </div>
         <section>
           {isUhdMode ? (
             <UhdSection />
@@ -173,7 +173,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           ) : isSerialsMode ? (
             <SerialsSection />
           ) : (
-            <div className={`relative z-20 ${currentLogo && currentId ? 'mt-[6vh] md:mt-[14vh]' : 'mt-[28vh] md:mt-[38vh]'}`}>
+            <div className={`relative z-20 mt-[6vh] md:mt-[14vh]`}>
               <TrendingSection />
             </div>
           )}
