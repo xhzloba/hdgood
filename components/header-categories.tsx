@@ -194,7 +194,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 className={[
                   "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isHomeActive
-                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
@@ -209,7 +209,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 className={[
                   "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isMoviesTabActive
-                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
@@ -224,7 +224,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 className={[
                   "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isSerialsTabActive
-                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
@@ -239,7 +239,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 className={[
                   "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isUhdTabActive
-                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
@@ -254,7 +254,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 className={[
                   "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isSearchActive
-                    ? "bg-zinc-100 text-зinc-900 h-10 shadow-[0_20px_40px_rgба(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
