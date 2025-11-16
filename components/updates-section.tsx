@@ -153,7 +153,7 @@ export function UpdatesSection() {
             {Array.from({ length: Math.min(15, columns * 3) }).map((_, idx) => (
               <div
                 key={`skeleton-${idx}`}
-                className="group block bg-zinc-900/60 border-2 md:border border-transparent overflow-hidden rounded-sm"
+                className="group block bg-zinc-900/60 overflow-hidden rounded-sm"
               >
                 <div className="aspect-[2/3] bg-zinc-950">
                   <Skeleton className="w-full h-full" />
@@ -180,7 +180,7 @@ export function UpdatesSection() {
                 return (
                   <div
                     key={`${item.id}-${item.timestamp}`}
-                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
                   >
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
                       {poster ? (

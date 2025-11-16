@@ -227,10 +227,7 @@ export function MovieGrid({ url }: MovieGridProps) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {Array.from({ length: skeletonCount }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-zinc-900/60 border-2 md:border border-zinc-800/50 rounded-sm overflow-hidden"
-          >
+          <div key={i} className="bg-zinc-900/60 rounded-sm overflow-hidden">
             <div className="aspect-[2/3] bg-zinc-950">
               <Skeleton className="w-full h-full" />
             </div>
@@ -294,7 +291,7 @@ export function MovieGrid({ url }: MovieGridProps) {
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}
-            className="group block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            className="group block bg-zinc-900/60 hover:bg-zinc-800/80 outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
               {movie.poster ? (

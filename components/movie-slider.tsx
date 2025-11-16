@@ -248,7 +248,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Ð
                   key={i}
                   className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
                 >
-                  <div className="block bg-zinc-900/60 border-2 md:border border-zinc-800/50 overflow-hidden rounded-sm">
+                  <div className="block bg-zinc-900/60 overflow-hidden rounded-sm">
                     <div className="aspect-[2/3] bg-zinc-950">
                       <Skeleton className="w-full h-full" />
                     </div>
@@ -286,7 +286,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Ð
                 >
                   <Link
                     href={`/movie/${movie.id}`}
-                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 border-2 md:border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
+                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
                     onClick={(e) => {
                       const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
                       if (api?.clickAllowed && !api.clickAllowed()) {
