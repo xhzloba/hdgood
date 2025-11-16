@@ -124,5 +124,11 @@
       "backdrop": "https://images.kinorium.com/movie/backstage/11046576/w1500_53641603.jpg"
     },
     "poster_logo": "https://images.kinorium.com/movie/plogo/11046576/w1500_55390653.png"
+  },
+  "68d5bcbdc8c62006017914a8": {
+    "bg_poster": {
+      "backdrop": "https://images.kinorium.com/movie/poster/2021785/w1500_55267492.jpg"
+    },
+    "poster_logo": "https://images.kinorium.com/movie/plogo/2021785/w1500_55215314.png"
   }
 }
