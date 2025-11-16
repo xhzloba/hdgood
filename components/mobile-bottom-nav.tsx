@@ -27,9 +27,8 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-zinc-900/80 backdrop-blur-sm border-t border-zinc-800/50 rounded-t-[50px] shadow-[0_-10px_28px_rgba(0,0,0,0.45)]">
-        <div className="mx-auto max-w-7xl px-4 py-2">
-          <div className="flex items-center justify-between">
+      <nav className="md:hidden fixed bottom-4 inset-x-0 z-50 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-zinc-900/80 px-3 py-1.5 border border-zinc-800/70 shadow-[0_18px_45px_rgba(0,0,0,0.9)] backdrop-blur-sm">
           <button
             type="button"
             aria-label="Главная"
@@ -40,91 +39,115 @@ export default function MobileBottomNav() {
                 router.push(href)
               }
             }}
-            className={`${isHome ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
+            className={[
+              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              isHome
+                ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
+                : "text-zinc-300/90 hover:text-white",
+            ].join(" ")}
           >
-            <IconHome className="w-6 h-6" stroke={1.5} />
+            <IconHome className="w-5 h-5" stroke={1.6} />
           </button>
-            <button
-              type="button"
-              aria-label="Поиск"
-              onClick={() => {
-                const href = "/search"
+          <button
+            type="button"
+            aria-label="Поиск"
+            onClick={() => {
+              const href = "/search"
+              if (pathname !== href) {
+                NProgress.start()
+                router.push(href)
+              }
+            }}
+            className={[
+              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              isSearchMode
+                ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
+                : "text-zinc-300/90 hover:text-white",
+            ].join(" ")}
+          >
+            <IconSearch className="w-5 h-5" stroke={1.6} />
+          </button>
+          <button
+            type="button"
+            aria-label="Фильмы"
+            onClick={() => {
+              const cat = CATEGORIES.find((c) => c.title === "Фильмы")
+              if (cat?.route) {
+                const href = cat.route
                 if (pathname !== href) {
                   NProgress.start()
                   router.push(href)
                 }
-              }}
-              className={`${isSearchMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconSearch className="w-6 h-6" stroke={1.5} />
-            </button>
-            <button
-              type="button"
-              aria-label="Фильмы"
-              onClick={() => {
-                const cat = CATEGORIES.find((c) => c.title === "Фильмы")
-                if (cat?.route) {
-                  const href = cat.route
-                  if (pathname !== href) {
-                    NProgress.start()
-                    router.push(href)
-                  }
+              }
+            }}
+            className={[
+              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              isMoviesMode
+                ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
+                : "text-zinc-300/90 hover:text-white",
+            ].join(" ")}
+          >
+            <IconMovie className="w-5 h-5" stroke={1.6} />
+          </button>
+          <button
+            type="button"
+            aria-label="Сериалы"
+            onClick={() => {
+              const cat = CATEGORIES.find((c) => c.title === "Сериалы")
+              if (cat?.route) {
+                const href = cat.route
+                if (pathname !== href) {
+                  NProgress.start()
+                  router.push(href)
                 }
-              }}
-              className={`${isMoviesMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconMovie className="w-6 h-6" stroke={1.5} />
-            </button>
-            <button
-              type="button"
-              aria-label="Сериалы"
-              onClick={() => {
-                const cat = CATEGORIES.find((c) => c.title === "Сериалы")
-                if (cat?.route) {
-                  const href = cat.route
-                  if (pathname !== href) {
-                    NProgress.start()
-                    router.push(href)
-                  }
+              }
+            }}
+            className={[
+              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              isSerialsMode
+                ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
+                : "text-zinc-300/90 hover:text-white",
+            ].join(" ")}
+          >
+            <IconDeviceTv className="w-5 h-5" stroke={1.6} />
+          </button>
+          <button
+            type="button"
+            aria-label="4K UHD"
+            onClick={() => {
+              const cat = CATEGORIES.find((c) => c.title === "4K UHD")
+              if (cat?.route) {
+                const href = cat.route
+                if (pathname !== href) {
+                  NProgress.start()
+                  router.push(href)
                 }
-              }}
-              className={`${isSerialsMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconDeviceTv className="w-6 h-6" stroke={1.5} />
-            </button>
-            <button
-              type="button"
-              aria-label="4K UHD"
-              onClick={() => {
-                const cat = CATEGORIES.find((c) => c.title === "4K UHD")
-                if (cat?.route) {
-                  const href = cat.route
-                  if (pathname !== href) {
-                    NProgress.start()
-                    router.push(href)
-                  }
-                }
-              }}
-              className={`${isUhdMode ? "text-white" : "text-zinc-300"} flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconBadge4k className="w-6 h-6" stroke={1.5} />
-            </button>
-            <button
-              type="button"
-              aria-label="Избранное"
-              className={`text-zinc-300 flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconHeart className="w-6 h-6" stroke={1.5} />
-            </button>
-            <button
-              type="button"
-              aria-label="Ещё"
-              onClick={() => setIsMoreOpen(true)}
-              className={`text-zinc-300 flex items-center justify-center w-12 h-12 rounded-md transition-colors`}
-            >
-              <IconCategory className="w-6 h-6" stroke={1.5} />
-            </button>
-          </div>
+              }
+            }}
+            className={[
+              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              isUhdMode
+                ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
+                : "text-zinc-300/90 hover:text-white",
+            ].join(" ")}
+          >
+            <IconBadge4k className="w-5 h-5" stroke={1.6} />
+          </button>
+          <button
+            type="button"
+            aria-label="Избранное"
+            className="inline-flex items-center justify-center h-10 w-10 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
+          >
+            <IconHeart className="w-5 h-5" stroke={1.6} />
+          </button>
+          <button
+            type="button"
+            aria-label="Ещё"
+            onClick={() => setIsMoreOpen(true)}
+            className="inline-flex items-center justify-center h-10 w-10 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
+          >
+            <IconCategory className="w-5 h-5" stroke={1.6} />
+          </button>
         </div>
       </nav>
       <Drawer open={isMoreOpen} onOpenChange={(o) => { setIsMoreOpen(o); if (!o) setMoreSelectedIndex(null) }}>
