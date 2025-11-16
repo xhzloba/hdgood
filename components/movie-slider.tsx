@@ -139,7 +139,8 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
   const display = movies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
-  const [overridesMap, setOverridesMap] = useState<Record<string, any>>({});
+  const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({ ...overridesCacheRef }));
   const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
   const [failedSrcById, setFailedSrcById] = useState<Record<string, string>>({});
 
@@ -154,8 +155,12 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
           headers: { Accept: "application/json" },
         });
         if (!res.ok) return;
-        const data = await res.json();
-        setOverridesMap(data || {});
+        const data = (await res.json()) || {};
+        setOverridesMap((prev) => {
+          const next = { ...prev, ...data };
+          Object.assign(overridesCacheRef, next);
+          return next;
+        });
       } catch {}
     })();
     return () => controller.abort();
@@ -337,7 +342,7 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
                       {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
                         <img
-                          key={movie.poster || "placeholder"}
+                          key={String(movie.id)}
                           src={movie.poster || "/placeholder.svg"}
                           alt={movie.title || "Постер"}
                           className={`w-full h-full object-cover transition-opacity duration-500 ${

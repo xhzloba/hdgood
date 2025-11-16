@@ -101,8 +101,7 @@ function extractMoviesFromData(data: any): any[] {
 
 // Бейдж качества: белый фон, чёрный текст, нейтральный бело‑серый бордер
 
-// Кеш overrides на уровне модуля, переживает размонтирование компонента
-const overridesCache: Record<string, any> = {};
+const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
 
 export function MovieGrid({ url }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -178,7 +177,7 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   // Batch-load overrides for current display ids.
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>(
-    () => ({ ...overridesCache })
+    () => ({ ...overridesCacheRef })
   );
   const idsString = useMemo(
     () => (display || []).map((m: any) => String(m.id)).join(","),
@@ -202,7 +201,7 @@ export function MovieGrid({ url }: MovieGridProps) {
         const data = (await res.json()) || {};
         setOverridesMap((prev) => {
           const next = { ...prev, ...data };
-          Object.assign(overridesCache, next);
+          Object.assign(overridesCacheRef, next);
           return next;
         });
       } catch {}

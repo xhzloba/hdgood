@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import NProgress from "nprogress"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
@@ -140,7 +139,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
       initializedRef.current = true
     }
     animateTo({ left: currRect.left - cr.left, width: currRect.width }, { left: tgtRect.left - cr.left, width: tgtRect.width })
-    try { NProgress.start() } catch {}
+    
     suppressNextAnimationRef.current = true
     pendingPathRef.current = href
     setTimeout(() => router.push(href), ANIM_DURATION)
@@ -221,10 +220,9 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     return () => window.removeEventListener("resize", update)
   }, [pathname, isHomeActive, isMoviesTabActive, isSerialsTabActive, isUhdTabActive, isSearchActive])
 
-  // Останавливаем верхний лоадер и подавляем первую анимацию после смены пути
+  // Подавляем первую анимацию после смены пути
   useEffect(() => {
     suppressNextAnimationRef.current = true
-    NProgress.done()
   }, [pathname])
 
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -302,7 +300,6 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                   onActiveIndexChange?.(idx)
                   if (cat.route) {
                     // Если для категории есть маршрут — навигируем туда
-                    NProgress.start()
                     router.push(cat.route)
                   } else {
                     // Иначе — локально выбираем категорию (главная/нестатичная)
@@ -339,9 +336,6 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 href="/"
                 aria-current={isHomeActive ? "page" : undefined}
                 onClick={(e) => {
-                  setStateActiveIndex(null)
-                  onActiveIndexChange?.(null)
-                  onSelect?.(null, null)
                   onTabClick("/", e)
                 }}
                 className={[

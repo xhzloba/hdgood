@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import NProgress from "nprogress"
 import { IconHome, IconSearch, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
@@ -23,6 +22,7 @@ export default function MobileBottomNav() {
 
   const isDetailPage = pathname?.startsWith("/movie/")
 
+
   if (isDetailPage) return null
 
   return (
@@ -35,7 +35,6 @@ export default function MobileBottomNav() {
             onClick={() => {
               const href = "/"
               if (pathname !== href) {
-                NProgress.start()
                 router.push(href)
               }
             }}
@@ -54,7 +53,6 @@ export default function MobileBottomNav() {
             onClick={() => {
               const href = "/search"
               if (pathname !== href) {
-                NProgress.start()
                 router.push(href)
               }
             }}
@@ -75,7 +73,6 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
-                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -97,7 +94,6 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
-                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -119,7 +115,6 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
-                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -165,7 +160,6 @@ export default function MobileBottomNav() {
                       const href = cat.route
                       setIsMoreOpen(false)
                       if (pathname !== href) {
-                        NProgress.start()
                         router.push(href)
                       }
                     } else {

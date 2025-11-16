@@ -10,7 +10,6 @@ import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import NProgress from "nprogress"
 import { PosterBackground } from "@/components/poster-background"
 import { APP_SETTINGS } from "@/lib/settings"
 import { getCountryLabel } from "@/lib/country-flags"
@@ -19,9 +18,17 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 type HomeClientProps = {
   initialSelectedTitle?: string
+  initialOverridesMap?: Record<string, any>
 }
 
-export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
+export default function HomeClient({ initialSelectedTitle, initialOverridesMap }: HomeClientProps) {
+  try {
+    if (initialOverridesMap && Object.keys(initialOverridesMap).length > 0) {
+      const ref: any = (globalThis as any)
+      const cache = (ref.__movieOverridesCache ||= {})
+      Object.assign(cache, initialOverridesMap)
+    }
+  } catch {}
   const pathname = usePathname()
   const [selected, setSelected] = useState<Category | null>(() => {
     if (!initialSelectedTitle) return null
@@ -160,6 +167,13 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
             })
             if (or.ok) {
               overridesMap = (await or.json()) || {}
+              try {
+                const ref: any = (globalThis as any)
+                if (ref) {
+                  const cache = (ref.__movieOverridesCache ||= {})
+                  Object.assign(cache, overridesMap)
+                }
+              } catch {}
             }
           } catch {}
         }
@@ -168,7 +182,9 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
         for (const it of items) {
           const d = it?.details || it
           const id = d?.id || it?.id
-          const ov = id ? overridesMap[String(id)] || null : null
+          const ov = id
+            ? (overridesMap[String(id)] ?? ((globalThis as any).__movieOverridesCache?.[String(id)] ?? null))
+            : null
           const bg =
             (ov?.backdrop as string) ||
             (ov?.bg_poster?.backdrop as string) ||

@@ -438,6 +438,11 @@ export default function MoviePage({
         if (!cancelled) {
           setOverrideData(data);
           movieOverrideCache[id] = data;
+          try {
+            const ref: any = (globalThis as any)
+            const cache = (ref.__movieOverridesCache ||= {})
+            cache[id] = data
+          } catch {}
         }
       } catch {
         if (!cancelled) {
