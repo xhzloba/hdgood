@@ -70,6 +70,19 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
     try {
       const ss = typeof window !== "undefined" ? window.sessionStorage : null
       if (!ss) return
+      const raw = ss.getItem("homeBackdrop:lastMeta")
+      if (!raw) return
+      const data = JSON.parse(raw)
+      if (data && data.meta) {
+        setMeta(data.meta)
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    try {
+      const ss = typeof window !== "undefined" ? window.sessionStorage : null
+      if (!ss) return
       const src = ss.getItem("homeBackdrop:lastLogoSrc")
       const id = ss.getItem("homeBackdrop:lastLogoId")
       if (src && id) {
@@ -82,7 +95,21 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   useEffect(() => {
     const src = currentLogo
     const id = currentId
-    if (!src || !id) return
+    if (!id) return
+    if (!src) {
+      if (logoId !== id) {
+        setLogoSrc(null)
+        setLogoId(null)
+        try {
+          const ss = typeof window !== "undefined" ? window.sessionStorage : null
+          if (ss) {
+            ss.removeItem("homeBackdrop:lastLogoSrc")
+            ss.removeItem("homeBackdrop:lastLogoId")
+          }
+        } catch {}
+      }
+      return
+    }
     if (src === logoSrc && id === logoId) return
     let cancelled = false
     const img = new Image()
@@ -335,12 +362,15 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   }, [bgIndex, currentBg])
 
   useEffect(() => {
-    if (!currentId) {
-      setMeta(null)
-      return
-    }
+    if (!currentId) return
     const m = metaMap[currentId]
-    setMeta(m ?? null)
+    if (m) {
+      setMeta(m)
+      try {
+        const ss = typeof window !== "undefined" ? window.sessionStorage : null
+        if (ss) ss.setItem("homeBackdrop:lastMeta", JSON.stringify({ id: currentId, meta: m }))
+      } catch {}
+    }
   }, [currentId, metaMap])
 
   return (
