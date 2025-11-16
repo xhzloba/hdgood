@@ -36,6 +36,8 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   // const currentColors = current ? current.colors : null
   const currentLogo = current ? current.logo ?? null : null
   const currentId = current ? current.id ?? null : null
+  const [logoSrc, setLogoSrc] = useState<string | null>(null)
+  const [logoId, setLogoId] = useState<string | null>(null)
   const [meta, setMeta] = useState<{ ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null } | null>(null)
   const [metaMap, setMetaMap] = useState<Record<string, { ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null }>>({})
   
@@ -63,6 +65,45 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   useEffect(() => {
     NProgress.done()
   }, [pathname])
+
+  useEffect(() => {
+    try {
+      const ss = typeof window !== "undefined" ? window.sessionStorage : null
+      if (!ss) return
+      const src = ss.getItem("homeBackdrop:lastLogoSrc")
+      const id = ss.getItem("homeBackdrop:lastLogoId")
+      if (src && id) {
+        setLogoSrc(src)
+        setLogoId(id)
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    const src = currentLogo
+    const id = currentId
+    if (!src || !id) return
+    if (src === logoSrc && id === logoId) return
+    let cancelled = false
+    const img = new Image()
+    img.onload = () => {
+      if (cancelled) return
+      setLogoSrc(src)
+      setLogoId(id)
+      try {
+        const ss = typeof window !== "undefined" ? window.sessionStorage : null
+        if (ss) {
+          ss.setItem("homeBackdrop:lastLogoSrc", src)
+          ss.setItem("homeBackdrop:lastLogoId", id)
+        }
+      } catch {}
+    }
+    img.onerror = () => {}
+    img.src = src
+    return () => {
+      cancelled = true
+    }
+  }, [currentLogo, currentId, logoSrc, logoId])
 
   useEffect(() => {
     let cancelled = false
@@ -140,7 +181,23 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           ? resultPairs.slice(0, Math.max(1, APP_SETTINGS.backdrop.topTrendingCount))
           : resultPairs
         if (!cancelled) setBgPairs(finalPairs)
-        if (!cancelled) setBgIndex(0)
+        if (!cancelled) {
+          let idx = 0
+          try {
+            const ss = typeof window !== "undefined" ? window.sessionStorage : null
+            const lastKey = ss ? ss.getItem("homeBackdrop:lastKey") : null
+            const lastIndexRaw = ss ? ss.getItem("homeBackdrop:lastIndex") : null
+            const lastIndex = lastIndexRaw ? parseInt(lastIndexRaw, 10) : 0
+            if (lastKey) {
+              const found = finalPairs.findIndex((p) => p.bg === lastKey)
+              if (found >= 0) idx = found
+              else if (Number.isFinite(lastIndex) && lastIndex >= 0 && lastIndex < finalPairs.length) idx = lastIndex
+            } else if (Number.isFinite(lastIndex) && lastIndex >= 0 && lastIndex < finalPairs.length) {
+              idx = lastIndex
+            }
+          } catch {}
+          setBgIndex(idx)
+        }
         const idsToPrefetch = finalPairs.map((p) => p.id).filter((v): v is string => !!v)
         if (idsToPrefetch.length > 0 && !cancelled) {
           const nextMap: Record<string, { ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null }> = {}
@@ -232,11 +289,50 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
 
   useEffect(() => {
     if (bgPairs.length === 0) return
-    const id = setInterval(() => {
-      setBgIndex((i) => (i + 1) % bgPairs.length)
-    }, Math.max(1000, (APP_SETTINGS.backdrop.rotationIntervalSeconds ?? 10) * 1000))
-    return () => clearInterval(id)
+    const intervalMs = Math.max(1000, (APP_SETTINGS.backdrop.rotationIntervalSeconds ?? 10) * 1000)
+    let mounted = true
+    const ss = typeof window !== "undefined" ? window.sessionStorage : null
+    const lastTickAtRaw = ss ? ss.getItem("homeBackdrop:lastTickAt") : null
+    const lastTickAt = lastTickAtRaw ? parseInt(lastTickAtRaw, 10) : 0
+    const now = Date.now()
+    const elapsed = lastTickAt ? Math.max(0, now - lastTickAt) : 0
+    const delay = Math.min(intervalMs, Math.max(100, intervalMs - elapsed))
+    let timeoutId: any = null
+    let intervalId: any = null
+    const startInterval = () => {
+      intervalId = setInterval(() => {
+        setBgIndex((i) => {
+          const next = (i + 1) % bgPairs.length
+          try { if (ss) ss.setItem("homeBackdrop:lastTickAt", String(Date.now())) } catch {}
+          return next
+        })
+      }, intervalMs)
+    }
+    timeoutId = setTimeout(() => {
+      if (!mounted) return
+      setBgIndex((i) => {
+        const next = (i + 1) % bgPairs.length
+        try { if (ss) ss.setItem("homeBackdrop:lastTickAt", String(Date.now())) } catch {}
+        return next
+      })
+      startInterval()
+    }, delay)
+    return () => {
+      mounted = false
+      if (timeoutId) clearTimeout(timeoutId)
+      if (intervalId) clearInterval(intervalId)
+    }
   }, [bgPairs])
+
+  useEffect(() => {
+    try {
+      const ss = typeof window !== "undefined" ? window.sessionStorage : null
+      if (!ss) return
+      const key = currentBg || ""
+      ss.setItem("homeBackdrop:lastIndex", String(bgIndex))
+      if (key) ss.setItem("homeBackdrop:lastKey", key)
+    } catch {}
+  }, [bgIndex, currentBg])
 
   useEffect(() => {
     if (!currentId) {
@@ -267,9 +363,9 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           />
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-[22vh] h-[96px]">
-          {currentLogo && currentId ? (
-            <Link href={`/movie/${currentId}`} className="block">
-              <img src={currentLogo} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
+          {logoSrc && logoId ? (
+            <Link href={`/movie/${logoId}`} className="block">
+              <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
             </Link>
           ) : null}
         </div>
