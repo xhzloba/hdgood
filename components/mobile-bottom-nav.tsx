@@ -27,8 +27,8 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-4 inset-x-0 z-50 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-zinc-900/80 px-3 py-1.5 border border-zinc-800/70 shadow-[0_18px_45px_rgba(0,0,0,0.9)] backdrop-blur-sm">
+      <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-zinc-900/80 px-3 py-2 border border-zinc-800/70 shadow-[0_18px_45px_rgba(0,0,0,0.9)] backdrop-blur-sm">
           <button
             type="button"
             aria-label="Главная"
@@ -40,7 +40,7 @@ export default function MobileBottomNav() {
               }
             }}
             className={[
-              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              "inline-flex items-center justify-center h-11 w-11 rounded-full transition-all duration-200",
               isHome
                 ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
                 : "text-zinc-300/90 hover:text-white",
@@ -59,7 +59,7 @@ export default function MobileBottomNav() {
               }
             }}
             className={[
-              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              "inline-flex items-center justify-center h-11 w-11 rounded-full transition-all duration-200",
               isSearchMode
                 ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
                 : "text-zinc-300/90 hover:text-white",
@@ -81,7 +81,7 @@ export default function MobileBottomNav() {
               }
             }}
             className={[
-              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              "inline-flex items-center justify-center h-11 w-11 rounded-full transition-all duration-200",
               isMoviesMode
                 ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
                 : "text-zinc-300/90 hover:text-white",
@@ -103,7 +103,7 @@ export default function MobileBottomNav() {
               }
             }}
             className={[
-              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              "inline-flex items-center justify-center h-11 w-11 rounded-full transition-all duration-200",
               isSerialsMode
                 ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
                 : "text-zinc-300/90 hover:text-white",
@@ -125,7 +125,7 @@ export default function MobileBottomNav() {
               }
             }}
             className={[
-              "inline-flex items-center justify-center h-10 w-10 rounded-full transition-all duration-200",
+              "inline-flex items-center justify-center h-11 w-11 rounded-full transition-all duration-200",
               isUhdMode
                 ? "bg-zinc-100 text-zinc-900 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[3px] scale-[1.08]"
                 : "text-zinc-300/90 hover:text-white",
@@ -136,7 +136,7 @@ export default function MobileBottomNav() {
           <button
             type="button"
             aria-label="Избранное"
-            className="inline-flex items-center justify-center h-10 w-10 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
           >
             <IconHeart className="w-5 h-5" stroke={1.6} />
           </button>
@@ -144,7 +144,7 @@ export default function MobileBottomNav() {
             type="button"
             aria-label="Ещё"
             onClick={() => setIsMoreOpen(true)}
-            className="inline-flex items-center justify-center h-10 w-10 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-full text-zinc-300/90 hover:text-white transition-all duration-200"
           >
             <IconCategory className="w-5 h-5" stroke={1.6} />
           </button>
