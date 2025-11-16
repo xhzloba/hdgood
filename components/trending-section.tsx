@@ -43,7 +43,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                 <MovieSlider
                   url={section.playlist_url}
                   title={section.title}
-                  autoplay={APP_SETTINGS.slider.trending.autoplay}
+                  autoplay={APP_SETTINGS.slider.trending.syncWithBackdrop ? APP_SETTINGS.slider.trending.autoplay : false}
                   autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
                   hoverPause={APP_SETTINGS.slider.trending.hoverPause}
                   perPageOverride={APP_SETTINGS.slider.trending.perPage}
