@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import NProgress from "nprogress"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
@@ -80,8 +80,151 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   const isSerialsTabActive = pathname.startsWith("/serials")
   const isUhdTabActive = pathname.startsWith("/uhd")
 
-  // Останавливаем верхний лоадер после завершения навигации
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false })
+  const EXTRA_Y = 10
+  const EXTRA_X = 2
+  const animIdRef = useRef<number | null>(null)
+  const baselineRef = useRef<{ top: number; height: number }>({ top: 0, height: 0 })
+  const initializedRef = useRef(false)
+  const ANIM_DURATION = 900
+  const suppressNextAnimationRef = useRef(false)
+  const pendingPathRef = useRef<string | null>(null)
+  const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2)
+  const animateTo = (from: { left: number; width: number }, to: { left: number; width: number }) => {
+    if (animIdRef.current) cancelAnimationFrame(animIdRef.current)
+    const startTime = performance.now()
+    const duration = ANIM_DURATION
+    const { top, height } = baselineRef.current
+    const fromLeft = from.left - EXTRA_X / 2
+    const toLeft = to.left - EXTRA_X / 2
+    const fromWidth = from.width + EXTRA_X
+    const toWidth = to.width + EXTRA_X
+    setIndicator({ left: fromLeft, top, width: fromWidth, height, visible: true })
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startTime) / duration)
+      const p = easeInOutCubic(t)
+      setIndicator({
+        left: fromLeft + (toLeft - fromLeft) * p,
+        top,
+        width: fromWidth + (toWidth - fromWidth) * p,
+        height,
+        visible: true,
+      })
+      if (t < 1) animIdRef.current = requestAnimationFrame(step)
+      else animIdRef.current = null
+    }
+    animIdRef.current = requestAnimationFrame(step)
+  }
+
+  const onTabClick = (href: string, e: any) => {
+    e.preventDefault()
+    const c = containerRef.current
+    if (!c) {
+      router.push(href)
+      return
+    }
+    const currentEl = c.querySelector('a[aria-current="page"]') as HTMLElement | null
+    const targetEl = e.currentTarget as HTMLElement
+    const cr = c.getBoundingClientRect()
+    const currRect = (currentEl ?? targetEl).getBoundingClientRect()
+    const tgtRect = targetEl.getBoundingClientRect()
+    const { top, height } = baselineRef.current
+    try {
+      ;(window as any).__headerIndicatorPrev = { left: currRect.left - cr.left, width: currRect.width, top, height }
+      ;(window as any).__headerIndicatorPrevAnimated = true
+      ;(window as any).__headerIndicatorPrevPath = href
+    } catch {}
+    if (!initializedRef.current) {
+      setIndicator({ left: currRect.left - cr.left - EXTRA_X / 2, top, width: currRect.width + EXTRA_X, height, visible: true })
+      initializedRef.current = true
+    }
+    animateTo({ left: currRect.left - cr.left, width: currRect.width }, { left: tgtRect.left - cr.left, width: tgtRect.width })
+    try { NProgress.start() } catch {}
+    suppressNextAnimationRef.current = true
+    pendingPathRef.current = href
+    setTimeout(() => router.push(href), ANIM_DURATION)
+  }
+
+  const moveIndicatorToEl = (el: HTMLElement | null) => {
+    const c = containerRef.current
+    if (!c || !el) return
+    const cr = c.getBoundingClientRect()
+    const ar = el.getBoundingClientRect()
+    const from = { left: indicator.left, width: indicator.width }
+    const to = { left: ar.left - cr.left, width: ar.width }
+    animateTo(from, to)
+  }
+
   useEffect(() => {
+    const update = () => {
+      const c = containerRef.current
+      if (!c) return
+      const sampleEl = c.querySelector('a') as HTMLElement | null
+      if (sampleEl) {
+        const cr = c.getBoundingClientRect()
+        const sr = sampleEl.getBoundingClientRect()
+        const h = sr.height + EXTRA_Y
+        const t = (cr.height - h) / 2
+        baselineRef.current = { top: t, height: h }
+      }
+      const activeEl = c.querySelector('a[aria-current="page"]') as HTMLElement | null
+      if (!activeEl) {
+        setIndicator((p) => ({ ...p, visible: false }))
+        return
+      }
+      const cr = c.getBoundingClientRect()
+      const ar = activeEl.getBoundingClientRect()
+      const next = { left: ar.left - cr.left, width: ar.width }
+      const prev = (typeof window !== "undefined" ? (window as any).__headerIndicatorPrev : null)
+      const alreadyAnimated = (typeof window !== "undefined" ? (window as any).__headerIndicatorPrevAnimated : false)
+      const prevPath = (typeof window !== "undefined" ? (window as any).__headerIndicatorPrevPath : null)
+      const shouldSkip = (suppressNextAnimationRef.current || alreadyAnimated) && (!pendingPathRef.current || pathname.startsWith(pendingPathRef.current))
+      if (!initializedRef.current) {
+        const { top, height } = baselineRef.current
+        if (shouldSkip) {
+          setIndicator({ left: next.left - EXTRA_X / 2, top, width: next.width + EXTRA_X, height, visible: true })
+          initializedRef.current = true
+          suppressNextAnimationRef.current = false
+          pendingPathRef.current = null
+          try {
+            try { (window as any).__headerIndicatorPrev = null } catch {}
+            ;(window as any).__headerIndicatorPrevAnimated = false
+            ;(window as any).__headerIndicatorPrevPath = null
+          } catch {}
+        } else if (prev && typeof prev.left === "number" && typeof prev.width === "number" && prevPath === pathname) {
+          initializedRef.current = true
+          animateTo({ left: prev.left, width: prev.width }, next)
+          try { (window as any).__headerIndicatorPrev = null } catch {}
+        } else {
+          setIndicator({ left: next.left - EXTRA_X / 2, top, width: next.width + EXTRA_X, height, visible: true })
+          initializedRef.current = true
+        }
+      } else {
+        if (shouldSkip) {
+          const { top, height } = baselineRef.current
+          setIndicator({ left: next.left - EXTRA_X / 2, top, width: next.width + EXTRA_X, height, visible: true })
+          suppressNextAnimationRef.current = false
+          pendingPathRef.current = null
+          try { ;(window as any).__headerIndicatorPrevAnimated = false; ;(window as any).__headerIndicatorPrevPath = null } catch {}
+        } else {
+          if (prev && prevPath === pathname && typeof prev.left === "number" && typeof prev.width === "number") {
+            animateTo({ left: prev.left, width: prev.width }, next)
+            try { ;(window as any).__headerIndicatorPrev = null; ;(window as any).__headerIndicatorPrevPath = null } catch {}
+          } else {
+            animateTo({ left: indicator.left, width: indicator.width }, next)
+          }
+        }
+      }
+    }
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [pathname, isHomeActive, isMoviesTabActive, isSerialsTabActive, isUhdTabActive, isSearchActive])
+
+  // Останавливаем верхний лоадер и подавляем первую анимацию после смены пути
+  useEffect(() => {
+    suppressNextAnimationRef.current = true
     NProgress.done()
   }, [pathname])
 
@@ -181,21 +324,26 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
           <div className="flex items-center justify-between gap-3">
             {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
-            <div className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5">
+            <div ref={containerRef} className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5 relative">
+              {indicator.visible && (
+                <div
+                  className="absolute left-0 top-0 z-0 rounded-full bg-blue-600 shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
+                  style={{ transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`, width: indicator.width, height: indicator.height, willChange: "transform,width,height" }}
+                />
+              )}
               {/* Главная */}
               <Link
                 href="/"
                 aria-current={isHomeActive ? "page" : undefined}
-                onClick={() => {
+                onClick={(e) => {
                   setStateActiveIndex(null)
                   onActiveIndexChange?.(null)
                   onSelect?.(null, null)
+                  onTabClick("/", e)
                 }}
                 className={[
-                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isHomeActive
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
-                    : "text-zinc-300/90 hover:text-white",
+                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isHomeActive ? "text-white" : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
                 <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
@@ -206,11 +354,10 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               <Link
                 href="/movies"
                 aria-current={isMoviesTabActive ? "page" : undefined}
+                onClick={(e) => onTabClick("/movies", e)}
                 className={[
-                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isMoviesTabActive
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
-                    : "text-zinc-300/90 hover:text-white",
+                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isMoviesTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
                 <IconMovie className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
@@ -221,11 +368,10 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               <Link
                 href="/serials"
                 aria-current={isSerialsTabActive ? "page" : undefined}
+                onClick={(e) => onTabClick("/serials", e)}
                 className={[
-                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isSerialsTabActive
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
-                    : "text-zinc-300/90 hover:text-white",
+                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isSerialsTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
                 <IconDeviceTv className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
@@ -236,11 +382,10 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               <Link
                 href="/uhd"
                 aria-current={isUhdTabActive ? "page" : undefined}
+                onClick={(e) => onTabClick("/uhd", e)}
                 className={[
-                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isUhdTabActive
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
-                    : "text-zinc-300/90 hover:text-white",
+                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isUhdTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
                 <IconBadge4k className="w-5 h-5 shrink-0" size={18} stroke={1.7} />
@@ -251,11 +396,10 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               <Link
                 href="/search"
                 aria-current={isSearchActive ? "page" : undefined}
+                onClick={(e) => onTabClick("/search", e)}
                 className={[
-                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isSearchActive
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
-                    : "text-zinc-300/90 hover:text-white",
+                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isSearchActive ? "text-white" : "text-zinc-300/90 hover:text-white",
                 ].join(" ")}
               >
                 <IconSearch className="w-4 h-4 shrink-0" size={16} stroke={1.7} />
