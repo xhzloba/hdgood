@@ -286,10 +286,11 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
             {meta ? (
               (() => {
-                const plain = [meta.year, meta.country, meta.genre, meta.duration]
+                const yearVal = meta.year && String(meta.year).trim() ? String(meta.year).trim() : null
+                const restArr = [meta.country, meta.genre, meta.duration]
                   .filter((v) => v && String(v).trim().length > 0) as string[]
                 return (
-                  <span className="inline-block max-w-[80vw] truncate">
+                  <span className="inline-block max-w-[80vw] truncate whitespace-nowrap">
                     {(meta.ratingKP != null || meta.ratingIMDb != null) && (
                       <>
                         <span className="inline-flex items-center gap-2 align-middle">
@@ -350,10 +351,20 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
                         )}
                       </>
                     )}
-                    {(meta.ratingKP != null || meta.ratingIMDb != null) && plain.length > 0 && (
+                    {(meta.ratingKP != null || meta.ratingIMDb != null) && (yearVal || restArr.length > 0) && (
                       <span className="text-zinc-400/60"> / </span>
                     )}
-                    {plain.length > 0 && <span>{plain.join(" / ")}</span>}
+                    {yearVal && (
+                      <span className="inline-flex items-center rounded-full bg-blue-600 text-white px-3 py-[3px] mr-2">
+                        <span className="truncate">{yearVal}</span>
+                      </span>
+                    )}
+                    {yearVal && restArr.length > 0 && (
+                      <span className="text-zinc-400/60"> / </span>
+                    )}
+                    {restArr.length > 0 && (
+                      <span className="truncate max-w-[60vw]">{restArr.join(" / ")}</span>
+                    )}
                   </span>
                 )
               })()
