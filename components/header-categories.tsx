@@ -76,6 +76,9 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   const activeIndex = activeIndexProp ?? stateActiveIndex
   const isHomeActive = pathname === "/" && activeIndex === null
   const isSearchActive = pathname.startsWith("/search")
+  const isMoviesTabActive = pathname.startsWith("/movies")
+  const isSerialsTabActive = pathname.startsWith("/serials")
+  const isUhdTabActive = pathname.startsWith("/uhd")
 
   // Останавливаем верхний лоадер после завершения навигации
   useEffect(() => {
@@ -175,9 +178,11 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
           </div>
         </div>
       ) : (
-        <div className={`bg-zinc-900/40 border border-zinc-800/50 rounded-sm p-1 ${className ?? ""}`.trim()}>
-          <div className="flex items-center justify-between">
-            <div className={`${containerBase}`}>
+        <div className={`bg-transparent ${className ?? ""}`.trim()}>
+          <div className="flex items-center justify-between gap-3">
+            {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
+            <div className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5">
+              {/* Главная */}
               <Link
                 href="/"
                 aria-current={isHomeActive ? "page" : undefined}
@@ -186,77 +191,93 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                   onActiveIndexChange?.(null)
                   onSelect?.(null, null)
                 }}
-                className={`${buttonBase} ${
+                className={[
+                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isHomeActive
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                }`}
+                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    : "text-zinc-300/90 hover:text-white",
+                ].join(" ")}
               >
-                <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.5} />
+                <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
                 <span>Главная</span>
               </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    className={`${buttonBase} ${
-                      activeIndex !== null
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                        : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                    }`}
-                  >
-                    <IconCategory className="w-4 h-4 shrink-0" />
-                    <span>Категории</span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="min-w-[12rem]">
-                  {CATEGORIES.map((cat, idx) => (
-                    <DropdownMenuItem
-                      key={idx}
-                      onClick={() => {
-                        setStateActiveIndex(idx)
-                        onActiveIndexChange?.(idx)
-                        if (cat.route) {
-                          NProgress.start()
-                          router.push(cat.route)
-                        } else {
-                          onSelect?.(cat, idx)
-                        }
-                      }}
-                    >
-                      <CategoryIcon name={cat.ico} className="w-4 h-4" />
-                      <span className="text-sm">{cat.title}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            <div className="hidden md:flex items-center gap-1">
+
+              {/* Фильмы */}
+              <Link
+                href="/movies"
+                aria-current={isMoviesTabActive ? "page" : undefined}
+                className={[
+                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isMoviesTabActive
+                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    : "text-zinc-300/90 hover:text-white",
+                ].join(" ")}
+              >
+                <IconMovie className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
+                <span>Фильмы</span>
+              </Link>
+
+              {/* Сериалы */}
+              <Link
+                href="/serials"
+                aria-current={isSerialsTabActive ? "page" : undefined}
+                className={[
+                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isSerialsTabActive
+                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    : "text-zinc-300/90 hover:text-white",
+                ].join(" ")}
+              >
+                <IconDeviceTv className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
+                <span>Сериалы</span>
+              </Link>
+
+              {/* 4K UHD */}
+              <Link
+                href="/uhd"
+                aria-current={isUhdTabActive ? "page" : undefined}
+                className={[
+                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                  isUhdTabActive
+                    ? "bg-zinc-100 text-zinc-900 h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    : "text-zinc-300/90 hover:text-white",
+                ].join(" ")}
+              >
+                <IconBadge4k className="w-5 h-5 shrink-0" size={18} stroke={1.7} />
+                <span>4K UHD</span>
+              </Link>
+
+              {/* Поиск как последний таб */}
               <Link
                 href="/search"
-                className={`${buttonBase} ${
+                aria-current={isSearchActive ? "page" : undefined}
+                className={[
+                  "inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
                   isSearchActive
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                }`}
+                    ? "bg-zinc-100 text-зinc-900 h-10 shadow-[0_20px_40px_rgба(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    : "text-zinc-300/90 hover:text-white",
+                ].join(" ")}
               >
-                <IconSearch className="w-4 h-4" size={16} stroke={1.5} />
+                <IconSearch className="w-4 h-4 shrink-0" size={16} stroke={1.7} />
                 <span>Поиск</span>
               </Link>
+            </div>
+
+            {/* Круглая кнопка справа — полноэкранный режим */}
+            <div className="hidden md:flex items-center">
               <button
                 type="button"
                 aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
                 onClick={toggleFullscreen}
-                className={`${buttonBase} ${
-                  isFullscreen
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20"
-                    : "bg-transparent border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700/50"
-                }`}
+                className={[
+                  "inline-flex items-center justify-center h-9 w-9 rounded-full border border-zinc-700/70 bg-zinc-900/80 text-zinc-300/90 hover:text-white hover:bg-zinc-800/90 shadow-md shadow-black/40 transition-colors",
+                  isFullscreen ? "ring-1 ring-blue-500/50 border-blue-500/60" : "",
+                ].join(" ")}
               >
                 {isFullscreen ? (
-                  <IconMinimize className="w-5 h-5" size={20} stroke={1.5} />
+                  <IconMinimize className="w-4 h-4" size={16} stroke={1.7} />
                 ) : (
-                  <IconMaximize className="w-5 h-5" size={20} stroke={1.5} />
+                  <IconMaximize className="w-4 h-4" size={16} stroke={1.7} />
                 )}
               </button>
             </div>

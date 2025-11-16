@@ -575,12 +575,8 @@ export function PosterBackground({
     if (simpleDarkCorners) {
       if (bgPosterUrl) {
         const overlayGradients = [
-          // верхний левый угол
-          "radial-gradient(1600px 800px at 0% 0%, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.7) 40%, transparent 80%)",
-          // верхний правый угол
-          "radial-gradient(1600px 800px at 100% 0%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.65) 38%, transparent 80%)",
-          // затемнение от боков к центру
-          "linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.98) 100%)",
+          // только мягкое затемнение от боков к центру, без затемнения углов
+          "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.9) 100%)",
           // максимально плотная растушёвка снизу: низ полностью в цвет фона
           "linear-gradient(to bottom, transparent 0%, transparent 12%, rgba(var(--app-bg-rgb, 15,15,15),0.85) 22%, rgba(var(--app-bg-rgb,15,15,15),0.98) 30%, var(--app-bg,#0f0f0f) 40%, var(--app-bg,#0f0f0f) 100%)",
         ]
