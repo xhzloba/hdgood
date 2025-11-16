@@ -840,6 +840,21 @@ export function PosterBackground({
   const [lastCompUrl, setLastCompUrl] = React.useState<string | undefined>(undefined)
 
   React.useEffect(() => {
+    try {
+      if (lastCompImg) return
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('posterBackground:lastComposite') : null
+      if (!raw) return
+      const data = JSON.parse(raw)
+      if (data && data.img) {
+        setLastCompImg(data.img)
+        setLastCompSize(data.size)
+        setLastCompPos(data.pos)
+        setLastCompUrl(data.url)
+      }
+    } catch {}
+  }, [])
+
+  React.useEffect(() => {
     const newImg = (style as any).__compositeImage as string | undefined
     const newSize = (style as any).__compositeSize as string | undefined
     const newPos = (style as any).__compositePosition as string | undefined
@@ -880,34 +895,49 @@ export function PosterBackground({
     }
   }, [(style as any).__compositeImage, (style as any).__compositeSize, (style as any).__compositePosition, (style as any).__bgUrl])
 
+  React.useEffect(() => {
+    try {
+      const payload = JSON.stringify({ img: lastCompImg, size: lastCompSize, pos: lastCompPos, url: lastCompUrl })
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('posterBackground:lastComposite', payload)
+      }
+    } catch {}
+  }, [lastCompImg, lastCompSize, lastCompPos, lastCompUrl])
+
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
-    if (!bgPosterUrl) return {}
-    
-    // Показываем мобильный фон только когда цвета готовы или posterUrl отсутствует
     const paletteReadyMobile = !!palette.corners || !!normalizedOverrides
     const shouldShowBackground = !posterUrl || paletteReadyMobile
-    
-    if (shouldShowBackground && !disableMobileBackdrop) {
-      // Получаем полный backgroundImage из style для мобильных
-      const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
-      // Посчитаем количество слоев-градиентов, чтобы задать размеры послойно
-      const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-      // Для всех градиентов используем cover, для последнего слоя (url) — авто по высоте вьюпорта
-      const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
-      const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
-      
-      return {
-        ['--mobile-bg-image' as any]: fullBackgroundImage,
-        ['--mobile-bg-size' as any]: mobileSizes,
-        ['--mobile-bg-position' as any]: mobilePositions,
+
+    if (!disableMobileBackdrop) {
+      if (bgPosterUrl && shouldShowBackground) {
+        const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
+        const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
+        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
+        const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
+        return {
+          ['--mobile-bg-image' as any]: fullBackgroundImage,
+          ['--mobile-bg-size' as any]: mobileSizes,
+          ['--mobile-bg-position' as any]: mobilePositions,
+        }
+      }
+      if (!bgPosterUrl && lastCompImg) {
+        const fullBackgroundImage = lastCompImg
+        const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
+        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
+        const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
+        return {
+          ['--mobile-bg-image' as any]: fullBackgroundImage,
+          ['--mobile-bg-size' as any]: mobileSizes,
+          ['--mobile-bg-position' as any]: mobilePositions,
+        }
       }
     }
-    
+
     return {
       ['--mobile-bg-image' as any]: 'none',
     }
-  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready, disableMobileBackdrop])
+  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready, disableMobileBackdrop, lastCompImg])
 
   const combinedClassName = React.useMemo(() => {
     const classes = []
