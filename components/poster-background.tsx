@@ -26,6 +26,8 @@ type PosterBackgroundProps = {
   className?: string
   colorOverrides?: ColorOverrides | null
   disableMobileBackdrop?: boolean
+  // Простой режим: не извлекать цвета, а просто затемнять углы поверх bgPosterUrl
+  simpleDarkCorners?: boolean
 }
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
@@ -480,13 +482,27 @@ function getCornerColors(img: HTMLImageElement): { tl: [number, number, number];
   return { tl, br, bl }
 }
 
-export function PosterBackground({ posterUrl, bgPosterUrl, children, className, colorOverrides, disableMobileBackdrop }: PosterBackgroundProps) {
+export function PosterBackground({
+  posterUrl,
+  bgPosterUrl,
+  children,
+  className,
+  colorOverrides,
+  disableMobileBackdrop,
+  simpleDarkCorners,
+}: PosterBackgroundProps) {
   type Palette = { corners: { tl: RGB; br: RGB; bl: RGB } | null; dominants: [RGB, RGB] | null }
   const [palette, setPalette] = React.useState<Palette>({ corners: null, dominants: null })
   const [ready, setReady] = React.useState(false)
   const isMobile = useIsMobile()
 
   React.useEffect(() => {
+    // В простом режиме для главной не извлекаем цвета вообще
+    if (simpleDarkCorners) {
+      setReady(true)
+      return
+    }
+
     const src = posterUrl || bgPosterUrl
     if (!src) return
     const img = new Image()
@@ -507,7 +523,7 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
       setReady(true)
     }
     img.src = src
-  }, [posterUrl, bgPosterUrl])
+  }, [posterUrl, bgPosterUrl, simpleDarkCorners])
 
   // Нормализуем colorOverrides в формат RGB-массивов
   const normalizedOverrides: ColorOverrides | null = React.useMemo(() => {
@@ -554,7 +570,43 @@ export function PosterBackground({ posterUrl, bgPosterUrl, children, className, 
 
   const style: React.CSSProperties = React.useMemo(() => {
     const baseStyle: React.CSSProperties = {}
-    
+
+    // --- Простой режим: не извлекаем цвета, просто затемняем углы поверх bgPosterUrl (главная) ---
+    if (simpleDarkCorners) {
+      if (bgPosterUrl) {
+        const overlayGradients = [
+          // верхний левый угол
+          "radial-gradient(1600px 800px at 0% 0%, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.7) 40%, transparent 80%)",
+          // верхний правый угол
+          "radial-gradient(1600px 800px at 100% 0%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.65) 38%, transparent 80%)",
+          // затемнение от боков к центру
+          "linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.98) 100%)",
+          // максимально плотная растушёвка снизу: низ полностью в цвет фона
+          "linear-gradient(to bottom, transparent 0%, transparent 12%, rgba(var(--app-bg-rgb, 15,15,15),0.85) 22%, rgba(var(--app-bg-rgb,15,15,15),0.98) 30%, var(--app-bg,#0f0f0f) 40%, var(--app-bg,#0f0f0f) 100%)",
+        ]
+
+        const gradientCount = overlayGradients.length
+        const bgHeightStr = "100% 100vh"
+        const urlPos = "center top"
+        const compositeImage = `${overlayGradients.join(", ")}, url(${bgPosterUrl})`
+        const compositeSize = `${Array(gradientCount).fill("cover").join(", ")}, ${bgHeightStr}`
+        const compositePos = `${Array(gradientCount).fill("center top").join(", ")}, ${urlPos}`
+
+        ;(baseStyle as any).backgroundImage = compositeImage
+        ;(baseStyle as any).backgroundSize = compositeSize
+        ;(baseStyle as any).backgroundPosition = compositePos
+        ;(baseStyle as any).backgroundRepeat = "no-repeat"
+        ;(baseStyle as any).__compositeImage = compositeImage
+        ;(baseStyle as any).__compositeSize = compositeSize
+        ;(baseStyle as any).__compositePosition = compositePos
+        ;(baseStyle as any).__bgUrl = bgPosterUrl
+      } else {
+        baseStyle.backgroundColor = "rgba(0, 0, 0, 0.98)"
+      }
+
+      return baseStyle
+    }
+
     // Добавляем bg_poster как фоновое изображение, если оно есть
     if (bgPosterUrl) {
       // Если цвета еще не готовы, показываем только базовые темные оверлеи

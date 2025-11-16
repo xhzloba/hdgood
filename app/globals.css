@@ -130,7 +130,8 @@
   }
   body {
     @apply text-foreground;
-    background: linear-gradient(180deg, var(--app-bg) 0%, #1a1a1a 100%);
+    /* Однородный фон, чтобы растушёвка backdrop снизу сливалась без видимой границы */
+    background: var(--app-bg);
     background-attachment: fixed;
     font-family: Arial, Helvetica, sans-serif;
   }

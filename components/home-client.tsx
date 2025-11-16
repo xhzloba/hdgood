@@ -29,7 +29,8 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   const current = bgPairs.length > 0 ? bgPairs[bgIndex % bgPairs.length] : null
   const currentBg = current ? current.bg : null
   const currentPoster = current ? current.poster : null
-  const currentColors = current ? current.colors : null
+  // На главной цвета из постера больше не используем
+  // const currentColors = current ? current.colors : null
   const currentLogo = current ? current.logo ?? null : null
   const currentId = current ? current.id ?? null : null
   
@@ -151,7 +152,14 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   }, [bgPairs])
 
   return (
-    <PosterBackground posterUrl={currentPoster} bgPosterUrl={currentBg} colorOverrides={currentColors} disableMobileBackdrop className="min-h-[100dvh] min-h-screen">
+    <PosterBackground
+      posterUrl={currentPoster}
+      bgPosterUrl={currentBg}
+      // colorOverrides={currentColors}
+      disableMobileBackdrop
+      simpleDarkCorners
+      className="min-h-[100dvh] min-h-screen"
+    >
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
         <div className="mb-4 hidden md:block">
           <HeaderCategories
