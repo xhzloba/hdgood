@@ -442,7 +442,7 @@ export default function MoviePage({
       } catch {
         if (!cancelled) {
           // Если в кеше уже было значение — оставляем его, иначе фиксируем отсутствие override
-          setOverrideData((prev) => (prev === null ? null : prev));
+          setOverrideData((prev: any) => (prev === null ? null : prev));
         }
       }
     })();

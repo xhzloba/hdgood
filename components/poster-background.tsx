@@ -573,6 +573,10 @@ export function PosterBackground({
 
     // --- Простой режим: не извлекаем цвета, просто затемняем углы поверх bgPosterUrl (главная) ---
     if (simpleDarkCorners) {
+      if (isMobile && !!disableMobileBackdrop) {
+        baseStyle.backgroundColor = "var(--app-bg, #0f0f0f)"
+        return baseStyle
+      }
       if (bgPosterUrl) {
         const overlayGradients = [
           // только мягкое затемнение от боков к центру, без затемнения углов
@@ -613,49 +617,8 @@ export function PosterBackground({
       if (shouldShowBackground) {
         const disableBG = isMobile && !!disableMobileBackdrop
         if (disableBG) {
-          if (palette.corners || normalizedOverrides) {
-            const useTl = normalizedOverrides?.accentTl ?? (palette.corners ? palette.corners.tl : null)
-            const useBr = normalizedOverrides?.accentBr ?? (palette.corners ? palette.corners.br : null)
-            const useBl = normalizedOverrides?.accentBl ?? (palette.corners ? palette.corners.bl : null)
-            const [rtl, gtl, btl] = (useTl || [0,0,0])
-            const [rbr, gbr, bbr] = (useBr || [0,0,0])
-            const [rbl, gbl, bbl2] = (useBl || [0,0,0])
-            const ar = Math.round((rtl + rbr + rbl) / 3)
-            const ag = Math.round((gtl + gbr + gbl) / 3)
-            const ab = Math.round((btl + bbr + bbl2) / 3)
-            ;(baseStyle as any)["--poster-accent-rgb"] = `${ar}, ${ag}, ${ab}`
-            ;(baseStyle as any)["--poster-accent-tl-rgb"] = `${rtl}, ${gtl}, ${btl}`
-            ;(baseStyle as any)["--poster-accent-br-rgb"] = `${rbr}, ${gbr}, ${bbr}`
-            ;(baseStyle as any)["--poster-accent-bl-rgb"] = `${rbl}, ${gbl}, ${bbl2}`
-            const domPair: [[number, number, number], [number, number, number]] | null = (() => {
-              if (normalizedOverrides?.dominant1 || normalizedOverrides?.dominant2) {
-                const d1 = normalizedOverrides?.dominant1 ?? (palette.dominants ? palette.dominants[0] : null)
-                const d2 = normalizedOverrides?.dominant2 ?? (palette.dominants ? palette.dominants[1] : null)
-                if (d1 && d2) return [d1, d2]
-                return null
-              }
-              return palette.dominants
-            })()
-            const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.75)`
-            const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.9)`
-            const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.9)`
-            const layers = [
-              `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
-              `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 62%, transparent 86% )`,
-              `linear-gradient( to right, rgba(${ar}, ${ag}, ${ab}, 0.42) 0%, rgba(${ar}, ${ag}, ${ab}, 0) 24% )`,
-              `radial-gradient( 2400px 1200px at 100% 100%, ${accentBR} 0%, transparent 78% )`,
-              `radial-gradient( 2600px 1300px at 50% 100%, rgba(${ar}, ${ag}, ${ab}, 0.35) 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 50%, transparent 90% )`,
-              `linear-gradient(to bottom, rgba(${ar}, ${ag}, ${ab}, 0) 58%, rgba(${ar}, ${ag}, ${ab}, 0.42) 86%, rgba(${ar}, ${ag}, ${ab}, 0.62) 100%)`,
-              'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 42%, var(--app-bg, rgba(24,24,27,1)) 82%, var(--app-bg, rgba(24,24,27,1)) 100%)',
-            ]
-            if (domPair) {
-              const [[d1r, d1g, d1b], [d2r, d2g, d2b]] = domPair
-              layers.push(`linear-gradient(90deg, rgba(${d1r}, ${d1g}, ${d1b}, 0.35), rgba(${d2r}, ${d2g}, ${d2b}, 0.35))`)
-              ;(baseStyle as any)["--poster-dominant-1-rgb"] = `${d1r}, ${d1g}, ${d1b}`
-              ;(baseStyle as any)["--poster-dominant-2-rgb"] = `${d2r}, ${d2g}, ${d2b}`
-            }
-            (baseStyle as any).backgroundImage = layers.join(', ')
-          }
+          (baseStyle as any).backgroundImage = 'none'
+          baseStyle.backgroundColor = 'var(--app-bg, #0f0f0f)'
           return baseStyle
         }
         baseStyle.backgroundImage = `url(${bgPosterUrl})`
@@ -957,9 +920,21 @@ export function PosterBackground({
       }
       style={{
         ...style,
-        backgroundImage: simpleDarkCorners ? (lastCompImg || style.backgroundImage) : style.backgroundImage,
-        backgroundSize: simpleDarkCorners ? (lastCompSize || (style as any).backgroundSize) : (style as any).backgroundSize,
-        backgroundPosition: simpleDarkCorners ? (lastCompPos || (style as any).backgroundPosition) : (style as any).backgroundPosition,
+        backgroundImage: isMobile && !!disableMobileBackdrop
+          ? 'none'
+          : simpleDarkCorners
+          ? (lastCompImg || style.backgroundImage)
+          : style.backgroundImage,
+        backgroundSize: isMobile && !!disableMobileBackdrop
+          ? undefined
+          : simpleDarkCorners
+          ? (lastCompSize || (style as any).backgroundSize)
+          : (style as any).backgroundSize,
+        backgroundPosition: isMobile && !!disableMobileBackdrop
+          ? undefined
+          : simpleDarkCorners
+          ? (lastCompPos || (style as any).backgroundPosition)
+          : (style as any).backgroundPosition,
         ...(simpleDarkCorners
           ? {
               ["--poster-accent-rgb" as any]: 'var(--app-bg-rgb)',
