@@ -13,6 +13,9 @@ import Link from "next/link"
 import NProgress from "nprogress"
 import { PosterBackground } from "@/components/poster-background"
 import { APP_SETTINGS } from "@/lib/settings"
+import { getCountryLabel } from "@/lib/country-flags"
+import { ratingColor, formatRatingLabel } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type HomeClientProps = {
   initialSelectedTitle?: string
@@ -33,6 +36,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
   // const currentColors = current ? current.colors : null
   const currentLogo = current ? current.logo ?? null : null
   const currentId = current ? current.id ?? null : null
+  const [meta, setMeta] = useState<{ ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null } | null>(null)
   
 
   const handleSelect = (cat: Category | null) => {
@@ -151,6 +155,107 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
     return () => clearInterval(id)
   }, [bgPairs])
 
+  useEffect(() => {
+    if (!currentId) {
+      setMeta(null)
+      return
+    }
+    let cancelled = false
+    const controller = new AbortController()
+    ;(async () => {
+      try {
+        const resp = await fetch(`https://api.vokino.pro/v2/view/${currentId}`, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        })
+        if (!resp.ok) {
+          if (!cancelled) setMeta(null)
+          return
+        }
+        const data = await resp.json()
+        const d = (data?.details ?? data) || {}
+        const yrRaw = d.year ?? d.released ?? d.release_year ?? d.releaseYear
+        const year = (() => {
+          if (yrRaw == null) return null
+          const s = String(yrRaw).trim()
+          if (!s || s === "0") return null
+          const m = s.match(/\d{4}/)
+          return m ? m[0] : s
+        })()
+        const countryLabel = getCountryLabel(d.country) || null
+        const genreVal = (() => {
+          if (Array.isArray(d.genre)) {
+            const first = d.genre[0]
+            return first != null ? String(first).trim() : null
+          }
+          const g = d.genre ?? (Array.isArray(d.tags) ? d.tags.join(", ") : d.tags)
+          if (g == null) return null
+          const s = String(g)
+          const first = s.split(/[,/|]/).map((p) => p.trim()).filter(Boolean)[0]
+          return first || null
+        })()
+        const getValidRating = (r: any): number | null => {
+          if (r == null) return null
+          const v = parseFloat(String(r))
+          if (Number.isNaN(v)) return null
+          if (String(r) === "0.0" || v === 0) return null
+          return v
+        }
+        const ratingKP = getValidRating((d as any).rating_kp)
+        const ratingIMDb = getValidRating((d as any).rating_imdb)
+        const durationStr = (() => {
+          const raw = d.duration ?? d.time ?? d.runtime ?? d.length
+          const toMinutes = (val: any): number | null => {
+            if (val == null) return null
+            if (typeof val === "number" && !Number.isNaN(val)) return Math.round(val)
+            if (typeof val === "string") {
+              const s = val.trim().toLowerCase()
+              if (s.includes(":")) {
+                const parts = s.split(":").map((p) => parseInt(p, 10))
+                if (parts.every((n) => !Number.isNaN(n))) {
+                  if (parts.length === 3) {
+                    const [h, m] = parts
+                    return h * 60 + m
+                  }
+                  if (parts.length === 2) {
+                    const [h, m] = parts
+                    return h * 60 + m
+                  }
+                }
+              }
+              const hoursMatch = s.match(/(\d+)\s*(ч|час|часа|часов|h|hr|hour|hours)/)
+              const minutesMatch = s.match(/(\d+)\s*(мин|м|m|min|minute|minutes)/)
+              if (hoursMatch || minutesMatch) {
+                const h = hoursMatch ? parseInt(hoursMatch[1], 10) : 0
+                const m = minutesMatch ? parseInt(minutesMatch[1], 10) : 0
+                return h * 60 + m
+              }
+              const num = parseInt(s.replace(/[^0-9]/g, ""), 10)
+              if (!Number.isNaN(num)) return num
+            }
+            return null
+          }
+          const mins = toMinutes(raw)
+          if (mins == null) return null
+          if (mins % 60 === 0) return `${mins} мин`
+          const h = Math.floor(mins / 60)
+          const m = mins % 60
+          return h > 0 ? `${h}ч ${m} мин` : `${m} мин`
+        })()
+        if (!cancelled) setMeta({ ratingKP, ratingIMDb, year, country: countryLabel, genre: genreVal || null, duration: durationStr })
+      } catch {
+        if (!cancelled) setMeta(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
+  }, [currentId])
+
   return (
     <PosterBackground
       posterUrl={currentPoster}
@@ -176,6 +281,88 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
               <img src={currentLogo} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
             </Link>
           ) : null}
+        </div>
+        <div className="relative z-30 hidden md:flex justify-center mt-3">
+          <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
+            {meta ? (
+              (() => {
+                const plain = [meta.year, meta.country, meta.genre, meta.duration]
+                  .filter((v) => v && String(v).trim().length > 0) as string[]
+                return (
+                  <span className="inline-block max-w-[80vw] truncate">
+                    {(meta.ratingKP != null || meta.ratingIMDb != null) && (
+                      <>
+                        <span className="inline-flex items-center gap-2 align-middle">
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
+                            alt="Кинопоиск"
+                            className="w-5 h-5 rounded-sm"
+                          />
+                          <span
+                            className={
+                              meta.ratingKP != null && meta.ratingKP > 8.5
+                                ? "font-semibold bg-clip-text text-transparent"
+                                : `${ratingColor(meta.ratingKP ?? undefined)} font-semibold`
+                            }
+                            style={
+                              meta.ratingKP != null && meta.ratingKP > 8.5
+                                ? {
+                                    backgroundImage:
+                                      "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                    WebkitBackgroundClip: "text",
+                                    backgroundClip: "text",
+                                    WebkitTextFillColor: "transparent",
+                                  }
+                                : undefined
+                            }
+                          >
+                            {meta.ratingKP != null ? formatRatingLabel(meta.ratingKP) : "—"}
+                          </span>
+                        </span>
+                        {meta.ratingIMDb != null && (
+                          <span className="inline-flex items-center gap-2 align-middle ml-3">
+                            <img
+                              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
+                              alt="IMDb"
+                              className="w-5 h-5 object-contain"
+                            />
+                            <span
+                              className={
+                                meta.ratingIMDb != null && meta.ratingIMDb > 8.5
+                                  ? "font-semibold bg-clip-text text-transparent"
+                                  : `${ratingColor(meta.ratingIMDb ?? undefined)} font-semibold`
+                              }
+                              style={
+                                meta.ratingIMDb != null && meta.ratingIMDb > 8.5
+                                  ? {
+                                      backgroundImage:
+                                        "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                      WebkitBackgroundClip: "text",
+                                      backgroundClip: "text",
+                                      WebkitTextFillColor: "transparent",
+                                    }
+                                  : undefined
+                              }
+                            >
+                              {formatRatingLabel(meta.ratingIMDb)}
+                            </span>
+                          </span>
+                        )}
+                      </>
+                    )}
+                    {(meta.ratingKP != null || meta.ratingIMDb != null) && plain.length > 0 && (
+                      <span className="text-zinc-400/60"> / </span>
+                    )}
+                    {plain.length > 0 && <span>{plain.join(" / ")}</span>}
+                  </span>
+                )
+              })()
+            ) : (
+              <div className="flex justify-center">
+                <Skeleton className="h-5 md:h-6 w-[40vw] max-w-[540px]" />
+              </div>
+            )}
+          </div>
         </div>
         <section>
           <div className="relative z-20 mt-[2vh] md:mt-[10vh]">
