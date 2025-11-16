@@ -8,6 +8,9 @@ import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 
+// Кеш dynamic overrides по id фильма, переживает размонтирование страницы
+const movieOverrideCache: Record<string, any> = {};
+
 const fetcher = async (
   url: string,
   timeout: number = 5000,
@@ -421,14 +424,26 @@ export default function MoviePage({
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
+
+    // Мгновенно подставляем override из кеша, если уже загружали его для этого id
+    if (!cancelled && movieOverrideCache[id] !== undefined) {
+      setOverrideData(movieOverrideCache[id]);
+    }
+
     (async () => {
       try {
         const res = await fetch(`/api/overrides/movies/${id}`, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled) setOverrideData(data || null);
+        const data = (await res.json()) || null;
+        if (!cancelled) {
+          setOverrideData(data);
+          movieOverrideCache[id] = data;
+        }
       } catch {
-        if (!cancelled) setOverrideData(null);
+        if (!cancelled) {
+          // Если в кеше уже было значение — оставляем его, иначе фиксируем отсутствие override
+          setOverrideData((prev) => (prev === null ? null : prev));
+        }
       }
     })();
     return () => {
