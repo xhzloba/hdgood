@@ -207,13 +207,12 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
           suppressNextAnimationRef.current = false
           pendingPathRef.current = null
           try { ;(window as any).__headerIndicatorPrevAnimated = false; ;(window as any).__headerIndicatorPrevPath = null } catch {}
+        } else if (prev && prevPath === pathname && typeof prev.left === "number" && typeof prev.width === "number") {
+          animateTo({ left: prev.left, width: prev.width }, next)
+          try { ;(window as any).__headerIndicatorPrev = null; ;(window as any).__headerIndicatorPrevPath = null } catch {}
         } else {
-          if (prev && prevPath === pathname && typeof prev.left === "number" && typeof prev.width === "number") {
-            animateTo({ left: prev.left, width: prev.width }, next)
-            try { ;(window as any).__headerIndicatorPrev = null; ;(window as any).__headerIndicatorPrevPath = null } catch {}
-          } else {
-            animateTo({ left: indicator.left, width: indicator.width }, next)
-          }
+          const { top, height } = baselineRef.current
+          setIndicator({ left: next.left - EXTRA_X / 2, top, width: next.width + EXTRA_X, height, visible: true })
         }
       }
     }
@@ -232,7 +231,11 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   useEffect(() => {
     const onChange = () => {
       const d: any = document
-      setIsFullscreen(!!(d.fullscreenElement || d.webkitFullscreenElement))
+      const curr = !!(d.fullscreenElement || d.webkitFullscreenElement)
+      if (curr !== isFullscreen) {
+        suppressNextAnimationRef.current = true
+      }
+      setIsFullscreen(curr)
     }
     document.addEventListener("fullscreenchange", onChange)
     document.addEventListener("webkitfullscreenchange", onChange)
