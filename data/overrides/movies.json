@@ -118,5 +118,11 @@
       "backdrop": "https://images.kinorium.com/movie/backstage/12316757/w1500_54813510.jpg"
     },
     "poster_logo": "/movies/logo/mama-vernulas-logo.png"
+  },
+  "69013ce1f5e08495f6b264dc": {
+    "bg_poster": {
+      "backdrop": "https://images.kinorium.com/movie/backstage/11046576/w1500_53641603.jpg"
+    },
+    "poster_logo": "https://images.kinorium.com/movie/plogo/11046576/w1500_55390653.png"
   }
 }
