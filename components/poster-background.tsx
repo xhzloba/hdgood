@@ -841,6 +841,7 @@ export function PosterBackground({
 
   React.useEffect(() => {
     try {
+      if (!simpleDarkCorners) return
       if (lastCompImg) return
       const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('posterBackground:lastComposite') : null
       if (!raw) return
@@ -852,7 +853,7 @@ export function PosterBackground({
         setLastCompUrl(data.url)
       }
     } catch {}
-  }, [])
+  }, [simpleDarkCorners])
 
   React.useEffect(() => {
     const newImg = (style as any).__compositeImage as string | undefined
@@ -921,7 +922,7 @@ export function PosterBackground({
           ['--mobile-bg-position' as any]: mobilePositions,
         }
       }
-      if (!bgPosterUrl && lastCompImg) {
+      if (simpleDarkCorners && !bgPosterUrl && lastCompImg) {
         const fullBackgroundImage = lastCompImg
         const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
         const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
@@ -937,7 +938,7 @@ export function PosterBackground({
     return {
       ['--mobile-bg-image' as any]: 'none',
     }
-  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready, disableMobileBackdrop, lastCompImg])
+  }, [bgPosterUrl, style.backgroundImage, posterUrl, ready, disableMobileBackdrop, lastCompImg, simpleDarkCorners])
 
   const combinedClassName = React.useMemo(() => {
     const classes = []
@@ -955,9 +956,9 @@ export function PosterBackground({
       }
       style={{
         ...style,
-        backgroundImage: lastCompImg || style.backgroundImage,
-        backgroundSize: lastCompSize || (style as any).backgroundSize,
-        backgroundPosition: lastCompPos || (style as any).backgroundPosition,
+        backgroundImage: simpleDarkCorners ? (lastCompImg || style.backgroundImage) : style.backgroundImage,
+        backgroundSize: simpleDarkCorners ? (lastCompSize || (style as any).backgroundSize) : (style as any).backgroundSize,
+        backgroundPosition: simpleDarkCorners ? (lastCompPos || (style as any).backgroundPosition) : (style as any).backgroundPosition,
         ...mobileBackgroundStyle,
         transition: 'none'
       }}

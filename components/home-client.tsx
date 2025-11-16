@@ -62,9 +62,7 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
     }
   }
 
-  useEffect(() => {
-    NProgress.done()
-  }, [pathname])
+  
 
   useEffect(() => {
     try {
