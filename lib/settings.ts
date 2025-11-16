@@ -11,6 +11,7 @@ export const APP_SETTINGS = {
       perPage: 15,
       hoverPause: true,
       loop: false,
+      syncWithBackdrop: false,
     },
   },
   mobile: {

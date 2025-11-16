@@ -28,7 +28,11 @@ const TRENDING_SECTIONS: TrendingItem[] = [
   },
 ]
 
-export function TrendingSection() {
+type TrendingSectionProps = {
+  activeBackdropId?: string | null
+}
+
+export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
   return (
     <section className="relative z-10">
       <div className="p-5 rounded-sm">
@@ -44,6 +48,7 @@ export function TrendingSection() {
                   hoverPause={APP_SETTINGS.slider.trending.hoverPause}
                   perPageOverride={APP_SETTINGS.slider.trending.perPage}
                   loop={APP_SETTINGS.slider.trending.loop}
+                  activeItemId={APP_SETTINGS.slider.trending.syncWithBackdrop ? activeBackdropId ?? undefined : undefined}
                 />
               ) : (
                 <MovieSlider url={section.playlist_url} title={section.title} />

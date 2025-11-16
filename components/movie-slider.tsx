@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useRef, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -25,6 +26,7 @@ type MovieSliderProps = {
   hoverPause?: boolean;
   perPageOverride?: number;
   loop?: boolean;
+  activeItemId?: string;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -85,7 +87,7 @@ function extractMoviesFromData(data: any): any[] {
   return movies;
 }
 
-export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все", autoplay = false, autoplayIntervalMs = 10000, hoverPause = true, perPageOverride, loop = false }: MovieSliderProps) {
+export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все", autoplay = false, autoplayIntervalMs = 10000, hoverPause = true, perPageOverride, loop = false, activeItemId }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -181,6 +183,44 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
       api.off("reInit", update);
     };
   }, [carouselApi]);
+
+  const isInteractingRef = useRef<boolean>(false);
+  useEffect(() => {
+    const api: any = carouselApi as any;
+    if (!api || typeof api.on !== "function") return;
+    const onDown = () => { isInteractingRef.current = true; };
+    const onUp = () => { isInteractingRef.current = false; };
+    try { api.on("pointerDown", onDown); api.on("pointerUp", onUp); } catch {}
+    return () => {
+      try { api.off("pointerDown", onDown); api.off("pointerUp", onUp); } catch {}
+    };
+  }, [carouselApi]);
+
+  const lastSyncedIdRef = useRef<string | null>(null);
+  const pendingSyncIdRef = useRef<string | null>(null);
+  const trySyncToActive = useCallback(() => {
+    const api: any = carouselApi as any;
+    const targetId = pendingSyncIdRef.current;
+    if (!api || !targetId) return;
+    if (isInteractingRef.current) return;
+    if (!finalDisplay || finalDisplay.length === 0) return;
+    const idx = finalDisplay.findIndex((m: any) => String(m.id) === String(targetId));
+    if (idx >= 0) {
+      try { api.scrollTo?.(idx); } catch {}
+      lastSyncedIdRef.current = targetId;
+      pendingSyncIdRef.current = null;
+    }
+  }, [carouselApi, finalDisplay]);
+
+  useEffect(() => {
+    pendingSyncIdRef.current = activeItemId || null;
+    lastSyncedIdRef.current = null;
+    trySyncToActive();
+  }, [activeItemId, trySyncToActive]);
+
+  useEffect(() => {
+    trySyncToActive();
+  }, [finalDisplay, trySyncToActive]);
 
   const [paused, setPaused] = useState<boolean>(false);
   useEffect(() => {
