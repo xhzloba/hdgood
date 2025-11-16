@@ -843,7 +843,7 @@ export function PosterBackground({
     try {
       if (!simpleDarkCorners) return
       if (lastCompImg) return
-      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('posterBackground:lastComposite') : null
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('homeBackdrop:lastComposite') : null
       if (!raw) return
       const data = JSON.parse(raw)
       if (data && data.img) {
@@ -898,12 +898,13 @@ export function PosterBackground({
 
   React.useEffect(() => {
     try {
+      if (!simpleDarkCorners) return
       const payload = JSON.stringify({ img: lastCompImg, size: lastCompSize, pos: lastCompPos, url: lastCompUrl })
       if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem('posterBackground:lastComposite', payload)
+        window.sessionStorage.setItem('homeBackdrop:lastComposite', payload)
       }
     } catch {}
-  }, [lastCompImg, lastCompSize, lastCompPos, lastCompUrl])
+  }, [lastCompImg, lastCompSize, lastCompPos, lastCompUrl, simpleDarkCorners])
 
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
@@ -959,6 +960,16 @@ export function PosterBackground({
         backgroundImage: simpleDarkCorners ? (lastCompImg || style.backgroundImage) : style.backgroundImage,
         backgroundSize: simpleDarkCorners ? (lastCompSize || (style as any).backgroundSize) : (style as any).backgroundSize,
         backgroundPosition: simpleDarkCorners ? (lastCompPos || (style as any).backgroundPosition) : (style as any).backgroundPosition,
+        ...(simpleDarkCorners
+          ? {
+              ["--poster-accent-rgb" as any]: 'var(--app-bg-rgb)',
+              ["--poster-accent-tl-rgb" as any]: 'var(--app-bg-rgb)',
+              ["--poster-accent-br-rgb" as any]: 'var(--app-bg-rgb)',
+              ["--poster-accent-bl-rgb" as any]: 'var(--app-bg-rgb)',
+              ["--poster-dominant-1-rgb" as any]: 'var(--app-bg-rgb)',
+              ["--poster-dominant-2-rgb" as any]: 'var(--app-bg-rgb)',
+            }
+          : {}),
         ...mobileBackgroundStyle,
         transition: 'none'
       }}
