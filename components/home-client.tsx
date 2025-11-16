@@ -178,17 +178,17 @@ export default function HomeClient({ initialSelectedTitle }: HomeClientProps) {
           ) : null}
         </div>
         <section>
-          {isUhdMode ? (
-            <UhdSection />
-          ) : isMoviesMode ? (
-            <MoviesSection />
-          ) : isSerialsMode ? (
-            <SerialsSection />
-          ) : (
-            <div className={`relative z-20 mt-[4vh] md:mt-[14vh]`}>
+          <div className="relative z-20 mt-[2vh] md:mt-[10vh]">
+            {isUhdMode ? (
+              <UhdSection />
+            ) : isMoviesMode ? (
+              <MoviesSection />
+            ) : isSerialsMode ? (
+              <SerialsSection />
+            ) : (
               <TrendingSection />
-            </div>
-          )}
+            )}
+          </div>
         </section>
       </main>
     </PosterBackground>
