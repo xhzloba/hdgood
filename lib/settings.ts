@@ -1,6 +1,6 @@
 export const APP_SETTINGS = {
   backdrop: {
-    showOnlyTopTrendingMovie: false,
+    showOnlyTopTrendingMovie: true,
     topTrendingCount: 1,
     rotationIntervalSeconds: 10,
   },
