@@ -578,11 +578,15 @@ export function PosterBackground({
         return baseStyle
       }
       if (bgPosterUrl) {
+        // Единый, достаточно агрессивный градиент снизу для всех роутов
+        const bottomFade =
+          "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
+
         const overlayGradients = [
-          // только мягкое затемнение от боков к центру, без затемнения углов
+          // только мягкое затемнение от боков к центру
           "linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 18%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 82%, rgba(0,0,0,0.65) 100%)",
-          // максимально плотная растушёвка снизу: низ полностью в цвет фона
-          "linear-gradient(to bottom, transparent 0%, transparent 12%, rgba(var(--app-bg-rgb, 15,15,15),0.72) 22%, rgba(var(--app-bg-rgb,15,15,15),0.93) 30%, var(--app-bg,#0f0f0f) 40%, var(--app-bg,#0f0f0f) 100%)",
+          // нижняя растушёвка
+          bottomFade,
         ]
 
         const gradientCount = overlayGradients.length
