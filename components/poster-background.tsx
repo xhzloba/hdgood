@@ -580,9 +580,9 @@ export function PosterBackground({
       if (bgPosterUrl) {
         const overlayGradients = [
           // только мягкое затемнение от боков к центру, без затемнения углов
-          "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.9) 100%)",
+          "linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 18%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 82%, rgba(0,0,0,0.65) 100%)",
           // максимально плотная растушёвка снизу: низ полностью в цвет фона
-          "linear-gradient(to bottom, transparent 0%, transparent 12%, rgba(var(--app-bg-rgb, 15,15,15),0.85) 22%, rgba(var(--app-bg-rgb,15,15,15),0.98) 30%, var(--app-bg,#0f0f0f) 40%, var(--app-bg,#0f0f0f) 100%)",
+          "linear-gradient(to bottom, transparent 0%, transparent 12%, rgba(var(--app-bg-rgb, 15,15,15),0.72) 22%, rgba(var(--app-bg-rgb,15,15,15),0.93) 30%, var(--app-bg,#0f0f0f) 40%, var(--app-bg,#0f0f0f) 100%)",
         ]
 
         const gradientCount = overlayGradients.length

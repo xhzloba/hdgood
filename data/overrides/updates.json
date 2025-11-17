@@ -284,5 +284,29 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "689d0ae407cc76df0455560e",
+    "timestamp": "2025-11-17T12:42:43.391Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "689d0ae407cc76df0455560e",
+    "timestamp": "2025-11-17T12:43:19.765Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
   }
 ]
