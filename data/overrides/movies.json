@@ -130,5 +130,33 @@
       "backdrop": "https://images.kinorium.com/movie/poster/2021785/w1500_55267492.jpg"
     },
     "poster_logo": "https://images.kinorium.com/movie/plogo/2021785/w1500_55215314.png"
+  },
+  "691654e274e3057d2efdfb0f": {
+    "poster_logo": "/movies/logo/obman-3-logo.webp",
+    "bg_poster": {
+      "backdrop": "/movies/obman3.webp"
+    },
+    "poster_colors": {
+      "dominant1": [
+        72,
+        113,
+        157
+      ],
+      "accentTl": [
+        62,
+        102,
+        148
+      ],
+      "accentBr": [
+        6,
+        21,
+        44
+      ],
+      "accentBl": [
+        23,
+        47,
+        88
+      ]
+    }
   }
 }

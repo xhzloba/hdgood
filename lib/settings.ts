@@ -1,6 +1,6 @@
 export const APP_SETTINGS = {
   backdrop: {
-    showOnlyTopTrendingMovie: false,
+    showOnlyTopTrendingMovie: true,
     topTrendingCount: 1,
     rotationIntervalSeconds: 10,
   },
@@ -19,6 +19,6 @@ export const APP_SETTINGS = {
     hideLogo: true,
     contentOffsetVh: 4,
   },
-} as const
+} as const;
 
-export type AppSettings = typeof APP_SETTINGS
+export type AppSettings = typeof APP_SETTINGS;

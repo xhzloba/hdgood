@@ -251,5 +251,38 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-11-17T12:03:19.660Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-11-17T12:03:49.178Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-11-17T12:22:35.251Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
