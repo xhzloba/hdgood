@@ -23,6 +23,7 @@ import {
   IconMinimize,
   IconSearch,
 } from "@tabler/icons-react"
+import NProgress from "nprogress"
 
 type HeaderCategoriesProps = {
   variant?: "horizontal" | "vertical"
@@ -120,6 +121,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     e.preventDefault()
     const c = containerRef.current
     if (!c) {
+      NProgress.set(0.2)
+      NProgress.start()
       router.push(href)
       return
     }
@@ -142,6 +145,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     
     suppressNextAnimationRef.current = true
     pendingPathRef.current = href
+    NProgress.set(0.2)
+    NProgress.start()
     setTimeout(() => router.push(href), ANIM_DURATION)
   }
 
@@ -223,6 +228,10 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   // Подавляем первую анимацию после смены пути
   useEffect(() => {
     suppressNextAnimationRef.current = true
+  }, [pathname])
+
+  useEffect(() => {
+    NProgress.done()
   }, [pathname])
 
   const [isFullscreen, setIsFullscreen] = useState(false)

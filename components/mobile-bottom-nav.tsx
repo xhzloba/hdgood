@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { IconHome, IconSearch, IconBadge4k, IconMovie, IconDeviceTv, IconHeart, IconCategory } from "@tabler/icons-react"
 import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { MovieGrid } from "@/components/movie-grid"
+import NProgress from "nprogress"
 
 export default function MobileBottomNav() {
   const router = useRouter()
@@ -23,6 +24,10 @@ export default function MobileBottomNav() {
   const isDetailPage = pathname?.startsWith("/movie/")
 
 
+  useEffect(() => {
+    NProgress.done()
+  }, [pathname])
+
   if (isDetailPage) return null
 
   return (
@@ -35,6 +40,8 @@ export default function MobileBottomNav() {
             onClick={() => {
               const href = "/"
               if (pathname !== href) {
+                NProgress.set(0.2)
+                NProgress.start()
                 router.push(href)
               }
             }}
@@ -53,6 +60,8 @@ export default function MobileBottomNav() {
             onClick={() => {
               const href = "/search"
               if (pathname !== href) {
+                NProgress.set(0.2)
+                NProgress.start()
                 router.push(href)
               }
             }}
@@ -73,6 +82,8 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
+                  NProgress.set(0.2)
+                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -94,6 +105,8 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
+                  NProgress.set(0.2)
+                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -115,6 +128,8 @@ export default function MobileBottomNav() {
               if (cat?.route) {
                 const href = cat.route
                 if (pathname !== href) {
+                  NProgress.set(0.2)
+                  NProgress.start()
                   router.push(href)
                 }
               }
@@ -160,6 +175,8 @@ export default function MobileBottomNav() {
                       const href = cat.route
                       setIsMoreOpen(false)
                       if (pathname !== href) {
+                        NProgress.set(0.2)
+                        NProgress.start()
                         router.push(href)
                       }
                     } else {
