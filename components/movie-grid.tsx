@@ -290,9 +290,9 @@ export function MovieGrid({ url }: MovieGridProps) {
           <Link
             key={movie.id || index}
             href={`/movie/${movie.id}`}
-            className="group block bg-zinc-900/60 hover:bg-zinc-800/80 outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               {movie.poster ? (
                 <img
                   src={movie.poster || "/placeholder.svg"}

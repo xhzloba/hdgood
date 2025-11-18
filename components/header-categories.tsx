@@ -332,22 +332,23 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         </div>
       ) : (
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              {/* Лого слева от табов */}
-              <Link
-                href="/"
-                className="hidden md:inline-flex items-center gap-2 pr-3 mr-1 border-r border-zinc-800/70 logo-hdgood"
-              >
-                <LogoParticles />
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-semibold tracking-wide text-white">
-                  HD
-                </span>
-                <span className="text-sm font-semibold tracking-tight text-zinc-100">
-                  GOOD
-                </span>
-              </Link>
+          <div className="relative flex items-center gap-3">
+            {/* Лого слева */}
+            <Link
+              href="/"
+              className="hidden md:inline-flex items-center gap-2 pr-3 border-r border-zinc-800/70 logo-hdgood"
+            >
+              <LogoParticles />
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-semibold tracking-wide text-white">
+                HD
+              </span>
+              <span className="text-sm font-semibold tracking-tight text-zinc-100">
+                GOOD
+              </span>
+            </Link>
 
+            {/* Центрированный контейнер табов */}
+            <div className="absolute left-1/2 -translate-x-1/2">
               {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
               <div
                 ref={containerRef}
@@ -439,7 +440,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
             </div>
 
             {/* Круглая кнопка справа — полноэкранный режим */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center ml-auto">
               <button
                 type="button"
                 aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}

@@ -180,7 +180,7 @@ export function UpdatesSection() {
                 return (
                   <div
                     key={`${item.id}-${item.timestamp}`}
-                    className="group block bg-zinc-900/60 hover:bg-zinc-800/80 outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                    className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
                   >
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative">
                       {poster ? (

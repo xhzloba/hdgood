@@ -12,10 +12,13 @@ export function CursorPopcorn() {
   const [state, setState] = useState<CursorState>({ x: 0, y: 0, visible: false })
 
   useEffect(() => {
-    // Не показываем на устройствах с тач-указателем
+    // Не показываем на мобильных / тач-устройствах
     if (typeof window !== "undefined") {
-      // @ts-ignore
-      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+      const isCoarse =
+        // @ts-ignore
+        (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) || false
+      const isNarrow = window.innerWidth <= 768
+      if (isCoarse || isNarrow) {
         return
       }
     }
