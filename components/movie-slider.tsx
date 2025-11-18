@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
+import { savePosterTransition } from "@/lib/poster-transition";
 import {
   Carousel,
   CarouselContent,
@@ -87,6 +88,24 @@ function extractMoviesFromData(data: any): any[] {
     movies = data;
   }
   return movies;
+}
+
+function getPrimaryGenreFromMovie(movie: any): string | null {
+  if (!movie) return null;
+  const raw = (movie as any).genre ?? (movie as any).tags;
+  if (!raw) return null;
+  if (Array.isArray(raw)) {
+    const first = raw.find((v) => v != null && String(v).trim().length > 0);
+    return first != null ? String(first).trim() : null;
+  }
+  if (typeof raw === "string") {
+    const parts = raw
+      .split(/[,/|]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts[0] || null;
+  }
+  return null;
 }
 
 export default function MovieSlider({
@@ -313,13 +332,14 @@ export default function MovieSlider({
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
                       <Skeleton className="w-full h-full" />
                     </div>
+                    {/* Под постером оставляем область для анимации частиц + скелетона текста */}
                     <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                      <div className="pointer-events-none absolute top-[36%] h-[32%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+                      <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
                       <div className="relative">
                         <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                          <Skeleton className="h-3 md:h-4 w-10" />
                           <Skeleton className="h-3 md:h-4 w-16" />
-                          <Skeleton className="h-3 md:h-4 w-12" />
                         </div>
                       </div>
                     </div>
@@ -357,6 +377,18 @@ export default function MovieSlider({
                       const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
                       if (api?.clickAllowed && !api.clickAllowed()) {
                         e.preventDefault()
+                        return
+                      }
+                      
+                      // Сохраняем позицию постера для анимации перехода (только десктоп)
+                      const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
+                      if (posterEl && movie.poster) {
+                        const rect = posterEl.getBoundingClientRect()
+                        savePosterTransition({
+                          movieId: String(movie.id),
+                          posterUrl: movie.poster,
+                          rect: rect,
+                        })
                       }
                     }}
                   >
@@ -387,40 +419,9 @@ export default function MovieSlider({
                       ) : (
                         <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
                       )}
-                      {(() => {
-                        const collected: string[] = [];
-                        if (movie.quality) collected.push(String(movie.quality));
-                        const tv = movie.tags as any;
-                        if (Array.isArray(tv)) {
-                          collected.push(
-                            ...tv.filter(Boolean).map((t: any) => String(t))
-                          );
-                        } else if (typeof tv === "string") {
-                          collected.push(
-                            ...tv
-                              .split(",")
-                              .map((t) => t.trim())
-                              .filter(Boolean)
-                          );
-                        }
-                        const tags = collected.slice(0, 2);
-                        return tags.length > 0 ? (
-                          <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex flex-col items-start gap-1">
-                            {tags.map((t, i) => (
-                              <Badge
-                                key={`${t}-${i}`}
-                                variant="secondary"
-                                className={"px-1.5 py-[2px] text-[9px] md:text-[10px] rounded-sm/2 bg-white text-black border border-zinc-300"}
-                              >
-                                {t}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : null;
-                      })()}
                       {movie.rating && (
                         <div
-                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium ${ratingBgColor(
+                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
                             movie.rating
                           )}`}
                         >
@@ -428,29 +429,38 @@ export default function MovieSlider({
                         </div>
                       )}
                     </div>
+                    {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
                     <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                      <div className="pointer-events-none absolute top-[42%] h-[18%] left-1/2 -translate-x-1/2 w-[60%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-                      <div className="relative">
+                      {/* Анимация частиц в области с названием */}
+                      <div className="pointer-events-none absolute inset-0 hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-400 movie-title-particles-text z-[1]">
+                        <span className="particle-text particle-text-1" />
+                        <span className="particle-text particle-text-2" />
+                        <span className="particle-text particle-text-3" />
+                        <span className="particle-text particle-text-4" />
+                        <span className="particle-text particle-text-5" />
+                        <span className="particle-text particle-text-6" />
+                        <span className="particle-text particle-text-7" />
+                        <span className="particle-text particle-text-8" />
+                      </div>
+                      <div className="relative z-[2]">
                         <h3
-                          className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
+                          className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
                           title={movie.title || "Без названия"}
                         >
                           {movie.title || "Без названия"}
                         </h3>
-                        <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
-                          {movie.year && <span>{movie.year}</span>}
-                          {movie.year && movie.country && (
-                            <span className="text-zinc-500/60"> / </span>
-                          )}
-                          {movie.country && (
-                            <>
-                              <CountryFlag country={movie.country} size="sm" />
-                              {getCountryLabel(movie.country) && (
-                                <span>{getCountryLabel(movie.country) as string}</span>
-                              )}
-                            </>
-                          )}
-                        </div>
+                        {(() => {
+                          const year = movie.year ? String(movie.year) : null;
+                          const genre = getPrimaryGenreFromMovie(movie);
+                          if (!year && !genre) return null;
+                          return (
+                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                              {year && <span>{year}</span>}
+                              {year && genre && <span className="text-zinc-500/60">•</span>}
+                              {genre && <span className="truncate max-w-[70%]">{genre}</span>}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </Link>

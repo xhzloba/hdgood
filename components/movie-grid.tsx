@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
+import { savePosterTransition } from "@/lib/poster-transition";
 
 interface Movie {
   id: string;
@@ -26,33 +27,33 @@ interface MovieGridProps {
 const fetcher = async (url: string, timeout: number = 10000) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
+
   try {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+      if (error.name === "AbortError") {
+        throw new Error("Request timeout");
       }
       throw error;
     }
-    throw new Error('Unknown error occurred');
+    throw new Error("Unknown error occurred");
   }
 };
 
@@ -99,9 +100,29 @@ function extractMoviesFromData(data: any): any[] {
   return movies;
 }
 
+function getPrimaryGenreFromMovie(movie: any): string | null {
+  if (!movie) return null;
+  const raw = (movie as any).genre ?? (movie as any).tags;
+  if (!raw) return null;
+  if (Array.isArray(raw)) {
+    const first = raw.find((v) => v != null && String(v).trim().length > 0);
+    return first != null ? String(first).trim() : null;
+  }
+  if (typeof raw === "string") {
+    const parts = raw
+      .split(/[,/|]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts[0] || null;
+  }
+  return null;
+}
+
 // Бейдж качества: белый фон, чёрный текст, нейтральный бело‑серый бордер
 
-const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+const overridesCacheRef =
+  (globalThis as any).__movieOverridesCache ||
+  ((globalThis as any).__movieOverridesCache = {});
 
 export function MovieGrid({ url }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -132,7 +153,10 @@ export function MovieGrid({ url }: MovieGridProps) {
   }, [url]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
-  const { data, error, isLoading, isValidating } = useSWR<string>(currentUrl, fetcher);
+  const { data, error, isLoading, isValidating } = useSWR<string>(
+    currentUrl,
+    fetcher
+  );
 
   // Append fetched page data
   useEffect(() => {
@@ -176,9 +200,9 @@ export function MovieGrid({ url }: MovieGridProps) {
   const display = hideLoadMore ? movies : displayMovies;
 
   // Batch-load overrides for current display ids.
-  const [overridesMap, setOverridesMap] = useState<Record<string, any>>(
-    () => ({ ...overridesCacheRef })
-  );
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({
+    ...overridesCacheRef,
+  }));
   const idsString = useMemo(
     () => (display || []).map((m: any) => String(m.id)).join(","),
     [display]
@@ -214,7 +238,8 @@ export function MovieGrid({ url }: MovieGridProps) {
       const ov = overridesMap[String(m.id)] || null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
       // Применяем переопределённое название, если задано (поддержка name/title)
-      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
+      const patchedTitle =
+        ov && (ov.name || ov.title) ? ov.name || ov.title : m.title;
       return { ...m, poster: patchedPoster, title: patchedTitle };
     });
   }, [display, overridesMap]);
@@ -233,13 +258,14 @@ export function MovieGrid({ url }: MovieGridProps) {
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               <Skeleton className="w-full h-full" />
             </div>
-            <div className="relative p-2 md:p-3 overflow-hidden">
-              <div className="pointer-events-none absolute top-[36%] h-[32%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+            {/* Под постером оставляем область для анимации частиц + скелетона текста */}
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+              <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
               <div className="relative">
                 <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
-                <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-2 md:h-3 w-10" />
                   <Skeleton className="h-2 md:h-3 w-16" />
-                  <Skeleton className="h-2 md:h-3 w-12" />
                 </div>
               </div>
             </div>
@@ -297,6 +323,18 @@ export function MovieGrid({ url }: MovieGridProps) {
             key={movie.id || index}
             href={`/movie/${movie.id}`}
             className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            onClick={(e) => {
+              // Сохраняем позицию постера для анимации перехода (только десктоп)
+              const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
+              if (posterEl && movie.poster) {
+                const rect = posterEl.getBoundingClientRect()
+                savePosterTransition({
+                  movieId: String(movie.id),
+                  posterUrl: movie.poster,
+                  rect: rect,
+                })
+              }
+            }}
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               {movie.poster ? (
@@ -319,73 +357,56 @@ export function MovieGrid({ url }: MovieGridProps) {
                   }}
                 />
               ) : (
-                <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                <div className="text-zinc-600 text-[10px] text-center p-1">
+                  Нет постера
+                </div>
               )}
-              {/* Tags / Quality on the left, opposite rating */}
-              {(() => {
-                const collected: string[] = [];
-                if (movie.quality) collected.push(String(movie.quality));
-                const tv = movie.tags as any;
-                if (Array.isArray(tv)) {
-                  collected.push(
-                    ...tv
-                      .filter(Boolean)
-                      .map((t: any) => String(t))
-                  );
-                } else if (typeof tv === "string") {
-                  collected.push(
-                    ...tv
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean)
-                  );
-                }
-                const display = collected.slice(0, 2);
-                return display.length > 0 ? (
-                  <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex flex-col items-start gap-1">
-                    {display.map((t, i) => (
-                      <Badge
-                        key={`${t}-${i}`}
-                        variant="secondary"
-                        className={"px-1.5 py-[2px] text-[9px] md:text-[10px] rounded-sm/2 bg-white text-black border border-zinc-300"}
-                      >
-                        {t}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : null;
-              })()}
               {movie.rating && (
                 <div
-                  className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium ${ratingBgColor(movie.rating)}`}
+                  className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
+                    movie.rating
+                  )}`}
                 >
                   {formatRatingLabel(movie.rating)}
                 </div>
               )}
             </div>
-            <div className="relative p-2 md:p-3 overflow-hidden">
-              <div className="pointer-events-none absolute top-[36%] h-[32%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-              <div className="relative">
+            {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+              {/* Анимация частиц в области с названием */}
+              <div className="pointer-events-none absolute inset-0 hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-400 movie-title-particles-text z-[1]">
+                <span className="particle-text particle-text-1" />
+                <span className="particle-text particle-text-2" />
+                <span className="particle-text particle-text-3" />
+                <span className="particle-text particle-text-4" />
+                <span className="particle-text particle-text-5" />
+                <span className="particle-text particle-text-6" />
+                <span className="particle-text particle-text-7" />
+                <span className="particle-text particle-text-8" />
+              </div>
+              <div className="relative z-[2]">
                 <h3
-                  className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
+                  className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
                   title={movie.title || "Без названия"}
                 >
                   {movie.title || "Без названия"}
                 </h3>
-                <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
-                  {movie.year && <span>{movie.year}</span>}
-                  {movie.year && movie.country && (
-                    <span className="text-zinc-500/60"> / </span>
-                  )}
-                  {movie.country && (
-                    <>
-                      <CountryFlag country={movie.country} size="sm" />
-                      {getCountryLabel(movie.country) && (
-                        <span>{getCountryLabel(movie.country) as string}</span>
+                {(() => {
+                  const year = movie.year ? String(movie.year) : null;
+                  const genre = getPrimaryGenreFromMovie(movie);
+                  if (!year && !genre) return null;
+                  return (
+                    <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                      {year && <span>{year}</span>}
+                      {year && genre && (
+                        <span className="text-zinc-500/60">•</span>
                       )}
-                    </>
-                  )}
-                </div>
+                      {genre && (
+                        <span className="truncate max-w-[70%]">{genre}</span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </Link>

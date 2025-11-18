@@ -216,28 +216,54 @@
   .movie-title-flame {
     /* базовое состояние: спрятано и анимация на паузе — включаем только при hover/focus группы */
     opacity: 0;
-    animation: movie-title-flame 18s ease-in-out infinite;
+    animation: movie-title-flame 6s ease-in-out infinite;
     animation-play-state: paused;
-    /* только маленькие "облачные" частицы — насыщенный синий, но очень компактно */
-    background-image: radial-gradient(
-        circle at 22% 52%,
-        rgba(37, 99, 235, 1) 0,
-        transparent 36%
+    /* эффект воды с волнами — по бокам выше, по центру ниже */
+    background-image:
+      /* основная волна воды снизу (центр) */ radial-gradient(
+        ellipse 120% 80% at 50% 105%,
+        rgba(29, 78, 216, 0.9) 0,
+        rgba(37, 99, 235, 0.7) 30%,
+        rgba(59, 130, 246, 0.5) 60%,
+        transparent 100%
       ),
-      radial-gradient(
-        circle at 50% 48%,
-        rgba(30, 64, 175, 0.98) 0,
-        transparent 34%
-      ),
-      radial-gradient(
-        circle at 76% 54%,
-        rgba(37, 99, 235, 0.98) 0,
-        transparent 36%
-      );
-    background-size: 200% 130%;
-    background-position: 0% 60%;
-    /* уменьшаем blur, чтобы частицы были чётче и ярче визуально */
-    filter: blur(6px);
+      /* вторая волна для глубины (центр) */
+        radial-gradient(
+          ellipse 110% 70% at 50% 100%,
+          rgba(30, 64, 175, 0.8) 0,
+          rgba(29, 78, 216, 0.6) 35%,
+          transparent 80%
+        ),
+      /* третья волна (центр) */
+        radial-gradient(
+          ellipse 130% 60% at 50% 110%,
+          rgba(37, 99, 235, 0.7) 0,
+          rgba(59, 130, 246, 0.5) 40%,
+          transparent 85%
+        ),
+      /* боковые волны выше (левая сторона) */
+        radial-gradient(
+          ellipse 60% 70% at 15% 75%,
+          rgba(29, 78, 216, 0.6) 0,
+          transparent 70%
+        ),
+      /* боковые волны выше (правая сторона) */
+        radial-gradient(
+          ellipse 60% 70% at 85% 75%,
+          rgba(37, 99, 235, 0.6) 0,
+          transparent 70%
+        ),
+      /* верхние слои воды (центр) */
+        radial-gradient(
+          ellipse 100% 40% at 50% 75%,
+          rgba(59, 130, 246, 0.5) 0,
+          rgba(96, 165, 250, 0.3) 50%,
+          transparent 100%
+        );
+    background-size: 100% 100%;
+    background-position: 0% 0%;
+    /* лёгкое размытие для эффекта воды */
+    filter: blur(6px) brightness(1.3);
     mix-blend-mode: screen;
     pointer-events: none;
   }
@@ -250,21 +276,530 @@
 }
 
 @keyframes movie-title-flame {
+  /* волны воды поднимаются и опускаются */
   0% {
-    background-position: 0% 60%;
-    transform: translate3d(0px, 2px, 0) scale(0.92);
+    background-position: 0% 100%;
+    transform: translate3d(0px, 0px, 0) scaleY(1);
+    filter: blur(6px) brightness(1.2);
   }
-  28% {
-    background-position: 120% 42%;
-    transform: translate3d(-5px, -3px, 0) scale(1.04);
+  25% {
+    background-position: 0% 85%;
+    transform: translate3d(0px, -15px, 0) scaleY(1.15);
+    filter: blur(7px) brightness(1.25);
   }
-  58% {
-    background-position: 45% 95%;
-    transform: translate3d(4px, 1px, 0) scale(1.06);
+  50% {
+    background-position: 0% 70%;
+    transform: translate3d(0px, -30px, 0) scaleY(1.3);
+    filter: blur(8px) brightness(1.3);
+  }
+  75% {
+    background-position: 0% 85%;
+    transform: translate3d(0px, -15px, 0) scaleY(1.15);
+    filter: blur(7px) brightness(1.25);
   }
   100% {
-    background-position: 0% 60%;
-    transform: translate3d(0px, 2px, 0) scale(0.92);
+    background-position: 0% 100%;
+    transform: translate3d(0px, 0px, 0) scaleY(1);
+    filter: blur(6px) brightness(1.2);
+  }
+}
+
+/* Мелкие частицы поверх основного эффекта (как у лого) */
+@media (min-width: 768px) {
+  .movie-title-particles {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .group:hover .movie-title-particles,
+  .group:focus-visible .movie-title-particles {
+    opacity: 1;
+  }
+
+  /* Каждая частица — маленький светящийся шарик с собственной анимацией */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(224, 242, 254, 1) 0%,
+      rgba(147, 197, 253, 1) 30%,
+      rgba(96, 165, 250, 0.7) 60%,
+      transparent 100%
+    );
+    filter: blur(0.3px) brightness(1.3);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(147, 197, 253, 0.9),
+      0 0 3px rgba(224, 242, 254, 0.6);
+  }
+
+  .particle-1 {
+    width: 2.5px;
+    height: 2.5px;
+    left: 12%;
+    top: 48%;
+    animation: particle-float-1 7.2s ease-in-out infinite;
+  }
+
+  .particle-2 {
+    width: 3px;
+    height: 3px;
+    left: 25%;
+    top: 55%;
+    animation: particle-float-2 6.8s ease-in-out infinite;
+  }
+
+  .particle-3 {
+    width: 2px;
+    height: 2px;
+    left: 38%;
+    top: 45%;
+    animation: particle-float-3 7.5s ease-in-out infinite;
+  }
+
+  .particle-4 {
+    width: 2.8px;
+    height: 2.8px;
+    left: 50%;
+    top: 52%;
+    animation: particle-float-4 6.5s ease-in-out infinite;
+  }
+
+  .particle-5 {
+    width: 2.3px;
+    height: 2.3px;
+    left: 62%;
+    top: 48%;
+    animation: particle-float-5 7.1s ease-in-out infinite;
+  }
+
+  .particle-6 {
+    width: 3px;
+    height: 3px;
+    left: 75%;
+    top: 54%;
+    animation: particle-float-6 6.9s ease-in-out infinite;
+  }
+
+  .particle-7 {
+    width: 2.2px;
+    height: 2.2px;
+    left: 85%;
+    top: 50%;
+    animation: particle-float-7 7.3s ease-in-out infinite;
+  }
+
+  .particle-8 {
+    width: 2.6px;
+    height: 2.6px;
+    left: 92%;
+    top: 56%;
+    animation: particle-float-8 6.7s ease-in-out infinite;
+  }
+
+  .particle-9 {
+    width: 2.4px;
+    height: 2.4px;
+    left: 18%;
+    top: 35%;
+    animation: particle-float-9 7.8s ease-in-out infinite;
+  }
+
+  .particle-10 {
+    width: 2.8px;
+    height: 2.8px;
+    left: 33%;
+    top: 68%;
+    animation: particle-float-10 6.3s ease-in-out infinite;
+  }
+
+  .particle-11 {
+    width: 2.2px;
+    height: 2.2px;
+    left: 45%;
+    top: 28%;
+    animation: particle-float-11 7.6s ease-in-out infinite;
+  }
+
+  .particle-12 {
+    width: 3px;
+    height: 3px;
+    left: 58%;
+    top: 72%;
+    animation: particle-float-12 6.4s ease-in-out infinite;
+  }
+
+  .particle-13 {
+    width: 2.3px;
+    height: 2.3px;
+    left: 70%;
+    top: 38%;
+    animation: particle-float-13 7.4s ease-in-out infinite;
+  }
+
+  .particle-14 {
+    width: 2.7px;
+    height: 2.7px;
+    left: 82%;
+    top: 65%;
+    animation: particle-float-14 6.6s ease-in-out infinite;
+  }
+
+  .particle-15 {
+    width: 2.5px;
+    height: 2.5px;
+    left: 8%;
+    top: 62%;
+    animation: particle-float-15 7.2s ease-in-out infinite;
+  }
+
+  .particle-16 {
+    width: 2.9px;
+    height: 2.9px;
+    left: 95%;
+    top: 42%;
+    animation: particle-float-16 6.8s ease-in-out infinite;
+  }
+}
+
+/* Индивидуальные анимации для каждой частицы */
+@keyframes particle-float-1 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  20% {
+    transform: translate3d(-4px, -6px, 0);
+  }
+  40% {
+    transform: translate3d(2px, -3px, 0);
+  }
+  60% {
+    transform: translate3d(-3px, -8px, 0);
+  }
+  80% {
+    transform: translate3d(1px, -5px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-2 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  25% {
+    transform: translate3d(3px, -5px, 0);
+  }
+  50% {
+    transform: translate3d(-2px, -7px, 0);
+  }
+  75% {
+    transform: translate3d(4px, -3px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-3 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  15% {
+    transform: translate3d(-2px, -4px, 0);
+  }
+  35% {
+    transform: translate3d(3px, -6px, 0);
+  }
+  55% {
+    transform: translate3d(-1px, -3px, 0);
+  }
+  75% {
+    transform: translate3d(2px, -7px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-4 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  30% {
+    transform: translate3d(4px, -4px, 0);
+  }
+  60% {
+    transform: translate3d(-3px, -6px, 0);
+  }
+  90% {
+    transform: translate3d(2px, -2px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-5 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  22% {
+    transform: translate3d(-3px, -5px, 0);
+  }
+  44% {
+    transform: translate3d(1px, -7px, 0);
+  }
+  66% {
+    transform: translate3d(-4px, -3px, 0);
+  }
+  88% {
+    transform: translate3d(2px, -6px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-6 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  18% {
+    transform: translate3d(3px, -6px, 0);
+  }
+  36% {
+    transform: translate3d(-2px, -4px, 0);
+  }
+  54% {
+    transform: translate3d(4px, -7px, 0);
+  }
+  72% {
+    transform: translate3d(-1px, -5px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-7 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  28% {
+    transform: translate3d(-4px, -3px, 0);
+  }
+  56% {
+    transform: translate3d(2px, -8px, 0);
+  }
+  84% {
+    transform: translate3d(-2px, -5px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-8 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  24% {
+    transform: translate3d(3px, -7px, 0);
+  }
+  48% {
+    transform: translate3d(-3px, -4px, 0);
+  }
+  72% {
+    transform: translate3d(4px, -6px, 0);
+  }
+  96% {
+    transform: translate3d(-1px, -3px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-9 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  17% {
+    transform: translate3d(-5px, -8px, 0);
+  }
+  34% {
+    transform: translate3d(3px, -4px, 0);
+  }
+  51% {
+    transform: translate3d(-2px, -9px, 0);
+  }
+  68% {
+    transform: translate3d(4px, -3px, 0);
+  }
+  85% {
+    transform: translate3d(-3px, -7px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-10 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  19% {
+    transform: translate3d(4px, -6px, 0);
+  }
+  38% {
+    transform: translate3d(-4px, -8px, 0);
+  }
+  57% {
+    transform: translate3d(2px, -4px, 0);
+  }
+  76% {
+    transform: translate3d(-3px, -7px, 0);
+  }
+  95% {
+    transform: translate3d(3px, -5px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-11 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  21% {
+    transform: translate3d(-3px, -7px, 0);
+  }
+  42% {
+    transform: translate3d(4px, -5px, 0);
+  }
+  63% {
+    transform: translate3d(-2px, -8px, 0);
+  }
+  84% {
+    transform: translate3d(3px, -4px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-12 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  23% {
+    transform: translate3d(5px, -6px, 0);
+  }
+  46% {
+    transform: translate3d(-3px, -9px, 0);
+  }
+  69% {
+    transform: translate3d(2px, -5px, 0);
+  }
+  92% {
+    transform: translate3d(-4px, -7px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-13 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  18% {
+    transform: translate3d(-4px, -8px, 0);
+  }
+  36% {
+    transform: translate3d(3px, -5px, 0);
+  }
+  54% {
+    transform: translate3d(-3px, -7px, 0);
+  }
+  72% {
+    transform: translate3d(4px, -4px, 0);
+  }
+  90% {
+    transform: translate3d(-2px, -6px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-14 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  20% {
+    transform: translate3d(3px, -7px, 0);
+  }
+  40% {
+    transform: translate3d(-5px, -5px, 0);
+  }
+  60% {
+    transform: translate3d(2px, -8px, 0);
+  }
+  80% {
+    transform: translate3d(-3px, -4px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-15 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  22% {
+    transform: translate3d(-4px, -6px, 0);
+  }
+  44% {
+    transform: translate3d(4px, -8px, 0);
+  }
+  66% {
+    transform: translate3d(-2px, -5px, 0);
+  }
+  88% {
+    transform: translate3d(3px, -7px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+}
+
+@keyframes particle-float-16 {
+  0% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  16% {
+    transform: translate3d(5px, -7px, 0);
+  }
+  32% {
+    transform: translate3d(-3px, -6px, 0);
+  }
+  48% {
+    transform: translate3d(2px, -9px, 0);
+  }
+  64% {
+    transform: translate3d(-4px, -4px, 0);
+  }
+  80% {
+    transform: translate3d(3px, -8px, 0);
+  }
+  100% {
+    transform: translate3d(0px, 0px, 0);
   }
 }
 
@@ -391,6 +926,265 @@
 @media (min-width: 430px) {
   .channel-tabs {
     flex-wrap: nowrap;
+  }
+}
+
+/* Частицы в области с названием фильма */
+@media (min-width: 768px) {
+  .movie-title-particles-text {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .group:hover .movie-title-particles-text,
+  .group:focus-visible .movie-title-particles-text {
+    opacity: 1;
+  }
+
+  /* Каждая частица — маленький светящийся шарик с собственной анимацией */
+  .particle-text {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(147, 197, 253, 1) 0%,
+      rgba(96, 165, 250, 0.9) 30%,
+      rgba(59, 130, 246, 0.6) 60%,
+      transparent 100%
+    );
+    filter: blur(0.5px) brightness(1.4);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(96, 165, 250, 0.9);
+  }
+
+  .particle-text-1 {
+    width: 3px;
+    height: 3px;
+    left: 15%;
+    top: 30%;
+    animation: particle-text-float-1 5s ease-in-out infinite;
+  }
+
+  .particle-text-2 {
+    width: 3.5px;
+    height: 3.5px;
+    left: 35%;
+    top: 50%;
+    animation: particle-text-float-2 5.5s ease-in-out infinite;
+  }
+
+  .particle-text-3 {
+    width: 2.5px;
+    height: 2.5px;
+    left: 55%;
+    top: 35%;
+    animation: particle-text-float-3 6s ease-in-out infinite;
+  }
+
+  .particle-text-4 {
+    width: 3px;
+    height: 3px;
+    left: 75%;
+    top: 55%;
+    animation: particle-text-float-4 5.2s ease-in-out infinite;
+  }
+
+  .particle-text-5 {
+    width: 2.8px;
+    height: 2.8px;
+    left: 25%;
+    top: 65%;
+    animation: particle-text-float-5 5.8s ease-in-out infinite;
+  }
+
+  .particle-text-6 {
+    width: 3.2px;
+    height: 3.2px;
+    left: 45%;
+    top: 25%;
+    animation: particle-text-float-6 5.3s ease-in-out infinite;
+  }
+
+  .particle-text-7 {
+    width: 2.7px;
+    height: 2.7px;
+    left: 65%;
+    top: 70%;
+    animation: particle-text-float-7 5.7s ease-in-out infinite;
+  }
+
+  .particle-text-8 {
+    width: 3.3px;
+    height: 3.3px;
+    left: 85%;
+    top: 40%;
+    animation: particle-text-float-8 5.4s ease-in-out infinite;
+  }
+}
+
+/* Индивидуальные анимации для частиц в области текста */
+@keyframes particle-text-float-1 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate3d(-3px, -4px, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(2px, -2px, 0);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translate3d(-2px, -5px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes particle-text-float-2 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translate3d(3px, -3px, 0);
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(-2px, -5px, 0);
+    opacity: 0.9;
+  }
+  90% {
+    transform: translate3d(2px, -2px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes particle-text-float-3 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.8;
+  }
+  20% {
+    transform: translate3d(-2px, -3px, 0);
+    opacity: 1;
+  }
+  40% {
+    transform: translate3d(3px, -5px, 0);
+    opacity: 0.9;
+  }
+  60% {
+    transform: translate3d(-1px, -2px, 0);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(2px, -4px, 0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes particle-text-float-4 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.9;
+  }
+  35% {
+    transform: translate3d(3px, -4px, 0);
+    opacity: 1;
+  }
+  70% {
+    transform: translate3d(-3px, -3px, 0);
+    opacity: 0.8;
+  }
+}
+
+@keyframes particle-text-float-5 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate3d(-3px, -5px, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(1px, -3px, 0);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translate3d(-2px, -4px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes particle-text-float-6 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.7;
+  }
+  20% {
+    transform: translate3d(3px, -5px, 0);
+    opacity: 1;
+  }
+  40% {
+    transform: translate3d(-2px, -3px, 0);
+    opacity: 0.9;
+  }
+  60% {
+    transform: translate3d(3px, -4px, 0);
+    opacity: 1;
+  }
+  80% {
+    transform: translate3d(-1px, -5px, 0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes particle-text-float-7 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.8;
+  }
+  30% {
+    transform: translate3d(-3px, -3px, 0);
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(2px, -5px, 0);
+    opacity: 0.9;
+  }
+  90% {
+    transform: translate3d(-2px, -2px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes particle-text-float-8 {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+    opacity: 0.9;
+  }
+  25% {
+    transform: translate3d(3px, -4px, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(-3px, -5px, 0);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translate3d(2px, -3px, 0);
+    opacity: 1;
   }
 }
 
