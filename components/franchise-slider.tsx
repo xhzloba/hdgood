@@ -156,7 +156,8 @@ export function FranchiseSlider() {
                       src={posterSrc(item.poster)}
                       alt={item.title}
                       loading="lazy"
-                      className={`w-full h-full object-cover transition-opacity duration-500 poster-media ${loadedImages.has(item.href) ? "opacity-100" : "opacity-0"}`}
+                      className={`w-full h-full object-cover transition-all ease-out poster-media ${loadedImages.has(item.href) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"}`}
+                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                       onLoad={() => setLoadedImages((prev) => {
                         const next = new Set(prev);
                         next.add(item.href);
