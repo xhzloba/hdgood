@@ -9,6 +9,8 @@ type Particle = {
   vy: number
   radius: number
   alpha: number
+  phase: number
+  freq: number
 }
 
 const PARTICLE_COUNT = 18
@@ -50,8 +52,10 @@ export function LogoParticles() {
           y: Math.random() * (height + 2 * marginY) - marginY,
           vx,
           vy,
-          radius: Math.random() * 1.0 + 0.5,
+          radius: Math.random() * 1.8 + 1.2,
           alpha: Math.random() * 0.4 + 0.22,
+          phase: Math.random() * Math.PI * 2,
+          freq: 0.015 + Math.random() * 0.02,
         }
       })
     }
@@ -68,6 +72,7 @@ export function LogoParticles() {
       for (const p of particles) {
         p.x += p.vx
         p.y += p.vy
+        p.phase += p.freq
 
         // мягкое хаотичное движение: если вышли за расширенные границы — возвращаем с противоположной стороны
         if (p.x < -marginX) p.x = width + marginX
@@ -79,14 +84,17 @@ export function LogoParticles() {
         p.alpha += (Math.random() - 0.5) * 0.02
         p.alpha = Math.min(0.55, Math.max(0.18, p.alpha))
 
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 2.4)
+        const pulse = 1 + 0.3 * Math.sin(p.phase)
+        const effectiveRadius = p.radius * pulse
+
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, effectiveRadius * 3.5)
         gradient.addColorStop(0, `rgba(191, 219, 254, ${p.alpha})`)
-        gradient.addColorStop(0.4, `rgba(96, 165, 250, ${p.alpha * 0.9})`)
+        gradient.addColorStop(0.45, `rgba(96, 165, 250, ${p.alpha * 0.9})`)
         gradient.addColorStop(1, "rgba(15, 23, 42, 0)")
 
         ctx.fillStyle = gradient
         ctx.beginPath()
-        ctx.arc(p.x, p.y, p.radius * 2.4, 0, Math.PI * 2)
+        ctx.arc(p.x, p.y, effectiveRadius * 3.5, 0, Math.PI * 2)
         ctx.fill()
       }
 
