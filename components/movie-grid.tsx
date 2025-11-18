@@ -234,7 +234,7 @@ export function MovieGrid({ url }: MovieGridProps) {
               <Skeleton className="w-full h-full" />
             </div>
             <div className="relative p-2 md:p-3 overflow-hidden">
-              <div className="pointer-events-none absolute top-[42%] h-[18%] left-1/2 -translate-x-1/2 w-[60%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+              <div className="pointer-events-none absolute top-[36%] h-[32%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
               <div className="relative">
                 <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
                 <div className="flex items-center justify-between">
@@ -364,7 +364,7 @@ export function MovieGrid({ url }: MovieGridProps) {
               )}
             </div>
             <div className="relative p-2 md:p-3 overflow-hidden">
-              <div className="pointer-events-none absolute top-[42%] h-[18%] left-1/2 -translate-x-1/2 w-[60%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+              <div className="pointer-events-none absolute top-[36%] h-[32%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
               <div className="relative">
                 <h3
                   className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
