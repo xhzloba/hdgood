@@ -373,6 +373,25 @@ export default function MovieSlider({
                   <Link
                     href={`/movie/${movie.id}`}
                     className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
+                    onMouseMove={(e) => {
+                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      if (!posterEl) return;
+                      const rect = posterEl.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const y = e.clientY - rect.top;
+                      const mx = x / rect.width * 2 - 1;
+                      const my = y / rect.height * 2 - 1;
+                      posterEl.style.setProperty('--x', `${x}px`);
+                      posterEl.style.setProperty('--y', `${y}px`);
+                      posterEl.style.setProperty('--mx', `${mx}`);
+                      posterEl.style.setProperty('--my', `${my}`);
+                    }}
+                    onMouseLeave={(e) => {
+                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      if (!posterEl) return;
+                      posterEl.style.setProperty('--mx', '0');
+                      posterEl.style.setProperty('--my', '0');
+                    }}
                     onClick={(e) => {
                       const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
                       if (api?.clickAllowed && !api.clickAllowed()) {
@@ -392,13 +411,13 @@ export default function MovieSlider({
                       }
                     }}
                   >
-                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
+                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
                       {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
                         <img
                           key={String(movie.id)}
                           src={movie.poster || "/placeholder.svg"}
                           alt={movie.title || "Постер"}
-                          className={`w-full h-full object-cover transition-opacity duration-500 ${
+                          className={`w-full h-full object-cover transition-opacity duration-500 poster-media ${
                             loadedImages.has(String(movie.id)) ? "opacity-100" : "opacity-0"
                           }`}
                           onLoad={() => {
@@ -428,20 +447,13 @@ export default function MovieSlider({
                           {formatRatingLabel(movie.rating)}
                         </div>
                       )}
+                      {movie.quality && (
+                        <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                          {String(movie.quality)}
+                        </div>
+                      )}
                     </div>
-                    {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
                     <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                      {/* Анимация частиц в области с названием */}
-                      <div className="pointer-events-none absolute inset-0 hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-400 movie-title-particles-text z-[1]">
-                        <span className="particle-text particle-text-1" />
-                        <span className="particle-text particle-text-2" />
-                        <span className="particle-text particle-text-3" />
-                        <span className="particle-text particle-text-4" />
-                        <span className="particle-text particle-text-5" />
-                        <span className="particle-text particle-text-6" />
-                        <span className="particle-text particle-text-7" />
-                        <span className="particle-text particle-text-8" />
-                      </div>
                       <div className="relative z-[2]">
                         <h3
                           className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"

@@ -120,8 +120,27 @@ export function FranchiseSlider() {
               <CarouselItem key={item.href ?? idx} className="basis-full pl-0">
                 <Link
                   href={item.href}
-          className="block bg-zinc-900/60 hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700 active:border-zinc-700 focus-visible:border-zinc-700 rounded-sm overflow-hidden transition-colors"
+                  className="group block bg-transparent hover:bg-transparent outline-none transition-all duration-200 rounded-sm overflow-hidden"
                   title={item.title}
+                  onMouseMove={(e) => {
+                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                    if (!posterEl) return;
+                    const rect = posterEl.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const mx = x / rect.width * 2 - 1;
+                    const my = y / rect.height * 2 - 1;
+                    posterEl.style.setProperty('--x', `${x}px`);
+                    posterEl.style.setProperty('--y', `${y}px`);
+                    posterEl.style.setProperty('--mx', `${mx}`);
+                    posterEl.style.setProperty('--my', `${my}`);
+                  }}
+                  onMouseLeave={(e) => {
+                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                    if (!posterEl) return;
+                    posterEl.style.setProperty('--mx', '0');
+                    posterEl.style.setProperty('--my', '0');
+                  }}
                   onClick={(e) => {
                     const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
                     if (api?.clickAllowed && !api.clickAllowed()) {
@@ -129,7 +148,7 @@ export function FranchiseSlider() {
                     }
                   }}
                 >
-                  <div className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[7/3] lg:aspect-[3/1] bg-zinc-950">
+                  <div className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[7/3] lg:aspect-[3/1] bg-zinc-950 overflow-hidden rounded-[10px] poster-card">
                     {!loadedImages.has(item.href) && (
                       <Skeleton className="absolute inset-0 w-full h-full" />
                     )}
@@ -137,7 +156,7 @@ export function FranchiseSlider() {
                       src={posterSrc(item.poster)}
                       alt={item.title}
                       loading="lazy"
-                      className={`w-full h-full object-cover transition-opacity duration-500 ${loadedImages.has(item.href) ? "opacity-100" : "opacity-0"}`}
+                      className={`w-full h-full object-cover transition-opacity duration-500 poster-media ${loadedImages.has(item.href) ? "opacity-100" : "opacity-0"}`}
                       onLoad={() => setLoadedImages((prev) => {
                         const next = new Set(prev);
                         next.add(item.href);
