@@ -313,11 +313,14 @@ export default function MovieSlider({
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
                       <Skeleton className="w-full h-full" />
                     </div>
-                    <div className="p-2 md:p-3 min-h-[48px] md:min-h-[56px]">
-                      <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
-                      <div className="flex items-center justify-between">
-                        <Skeleton className="h-3 md:h-4 w-16" />
-                        <Skeleton className="h-3 md:h-4 w-12" />
+                    <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                      <div className="pointer-events-none absolute top-[42%] h-[18%] left-1/2 -translate-x-1/2 w-[60%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+                      <div className="relative">
+                        <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                        <div className="flex items-center justify-between">
+                          <Skeleton className="h-3 md:h-4 w-16" />
+                          <Skeleton className="h-3 md:h-4 w-12" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -425,26 +428,29 @@ export default function MovieSlider({
                         </div>
                       )}
                     </div>
-                    <div className="p-2 md:p-3 min-h-[48px] md:min-h-[56px]">
-                      <h3
-                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
-                        title={movie.title || "Без названия"}
-                      >
-                        {movie.title || "Без названия"}
-                      </h3>
-                      <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
-                        {movie.year && <span>{movie.year}</span>}
-                        {movie.year && movie.country && (
-                          <span className="text-zinc-500/60"> / </span>
-                        )}
-                        {movie.country && (
-                          <>
-                            <CountryFlag country={movie.country} size="sm" />
-                            {getCountryLabel(movie.country) && (
-                              <span>{getCountryLabel(movie.country) as string}</span>
-                            )}
-                          </>
-                        )}
+                    <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                      <div className="pointer-events-none absolute top-[42%] h-[18%] left-1/2 -translate-x-1/2 w-[60%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+                      <div className="relative">
+                        <h3
+                          className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/60 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300 group-active:text-zinc-300"
+                          title={movie.title || "Без названия"}
+                        >
+                          {movie.title || "Без названия"}
+                        </h3>
+                        <div className="flex items-center justify-start gap-1 text-[10px] md:text-[11px] text-zinc-400/60 transition-colors duration-200 group-hover:text-zinc-400 group-focus-visible:text-zinc-400 group-active:text-zinc-400">
+                          {movie.year && <span>{movie.year}</span>}
+                          {movie.year && movie.country && (
+                            <span className="text-zinc-500/60"> / </span>
+                          )}
+                          {movie.country && (
+                            <>
+                              <CountryFlag country={movie.country} size="sm" />
+                              {getCountryLabel(movie.country) && (
+                                <span>{getCountryLabel(movie.country) as string}</span>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </Link>

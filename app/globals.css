@@ -211,6 +211,62 @@
   animation: logo-particles 18s linear infinite;
 }
 
+/* «Пламя» и частицы под блоком с названием фильма (только десктоп) */
+@media (min-width: 768px) {
+  .movie-title-flame {
+    /* базовое состояние: спрятано и анимация на паузе — включаем только при hover/focus группы */
+    opacity: 0;
+    animation: movie-title-flame 18s ease-in-out infinite;
+    animation-play-state: paused;
+    /* только маленькие "облачные" частицы */
+    background-image: radial-gradient(
+        circle at 22% 52%,
+        rgba(96, 165, 250, 0.7) 0,
+        transparent 36%
+      ),
+      radial-gradient(
+        circle at 50% 48%,
+        rgba(59, 130, 246, 0.65) 0,
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 76% 54%,
+        rgba(129, 199, 255, 0.7) 0,
+        transparent 36%
+      );
+    background-size: 200% 130%;
+    background-position: 0% 60%;
+    filter: blur(10px);
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .group:hover .movie-title-flame,
+  .group:focus-visible .movie-title-flame {
+    opacity: 1;
+    animation-play-state: running;
+  }
+}
+
+@keyframes movie-title-flame {
+  0% {
+    background-position: 0% 60%;
+    transform: translate3d(0px, 2px, 0) scale(0.92);
+  }
+  28% {
+    background-position: 120% 42%;
+    transform: translate3d(-5px, -3px, 0) scale(1.04);
+  }
+  58% {
+    background-position: 45% 95%;
+    transform: translate3d(4px, 1px, 0) scale(1.06);
+  }
+  100% {
+    background-position: 0% 60%;
+    transform: translate3d(0px, 2px, 0) scale(0.92);
+  }
+}
+
 @keyframes logo-glow {
   0% {
     opacity: 0.8;
