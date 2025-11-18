@@ -28,6 +28,7 @@ type PosterBackgroundProps = {
   disableMobileBackdrop?: boolean
   // Простой режим: не извлекать цвета, а просто затемнять углы поверх bgPosterUrl
   simpleDarkCorners?: boolean
+  softBottomFade?: boolean
 }
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
@@ -490,6 +491,7 @@ export function PosterBackground({
   colorOverrides,
   disableMobileBackdrop,
   simpleDarkCorners,
+  softBottomFade,
 }: PosterBackgroundProps) {
   type Palette = { corners: { tl: RGB; br: RGB; bl: RGB } | null; dominants: [RGB, RGB] | null }
   const [palette, setPalette] = React.useState<Palette>({ corners: null, dominants: null })
@@ -578,9 +580,9 @@ export function PosterBackground({
         return baseStyle
       }
       if (bgPosterUrl) {
-        // Единый, достаточно агрессивный градиент снизу для всех роутов
-        const bottomFade =
-          "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
+        const bottomFade = softBottomFade
+          ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 12%, rgba(0,0,0,0.85) 26%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.95) 100%)"
+          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
 
         const overlayGradients = [
           // только мягкое затемнение от боков к центру
