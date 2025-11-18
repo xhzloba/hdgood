@@ -309,8 +309,8 @@ export default function MovieSlider({
                     compactOnMobile ? "basis-[36%] sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
                   } md:basis-1/4 lg:basis-1/5 xl:basis-1/6`}
                 >
-                  <div className="block bg-zinc-900/60 overflow-hidden rounded-sm">
-                    <div className="aspect-[2/3] bg-zinc-950">
+                  <div className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm">
+                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
                       <Skeleton className="w-full h-full" />
                     </div>
                     <div className="p-2 md:p-3 min-h-[48px] md:min-h-[56px]">

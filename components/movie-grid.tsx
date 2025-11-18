@@ -226,8 +226,11 @@ export function MovieGrid({ url }: MovieGridProps) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {Array.from({ length: skeletonCount }).map((_, i) => (
-          <div key={i} className="bg-zinc-900/60 rounded-sm overflow-hidden">
-            <div className="aspect-[2/3] bg-zinc-950">
+          <div
+            key={i}
+            className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+          >
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               <Skeleton className="w-full h-full" />
             </div>
             <div className="p-2 md:p-3">
