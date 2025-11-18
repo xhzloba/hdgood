@@ -212,3 +212,35 @@
     overflow-anchor: none;
   }
 }
+
+/* Перенос табов только на очень узких экранах */
+@media (max-width: 429px) {
+  .channel-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+/* От 430px и выше табы не переносятся */
+@media (min-width: 430px) {
+  .channel-tabs {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Точные твики для очень узких экранов: 390px и меньше */
+@media (max-width: 390px) {
+  .channel-tab-btn {
+    font-size: 11px !important;
+    padding-inline: 0.55rem !important;
+    height: 2.1rem !important;
+  }
+
+  .channel-tab-btn[data-active="true"] {
+    height: 2.3rem !important;
+    transform: scale(1.04) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
