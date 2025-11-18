@@ -52,8 +52,9 @@ export function LogoParticles() {
           y: Math.random() * (height + 2 * marginY) - marginY,
           vx,
           vy,
-          radius: Math.random() * 1.8 + 1.2,
-          alpha: Math.random() * 0.4 + 0.22,
+          // чуть меньше частицы, но с мягким свечением
+          radius: Math.random() * 1.2 + 0.9,
+          alpha: Math.random() * 0.3 + 0.2,
           phase: Math.random() * Math.PI * 2,
           freq: 0.015 + Math.random() * 0.02,
         }
@@ -81,20 +82,20 @@ export function LogoParticles() {
         if (p.y > height + marginY) p.y = -marginY
 
         // лёгкое дрожание прозрачности для живости
-        p.alpha += (Math.random() - 0.5) * 0.02
-        p.alpha = Math.min(0.55, Math.max(0.18, p.alpha))
+        p.alpha += (Math.random() - 0.5) * 0.015
+        p.alpha = Math.min(0.5, Math.max(0.16, p.alpha))
 
-        const pulse = 1 + 0.3 * Math.sin(p.phase)
+        const pulse = 1 + 0.25 * Math.sin(p.phase)
         const effectiveRadius = p.radius * pulse
 
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, effectiveRadius * 3.5)
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, effectiveRadius * 2.8)
         gradient.addColorStop(0, `rgba(191, 219, 254, ${p.alpha})`)
-        gradient.addColorStop(0.45, `rgba(96, 165, 250, ${p.alpha * 0.9})`)
+        gradient.addColorStop(0.4, `rgba(96, 165, 250, ${p.alpha * 0.85})`)
         gradient.addColorStop(1, "rgba(15, 23, 42, 0)")
 
         ctx.fillStyle = gradient
         ctx.beginPath()
-        ctx.arc(p.x, p.y, effectiveRadius * 3.5, 0, Math.PI * 2)
+        ctx.arc(p.x, p.y, effectiveRadius * 2.8, 0, Math.PI * 2)
         ctx.fill()
       }
 

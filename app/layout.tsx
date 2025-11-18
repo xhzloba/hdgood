@@ -6,6 +6,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { ShortcutNavigator } from "@/components/shortcut-navigator";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Toaster } from "@/components/ui/toaster";
+import { CursorPopcorn } from "@/components/cursor-popcorn";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -64,6 +65,7 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <NextTopLoader color="#2563eb" showSpinner={false} height={3} />
         <ScrollToTop />
+        <CursorPopcorn />
         {/* Глобальный хоткей: Space+K для открытия /admin */}
         <ShortcutNavigator />
         {children}
