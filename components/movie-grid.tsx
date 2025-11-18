@@ -167,6 +167,7 @@ export function MovieGrid({ url }: MovieGridProps) {
     } catch {}
   }, []);
 
+
   useEffect(() => {
     try {
       if (typeof window === "undefined") return;
@@ -367,7 +368,10 @@ export function MovieGrid({ url }: MovieGridProps) {
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
-    const skeletonCount = isArrowCandidate ? effectiveCols : (expectedSkeletonCountForUrl(url) ?? perPage);
+    const isDesktopNow = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+    const skeletonCount = typeof window === "undefined"
+      ? 5
+      : (isArrowDesktopMode ? effectiveCols : (isDesktopNow ? 5 : perPage));
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
         {Array.from({ length: skeletonCount }).map((_, i) => (
