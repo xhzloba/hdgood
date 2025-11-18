@@ -2,7 +2,6 @@
 
 import { HeaderCategories } from "@/components/header-categories"
 import { UpdatesSection } from "@/components/updates-section"
-import { Footer } from "@/components/footer"
 
 export default function UpdatesPage() {
   return (
@@ -12,9 +11,7 @@ export default function UpdatesPage() {
           <HeaderCategories variant="horizontal" />
         </div>
         <UpdatesSection />
-        <div className="mt-10 md:mt-12">
-          <Footer />
-        </div>
+        
       </main>
     </div>
   )

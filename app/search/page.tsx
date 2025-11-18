@@ -6,7 +6,6 @@ import { HeaderCategories } from "@/components/header-categories"
 import { MovieGrid } from "@/components/movie-grid"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Footer } from "@/components/footer"
 
 function SearchForm() {
   const router = useRouter()
@@ -70,9 +69,7 @@ export default function SearchPage() {
             </Suspense>
           </div>
         </section>
-        <div className="mt-10 md:mt-12">
-          <Footer />
-        </div>
+        
       </main>
     </div>
   )

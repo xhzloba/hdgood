@@ -1,6 +1,5 @@
 import { HeaderCategories } from "@/components/header-categories";
 import { MovieGrid } from "@/components/movie-grid";
-import { Footer } from "@/components/footer";
 
 export default function Top250Page() {
   const apiUrl = "https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
@@ -22,9 +21,7 @@ export default function Top250Page() {
             </div>
           </div>
         </section>
-        <div className="mt-10 md:mt-12">
-          <Footer />
-        </div>
+        
       </main>
     </div>
   );

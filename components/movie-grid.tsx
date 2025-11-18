@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -118,6 +119,7 @@ function getPrimaryGenreFromMovie(movie: any): string | null {
   return null;
 }
 
+
 // Бейдж качества: белый фон, чёрный текст, нейтральный бело‑серый бордер
 
 const overridesCacheRef =
@@ -131,6 +133,9 @@ export function MovieGrid({ url }: MovieGridProps) {
     Array<{ page: number; data: any }>
   >([]);
   const [lastPageEmpty, setLastPageEmpty] = useState<boolean>(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [gridCols, setGridCols] = useState<number>(4);
+  const [subIndex, setSubIndex] = useState<number>(0);
 
   const perPage = 15;
 
@@ -152,11 +157,52 @@ export function MovieGrid({ url }: MovieGridProps) {
     setLastPageEmpty(false);
   }, [url]);
 
+  useEffect(() => {
+    try {
+      const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null;
+      const update = () => setIsDesktop(!!mq?.matches);
+      update();
+      mq?.addEventListener("change", update);
+      return () => mq?.removeEventListener("change", update);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const mqlXl = window.matchMedia("(min-width: 1280px)");
+      const mqlLg = window.matchMedia("(min-width: 1024px)");
+      const mqlMd = window.matchMedia("(min-width: 768px)");
+      const computeCols = () => {
+        if (mqlXl.matches) return 6;
+        if (mqlLg.matches) return 5;
+        if (mqlMd.matches) return 4;
+        return 2;
+      };
+      const updateCols = () => setGridCols(computeCols());
+      updateCols();
+      mqlXl.addEventListener("change", updateCols);
+      mqlLg.addEventListener("change", updateCols);
+      mqlMd.addEventListener("change", updateCols);
+      window.addEventListener("resize", updateCols);
+      return () => {
+        mqlXl.removeEventListener("change", updateCols);
+        mqlLg.removeEventListener("change", updateCols);
+        mqlMd.removeEventListener("change", updateCols);
+        window.removeEventListener("resize", updateCols);
+      };
+    } catch {}
+  }, []);
+
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
   const { data, error, isLoading, isValidating } = useSWR<string>(
     currentUrl,
     fetcher
   );
+  const nextUrl = useMemo(() => makePageUrl(url, page + 1), [url, page]);
+  const { data: nextData } = useSWR<string>(nextUrl, fetcher);
+  const next2Url = useMemo(() => makePageUrl(url, page + 2), [url, page]);
+  const { data: next2Data } = useSWR<string>(next2Url, fetcher);
 
   // Append fetched page data
   useEffect(() => {
@@ -172,6 +218,50 @@ export function MovieGrid({ url }: MovieGridProps) {
       return next;
     });
   }, [data, page, lastPageEmpty]);
+
+  useEffect(() => {
+    if (!nextData) return;
+    setPagesData((prev) => {
+      const nextPage = page + 1;
+      const exists = prev.some((p) => p.page === nextPage);
+      if (exists) return prev;
+      const movies = extractMoviesFromData(nextData);
+      if (!movies || movies.length === 0) {
+        setLastPageEmpty(true);
+      }
+      return [...prev, { page: nextPage, data: nextData }];
+    });
+  }, [nextData, page]);
+
+  useEffect(() => {
+    if (!next2Data) return;
+    setPagesData((prev) => {
+      const nextPage = page + 2;
+      const exists = prev.some((p) => p.page === nextPage);
+      if (exists) return prev;
+      const movies = extractMoviesFromData(next2Data);
+      if (!movies || movies.length === 0) {
+        setLastPageEmpty(true);
+      }
+      return [...prev, { page: nextPage, data: next2Data }];
+    });
+  }, [next2Data, page]);
+
+  const hasNextLoadedGlobal = useMemo(() => {
+    return pagesData.some((p) => p.page === page + 1);
+  }, [pagesData, page]);
+  const nextPageEntry = useMemo(() => {
+    return pagesData.find((p) => p.page === page + 1) || null;
+  }, [pagesData, page]);
+  const nextPageItemsLen = useMemo(() => {
+    if (!nextPageEntry) return null;
+    try {
+      const arr = extractMoviesFromData(nextPageEntry.data);
+      return Array.isArray(arr) ? arr.length : 0;
+    } catch {
+      return 0;
+    }
+  }, [nextPageEntry]);
 
   // NOTE: Avoid early returns before all hooks to keep hook order stable.
 
@@ -197,7 +287,37 @@ export function MovieGrid({ url }: MovieGridProps) {
     const base = (url || "").split("?")[0];
     return base.includes("/api/franchise");
   })();
-  const display = hideLoadMore ? movies : displayMovies;
+  const isArrowCandidate = useMemo(() => {
+    const u = String(url || "");
+    const isList = u.includes("/v2/list");
+    const isMovieOrSerial = u.includes("type=movie") || u.includes("type=serial");
+    const isUhdTag = /tag=(4K|4K%20HDR|4K%20DolbyV|60FPS)/.test(u);
+    return isList && (isMovieOrSerial || isUhdTag);
+  }, [url]);
+  const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore;
+  const currentPageEntry = useMemo(() => {
+    return pagesData.find((p) => p.page === page) || null;
+  }, [pagesData, page]);
+  const effectiveCols = useMemo(() => (isArrowDesktopMode ? 5 : gridCols), [isArrowDesktopMode, gridCols]);
+  const chunkSize = 5;
+  const getItemsForPage = (pg: number) => {
+    const entry = pagesData.find((p) => p.page === pg) || null;
+    return entry ? extractMoviesFromData(entry.data) : [];
+  };
+  const currChunkCount = useMemo(() => {
+    const len = getItemsForPage(page).length;
+    return Math.max(1, Math.ceil(len / chunkSize));
+  }, [pagesData, page]);
+  const display = hideLoadMore
+    ? movies
+    : isArrowDesktopMode
+    ? (() => {
+        const currItems = getItemsForPage(page);
+        const start = subIndex * chunkSize;
+        const end = start + chunkSize;
+        return currItems.slice(start, end);
+      })()
+    : displayMovies;
 
   // Batch-load overrides for current display ids.
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({
@@ -247,9 +367,9 @@ export function MovieGrid({ url }: MovieGridProps) {
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
-    const skeletonCount = expectedSkeletonCountForUrl(url) ?? perPage;
+    const skeletonCount = isArrowCandidate ? effectiveCols : (expectedSkeletonCountForUrl(url) ?? perPage);
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
@@ -259,6 +379,38 @@ export function MovieGrid({ url }: MovieGridProps) {
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+              <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+              <div className="relative">
+                <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-2 md:h-3 w-10" />
+                  <Skeleton className="h-2 md:h-3 w-16" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (
+    isArrowDesktopMode &&
+    (isLoading || isValidating) &&
+    !pagesData.some((p) => p.page === page)
+  ) {
+    const skeletonCount = effectiveCols;
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
+        {Array.from({ length: skeletonCount }).map((_, i) => (
+          <div
+            key={i}
+            className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+          >
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
+              <Skeleton className="w-full h-full" />
+            </div>
             <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
               <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
               <div className="relative">
@@ -302,6 +454,43 @@ export function MovieGrid({ url }: MovieGridProps) {
     if (isLoading) return;
     if (lastPageEmpty) return;
     setPage((p) => p + 1);
+    setSubIndex(0);
+  };
+
+  const handlePrevArrow = () => {
+    if (!isArrowDesktopMode) return;
+    const prevItems = page > 1 ? getItemsForPage(page - 1) : [];
+    const prevChunks = Math.max(1, Math.ceil(prevItems.length / chunkSize));
+    if (subIndex > 0) {
+      setSubIndex((i) => Math.max(0, i - 1));
+      return;
+    }
+    if (page > 1) {
+      setPage((p) => Math.max(1, p - 1));
+      setSubIndex(Math.max(0, prevChunks - 1));
+    }
+  };
+
+  const handleNextArrow = () => {
+    if (!isArrowDesktopMode) return;
+    const currItems = getItemsForPage(page);
+    const chunkCount = Math.max(1, Math.ceil(currItems.length / chunkSize));
+    if (subIndex < chunkCount - 1) {
+      setSubIndex((i) => i + 1);
+      return;
+    }
+    const nextEntry = pagesData.find((p) => p.page === page + 1) || null;
+    const nextLen = nextEntry ? extractMoviesFromData(nextEntry.data).length : 0;
+    if (nextEntry) {
+      if (nextLen === 0) {
+        return;
+      }
+      setPage((p) => p + 1);
+      setSubIndex(0);
+      return;
+    }
+    if (lastPageEmpty || isLoading) return;
+    handleLoadMore();
   };
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
@@ -315,9 +504,21 @@ export function MovieGrid({ url }: MovieGridProps) {
     );
   }
 
+  const showLoadMoreButton = !lastPageEmpty && !hideLoadMore && !isArrowDesktopMode;
+
   return (
-    <div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+    <div className="relative">
+      {isArrowDesktopMode && (
+        <button
+          onClick={handlePrevArrow}
+          disabled={page <= 1 && subIndex <= 0}
+          className="hidden md:flex items-center justify-center absolute left-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Предыдущая страница"
+        >
+          <IconChevronLeft size={20} />
+        </button>
+      )}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
         {finalDisplay.map((movie: any, index: number) => (
           <Link
             key={movie.id || index}
@@ -360,11 +561,15 @@ export function MovieGrid({ url }: MovieGridProps) {
                 <img
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.title || "Постер"}
-                  className={`w-full h-full object-cover transition-opacity duration-500 poster-media ${
+                  decoding="async"
+                  loading={index < effectiveCols ? "eager" : "lazy"}
+                  fetchPriority={index < effectiveCols ? "high" : "low"}
+                  className={`w-full h-full object-cover transition-all ease-out poster-media ${
                     loadedImages.has(String(movie.id))
-                      ? "opacity-100"
-                      : "opacity-0"
+                      ? "opacity-100 blur-0 scale-100"
+                      : "opacity-0 blur-md scale-[1.02]"
                   }`}
+                  style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                   onLoad={() => handleImageLoad(movie.id)}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
@@ -425,8 +630,18 @@ export function MovieGrid({ url }: MovieGridProps) {
           </Link>
         ))}
       </div>
+      {isArrowDesktopMode && (
+        <button
+          onClick={handleNextArrow}
+          disabled={(subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty))}
+          className="hidden md:flex items-center justify-center absolute right-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Следующая страница"
+        >
+          <IconChevronRight size={20} />
+        </button>
+      )}
 
-      {!lastPageEmpty && !hideLoadMore && (
+      {showLoadMoreButton && (
         <div className="flex justify-center mt-4">
           {isLoading ? (
             // Анимированные синие три точки без обрамления (увеличенный размер)

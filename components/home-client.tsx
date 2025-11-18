@@ -14,7 +14,6 @@ import { APP_SETTINGS } from "@/lib/settings";
 import { getCountryLabel } from "@/lib/country-flags";
 import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Footer } from "@/components/footer";
 
 type HomeClientProps = {
   initialSelectedTitle?: string;
@@ -87,6 +86,7 @@ export default function HomeClient({
   const activeIndex = selected
     ? CATEGORIES.findIndex((c) => c.title === selected.title)
     : null;
+  const sectionMarginClass = "mt-[1vh] md:mt-[4vh]";
   const handleActiveIndexChange = (index: number | null) => {
     if (index == null) {
       setSelected(null);
@@ -640,7 +640,7 @@ export default function HomeClient({
           </div>
         </div>
         <section>
-          <div className="relative z-20 mt-[2vh] md:mt-[10vh]">
+          <div className={`relative z-20 ${sectionMarginClass}`}>
             {isUhdMode ? (
               <UhdSection />
             ) : isMoviesMode ? (
@@ -652,9 +652,7 @@ export default function HomeClient({
             )}
           </div>
         </section>
-        <div className="relative z-20 mt-10 md:mt-12">
-          <Footer />
-        </div>
+        
       </main>
     </PosterBackground>
   );
