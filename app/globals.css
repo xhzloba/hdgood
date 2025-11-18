@@ -137,6 +137,118 @@
   }
 }
 
+/* Лого HD Good с подсветкой и мягкими «частицами» */
+.logo-hdgood {
+  position: relative;
+  border-radius: 9999px;
+  padding-inline: 0.4rem;
+  padding-block: 0.15rem;
+  isolation: isolate;
+}
+
+.logo-hdgood::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: radial-gradient(
+      circle at 0% 0%,
+      rgba(30, 64, 175, 0.9),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(30, 64, 175, 0.82),
+      transparent 60%
+    ),
+    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.7), transparent 55%);
+  opacity: 0.9;
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: -1;
+  animation: logo-glow 4.5s ease-in-out infinite;
+}
+
+.logo-hdgood::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  background-image: radial-gradient(
+      circle at 8% 20%,
+      rgba(30, 64, 175, 0.9) 0,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(37, 99, 235, 0.7) 0,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 30% 80%,
+      rgba(15, 23, 42, 0.85) 0,
+      transparent 50%
+    ),
+    /* мелкие «частицы» вокруг логотипа */
+      radial-gradient(
+        circle at 15% 10%,
+        rgba(59, 130, 246, 0.55) 0,
+        transparent 30%
+      ),
+    radial-gradient(
+      circle at 85% 25%,
+      rgba(37, 99, 235, 0.45) 0,
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 10% 85%,
+      rgba(30, 64, 175, 0.5) 0,
+      transparent 28%
+    ),
+    radial-gradient(circle at 70% 90%, rgba(15, 23, 42, 0.7) 0, transparent 34%);
+  background-size: 260% 260%;
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  filter: blur(4px);
+  pointer-events: none;
+  z-index: -1;
+  animation: logo-particles 18s linear infinite;
+}
+
+@keyframes logo-glow {
+  0% {
+    opacity: 0.85;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  40% {
+    opacity: 1;
+    transform: translate3d(0, -0.5px, 0) scale(1.04);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translate3d(0, 0.5px, 0) scale(1.02);
+  }
+  100% {
+    opacity: 0.85;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes logo-particles {
+  0% {
+    background-position: 0% 0%;
+  }
+  30% {
+    background-position: 120% 40%;
+  }
+  60% {
+    background-position: 40% 120%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
 /* Фиксированный фон для мобильных устройств */
 @media (max-width: 768px) {
   /* Делаем фон контейнера основным источником бэкграунда на мобильных */

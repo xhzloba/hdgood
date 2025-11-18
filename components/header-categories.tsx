@@ -5,6 +5,7 @@ import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
+import { LogoParticles } from "@/components/logo-particles"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import {
   IconClock,
@@ -332,85 +333,109 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
       ) : (
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
           <div className="flex items-center justify-between gap-3">
-            {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
-            <div ref={containerRef} className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5 relative">
-              {indicator.visible && (
-                <div
-                  className="absolute left-0 top-0 z-0 rounded-full bg-blue-600 shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
-                  style={{ transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`, width: indicator.width, height: indicator.height, willChange: "transform,width,height" }}
-                />
-              )}
-              {/* Главная */}
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Лого слева от табов */}
               <Link
                 href="/"
-                aria-current={isHomeActive ? "page" : undefined}
-                onClick={(e) => {
-                  onTabClick("/", e)
-                }}
-                className={[
-                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isHomeActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                ].join(" ")}
+                className="hidden md:inline-flex items-center gap-2 pr-3 mr-1 border-r border-zinc-800/70 logo-hdgood"
               >
-                <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                <span>Главная</span>
+                <LogoParticles />
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-semibold tracking-wide text-white">
+                  HD
+                </span>
+                <span className="text-sm font-semibold tracking-tight text-zinc-100">
+                  GOOD
+                </span>
               </Link>
 
-              {/* Фильмы */}
-              <Link
-                href="/movies"
-                aria-current={isMoviesTabActive ? "page" : undefined}
-                onClick={(e) => onTabClick("/movies", e)}
-                className={[
-                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isMoviesTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                ].join(" ")}
+              {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
+              <div
+                ref={containerRef}
+                className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5 relative"
               >
-                <IconMovie className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                <span>Фильмы</span>
-              </Link>
+                {indicator.visible && (
+                  <div
+                    className="absolute left-0 top-0 z-0 rounded-full bg-blue-600 shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
+                    style={{
+                      transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`,
+                      width: indicator.width,
+                      height: indicator.height,
+                      willChange: "transform,width,height",
+                    }}
+                  />
+                )}
+                {/* Главная */}
+                <Link
+                  href="/"
+                  aria-current={isHomeActive ? "page" : undefined}
+                  onClick={(e) => {
+                    onTabClick("/", e)
+                  }}
+                  className={[
+                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                    isHomeActive ? "text-white" : "text-zinc-300/90 hover:text-white",
+                  ].join(" ")}
+                >
+                  <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
+                  <span>Главная</span>
+                </Link>
 
-              {/* Сериалы */}
-              <Link
-                href="/serials"
-                aria-current={isSerialsTabActive ? "page" : undefined}
-                onClick={(e) => onTabClick("/serials", e)}
-                className={[
-                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isSerialsTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                ].join(" ")}
-              >
-                <IconDeviceTv className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                <span>Сериалы</span>
-              </Link>
+                {/* Фильмы */}
+                <Link
+                  href="/movies"
+                  aria-current={isMoviesTabActive ? "page" : undefined}
+                  onClick={(e) => onTabClick("/movies", e)}
+                  className={[
+                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                    isMoviesTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
+                  ].join(" ")}
+                >
+                  <IconMovie className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
+                  <span>Фильмы</span>
+                </Link>
 
-              {/* 4K UHD */}
-              <Link
-                href="/uhd"
-                aria-current={isUhdTabActive ? "page" : undefined}
-                onClick={(e) => onTabClick("/uhd", e)}
-                className={[
-                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isUhdTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                ].join(" ")}
-              >
-                <IconBadge4k className="w-5 h-5 shrink-0" size={18} stroke={1.7} />
-                <span>4K UHD</span>
-              </Link>
+                {/* Сериалы */}
+                <Link
+                  href="/serials"
+                  aria-current={isSerialsTabActive ? "page" : undefined}
+                  onClick={(e) => onTabClick("/serials", e)}
+                  className={[
+                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                    isSerialsTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
+                  ].join(" ")}
+                >
+                  <IconDeviceTv className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
+                  <span>Сериалы</span>
+                </Link>
 
-              {/* Поиск как последний таб */}
-              <Link
-                href="/search"
-                aria-current={isSearchActive ? "page" : undefined}
-                onClick={(e) => onTabClick("/search", e)}
-                className={[
-                  "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                  isSearchActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                ].join(" ")}
-              >
-                <IconSearch className="w-4 h-4 shrink-0" size={16} stroke={1.7} />
-                <span>Поиск</span>
-              </Link>
+                {/* 4K UHD */}
+                <Link
+                  href="/uhd"
+                  aria-current={isUhdTabActive ? "page" : undefined}
+                  onClick={(e) => onTabClick("/uhd", e)}
+                  className={[
+                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                    isUhdTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
+                  ].join(" ")}
+                >
+                  <IconBadge4k className="w-5 h-5 shrink-0" size={18} stroke={1.7} />
+                  <span>4K UHD</span>
+                </Link>
+
+                {/* Поиск как последний таб */}
+                <Link
+                  href="/search"
+                  aria-current={isSearchActive ? "page" : undefined}
+                  onClick={(e) => onTabClick("/search", e)}
+                  className={[
+                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
+                    isSearchActive ? "text-white" : "text-zinc-300/90 hover:text-white",
+                  ].join(" ")}
+                >
+                  <IconSearch className="w-4 h-4 shrink-0" size={16} stroke={1.7} />
+                  <span>Поиск</span>
+                </Link>
+              </div>
             </div>
 
             {/* Круглая кнопка справа — полноэкранный режим */}

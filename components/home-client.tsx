@@ -14,6 +14,7 @@ import { APP_SETTINGS } from "@/lib/settings";
 import { getCountryLabel } from "@/lib/country-flags";
 import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Footer } from "@/components/footer";
 
 type HomeClientProps = {
   initialSelectedTitle?: string;
@@ -651,6 +652,9 @@ export default function HomeClient({
             )}
           </div>
         </section>
+        <div className="relative z-20 mt-10 md:mt-12">
+          <Footer />
+        </div>
       </main>
     </PosterBackground>
   );

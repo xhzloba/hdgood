@@ -6,6 +6,7 @@ import { HeaderCategories } from "@/components/header-categories"
 import { MovieGrid } from "@/components/movie-grid"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Footer } from "@/components/footer"
 
 function SearchForm() {
   const router = useRouter()
@@ -48,7 +49,7 @@ function SearchResults() {
 export default function SearchPage() {
   return (
     <div className="min-h-[100dvh] min-h-screen">
-      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
+      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-10">
         <div className="mb-4 hidden md:block">
           <HeaderCategories variant="horizontal" />
         </div>
@@ -69,6 +70,9 @@ export default function SearchPage() {
             </Suspense>
           </div>
         </section>
+        <div className="mt-10 md:mt-12">
+          <Footer />
+        </div>
       </main>
     </div>
   )
