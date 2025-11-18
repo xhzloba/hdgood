@@ -27,6 +27,8 @@ type MovieSliderProps = {
   perPageOverride?: number;
   loop?: boolean;
   activeItemId?: string;
+  // Только для главной: уменьшенные карточки на мобиле
+  compactOnMobile?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -87,7 +89,19 @@ function extractMoviesFromData(data: any): any[] {
   return movies;
 }
 
-export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "Смотреть все", autoplay = false, autoplayIntervalMs = 10000, hoverPause = true, perPageOverride, loop = false, activeItemId }: MovieSliderProps) {
+export default function MovieSlider({
+  url,
+  title,
+  viewAllHref,
+  viewAllLabel = "Смотреть все",
+  autoplay = false,
+  autoplayIntervalMs = 10000,
+  hoverPause = true,
+  perPageOverride,
+  loop = false,
+  activeItemId,
+  compactOnMobile,
+}: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
@@ -291,7 +305,9 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
               {Array.from({ length: perPage }).map((_, i) => (
                 <CarouselItem
                   key={i}
-                  className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                  className={`pl-2 ${
+                    compactOnMobile ? "basis-[36%] sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                  } md:basis-1/4 lg:basis-1/5 xl:basis-1/6`}
                 >
                   <div className="block bg-zinc-900/60 overflow-hidden rounded-sm">
                     <div className="aspect-[2/3] bg-zinc-950">
@@ -327,7 +343,9 @@ export default function MovieSlider({ url, title, viewAllHref, viewAllLabel = "�
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
-                  className="pl-2 basis-1/2 sm:basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                  className={`pl-2 ${
+                    compactOnMobile ? "basis-[36%] sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                  } md:basis-1/4 lg:basis-1/5 xl:basis-1/6`}
                 >
                   <Link
                     href={`/movie/${movie.id}`}

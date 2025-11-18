@@ -49,9 +49,14 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                   perPageOverride={APP_SETTINGS.slider.trending.perPage}
                   loop={APP_SETTINGS.slider.trending.loop}
                   activeItemId={APP_SETTINGS.slider.trending.syncWithBackdrop ? activeBackdropId ?? undefined : undefined}
+                  compactOnMobile
                 />
               ) : (
-                <MovieSlider url={section.playlist_url} title={section.title} />
+                <MovieSlider
+                  url={section.playlist_url}
+                  title={section.title}
+                  compactOnMobile
+                />
               )}
               {/* Баннер франшизы сразу после слайдера "В тренде" */}
               {section.title === "В тренде" && (
@@ -67,6 +72,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
               url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
               title="Топ 250 фильмов"
               viewAllHref="/top250"
+              compactOnMobile
             />
           </div>
         </div>
