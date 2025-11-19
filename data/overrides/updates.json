@@ -430,5 +430,15 @@
       "poster"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-19T16:51:19.062Z",
+    "poster": "/movies/frankenshtein-poster.jpg",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
   }
 ]
