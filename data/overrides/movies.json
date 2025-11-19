@@ -191,5 +191,11 @@
       "backdrop": "/series/ikusagi.webp"
     },
     "poster": "https://ru-images-s.kinorium.com/movie/1080/11236981.jpg?1763282606"
+  },
+  "68f019609ef7449115e8806e": {
+    "poster_logo": "https://imagetmdb.com/t/p/w300/2ynhin6bifD0Uk0eVpmpNeIQ18r.png",
+    "bg_poster": {
+      "backdrop": "https://imagetmdb.com/t/p/original/kM2l7BoPrlP7hx6bSKrp6MHZ1Aa.jpg"
+    }
   }
 }

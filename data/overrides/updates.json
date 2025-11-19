@@ -440,5 +440,25 @@
       "poster"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "68f019609ef7449115e8806e",
+    "timestamp": "2025-11-19T20:31:42.644Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68f019609ef7449115e8806e",
+    "timestamp": "2025-11-19T20:36:14.714Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
