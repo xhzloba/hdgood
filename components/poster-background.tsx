@@ -607,7 +607,20 @@ export function PosterBackground({
         ;(baseStyle as any).__compositePosition = compositePos
         ;(baseStyle as any).__bgUrl = bgPosterUrl
       } else {
-        baseStyle.backgroundColor = "rgba(0, 0, 0, 0.98)"
+        const bottomFade = softBottomFade
+          ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 12%, rgba(0,0,0,0.85) 26%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.95) 100%)"
+          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
+
+        const overlayGradients = [
+          "linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 18%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 82%, rgba(0,0,0,0.65) 100%)",
+          bottomFade,
+        ]
+
+        const gradientCount = overlayGradients.length
+        ;(baseStyle as any).backgroundImage = overlayGradients.join(", ")
+        ;(baseStyle as any).backgroundSize = Array(gradientCount).fill("cover").join(", ")
+        ;(baseStyle as any).backgroundPosition = Array(gradientCount).fill("center top").join(", ")
+        ;(baseStyle as any).backgroundRepeat = "no-repeat"
       }
 
       return baseStyle
@@ -808,10 +821,10 @@ export function PosterBackground({
   const [lastCompPos, setLastCompPos] = React.useState<string | undefined>(undefined)
   const [lastCompUrl, setLastCompUrl] = React.useState<string | undefined>(undefined)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     try {
       if (!simpleDarkCorners) return
-      if (lastCompImg) return
+      if (lastCompImg && lastCompSize && lastCompPos) return
       const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('homeBackdrop:lastComposite') : null
       if (!raw) return
       const data = JSON.parse(raw)
@@ -823,6 +836,8 @@ export function PosterBackground({
       }
     } catch {}
   }, [simpleDarkCorners])
+
+  
 
   React.useEffect(() => {
     const newImg = (style as any).__compositeImage as string | undefined
@@ -926,21 +941,15 @@ export function PosterBackground({
       }
       style={{
         ...style,
-        backgroundImage: isMobile && !!disableMobileBackdrop
-          ? 'none'
-          : simpleDarkCorners
-          ? (lastCompImg || style.backgroundImage)
-          : style.backgroundImage,
-        backgroundSize: isMobile && !!disableMobileBackdrop
-          ? undefined
-          : simpleDarkCorners
-          ? (lastCompSize || (style as any).backgroundSize)
-          : (style as any).backgroundSize,
-        backgroundPosition: isMobile && !!disableMobileBackdrop
-          ? undefined
-          : simpleDarkCorners
-          ? (lastCompPos || (style as any).backgroundPosition)
-          : (style as any).backgroundPosition,
+        backgroundImage: (isMobile && !!disableMobileBackdrop)
+          ? (simpleDarkCorners ? (lastCompImg || 'none') : 'none')
+          : (simpleDarkCorners ? (lastCompImg || style.backgroundImage) : style.backgroundImage),
+        backgroundSize: (isMobile && !!disableMobileBackdrop)
+          ? (simpleDarkCorners ? (lastCompSize || undefined) : undefined)
+          : (simpleDarkCorners ? (lastCompSize || (style as any).backgroundSize) : (style as any).backgroundSize),
+        backgroundPosition: (isMobile && !!disableMobileBackdrop)
+          ? (simpleDarkCorners ? (lastCompPos || undefined) : undefined)
+          : (simpleDarkCorners ? (lastCompPos || (style as any).backgroundPosition) : (style as any).backgroundPosition),
         ...(simpleDarkCorners
           ? {
               ["--poster-accent-rgb" as any]: 'var(--app-bg-rgb)',
