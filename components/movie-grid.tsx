@@ -25,6 +25,7 @@ interface Movie {
 interface MovieGridProps {
   url: string;
   navigateOnClick?: boolean;
+  onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -128,7 +129,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -164,6 +165,10 @@ export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
     setPage(1);
     setPagesData([]);
     setLastPageEmpty(false);
+  }, [url]);
+
+  useEffect(() => {
+    lastPagingRef.current = null;
   }, [url]);
 
   useEffect(() => {
@@ -362,6 +367,49 @@ export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
         return currItems.slice(start, end);
       })()
     : displayMovies;
+
+  const prevItemsCount = useMemo(() => {
+    return pagesData
+      .filter((p) => p.page < page)
+      .reduce((sum, p) => {
+        try {
+          const arr = extractMoviesFromData(p.data);
+          return sum + (Array.isArray(arr) ? arr.length : 0);
+        } catch {
+          return sum;
+        }
+      }, 0);
+  }, [pagesData, page]);
+  const currItemsLen = useMemo(() => getItemsForPage(page).length, [pagesData, page]);
+  const currEndIndex = useMemo(() => {
+    const base = Math.min(currItemsLen, (subIndex + 1) * chunkSize);
+    const hasCurrent = pagesData.some((p) => p.page === page);
+    if (isArrowDesktopMode && !hasCurrent) {
+      return Math.min((subIndex + 1) * chunkSize, chunkSize);
+    }
+    return base;
+  }, [currItemsLen, subIndex, isArrowDesktopMode, pagesData, page]);
+  const scrolledCount = useMemo(() => Math.max(0, (page - 1) * perPage) + currEndIndex, [page, currEndIndex]);
+
+  const lastPagingRef = useRef<{ page: number; scrolled: number; arrow: boolean } | null>(null);
+  useEffect(() => {
+    const info = { page, scrolledCount, isArrowMode: isArrowDesktopMode };
+    const last = lastPagingRef.current;
+    const changed = !last || last.page !== info.page || last.scrolled !== info.scrolledCount || last.arrow !== info.isArrowMode;
+    if (!changed) return;
+    lastPagingRef.current = { page: info.page, scrolled: info.scrolledCount, arrow: info.isArrowMode };
+    try {
+      onPagingInfo?.(info);
+    } catch {}
+  }, [page, subIndex, scrolledCount, isArrowDesktopMode]);
+
+  useEffect(() => {
+    try {
+      onPagingInfo?.({ page, scrolledCount, isArrowMode: isArrowDesktopMode });
+    } catch {}
+  }, [url, isArrowDesktopMode]);
+
+  
 
   // Batch-load overrides for current display ids.
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({

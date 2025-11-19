@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useLayoutEffect } from "react"
+import { useState, useRef, useLayoutEffect, useCallback, useEffect } from "react"
 import { MovieGrid } from "./movie-grid"
 
 interface Channel {
@@ -35,6 +35,14 @@ const UHD_CHANNELS: Channel[] = [
 export function UhdSection() {
   const [active, setActive] = useState(0)
   const prevYRef = useRef<number | null>(null)
+  const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
+  const handlePagingInfo = useCallback((info: { page: number; scrolledCount: number; isArrowMode: boolean }) => {
+    setPaging((prev) => {
+      if (!info.isArrowMode) return null;
+      if (prev && prev.page === info.page && prev.scrolledCount === info.scrolledCount) return prev;
+      return { page: info.page, scrolledCount: info.scrolledCount };
+    });
+  }, [])
   const preserveScroll = (cb: () => void) => {
     if (typeof window !== "undefined") {
       prevYRef.current = window.scrollY
@@ -56,7 +64,7 @@ export function UhdSection() {
         <div
           className="sticky top-0 z-20 -mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 rounded-t-sm"
         >
-          <div className="channel-tabs flex flex-wrap md:inline-flex md:flex-nowrap items-center rounded-full px-1.5 py-0.5 gap-1.5">
+          <div className="channel-tabs flex flex-wrap md:flex md:flex-nowrap items-center rounded-full px-1.5 py-0.5 gap-1.5 w-full">
             {UHD_CHANNELS.map((ch, idx) => (
               <button
                 key={idx}
@@ -72,10 +80,29 @@ export function UhdSection() {
                 {ch.title}
               </button>
             ))}
+            <span className="hidden md:inline-flex items-center gap-2 ml-auto text-[14px] md:text-[16px] text-zinc-300 font-medium">
+              {paging && (
+                <>
+                  <span>Стр.</span>
+                  <span
+                    className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
+                    style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                  >
+                    {paging.page}
+                  </span>
+                  <span className="text-zinc-500/60">•</span>
+                  <span>Пролистано</span>
+                  <span className="text-white">{paging.scrolledCount}</span>
+                </>
+              )}
+            </span>
           </div>
         </div>
         <div className="mt-4 overflow-anchor-none">
-          <MovieGrid url={UHD_CHANNELS[active].playlist_url} />
+          <MovieGrid
+            url={UHD_CHANNELS[active].playlist_url}
+            onPagingInfo={handlePagingInfo}
+          />
         </div>
       </div>
     </section>
