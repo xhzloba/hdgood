@@ -325,8 +325,8 @@ export default function MovieSlider({
                 <CarouselItem
                   key={i}
                   className={`pl-2 ${
-                    compactOnMobile ? "basis-[36%] sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/4 lg:basis-1/5 xl:basis-1/6`}
+                    compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                  } md:basis-1/5 lg:basis-1/5 xl:basis-1/5`}
                 >
                   <div className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm">
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
@@ -368,8 +368,8 @@ export default function MovieSlider({
                 <CarouselItem
                   key={movie.id || index}
                   className={`pl-2 ${
-                    compactOnMobile ? "basis-[36%] sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/4 lg:basis-1/5 xl:basis-1/6`}
+                    compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                  } md:basis-1/5 lg:basis-1/5 xl:basis-1/5`}
                 >
                   <Link
                     href={`/movie/${movie.id}`}
