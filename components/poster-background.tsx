@@ -581,12 +581,12 @@ export function PosterBackground({
       }
       if (bgPosterUrl) {
         const bottomFade = softBottomFade
-          ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 12%, rgba(0,0,0,0.85) 26%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.95) 100%)"
-          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
+          ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 12%, rgba(0,0,0,0.7) 26%, rgba(0,0,0,0.82) 38%, rgba(0,0,0,0.88) 100%)"
+          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 10%, rgba(0,0,0,0.85) 24%, rgba(0,0,0,0.95) 34%, rgba(0,0,0,0.95) 100%)"
 
         const overlayGradients = [
           // только мягкое затемнение от боков к центру
-          "linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 18%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 82%, rgba(0,0,0,0.65) 100%)",
+          "linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 18%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.2) 82%, rgba(0,0,0,0.5) 100%)",
           // нижняя растушёвка
           bottomFade,
         ]
@@ -639,8 +639,8 @@ export function PosterBackground({
         
         // Добавляем полупрозрачный оверлей поверх bg_poster
         const overlayGradients = [
-          'linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.6) 100%)',
-          'radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%)'
+          'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.4) 100%)',
+          'radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%)'
         ]
         
         if (palette.corners || normalizedOverrides) {
@@ -670,25 +670,25 @@ export function PosterBackground({
           const [erbr, egbr, ebbr] = enhanceColor(rbr, gbr, bbr)
           const [erbl, egbl, ebbl2] = enhanceColor(rbl, gbl, bbl2)
           
-          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.75)`
-          const accentBR = `rgba(${erbr}, ${egbr}, ${ebbr}, 0.9)`
-          const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.9)`
+          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.6)`
+          const accentBR = `rgba(${erbr}, ${egbr}, ${ebbr}, 0.75)`
+          const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.75)`
           const ar = Math.round((ertl + erbr + erbl) / 3)
           const ag = Math.round((egtl + egbr + egbl) / 3)
           const ab = Math.round((ebtl + ebbr + ebbl2) / 3)
-          const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.35)`
+          const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`
           const accentBase = `${ar}, ${ag}, ${ab}`
           
           overlayGradients.push(
             `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
-            `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${accentBase}, 0.22) 62%, transparent 86% )`,
-            `linear-gradient( to right, rgba(${accentBase}, 0.42) 0%, rgba(${accentBase}, 0) 24% )`,
+            `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${accentBase}, 0.18) 62%, transparent 86% )`,
+            `linear-gradient( to right, rgba(${accentBase}, 0.32) 0%, rgba(${accentBase}, 0) 24% )`,
             `radial-gradient( 2400px 1200px at 100% 100%, ${accentBR} 0%, transparent 78% )`,
-            `radial-gradient( 2600px 1300px at 50% 100%, rgba(${accentBase}, 0.35) 0%, rgba(${accentBase}, 0.22) 50%, transparent 90% )`,
-            `linear-gradient(to bottom, rgba(${accentBase}, 0) 58%, rgba(${accentBase}, 0.42) 86%, rgba(${accentBase}, 0.62) 100%)`
+            `radial-gradient( 2600px 1300px at 50% 100%, rgba(${accentBase}, 0.28) 0%, rgba(${accentBase}, 0.18) 50%, transparent 90% )`,
+            `linear-gradient(to bottom, rgba(${accentBase}, 0) 58%, rgba(${accentBase}, 0.32) 86%, rgba(${accentBase}, 0.5) 100%)`
           )
           overlayGradients.push(
-            'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 40%, var(--app-bg, rgba(24,24,27,1)) 80%, var(--app-bg, rgba(24,24,27,1)) 100%)'
+            'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 45%, rgba(var(--app-bg-rgb, 24,24,27), 0.85) 85%, rgba(var(--app-bg-rgb, 24,24,27), 0.92) 100%)'
           )
           
           // Если посчитали два доминирующих — добавим мягкий линейный градиент между ними
@@ -749,22 +749,22 @@ export function PosterBackground({
     const [rtl, gtl, btl] = (useTl2 || [0,0,0])
     const [rbr, gbr, bbr] = (useBr2 || [0,0,0])
     const [rbl, gbl, bbl2] = (useBl2 || [0,0,0])
-    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.75)`
-    const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.9)`
-    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.9)`
+    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.6)`
+    const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.75)`
+    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.75)`
     const ar = Math.round((rtl + rbr + rbl) / 3)
     const ag = Math.round((gtl + gbr + gbl) / 3)
     const ab = Math.round((btl + bbr + bbl2) / 3)
-    const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.35)`
+    const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`
     // Базовые слои
     const layers = [
       `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
-      `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 62%, transparent 86% )`,
-      `linear-gradient( to right, rgba(${ar}, ${ag}, ${ab}, 0.42) 0%, rgba(${ar}, ${ag}, ${ab}, 0) 24% )`,
+      `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${ar}, ${ag}, ${ab}, 0.18) 62%, transparent 86% )`,
+      `linear-gradient( to right, rgba(${ar}, ${ag}, ${ab}, 0.32) 0%, rgba(${ar}, ${ag}, ${ab}, 0) 24% )`,
       `radial-gradient( 2400px 1200px at 100% 100%, ${accentBR} 0%, transparent 78% )`,
-      `radial-gradient( 2600px 1300px at 50% 100%, rgba(${ar}, ${ag}, ${ab}, 0.35) 0%, rgba(${ar}, ${ag}, ${ab}, 0.22) 50%, transparent 90% )`,
-      `linear-gradient(to bottom, rgba(${ar}, ${ag}, ${ab}, 0) 58%, rgba(${ar}, ${ag}, ${ab}, 0.42) 86%, rgba(${ar}, ${ag}, ${ab}, 0.62) 100%)`,
-      'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 42%, var(--app-bg, rgba(24,24,27,1)) 82%, var(--app-bg, rgba(24,24,27,1)) 100%)',
+      `radial-gradient( 2600px 1300px at 50% 100%, rgba(${ar}, ${ag}, ${ab}, 0.28) 0%, rgba(${ar}, ${ag}, ${ab}, 0.18) 50%, transparent 90% )`,
+      `linear-gradient(to bottom, rgba(${ar}, ${ag}, ${ab}, 0) 58%, rgba(${ar}, ${ag}, ${ab}, 0.32) 86%, rgba(${ar}, ${ag}, ${ab}, 0.5) 100%)`,
+      'linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 45%, rgba(var(--app-bg-rgb, 24,24,27), 0.85) 85%, rgba(var(--app-bg-rgb, 24,24,27), 0.92) 100%)',
     ]
 
     // Добавим доминирующие, если есть
