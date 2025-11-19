@@ -288,12 +288,17 @@ export function MovieGrid({ url }: MovieGridProps) {
     const base = (url || "").split("?")[0];
     return base.includes("/api/franchise");
   })();
+  const isSearchMode = useMemo(() => {
+    const u = String(url || "");
+    return u.includes("/api/search");
+  }, [url]);
+
   const isArrowCandidate = useMemo(() => {
     const u = String(url || "");
     const isList = u.includes("/v2/list");
     const isMovieOrSerial = u.includes("type=movie") || u.includes("type=serial");
     const isUhdTag = /tag=(4K|4K%20HDR|4K%20DolbyV|60FPS)/.test(u);
-    return isList && (isMovieOrSerial || isUhdTag);
+    return (isList && (isMovieOrSerial || isUhdTag)) || u.includes("/api/search");
   }, [url]);
   const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore;
   const currentPageEntry = useMemo(() => {

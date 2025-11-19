@@ -1257,7 +1257,7 @@
   .poster-card .poster-media {
     will-change: transform;
     transition: transform 250ms ease;
-    transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1);
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateX(0px) translateY(0px) scale(1);
   }
 
   .group:hover .poster-card .poster-media,
@@ -1265,6 +1265,8 @@
     transform: perspective(800px)
       rotateX(calc(var(--my, 0) * 4deg))
       rotateY(calc(var(--mx, 0) * -4deg))
+      translateX(calc(var(--mx, 0) * 12px))
+      translateY(calc(var(--my, 0) * 12px))
       scale(1.06);
   }
 }
