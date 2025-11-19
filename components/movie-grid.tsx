@@ -758,8 +758,13 @@ export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
             >
               <IconX size={18} />
             </button>
-            <div className="flex items-start gap-3 md:gap-4">
-              <div className="flex-1 min-w-0">
+            <div className="grid md:grid-cols-[minmax(90px,120px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
+              <div className="hidden md:block rounded-sm overflow-hidden bg-zinc-900 h-full">
+                {selectedMovie.poster ? (
+                  <img src={selectedMovie.poster} alt="Постер" className="w-full h-full object-cover" />
+                ) : null}
+              </div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie.title || "Без названия"}>
                     {selectedMovie.title || "Без названия"}
@@ -789,12 +794,22 @@ export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
                     ))}</div> : null;
                   })()}
                 </div>
-                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90">
-                  {(() => {
+                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
+                  {selectedLoading ? (
+                    <div>
+                      <Skeleton className="h-3 w-[92%] mb-2" />
+                      <Skeleton className="h-3 w-[88%] mb-2" />
+                      <Skeleton className="h-3 w-[72%]" />
+                    </div>
+                  ) : (() => {
                     const d: any = selectedDetails || {};
                     const aboutRaw = d.about ?? d.description;
                     const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
-                    return about ? <p className="line-clamp-3 md:line-clamp-4">{about}</p> : null;
+                    return about ? (
+                      <p className="line-clamp-3 md:line-clamp-4">{about}</p>
+                    ) : (
+                      <div className="h-3" />
+                    );
                   })()}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
@@ -807,14 +822,13 @@ export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
                       }
                       router.push(`/movie/${selectedMovie.id}#watch`);
                     }}
-                    className="px-3 py-2 rounded-sm text-[12px] text-white border border-transparent hover:opacity-90 transition-all duration-200"
-                    style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
                   >
                     Смотреть онлайн
                   </button>
                   <Link
                     href={`/movie/${selectedMovie.id}`}
-                    className="px-3 py-2 rounded-sm text-[12px] border border-zinc-700/60 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 transition-all duration-200"
+                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
                     Подробнее
                   </Link>
