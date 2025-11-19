@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Carousel,
@@ -55,7 +55,6 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
 ];
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 // Рандомный порядок: тасуем на каждом монтировании/смене роута (без sessionStorage)
 function orderFranchiseItems(_pathname: string): typeof FRANCHISE_ITEMS {
   if (typeof window !== "undefined") {
@@ -82,6 +81,9 @@ export function FranchiseSlider() {
   const pathname = usePathname();
   const [items, setItems] = useState<typeof FRANCHISE_ITEMS>(FRANCHISE_ITEMS);
   const [ready, setReady] = useState(false)
+  const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const parallaxRef = useRef<Map<string, { mx: number; my: number; targetMx: number; targetMy: number; hover: boolean }>>(new Map());
 
   // Перемешивать элементы при первом рендере и каждой смене роута
   useEffect(() => {
@@ -111,6 +113,43 @@ export function FranchiseSlider() {
     };
   }, [carouselApi]);
 
+  useEffect(() => {
+    let rafId = 0;
+    const start = performance.now();
+    const offsetOf = (key: string) => {
+      let s = 0;
+      for (let i = 0; i < key.length; i++) s += key.charCodeAt(i);
+      return s * 0.001;
+    };
+    const tick = (t: number) => {
+      const dt = t - start;
+      cardRefs.current.forEach((el, key) => {
+        const st = parallaxRef.current.get(key) || { mx: 0, my: 0, targetMx: 0, targetMy: 0, hover: false };
+        if (st.hover) {
+          st.mx += (st.targetMx - st.mx) * 0.22;
+          st.my += (st.targetMy - st.my) * 0.22;
+        } else {
+          const off = offsetOf(key);
+          st.mx = 0.24 * Math.sin(dt * 0.0012 + off);
+          st.my = 0.20 * Math.cos(dt * 0.001 + off);
+          el.style.setProperty("--x", "50%");
+          el.style.setProperty("--y", "50%");
+        }
+        el.style.setProperty("--mx", String(st.mx));
+        el.style.setProperty("--my", String(st.my));
+        el.style.setProperty("--tx", `${st.mx * 42}px`);
+        el.style.setProperty("--ty", `${st.my * 30}px`);
+        el.style.setProperty("--degx", `${-st.my * 8}deg`);
+        el.style.setProperty("--degy", `${st.mx * 12}deg`);
+        el.style.setProperty("--degz", `${st.mx * st.my * 6}deg`);
+        parallaxRef.current.set(key, st);
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [hoveredKey, items]);
+
   return (
     <div className="space-y-3">
       <div className="relative">
@@ -122,8 +161,14 @@ export function FranchiseSlider() {
                   href={item.href}
                   className="group block bg-transparent hover:bg-transparent outline-none transition-all duration-200 rounded-sm overflow-hidden"
                   title={item.title}
+                  onMouseEnter={() => {
+                    setHoveredKey(item.href)
+                    const st = parallaxRef.current.get(item.href) || { mx: 0, my: 0, targetMx: 0, targetMy: 0, hover: false };
+                    st.hover = true;
+                    parallaxRef.current.set(item.href, st);
+                  }}
                   onMouseMove={(e) => {
-                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                    const posterEl = cardRefs.current.get(item.href) as HTMLElement | undefined;
                     if (!posterEl) return;
                     const rect = posterEl.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -132,14 +177,22 @@ export function FranchiseSlider() {
                     const my = y / rect.height * 2 - 1;
                     posterEl.style.setProperty('--x', `${x}px`);
                     posterEl.style.setProperty('--y', `${y}px`);
-                    posterEl.style.setProperty('--mx', `${mx}`);
-                    posterEl.style.setProperty('--my', `${my}`);
+                    const st = parallaxRef.current.get(item.href) || { mx: 0, my: 0, targetMx: 0, targetMy: 0, hover: true };
+                    st.targetMx = Math.max(-1, Math.min(1, mx));
+                    st.targetMy = Math.max(-1, Math.min(1, my));
+                    parallaxRef.current.set(item.href, st);
                   }}
                   onMouseLeave={(e) => {
-                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                    const posterEl = cardRefs.current.get(item.href) as HTMLElement | undefined;
                     if (!posterEl) return;
                     posterEl.style.setProperty('--mx', '0');
                     posterEl.style.setProperty('--my', '0');
+                    const st = parallaxRef.current.get(item.href) || { mx: 0, my: 0, targetMx: 0, targetMy: 0, hover: false };
+                    st.hover = false;
+                    st.targetMx = 0;
+                    st.targetMy = 0;
+                    parallaxRef.current.set(item.href, st);
+                    setHoveredKey(null);
                   }}
                   onClick={(e) => {
                     const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
@@ -160,6 +213,7 @@ export function FranchiseSlider() {
                       WebkitMaskSize: "100% 100%",
                       maskSize: "100% 100%",
                     }}
+                    ref={(el) => { if (el) cardRefs.current.set(item.href, el) }}
                   >
                     {!loadedImages.has(item.href) && (
                       <Skeleton className="absolute inset-0 w-full h-full" />
@@ -169,7 +223,7 @@ export function FranchiseSlider() {
                       alt={item.title}
                       loading="lazy"
                       className={`w-full h-full object-cover transition-all ease-out poster-media ${loadedImages.has(item.href) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"}`}
-                      style={{ transition: "opacity 250ms ease-out, filter 500ms ease-out, transform 500ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%", transform: "perspective(900px) translate3d(calc(var(--mx) * 14px), calc(var(--my) * 10px), 0) rotateY(calc(var(--mx) * 4deg)) rotateX(calc(var(--my) * -3deg)) scale(1.04)" }}
+                      style={{ transition: "opacity 250ms ease-out, filter 500ms ease-out, transform 500ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%", transform: "perspective(1000px) translate3d(var(--tx), var(--ty), 0) rotateY(var(--degy)) rotateX(var(--degx)) rotateZ(var(--degz)) scale(1.05)" }}
                       onLoad={() => setLoadedImages((prev) => {
                         const next = new Set(prev);
                         next.add(item.href);
