@@ -169,21 +169,37 @@ export function FranchiseSlider() {
                       alt={item.title}
                       loading="lazy"
                       className={`w-full h-full object-cover transition-all ease-out poster-media ${loadedImages.has(item.href) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"}`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}
+                      style={{ transition: "opacity 250ms ease-out, filter 500ms ease-out, transform 500ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%", transform: "perspective(900px) translate3d(calc(var(--mx) * 14px), calc(var(--my) * 10px), 0) rotateY(calc(var(--mx) * 4deg)) rotateX(calc(var(--my) * -3deg)) scale(1.04)" }}
                       onLoad={() => setLoadedImages((prev) => {
                         const next = new Set(prev);
                         next.add(item.href);
                         return next;
                       })}
                     />
+                    {loadedImages.has(item.href) && (
+                      <div
+                        className="pointer-events-none absolute inset-0 z-10"
+                        style={{
+                          background: "radial-gradient(140px circle at var(--x) var(--y), rgba(255,255,255,0.10), rgba(0,0,0,0) 60%)",
+                          transition: "background 400ms ease-out",
+                        }}
+                      />
+                    )}
                     {loadedImages.has(item.href) && item.overlay?.[0] && (
-                      <div className="pointer-events-none absolute left-1/2 top-[56%] md:top-[54%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%] z-20">
+                      <div
+                        className="pointer-events-none absolute left-1/2 top-[56%] md:top-[54%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%] z-20"
+                        style={{
+                          transform: "translate3d(calc(var(--mx) * 6px), calc(var(--my) * 4px), 0) scale(1.02)",
+                          transition: "transform 450ms ease-out, filter 450ms ease-out",
+                          filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.35))",
+                        }}
+                      >
                         <img
                           src={item.overlay[0]}
                           alt={`${item.title} logo`}
                           loading="lazy"
                           decoding="async"
-                          className="h-12 md:h-14 lg:h-16 w-auto drop-shadow-lg"
+                          className="h-12 md:h-14 lg:h-16 w-auto"
                         />
                       </div>
                     )}
