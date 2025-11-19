@@ -354,7 +354,8 @@ export default function MovieSlider({
             {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
               <span
                 key={i}
-                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
+                className={`${selectedIndex === i ? "w-6" : "w-2"} h-2 rounded-full transition-all duration-300`}
+                style={{ backgroundColor: selectedIndex === i ? "rgba(var(--ui-accent-rgb), 0.9)" : "rgba(255,255,255,0.3)" }}
               />
             ))}
           </div>
@@ -411,9 +412,9 @@ export default function MovieSlider({
                       }
                     }}
                   >
-                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-                      {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
-                        <img
+                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                    {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
+                      <img
                           key={String(movie.id)}
                           src={movie.poster || "/placeholder.svg"}
                           alt={movie.title || "Постер"}
@@ -438,6 +439,15 @@ export default function MovieSlider({
                         />
                       ) : (
                         <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                      )}
+                      {movie.poster && loadedImages.has(String(movie.id)) && (
+                        <div
+                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                          style={{
+                            background:
+                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                          }}
+                        />
                       )}
                       {movie.rating && (
                         <div
@@ -491,7 +501,8 @@ export default function MovieSlider({
                 aria-label={`К слайду ${i + 1}`}
                 aria-current={selectedIndex === i}
                 onClick={() => carouselApi?.scrollTo?.(i)}
-                className={`${selectedIndex === i ? "w-6 bg-blue-500" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
+                className={`${selectedIndex === i ? "w-6" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
+                style={selectedIndex === i ? { backgroundColor: "rgb(var(--ui-accent-rgb))" } : undefined}
               />
             ))}
           </div>

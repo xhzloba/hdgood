@@ -270,6 +270,36 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     } catch {}
   }
 
+  const [accentTheme, setAccentTheme] = useState<"blue" | "red">("blue")
+  const applyAccentTheme = (t: "blue" | "red") => {
+    const v = t === "red" ? "220, 38, 38" : "37, 99, 235"
+    try {
+      if (typeof document !== "undefined") {
+        document.documentElement.style.setProperty("--ui-accent-rgb", v)
+      }
+    } catch {}
+  }
+  useEffect(() => {
+    try {
+      const ls = typeof window !== "undefined" ? window.localStorage : null
+      const t = ls?.getItem("ui:accentTheme") as any
+      const valid = t === "red" || t === "blue" ? (t as any) : "blue"
+      setAccentTheme(valid)
+      applyAccentTheme(valid)
+    } catch {}
+  }, [])
+  const changeAccentTheme = (t: "blue" | "red") => {
+    setAccentTheme(t)
+    applyAccentTheme(t)
+    try {
+      const ls = typeof window !== "undefined" ? window.localStorage : null
+      ls?.setItem("ui:accentTheme", t)
+      if (typeof document !== "undefined") {
+        document.cookie = `ui:accentTheme=${t}; path=/; max-age=${60 * 60 * 24 * 365}`
+      }
+    } catch {}
+  }
+
   const containerBase = variant === "vertical"
     ? "flex flex-col gap-1 items-stretch"
     : "flex gap-1 flex-wrap items-center justify-start min-h-[40px]"
@@ -295,7 +325,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               }}
               className={`${buttonBase} ${
                 isHomeActive
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent ring-1 ring-blue-500/20 before:absolute before:inset-y-1 before:left-0 before:w-[4px] before:rounded before:bg-blue-400"
+                  ? "bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] text-white border-transparent ring-1 ring-[rgba(var(--ui-accent-rgb),0.2)] before:absolute before:inset-y-1 before:left-0 before:w-[4px] before:rounded before:bg-[rgb(var(--ui-accent-rgb))]"
                   : "bg-zinc-900/40 border-zinc-800/60 text-zinc-300 hover:border-zinc-700/60 hover:bg-zinc-800/70"
               }`}
             >
@@ -319,7 +349,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                 aria-current={activeIndex === idx ? "page" : undefined}
                 className={`${buttonBase} ${
                   activeIndex === idx
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent ring-1 ring-blue-500/20 before:absolute before:inset-y-1 before:left-0 before:w-[4px] before:rounded before:bg-blue-400"
+                    ? "bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] text-white border-transparent ring-1 ring-[rgba(var(--ui-accent-rgb),0.2)] before:absolute before:inset-y-1 before:left-0 before:w-[4px] before:rounded before:bg-[rgb(var(--ui-accent-rgb))]"
                     : "bg-zinc-900/40 border-zinc-800/60 text-zinc-300 hover:border-zinc-700/60 hover:bg-zinc-800/70"
                 }`}
               >
@@ -339,7 +369,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               className="hidden md:inline-flex items-center gap-2 pr-3 border-r border-zinc-800/70 logo-hdgood"
             >
               <LogoParticles />
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-semibold tracking-wide text-white">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold tracking-wide text-white" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}>
                 HD
               </span>
               <span className="text-sm font-semibold tracking-tight text-zinc-100">
@@ -356,8 +386,9 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               >
                 {indicator.visible && (
                   <div
-                    className="absolute left-0 top-0 z-0 rounded-full bg-blue-600 shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
+                    className="absolute left-0 top-0 z-0 rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
                     style={{
+                      backgroundColor: "rgb(var(--ui-accent-rgb))",
                       transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`,
                       width: indicator.width,
                       height: indicator.height,
@@ -441,14 +472,33 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
 
             {/* Круглая кнопка справа — полноэкранный режим */}
             <div className="hidden md:flex items-center ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Тема акцента"
+                    className="inline-flex items-center justify-center h-9 w-9 rounded-full border border-zinc-700/70 bg-zinc-900/80 text-zinc-300/90 hover:text-white hover:bg-zinc-800/90 shadow-md shadow-black/40 transition-colors mr-2"
+                  >
+                    <span
+                      style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                      className="inline-block w-3.5 h-3.5 rounded-full"
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => changeAccentTheme("blue")}>Синий</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => changeAccentTheme("red")}>Алый</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <button
                 type="button"
                 aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
                 onClick={toggleFullscreen}
                 className={[
                   "inline-flex items-center justify-center h-9 w-9 rounded-full border border-zinc-700/70 bg-zinc-900/80 text-zinc-300/90 hover:text-white hover:bg-zinc-800/90 shadow-md shadow-black/40 transition-colors",
-                  isFullscreen ? "ring-1 ring-blue-500/50 border-blue-500/60" : "",
+                  isFullscreen ? "ring-1" : "",
                 ].join(" ")}
+                style={isFullscreen ? { boxShadow: "0 0 0 1px rgba(var(--ui-accent-rgb), 0.5)", borderColor: `rgba(var(--ui-accent-rgb), 0.6)` } : undefined}
               >
                 {isFullscreen ? (
                   <IconMinimize className="w-4 h-4" size={16} stroke={1.7} />

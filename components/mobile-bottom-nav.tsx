@@ -183,7 +183,8 @@ export default function MobileBottomNav() {
                       setMoreSelectedIndex(idx)
                     }
                   }}
-                  className={`p-3 border text-left transition-all duration-200 rounded-sm ${moreSelectedIndex === idx ? "bg-blue-600 text-white border-blue-600" : "bg-zinc-900/40 border-zinc-800/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/60"}`}
+                  className={`p-3 border text-left transition-all duration-200 rounded-sm ${moreSelectedIndex === idx ? "text-white" : "bg-zinc-900/40 border-zinc-800/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/60"}`}
+                  style={moreSelectedIndex === idx ? { backgroundColor: "rgb(var(--ui-accent-rgb))", borderColor: "rgb(var(--ui-accent-rgb))" } : undefined}
                 >
                   <div className="text-[11px] font-medium">{cat.title}</div>
                 </button>

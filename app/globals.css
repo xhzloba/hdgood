@@ -38,6 +38,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --ui-accent-rgb: 37, 99, 235;
 }
 
 .dark {
@@ -153,15 +154,15 @@
   border-radius: inherit;
   background: radial-gradient(
       circle at 0% 0%,
-      rgba(30, 64, 175, 1),
+      rgba(var(--ui-accent-rgb), 1),
       transparent 55%
     ),
     radial-gradient(
       circle at 100% 100%,
-      rgba(30, 64, 175, 0.98),
+      rgba(var(--ui-accent-rgb), 0.98),
       transparent 60%
     ),
-    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.95), transparent 52%);
+    radial-gradient(circle at 50% 0%, rgba(var(--ui-accent-rgb), 0.95), transparent 52%);
   opacity: 0.95;
   filter: blur(6px);
   pointer-events: none;
@@ -176,29 +177,28 @@
   border-radius: inherit;
   background-image: radial-gradient(
       circle at 8% 20%,
-      rgba(30, 64, 175, 1) 0,
+      rgba(var(--ui-accent-rgb), 1) 0,
       transparent 42%
     ),
     radial-gradient(
       circle at 80% 70%,
-      rgba(37, 99, 235, 0.98) 0,
+      rgba(var(--ui-accent-rgb), 0.98) 0,
       transparent 48%
     ),
     radial-gradient(circle at 30% 80%, rgba(15, 23, 42, 0.9) 0, transparent 52%),
-    /* мелкие «частицы» вокруг логотипа */
-      radial-gradient(
-        circle at 15% 10%,
-        rgba(37, 99, 235, 0.9) 0,
-        transparent 32%
-      ),
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(var(--ui-accent-rgb), 0.9) 0,
+      transparent 32%
+    ),
     radial-gradient(
       circle at 85% 25%,
-      rgba(59, 130, 246, 0.85) 0,
+      rgba(var(--ui-accent-rgb), 0.85) 0,
       transparent 34%
     ),
     radial-gradient(
       circle at 10% 85%,
-      rgba(30, 64, 175, 0.85) 0,
+      rgba(var(--ui-accent-rgb), 0.85) 0,
       transparent 30%
     ),
     radial-gradient(circle at 70% 90%, rgba(15, 23, 42, 0.9) 0, transparent 38%);
@@ -220,46 +220,41 @@
     animation-play-state: paused;
     /* эффект воды с волнами — по бокам выше, по центру ниже */
     background-image:
-      /* основная волна воды снизу (центр) */ radial-gradient(
+      radial-gradient(
         ellipse 120% 80% at 50% 105%,
-        rgba(29, 78, 216, 0.9) 0,
-        rgba(37, 99, 235, 0.7) 30%,
-        rgba(59, 130, 246, 0.5) 60%,
+        rgba(var(--ui-accent-rgb), 0.9) 0,
+        rgba(var(--ui-accent-rgb), 0.7) 30%,
+        rgba(var(--ui-accent-rgb), 0.5) 60%,
         transparent 100%
       ),
-      /* вторая волна для глубины (центр) */
-        radial-gradient(
-          ellipse 110% 70% at 50% 100%,
-          rgba(30, 64, 175, 0.8) 0,
-          rgba(29, 78, 216, 0.6) 35%,
-          transparent 80%
-        ),
-      /* третья волна (центр) */
-        radial-gradient(
-          ellipse 130% 60% at 50% 110%,
-          rgba(37, 99, 235, 0.7) 0,
-          rgba(59, 130, 246, 0.5) 40%,
-          transparent 85%
-        ),
-      /* боковые волны выше (левая сторона) */
-        radial-gradient(
-          ellipse 60% 70% at 15% 75%,
-          rgba(29, 78, 216, 0.6) 0,
-          transparent 70%
-        ),
-      /* боковые волны выше (правая сторона) */
-        radial-gradient(
-          ellipse 60% 70% at 85% 75%,
-          rgba(37, 99, 235, 0.6) 0,
-          transparent 70%
-        ),
-      /* верхние слои воды (центр) */
-        radial-gradient(
-          ellipse 100% 40% at 50% 75%,
-          rgba(59, 130, 246, 0.5) 0,
-          rgba(96, 165, 250, 0.3) 50%,
-          transparent 100%
-        );
+      radial-gradient(
+        ellipse 110% 70% at 50% 100%,
+        rgba(var(--ui-accent-rgb), 0.8) 0,
+        rgba(var(--ui-accent-rgb), 0.6) 35%,
+        transparent 80%
+      ),
+      radial-gradient(
+        ellipse 130% 60% at 50% 110%,
+        rgba(var(--ui-accent-rgb), 0.7) 0,
+        rgba(var(--ui-accent-rgb), 0.5) 40%,
+        transparent 85%
+      ),
+      radial-gradient(
+        ellipse 60% 70% at 15% 75%,
+        rgba(var(--ui-accent-rgb), 0.6) 0,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 60% 70% at 85% 75%,
+        rgba(var(--ui-accent-rgb), 0.6) 0,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 100% 40% at 50% 75%,
+        rgba(var(--ui-accent-rgb), 0.5) 0,
+        rgba(var(--ui-accent-rgb), 0.3) 50%,
+        transparent 100%
+      );
     background-size: 100% 100%;
     background-position: 0% 0%;
     /* лёгкое размытие для эффекта воды */
@@ -322,9 +317,9 @@
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(224, 242, 254, 1) 0%,
-      rgba(147, 197, 253, 1) 30%,
-      rgba(96, 165, 250, 0.7) 60%,
+      rgba(var(--ui-accent-rgb), 0.95) 0%,
+      rgba(var(--ui-accent-rgb), 0.7) 30%,
+      rgba(var(--ui-accent-rgb), 0.5) 60%,
       transparent 100%
     );
     filter: blur(0.3px) brightness(1.3);

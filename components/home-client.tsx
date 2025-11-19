@@ -618,7 +618,7 @@ export default function HomeClient({
                         <span className="text-zinc-400/60"> / </span>
                       )}
                     {yearVal && (
-                      <span className="inline-flex items-center rounded-full bg-blue-600 text-white px-3 py-[3px] mr-2">
+                      <span className="inline-flex items-center rounded-full text-white px-3 py-[3px] mr-2" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}>
                         <span className="truncate">{yearVal}</span>
                       </span>
                     )}

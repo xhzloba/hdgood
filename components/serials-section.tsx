@@ -63,9 +63,10 @@ export function SerialsSection() {
                 onClick={() => preserveScroll(() => setActive(idx))}
                 className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200 ${
                   active === idx
-                    ? "bg-blue-600 text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
+                    ? "text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white"
                 }`}
+                style={active === idx ? { backgroundColor: "rgb(var(--ui-accent-rgb))" } : undefined}
               >
                 {ch.title}
               </button>

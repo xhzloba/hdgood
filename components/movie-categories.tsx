@@ -81,9 +81,18 @@ export function MovieCategories() {
             onClick={() => setSelectedCategory(selectedCategory === index ? null : index)}
             className={`p-3 border text-left transition-all duration-200 rounded-sm ${
               selectedCategory === index
-                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20"
+                ? "text-white shadow-lg"
                 : "bg-zinc-900/40 border-zinc-800/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/60"
             }`}
+            style={
+              selectedCategory === index
+                ? {
+                    backgroundColor: "rgb(var(--ui-accent-rgb))",
+                    borderColor: "rgb(var(--ui-accent-rgb))",
+                    boxShadow: "0 12px 32px rgba(var(--ui-accent-rgb), 0.2)",
+                  }
+                : undefined
+            }
           >
             <div className="text-[11px] font-medium">{category.title}</div>
           </button>

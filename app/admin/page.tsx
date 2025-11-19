@@ -454,7 +454,7 @@ export default function AdminOverridesPage() {
               <input type="password" className="w-full h-9 rounded bg-zinc-800 border border-zinc-700 px-2 text-sm"
                 value={password} onChange={(e) => setPassword(e.target.value)} placeholder="user" />
             </div>
-            <button className="w-full h-9 bg-blue-600 hover:bg-blue-500 rounded text-sm" type="submit">Войти</button>
+            <button className="w-full h-9 rounded text-sm hover:opacity-90 active:opacity-95" type="submit" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))", color: "#fff" }}>Войти</button>
           </form>
         </main>
       </div>
@@ -491,7 +491,7 @@ export default function AdminOverridesPage() {
               value={rawInput}
               onChange={(e) => setRawInput(e.target.value)}
             />
-            <button className="h-9 px-4 bg-blue-600 hover:bg-blue-500 rounded text-sm" type="submit" disabled={loading}>
+            <button className="h-9 px-4 rounded text-sm hover:opacity-90 active:opacity-95" type="submit" disabled={loading} style={{ backgroundColor: "rgb(var(--ui-accent-rgb))", color: "#fff" }}>
               {loading ? "Загрузка..." : "Искать"}
             </button>
           </form>
@@ -637,7 +637,7 @@ export default function AdminOverridesPage() {
                         const hex = await pickWithEyedropper();
                         if (hex) updateField('poster_colors.dominant1', hex);
                       }}>Пипетка</button>
-                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant1' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant1' ? null : 'poster_colors.dominant1')}>С постера</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant1' ? 'text-white' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant1' ? null : 'poster_colors.dominant1')} style={activePickField === 'poster_colors.dominant1' ? { backgroundColor: 'rgb(var(--ui-accent-rgb))' } : undefined}>С постера</button>
                     </div>
                   </div>
                   <div>
@@ -650,7 +650,7 @@ export default function AdminOverridesPage() {
                         const hex = await pickWithEyedropper();
                         if (hex) updateField('poster_colors.dominant2', hex);
                       }}>Пипетка</button>
-                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant2' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant2' ? null : 'poster_colors.dominant2')}>С постера</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.dominant2' ? 'text-white' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.dominant2' ? null : 'poster_colors.dominant2')} style={activePickField === 'poster_colors.dominant2' ? { backgroundColor: 'rgb(var(--ui-accent-rgb))' } : undefined}>С постера</button>
                     </div>
                   </div>
                   <div>
@@ -663,7 +663,7 @@ export default function AdminOverridesPage() {
                         const hex = await pickWithEyedropper();
                         if (hex) updateField('poster_colors.accentTl', hex);
                       }}>Пипетка</button>
-                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentTl' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentTl' ? null : 'poster_colors.accentTl')}>С постера</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentTl' ? 'text-white' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentTl' ? null : 'poster_colors.accentTl')} style={activePickField === 'poster_colors.accentTl' ? { backgroundColor: 'rgb(var(--ui-accent-rgb))' } : undefined}>С постера</button>
                     </div>
                   </div>
                   <div>
@@ -676,7 +676,7 @@ export default function AdminOverridesPage() {
                         const hex = await pickWithEyedropper();
                         if (hex) updateField('poster_colors.accentBr', hex);
                       }}>Пипетка</button>
-                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBr' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBr' ? null : 'poster_colors.accentBr')}>С постера</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBr' ? 'text-white' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBr' ? null : 'poster_colors.accentBr')} style={activePickField === 'poster_colors.accentBr' ? { backgroundColor: 'rgb(var(--ui-accent-rgb))' } : undefined}>С постера</button>
                     </div>
                   </div>
                   <div>
@@ -689,7 +689,7 @@ export default function AdminOverridesPage() {
                         const hex = await pickWithEyedropper();
                         if (hex) updateField('poster_colors.accentBl', hex);
                       }}>Пипетка</button>
-                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBl' ? 'bg-blue-600' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBl' ? null : 'poster_colors.accentBl')}>С постера</button>
+                      <button type="button" className={`h-8 px-2 rounded text-xs ${activePickField === 'poster_colors.accentBl' ? 'text-white' : 'bg-zinc-700/60 hover:bg-zinc-600'}`} onClick={() => setActivePickField((p) => p === 'poster_colors.accentBl' ? null : 'poster_colors.accentBl')} style={activePickField === 'poster_colors.accentBl' ? { backgroundColor: 'rgb(var(--ui-accent-rgb))' } : undefined}>С постера</button>
                     </div>
                   </div>
                 </div>

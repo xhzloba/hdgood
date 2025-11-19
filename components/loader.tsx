@@ -4,7 +4,7 @@ type LoaderProps = {
   className?: string
 }
 
-export function Loader({ size = 'md', colorClass = 'bg-blue-500', className }: LoaderProps) {
+export function Loader({ size = 'md', colorClass = 'bg-[rgb(var(--ui-accent-rgb))]', className }: LoaderProps) {
   const sizeClass = size === 'sm' ? 'w-2 h-2' : size === 'lg' ? 'w-4 h-4' : 'w-3 h-3'
   return (
     <div className={`flex items-center justify-center gap-2 ${className ?? ''}`}>

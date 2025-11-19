@@ -623,6 +623,15 @@ export function MovieGrid({ url }: MovieGridProps) {
                   Нет постера
                 </div>
               )}
+              {movie.poster && loadedImages.has(String(movie.id)) && (
+                <div
+                  className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background:
+                      "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                  }}
+                />
+              )}
               {movie.rating && (
                 <div
                   className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(

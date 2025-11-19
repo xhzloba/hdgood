@@ -131,7 +131,8 @@ function SearchForm() {
           <Button
             type="submit"
             disabled={!query.trim()}
-            className="h-10 px-4 rounded-full bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:text-white active:bg-blue-800 active:text-white disabled:bg-blue-600 disabled:text-white disabled:opacity-100 disabled:cursor-not-allowed"
+            className="h-10 px-4 rounded-full text-white shadow-md hover:opacity-90 active:opacity-95 disabled:opacity-100 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
           >
             Найти
           </Button>

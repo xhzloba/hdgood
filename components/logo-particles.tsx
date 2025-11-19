@@ -70,6 +70,10 @@ export function LogoParticles() {
       // лёгкий общий tint, чтобы частицы чуть «светились» в глубине
       ctx.globalCompositeOperation = "lighter"
 
+      const accentRGB = (typeof window !== 'undefined'
+        ? getComputedStyle(document.documentElement).getPropertyValue('--ui-accent-rgb').trim()
+        : '37, 99, 235') || '37, 99, 235'
+
       for (const p of particles) {
         p.x += p.vx
         p.y += p.vy
@@ -89,8 +93,8 @@ export function LogoParticles() {
         const effectiveRadius = p.radius * pulse
 
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, effectiveRadius * 2.8)
-        gradient.addColorStop(0, `rgba(191, 219, 254, ${p.alpha})`)
-        gradient.addColorStop(0.4, `rgba(96, 165, 250, ${p.alpha * 0.85})`)
+        gradient.addColorStop(0, `rgba(${accentRGB}, ${p.alpha})`)
+        gradient.addColorStop(0.4, `rgba(${accentRGB}, ${p.alpha * 0.85})`)
         gradient.addColorStop(1, "rgba(15, 23, 42, 0)")
 
         ctx.fillStyle = gradient
