@@ -30,6 +30,7 @@
     }
   },
   "68fea7f1b935d9900a3bce1a": {
+    "poster": "https://imagetmdb.com/t/p/original/oCxLbnBBEmUCeRcmsBrmF9jEcHd.jpg",
     "poster_logo": "/movies/logo/frankestein-logo.webp",
     "bg_poster": {
       "backdrop": "/movies/frankenstein.webp"
@@ -71,10 +72,11 @@
     "name": "Протокол выхода"
   },
   "690d1a609cfe849a33163677": {
-    "poster_logo": "https://images-s.kinorium.com/movie/plogo/11084993/w1500_55545870.png",
+    "poster": "/movies/planeta-poster.jpg",
     "bg_poster": {
-      "backdrop": "https://images-s.kinorium.com/movie/shot/11084993/w1500_55094130.jpg"
+      "backdrop": "/movies/planeta.jpg"
     },
+    "poster_logo": "https://images-s.kinorium.com/movie/plogo/11084993/w1500_55545870.png",
     "franchise": {
       "budget": "$105 000 000",
       "fees_use": "$40 000 000",
@@ -177,5 +179,17 @@
         214
       ]
     }
+  },
+  "68d5bb609906b3f36b1b168f": {
+    "bg_poster": {
+      "backdrop": "https://imagetmdb.com/t/p/original/zpEWFNqoN8Qg1SzMMHmaGyOBTdW.jpg"
+    },
+    "poster": "https://imagetmdb.com/t/p/original/qcSFcQwcuzyWQ4UGsIa1y2WMozB.jpg"
+  },
+  "691654e66274cfb19056f227": {
+    "bg_poster": {
+      "backdrop": "/series/ikusagi.webp"
+    },
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11236981.jpg?1763282606"
   }
 }

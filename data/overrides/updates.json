@@ -329,5 +329,86 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-19T11:55:53.576Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-19T11:57:10.442Z",
+    "poster": "/movies/planeta-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-19T11:59:26.964Z",
+    "poster": "https://imagetmdb.com/t/p/original/oCxLbnBBEmUCeRcmsBrmF9jEcHd.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
+  },
+  {
+    "id": "68d5bb609906b3f36b1b168f",
+    "timestamp": "2025-11-19T12:01:01.941Z",
+    "poster": "https://imagetmdb.com/t/p/original/qcSFcQwcuzyWQ4UGsIa1y2WMozB.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68d5bb609906b3f36b1b168f",
+    "timestamp": "2025-11-19T12:01:50.452Z",
+    "poster": "https://imagetmdb.com/t/p/original/qcSFcQwcuzyWQ4UGsIa1y2WMozB.jpg",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68d5bb609906b3f36b1b168f",
+    "timestamp": "2025-11-19T12:02:32.418Z",
+    "poster": "https://imagetmdb.com/t/p/original/qcSFcQwcuzyWQ4UGsIa1y2WMozB.jpg",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "691654e66274cfb19056f227",
+    "timestamp": "2025-11-19T12:09:21.853Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11236981.jpg?1763282606",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
+  },
+  {
+    "id": "691654e66274cfb19056f227",
+    "timestamp": "2025-11-19T12:13:19.974Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11236981.jpg?1763282606",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]
