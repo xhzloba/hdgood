@@ -15,44 +15,28 @@ function SearchForm() {
   const params = useSearchParams()
   const [query, setQuery] = useState("")
   const [isListening, setIsListening] = useState(false)
-  const [isVoicePending, setIsVoicePending] = useState(false)
   const recognitionRef = useRef<any>(null)
   const finalTextRef = useRef<string>("")
   const autoSubmittedRef = useRef<boolean>(false)
-  const debounceTimerRef = useRef<number | null>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const textMeasureRef = useRef<HTMLSpanElement | null>(null)
   useEffect(() => {
     const q = params.get("q") || ""
     setQuery(q)
   }, [params])
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = null
-    }
-    setIsVoicePending(false)
     const q = query.trim()
     const url = q ? `/search?q=${encodeURIComponent(q)}` : "/search"
     router.push(url)
   }
-  const scheduleAutoSubmit = (text: string) => {
-    try {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-        debounceTimerRef.current = null
-      }
-      setIsVoicePending(true)
-      debounceTimerRef.current = window.setTimeout(() => {
-        if (autoSubmittedRef.current) return
-        autoSubmittedRef.current = true
-        try { recognitionRef.current?.stop() } catch {}
-        setIsListening(false)
-        const url = `/search?q=${encodeURIComponent(text)}`
-        router.push(url)
-      }, 2000)
-    } catch {}
+  const submitVoiceQuery = (text: string) => {
+    const q = text.trim()
+    if (!q) return
+    if (autoSubmittedRef.current) return
+    autoSubmittedRef.current = true
+    try { recognitionRef.current?.stop() } catch {}
+    setIsListening(false)
+    const url = `/search?q=${encodeURIComponent(q)}`
+    router.push(url)
   }
 
   const startVoice = () => {
@@ -72,17 +56,20 @@ function SearchForm() {
           try {
             let interim = ""
             let final = finalTextRef.current
+            let hadFinal = false
             for (let i = e.resultIndex; i < e.results.length; i++) {
               const result = e.results[i]
               const transcript = result?.[0]?.transcript || ""
-              if (result.isFinal) final += transcript + " "
+              if (result.isFinal) { final += transcript + " "; hadFinal = true }
               else interim += transcript
             }
             finalTextRef.current = final
             const combined = (final + interim).trim()
             if (combined) {
               setQuery(combined)
-              scheduleAutoSubmit(combined)
+              if (hadFinal && !autoSubmittedRef.current) {
+                submitVoiceQuery(combined)
+              }
             }
           } catch {}
         }
@@ -96,17 +83,13 @@ function SearchForm() {
         rec.onend = () => {
           setIsListening(false)
           const text = (finalTextRef.current || query).trim()
-          if (text) scheduleAutoSubmit(text)
+          if (text && !autoSubmittedRef.current) submitVoiceQuery(text)
         }
         rec.onstart = () => {
           finalTextRef.current = ""
           setIsListening(true)
           autoSubmittedRef.current = false
-          if (debounceTimerRef.current) {
-            clearTimeout(debounceTimerRef.current)
-            debounceTimerRef.current = null
-          }
-          setIsVoicePending(false)
+          autoSubmittedRef.current = false
         }
         recognitionRef.current = rec
       }
@@ -118,32 +101,11 @@ function SearchForm() {
     }
   }
   useEffect(() => {
-    const handleFirstLoaded = () => {
-      try {
-        if (debounceTimerRef.current) {
-          clearTimeout(debounceTimerRef.current)
-          debounceTimerRef.current = null
-        }
-        setIsVoicePending(false)
-      } catch {}
-    }
-    if (typeof window !== "undefined") {
-      window.addEventListener("search:firstResultsLoaded", handleFirstLoaded)
-    }
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-        debounceTimerRef.current = null
-      }
-      setIsVoicePending(false)
-      if (typeof window !== "undefined") {
-        window.removeEventListener("search:firstResultsLoaded", handleFirstLoaded)
-      }
-    }
+    autoSubmittedRef.current = false
   }, [])
   return (
     <form onSubmit={onSubmit} className="mx-auto w-full md:w-[680px]">
-      <div className="relative" ref={containerRef}>
+      <div className="relative">
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <circle cx="11" cy="11" r="8" />
@@ -157,22 +119,6 @@ function SearchForm() {
           aria-label="Поиск"
           className="h-12 pl-10 pr-28 rounded-full bg-zinc-900/60 border border-zinc-800/70 text-zinc-100 placeholder:text-zinc-400 focus-visible:ring-ring/50"
         />
-        <span ref={textMeasureRef} className="absolute opacity-0 pointer-events-none whitespace-pre px-0 font-normal text-[14px] md:text-[16px]">
-          {query}
-        </span>
-        {isVoicePending && (() => {
-          const textW = textMeasureRef.current?.offsetWidth || 0
-          const containerW = containerRef.current?.offsetWidth || 0
-          const textStart = 40 // pl-10
-          const gap = 12
-          const reservedRight = 120 // место под кнопки справа
-          const left = Math.min(textStart + textW + gap, Math.max(textStart + gap, containerW - reservedRight))
-          return (
-            <div className="absolute top-1/2 -translate-y-1/2" style={{ left }}>
-              <span className="inline-block h-4 w-4 rounded-full border-2 border-zinc-400/60 border-t-transparent animate-spin" />
-            </div>
-          )
-        })()}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
           <button
             type="button"

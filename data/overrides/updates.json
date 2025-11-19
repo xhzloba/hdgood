@@ -410,5 +410,25 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-19T15:43:19.885Z",
+    "poster": "https://3.downloader.disk.yandex.ru/preview/8853a7f15616db4fdec41f2b0234e13fa314270bd965626e36f74c5b733db56a/inf/lS5JdtfotEvfSWbLKtw1whjWttZioapm-Ca41cPjSQKeQ9P2XA_hHWK69FTHIEFCwu_tM7G_UH6tGkQYc3rNSw%3D%3D?uid=1567040424&filename=planeta-poster.jpg&disposition=inline&hash=&limit=0&content_type=image%2Fjpeg&owner_uid=1567040424&tknv=v3&size=3456x1752",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-11-19T15:46:32.064Z",
+    "poster": "https://4.downloader.disk.yandex.ru/preview/74f2b7441a791da519e6860f16f640ab4382f2a898e0650bf163ba71182de6db/inf/kR-DiZL_zHJYPoNgZbNh5RdwlB1miJB39Q3T9YxKxKBlkPt-jmRba0VhxbnJSfX1VbW_NTqPNueQDbR5y7t5Yw%3D%3D?uid=1567040424&filename=oCxLbnBBEmUCeRcmsBrmF9jEcHd.jpg&disposition=inline&hash=&limit=0&content_type=image%2Fjpeg&owner_uid=1567040424&tknv=v3&size=3456x1752",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
   }
 ]

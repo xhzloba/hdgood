@@ -159,6 +159,15 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   useEffect(() => {
     try {
+      const isSearch = String(url || "").includes("/api/search");
+      if (isSearch) {
+        hasFirstResultsLoadedRef.current = false;
+      }
+    } catch {}
+  }, [url]);
+
+  useEffect(() => {
+    try {
       const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null;
       const update = () => setIsDesktop(!!mq?.matches);
       update();
@@ -255,16 +264,18 @@ export function MovieGrid({ url }: MovieGridProps) {
       if (!isSearch) return;
       if (hasFirstResultsLoadedRef.current) return;
       const firstEntry = pagesData.find((p) => p.page === 1) || null;
-      if (!firstEntry) return;
-      const arr = extractMoviesFromData(firstEntry.data) || [];
+      const hasData = !!firstEntry;
+      const arr = hasData ? (extractMoviesFromData(firstEntry!.data) || []) : [];
       const ok = Array.isArray(arr) && arr.length > 0;
-      if (!ok) return;
-      if (typeof window !== "undefined") {
-        hasFirstResultsLoadedRef.current = true;
-        window.dispatchEvent(new CustomEvent("search:firstResultsLoaded"));
+      const finished = !isLoading && !isValidating;
+      if ((ok && finished) || (error && finished) || (lastPageEmpty && finished)) {
+        if (typeof window !== "undefined") {
+          hasFirstResultsLoadedRef.current = true;
+          window.dispatchEvent(new CustomEvent("search:firstResultsLoaded"));
+        }
       }
     } catch {}
-  }, [pagesData, url]);
+  }, [pagesData, url, isLoading, isValidating, error, lastPageEmpty]);
 
   const hasNextLoadedGlobal = useMemo(() => {
     return pagesData.some((p) => p.page === page + 1);
