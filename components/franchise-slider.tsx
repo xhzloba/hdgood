@@ -48,7 +48,7 @@ const FRANCHISE_ITEMS: FranchiseItem[] = [
   },
   {
     title: "Люди Икс",
-    poster: "/movies/lyudi-x.jpg",
+    poster: "https://imagetmdb.com/t/p/original/vy6udfAuHvOy5MAoPqs5hLNPR8O.jpg",
     href: "/franchise/lyudi-x",
     overlay: X_MEN_OVERLAY,
   },
@@ -148,7 +148,19 @@ export function FranchiseSlider() {
                     }
                   }}
                 >
-                  <div className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[7/3] lg:aspect-[3/1] bg-zinc-950 overflow-hidden rounded-[10px] poster-card">
+                  <div
+                    className="relative aspect-[1/1] sm:aspect-[4/3] md:aspect-[2/1] lg:aspect-[2/1] bg-transparent overflow-hidden rounded-[10px] poster-card"
+                    style={{
+                      WebkitMaskImage:
+                        "radial-gradient(farthest-side at 55% 50%, black 70%, transparent 100%)",
+                      maskImage:
+                        "radial-gradient(farthest-side at 55% 50%, black 70%, transparent 100%)",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskSize: "100% 100%",
+                      maskSize: "100% 100%",
+                    }}
+                  >
                     {!loadedImages.has(item.href) && (
                       <Skeleton className="absolute inset-0 w-full h-full" />
                     )}
@@ -157,14 +169,13 @@ export function FranchiseSlider() {
                       alt={item.title}
                       loading="lazy"
                       className={`w-full h-full object-cover transition-all ease-out poster-media ${loadedImages.has(item.href) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"}`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}
                       onLoad={() => setLoadedImages((prev) => {
                         const next = new Set(prev);
                         next.add(item.href);
                         return next;
                       })}
                     />
-                    {/* Оверлей: оставляем только первый логотип, поверх градиента */}
                     {loadedImages.has(item.href) && item.overlay?.[0] && (
                       <div className="pointer-events-none absolute left-1/2 top-[56%] md:top-[54%] -translate-x-1/2 flex justify-center items-center w-[55%] md:w-[40%] z-20">
                         <img
@@ -176,27 +187,7 @@ export function FranchiseSlider() {
                         />
                       </div>
                     )}
-                    {/* Левый верхний угол: растушевка (градиент) для Джона Уика */}
-                    {item.title === "Джон Уик" && (
-                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
-                    )}
-                    {item.title === "Веном" && (
-                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
-                    )}
-                    {item.title === "Люди Икс" && (
-                      <div className="pointer-events-none absolute inset-y-0 left-0 w-[60%] md:w-[45%] bg-gradient-to-r from-black/90 via-black/70 to-transparent z-0" />
-                    )}
                     
-                    {/* Правая растушовка для Джона Уика */}
-                    {item.title === "Джон Уик" && (
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
-                    )}
-                    {item.title === "Веном" && (
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
-                    )}
-                    {item.title === "Люди Икс" && (
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-[40%] md:w-[35%] bg-gradient-to-l from-black/90 via-black/70 to-transparent z-0" />
-                    )}
                   </div>
                 </Link>
               </CarouselItem>
