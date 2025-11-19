@@ -387,9 +387,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               >
                 {indicator.visible && (
                   <div
-                    className="absolute left-0 top-0 z-0 rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.9)] transition-none pointer-events-none"
+                    className="absolute left-0 top-0 z-0 rounded-full transition-none pointer-events-none tab-active-effect"
                     style={{
-                      backgroundColor: "rgb(var(--ui-accent-rgb))",
                       transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`,
                       width: indicator.width,
                       height: indicator.height,
