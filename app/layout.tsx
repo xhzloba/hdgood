@@ -64,7 +64,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var m=document.cookie.match(/(?:^|; )ui:accentTheme=([^;]+)/);var c=m?decodeURIComponent(m[1]):null;var t=localStorage.getItem('ui:accentTheme')||c||'blue';localStorage.setItem('ui:accentTheme', t);var v=(t==='red')?'220, 38, 38':'37, 99, 235';document.documentElement.style.setProperty('--ui-accent-rgb', v);}catch(e){}})();",
+              "(function(){try{var m=document.cookie.match(/(?:^|; )ui:accentTheme=([^;]+)/);var c=m?decodeURIComponent(m[1]):null;var t=localStorage.getItem('ui:accentTheme')||c||'blue';localStorage.setItem('ui:accentTheme', t);var v=(t==='red')?'220, 38, 38':(t==='purple')?'79, 70, 229':'37, 99, 235';document.documentElement.style.setProperty('--ui-accent-rgb', v);}catch(e){}})();",
           }}
         />
       </head>

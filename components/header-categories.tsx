@@ -270,25 +270,26 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     } catch {}
   }
 
-  const [accentTheme, setAccentTheme] = useState<"blue" | "red">("blue")
-  const applyAccentTheme = (t: "blue" | "red") => {
-    const v = t === "red" ? "220, 38, 38" : "37, 99, 235"
+  const [accentTheme, setAccentTheme] = useState<"blue" | "red" | "purple">("blue")
+  const applyAccentTheme = (t: "blue" | "red" | "purple") => {
+    const v = t === "red" ? "220, 38, 38" : t === "purple" ? "79, 70, 229" : "37, 99, 235"
     try {
       if (typeof document !== "undefined") {
         document.documentElement.style.setProperty("--ui-accent-rgb", v)
       }
     } catch {}
   }
+  const themeColors: Record<string, string> = { blue: "37, 99, 235", red: "220, 38, 38", purple: "79, 70, 229" }
   useEffect(() => {
     try {
       const ls = typeof window !== "undefined" ? window.localStorage : null
       const t = ls?.getItem("ui:accentTheme") as any
-      const valid = t === "red" || t === "blue" ? (t as any) : "blue"
+      const valid = (t === "red" || t === "blue" || t === "purple") ? (t as any) : "blue"
       setAccentTheme(valid)
       applyAccentTheme(valid)
     } catch {}
   }, [])
-  const changeAccentTheme = (t: "blue" | "red") => {
+  const changeAccentTheme = (t: "blue" | "red" | "purple") => {
     setAccentTheme(t)
     applyAccentTheme(t)
     try {
@@ -485,9 +486,28 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                     />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => changeAccentTheme("blue")}>Синий</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => changeAccentTheme("red")}>Алый</DropdownMenuItem>
+                <DropdownMenuContent align="end" className="rounded-2xl border-0 bg-zinc-900/60 p-2 shadow-xl backdrop-blur-md min-w-[12rem]">
+                  <DropdownMenuItem
+                    onClick={() => changeAccentTheme("blue")}
+                    className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                  >
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.blue})` }} />
+                    <span>Синий</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => changeAccentTheme("red")}
+                    className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                  >
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.red})` }} />
+                    <span>Алый</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => changeAccentTheme("purple")}
+                    className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                  >
+                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.purple})` }} />
+                    <span>Фиолетовый</span>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <button
