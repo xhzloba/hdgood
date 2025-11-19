@@ -592,7 +592,7 @@ export function PosterBackground({
         ]
 
         const gradientCount = overlayGradients.length
-        const bgHeightStr = "100% 100vh"
+        const bgHeightStr = "cover"
         const urlPos = "center top"
         const compositeImage = `${overlayGradients.join(", ")}, url(${bgPosterUrl})`
         const compositeSize = `${Array(gradientCount).fill("cover").join(", ")}, ${bgHeightStr}`
@@ -602,25 +602,15 @@ export function PosterBackground({
         ;(baseStyle as any).backgroundSize = compositeSize
         ;(baseStyle as any).backgroundPosition = compositePos
         ;(baseStyle as any).backgroundRepeat = "no-repeat"
+        if (!isMobile) {
+          ;(baseStyle as any).backgroundAttachment = 'fixed'
+        }
         ;(baseStyle as any).__compositeImage = compositeImage
         ;(baseStyle as any).__compositeSize = compositeSize
         ;(baseStyle as any).__compositePosition = compositePos
         ;(baseStyle as any).__bgUrl = bgPosterUrl
       } else {
-        const bottomFade = softBottomFade
-          ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 12%, rgba(0,0,0,0.85) 26%, rgba(0,0,0,0.92) 38%, rgba(0,0,0,0.95) 100%)"
-          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.97) 24%, rgba(0,0,0,1) 34%, rgba(0,0,0,1) 100%)"
-
-        const overlayGradients = [
-          "linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 18%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.3) 82%, rgba(0,0,0,0.65) 100%)",
-          bottomFade,
-        ]
-
-        const gradientCount = overlayGradients.length
-        ;(baseStyle as any).backgroundImage = overlayGradients.join(", ")
-        ;(baseStyle as any).backgroundSize = Array(gradientCount).fill("cover").join(", ")
-        ;(baseStyle as any).backgroundPosition = Array(gradientCount).fill("center top").join(", ")
-        ;(baseStyle as any).backgroundRepeat = "no-repeat"
+        baseStyle.backgroundColor = "var(--app-bg, #0f0f0f)"
       }
 
       return baseStyle
@@ -729,7 +719,7 @@ export function PosterBackground({
         
         const compositeImage = `${overlayGradients.join(', ')}, url(${bgPosterUrl})`
         const gradientCount = overlayGradients.length
-        const bgHeightStr = `100% 100vh`
+        const bgHeightStr = `cover`
         const urlPos = 'center top'
         const compositeSize = `${Array(gradientCount).fill('cover').join(', ')}, ${bgHeightStr}`
         const compositePos = `${Array(gradientCount).fill('center top').join(', ')}, ${urlPos}`
@@ -829,6 +819,13 @@ export function PosterBackground({
       if (!raw) return
       const data = JSON.parse(raw)
       if (data && data.img) {
+        const el = containerRef.current
+        if (el) {
+          el.style.backgroundImage = data.img || ''
+          el.style.backgroundSize = data.size || ''
+          el.style.backgroundPosition = data.pos || ''
+          if (!isMobile) el.style.backgroundAttachment = 'fixed'
+        }
         setLastCompImg(data.img)
         setLastCompSize(data.size)
         setLastCompPos(data.pos)
@@ -899,7 +896,7 @@ export function PosterBackground({
       if (bgPosterUrl && shouldShowBackground) {
         const fullBackgroundImage = style.backgroundImage || `url(${bgPosterUrl})`
         const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
+        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}cover`
         const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
         return {
           ['--mobile-bg-image' as any]: fullBackgroundImage,
@@ -910,7 +907,7 @@ export function PosterBackground({
       if (simpleDarkCorners && !bgPosterUrl && lastCompImg) {
         const fullBackgroundImage = lastCompImg
         const gradientCount = (fullBackgroundImage.match(/(linear-gradient|radial-gradient)\(/g) || []).length
-        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}100% 100svh`
+        const mobileSizes = `${Array(gradientCount).fill('cover').join(', ')}${gradientCount ? ', ' : ''}cover`
         const mobilePositions = `${Array(gradientCount).fill('center top').join(', ')}${gradientCount ? ', ' : ''}center top`
         return {
           ['--mobile-bg-image' as any]: fullBackgroundImage,
@@ -933,9 +930,11 @@ export function PosterBackground({
   }, [className, bgPosterUrl])
 
   const showFixedMobileBackdrop = !!bgPosterUrl && isMobile && !disableMobileBackdrop
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <div 
+      ref={containerRef}
       className={
         ((combinedClassName || '') + (showFixedMobileBackdrop ? ' mobile-fixed' : '')).trim() || undefined
       }
