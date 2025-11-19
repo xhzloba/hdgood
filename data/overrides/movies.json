@@ -197,5 +197,24 @@
     "bg_poster": {
       "backdrop": "https://imagetmdb.com/t/p/original/kM2l7BoPrlP7hx6bSKrp6MHZ1Aa.jpg"
     }
+  },
+  "6593f8778914c04deae99c86": {
+    "poster_colors": {
+      "accentTl": [
+        225,
+        2,
+        1
+      ],
+      "accentBr": [
+        252,
+        22,
+        1
+      ],
+      "accentBl": [
+        4,
+        194,
+        198
+      ]
+    }
   }
 }

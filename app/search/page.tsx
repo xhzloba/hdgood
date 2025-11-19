@@ -175,7 +175,7 @@ export default function SearchPage() {
         <div className="mb-4 hidden md:block">
           <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[22vh] h-[96px]">
+        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
           {logoSrc && logoId ? (
             <Link href={`/movie/${logoId}`} className="block">
               <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />

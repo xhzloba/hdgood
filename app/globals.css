@@ -1089,6 +1089,35 @@
   }
 }
 
+.smoke-flash {
+  position: relative;
+}
+.smoke-flash::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  border-radius: 24px;
+  background-image: radial-gradient(circle at 50% 50%, rgba(var(--ui-accent-rgb), 0.9) 0%, rgba(var(--ui-accent-rgb), 0.35) 30%, rgba(15, 23, 42, 0.6) 65%, rgba(15, 23, 42, 0) 100%);
+  filter: blur(16px);
+  opacity: 0;
+  animation: smoke-flash 700ms ease-out forwards;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+@keyframes smoke-flash {
+  0% { opacity: 0; transform: scale(0.95); filter: blur(18px); }
+  35% { opacity: 0.65; transform: scale(1); filter: blur(22px); }
+  70% { opacity: 0.35; transform: scale(1.05); filter: blur(26px); }
+  100% { opacity: 0; transform: scale(1.08); filter: blur(30px); }
+}
+
+html[data-toploader="silent"] #nprogress,
+html[data-toploader="silent"] #nprogress .bar,
+html[data-toploader="silent"] #nprogress .peg {
+  display: none !important;
+}
+
 /* Индивидуальные анимации для частиц в области текста */
 @keyframes particle-text-float-1 {
   0%,

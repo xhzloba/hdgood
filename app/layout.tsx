@@ -69,6 +69,12 @@ export default function RootLayout({
         />
       </head>
       <body className={`font-sans antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var ss=window.sessionStorage;if(ss&&ss.getItem('toploader:silentOnce')==='1'){ss.removeItem('toploader:silentOnce');var r=document.documentElement;r.setAttribute('data-toploader','silent');setTimeout(function(){try{r.removeAttribute('data-toploader');}catch(e){}},800);} }catch(e){}})();",
+          }}
+        />
         <NextTopLoader color="rgb(var(--ui-accent-rgb))" showSpinner={false} height={3} />
         <ScrollToTop />
         <CursorPopcorn />

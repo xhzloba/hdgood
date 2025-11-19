@@ -521,7 +521,7 @@ export default function HomeClient({
             onActiveIndexChange={handleActiveIndexChange}
           />
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[22vh] h-[96px]">
+        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
           {logoSrc && logoId ? (
             <Link href={`/movie/${logoId}`} className="block">
               <img
@@ -532,7 +532,7 @@ export default function HomeClient({
             </Link>
           ) : null}
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-3">
+        <div className="relative z-30 hidden md:flex justify-center mt-1">
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
             {meta ? (
               (() => {

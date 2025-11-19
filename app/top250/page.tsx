@@ -17,7 +17,7 @@ export default function Top250Page() {
               </div>
             </div>
             <div className="mt-4">
-              <MovieGrid url={apiUrl} />
+              <MovieGrid url={apiUrl} navigateOnClick />
             </div>
           </div>
         </section>

@@ -3,7 +3,8 @@ import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -23,6 +24,7 @@ interface Movie {
 
 interface MovieGridProps {
   url: string;
+  navigateOnClick?: boolean;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -126,7 +128,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -136,6 +138,13 @@ export function MovieGrid({ url }: MovieGridProps) {
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const [gridCols, setGridCols] = useState<number>(4);
   const [subIndex, setSubIndex] = useState<number>(0);
+  const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
+  const [selectedDetails, setSelectedDetails] = useState<any | null>(null);
+  const [selectedLoading, setSelectedLoading] = useState<boolean>(false);
+  const [selectedError, setSelectedError] = useState<string | null>(null);
+  const [infoVisible, setInfoVisible] = useState<boolean>(false);
+  const posterContextRef = useRef<{ rect: DOMRect; posterUrl: string } | null>(null);
+  const router = useRouter();
 
   const perPage = 15;
 
@@ -399,6 +408,31 @@ export function MovieGrid({ url }: MovieGridProps) {
     });
   }, [display, overridesMap]);
 
+  useEffect(() => {
+    if (!selectedMovie) return;
+    setSelectedLoading(true);
+    setSelectedError(null);
+    setSelectedDetails(null);
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`https://api.vokino.pro/v2/view/${selectedMovie.id}`, {
+          signal: controller.signal,
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const json = await res.json();
+        setSelectedDetails(json?.details ?? json ?? null);
+      } catch (e: any) {
+        setSelectedError("Ошибка загрузки");
+      } finally {
+        setSelectedLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [selectedMovie]);
+
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
@@ -546,6 +580,7 @@ export function MovieGrid({ url }: MovieGridProps) {
 
   return (
     <div className="relative">
+      <div className="relative">
       {isArrowDesktopMode && (
         <button
           onClick={handlePrevArrow}
@@ -558,9 +593,8 @@ export function MovieGrid({ url }: MovieGridProps) {
       )}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
         {finalDisplay.map((movie: any, index: number) => (
-          <Link
+          <div
             key={movie.id || index}
-            href={`/movie/${movie.id}`}
             className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
             onMouseMove={(e) => {
               const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
@@ -582,15 +616,32 @@ export function MovieGrid({ url }: MovieGridProps) {
               posterEl.style.setProperty('--my', '0');
             }}
             onClick={(e) => {
-              // Сохраняем позицию постера для анимации перехода (только десктоп)
-              const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
+              if (navigateOnClick || !isDesktop) {
+                router.push(`/movie/${movie.id}`);
+                return;
+              }
+              const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement;
               if (posterEl && movie.poster) {
-                const rect = posterEl.getBoundingClientRect()
-                savePosterTransition({
-                  movieId: String(movie.id),
-                  posterUrl: movie.poster,
-                  rect: rect,
-                })
+                const rect = posterEl.getBoundingClientRect();
+                posterContextRef.current = { rect, posterUrl: movie.poster };
+              } else {
+                posterContextRef.current = null;
+              }
+              if (selectedMovie && String(selectedMovie.id) === String(movie.id)) {
+                setInfoVisible(false);
+                setTimeout(() => {
+                  setSelectedMovie(null);
+                  setSelectedDetails(null);
+                  setSelectedError(null);
+                }, 200);
+                return;
+              }
+              setSelectedMovie(movie);
+              setInfoVisible(false);
+              if (typeof window !== "undefined") {
+                requestAnimationFrame(() => setInfoVisible(true));
+              } else {
+                setInfoVisible(true);
               }
             }}
           >
@@ -674,7 +725,7 @@ export function MovieGrid({ url }: MovieGridProps) {
                 })()}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
       {isArrowDesktopMode && (
@@ -686,6 +737,94 @@ export function MovieGrid({ url }: MovieGridProps) {
         >
           <IconChevronRight size={20} />
         </button>
+      )}
+      </div>
+
+      {!navigateOnClick && selectedMovie && (
+        <div key={String(selectedMovie.id)} className={`mt-3 md:mt-4 transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+          <div className="relative p-3 md:p-4 smoke-flash">
+            <button
+              type="button"
+              aria-label="Закрыть"
+              onClick={() => {
+                setInfoVisible(false);
+                setTimeout(() => {
+                  setSelectedMovie(null);
+                  setSelectedDetails(null);
+                  setSelectedError(null);
+                }, 200);
+              }}
+              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-300 hover:text-white hover:bg-zinc-700/40 transition-all duration-200"
+            >
+              <IconX size={18} />
+            </button>
+            <div className="flex items-start gap-3 md:gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie.title || "Без названия"}>
+                    {selectedMovie.title || "Без названия"}
+                  </h3>
+                  {(() => {
+                    const rating = (selectedDetails as any)?.rating_kp ?? (selectedDetails as any)?.rating ?? selectedMovie.rating;
+                    return rating ? (
+                      <span className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(rating)}`}>{formatRatingLabel(rating)}</span>
+                    ) : null;
+                  })()}
+                </div>
+                <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
+                  {(() => {
+                    const d: any = selectedDetails || {};
+                    const year = d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year;
+                    const countryRaw = d.country ?? selectedMovie.country;
+                    const quality = d.quality ?? selectedMovie.quality;
+                    const parts: string[] = [];
+                    if (year) parts.push(String(year));
+                    if (quality) parts.push(String(quality));
+                    if (countryRaw) {
+                      const arr = Array.isArray(countryRaw) ? countryRaw : String(countryRaw).split(",").map((s) => s.trim()).filter(Boolean);
+                      if (arr.length > 0) parts.push(arr.join(" "));
+                    }
+                    return parts.length > 0 ? <div className="flex items-center gap-2">{parts.map((p, i) => (
+                      <span key={i} className="truncate">{p}</span>
+                    ))}</div> : null;
+                  })()}
+                </div>
+                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90">
+                  {(() => {
+                    const d: any = selectedDetails || {};
+                    const aboutRaw = d.about ?? d.description;
+                    const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
+                    return about ? <p className="line-clamp-3 md:line-clamp-4">{about}</p> : null;
+                  })()}
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const ctx = posterContextRef.current;
+                      if (ctx) {
+                        savePosterTransition({ movieId: String(selectedMovie.id), posterUrl: ctx.posterUrl, rect: ctx.rect });
+                      }
+                      router.push(`/movie/${selectedMovie.id}#watch`);
+                    }}
+                    className="px-3 py-2 rounded-sm text-[12px] text-white border border-transparent hover:opacity-90 transition-all duration-200"
+                    style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                  >
+                    Смотреть онлайн
+                  </button>
+                  <Link
+                    href={`/movie/${selectedMovie.id}`}
+                    className="px-3 py-2 rounded-sm text-[12px] border border-zinc-700/60 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 transition-all duration-200"
+                  >
+                    Подробнее
+                  </Link>
+                  {selectedLoading && <Loader size="sm" />}
+                  {selectedError && <span className="text-[12px] text-red-400">{selectedError}</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {showLoadMoreButton && (
