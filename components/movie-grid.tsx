@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -247,6 +247,24 @@ export function MovieGrid({ url }: MovieGridProps) {
       return [...prev, { page: nextPage, data: next2Data }];
     });
   }, [next2Data, page]);
+
+  const hasFirstResultsLoadedRef = useRef(false);
+  useEffect(() => {
+    try {
+      const isSearch = (String(url || "").includes("/api/search"));
+      if (!isSearch) return;
+      if (hasFirstResultsLoadedRef.current) return;
+      const firstEntry = pagesData.find((p) => p.page === 1) || null;
+      if (!firstEntry) return;
+      const arr = extractMoviesFromData(firstEntry.data) || [];
+      const ok = Array.isArray(arr) && arr.length > 0;
+      if (!ok) return;
+      if (typeof window !== "undefined") {
+        hasFirstResultsLoadedRef.current = true;
+        window.dispatchEvent(new CustomEvent("search:firstResultsLoaded"));
+      }
+    } catch {}
+  }, [pagesData, url]);
 
   const hasNextLoadedGlobal = useMemo(() => {
     return pagesData.some((p) => p.page === page + 1);
