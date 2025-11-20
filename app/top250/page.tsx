@@ -22,6 +22,17 @@ export default function Top250Page() {
   } | null>(null);
   const [overrideBg, setOverrideBg] = useState<string | null>(null);
   const [overridePoster, setOverridePoster] = useState<string | null>(null);
+  const [overrideHeroMeta, setOverrideHeroMeta] = useState<{
+    ratingKP?: number | null;
+    ratingIMDb?: number | null;
+    year?: string | null;
+    country?: string | null;
+    genre?: string | null;
+    duration?: string | null;
+  } | null>(null);
+  const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(null);
+  const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(null);
+  const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(null);
   useEffect(() => {
     try {
       const ss = typeof window !== "undefined" ? window.sessionStorage : null;
@@ -37,6 +48,10 @@ export default function Top250Page() {
       }
     } catch {}
   }, []);
+  const hasOverrideBg = overrideBg != null;
+  const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
+  const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
+  const effMeta = overrideHeroMeta ?? meta;
   return (
     <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade className="min-h-[100dvh] min-h-screen" posterUrl={overridePoster ?? undefined} bgPosterUrl={overrideBg ?? undefined}>
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6 relative">
@@ -44,39 +59,45 @@ export default function Top250Page() {
           <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
-          {logoSrc && logoId ? (
-            <Link href={`/movie/${logoId}`} className="block">
-              <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
+          {effLogoSrc && effLogoId ? (
+            <Link href={`/movie/${effLogoId}`} className="block">
+              <img src={effLogoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
             </Link>
+          ) : hasOverrideBg && overrideHeroTitle ? (
+            <div className="h-[96px] flex items-center justify-center px-4">
+              <span className="text-2xl md:text-4xl font-semibold text-zinc-100 truncate max-w-[80vw]">
+                {overrideHeroTitle}
+              </span>
+            </div>
           ) : null}
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-1">
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
-            {meta ? (
+            {effMeta ? (
               (() => {
-                const yearVal = meta.year && String(meta.year).trim() ? String(meta.year).trim() : null;
-                const restArr = [meta.country, meta.genre, meta.duration].filter((v) => v && String(v).trim().length > 0) as string[];
+                const yearVal = effMeta.year && String(effMeta.year).trim() ? String(effMeta.year).trim() : null;
+                const restArr = [effMeta.country, effMeta.genre, effMeta.duration].filter((v) => v && String(v).trim().length > 0) as string[];
                 return (
                   <span className="inline-block max-w-[80vw] truncate whitespace-nowrap">
-                    {(meta.ratingKP != null || meta.ratingIMDb != null) && (
+                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) && (
                       <>
                         <span className="inline-flex items-center gap-2 align-middle">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png" alt="Кинопоиск" className="w-5 h-5 rounded-sm" />
-                          <span className={meta.ratingKP != null && meta.ratingKP > 8.5 ? "font-semibold bg-clip-text text-transparent" : `${ratingColor(meta.ratingKP ?? undefined)} font-semibold`} style={meta.ratingKP != null && meta.ratingKP > 8.5 ? { backgroundImage: "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" } : undefined}>
-                            {meta.ratingKP != null ? formatRatingLabel(meta.ratingKP) : "—"}
+                          <span className={effMeta.ratingKP != null && effMeta.ratingKP > 8.5 ? "font-semibold bg-clip-text text-transparent" : `${ratingColor(effMeta.ratingKP ?? undefined)} font-semibold`} style={effMeta.ratingKP != null && effMeta.ratingKP > 8.5 ? { backgroundImage: "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" } : undefined}>
+                            {effMeta.ratingKP != null ? formatRatingLabel(effMeta.ratingKP) : "—"}
                           </span>
                         </span>
-                        {meta.ratingIMDb != null && (
+                        {effMeta.ratingIMDb != null && (
                           <span className="inline-flex items-center gap-2 align-middle ml-3">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png" alt="IMDb" className="w-5 h-5 object-contain" />
-                            <span className={meta.ratingIMDb != null && meta.ratingIMDb > 8.5 ? "font-semibold bg-clip-text text-transparent" : `${ratingColor(meta.ratingIMDb ?? undefined)} font-semibold`} style={meta.ratingIMDb != null && meta.ratingIMDb > 8.5 ? { backgroundImage: "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" } : undefined}>
-                              {formatRatingLabel(meta.ratingIMDb)}
+                            <span className={effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5 ? "font-semibold bg-clip-text text-transparent" : `${ratingColor(effMeta.ratingIMDb ?? undefined)} font-semibold`} style={effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5 ? { backgroundImage: "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" } : undefined}>
+                              {formatRatingLabel(effMeta.ratingIMDb)}
                             </span>
                           </span>
                         )}
                       </>
                     )}
-                    {(meta.ratingKP != null || meta.ratingIMDb != null) && (yearVal || restArr.length > 0) && <span className="text-zinc-400/60"> / </span>}
+                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) && (yearVal || restArr.length > 0) && <span className="text-zinc-400/60"> / </span>}
                     {yearVal && (
                       <span className="inline-flex items-center rounded-full text-white px-3 py-[3px] mr-2" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}>
                         <span className="truncate">{yearVal}</span>
@@ -103,7 +124,7 @@ export default function Top250Page() {
                 </div>
               </div>
               <div className="mt-4 overflow-anchor-none">
-                <MovieGrid url={apiUrl} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
+                <MovieGrid url={apiUrl} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
               </div>
             </div>
           </div>

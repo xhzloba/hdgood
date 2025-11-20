@@ -30,6 +30,23 @@ interface MovieGridProps {
   onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
   onWatchOpenChange?: (open: boolean) => void;
   onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void;
+  onHeroInfoOverrideChange?: (
+    info:
+      | {
+          title?: string | null;
+          logo?: string | null;
+          logoId?: string | null;
+          meta?: {
+            ratingKP?: number | null;
+            ratingIMDb?: number | null;
+            year?: string | null;
+            country?: string | null;
+            genre?: string | null;
+            duration?: string | null;
+          } | null;
+        }
+      | null
+  ) => void;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -133,7 +150,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -226,6 +243,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   useEffect(() => {
     if (!watchOpen) {
       try { onBackdropOverrideChange?.(null, null); } catch {}
+      try { onHeroInfoOverrideChange?.(null); } catch {}
       return;
     }
   }, [watchOpen]);
@@ -557,6 +575,78 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
       const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
       onBackdropOverrideChange?.(bg ? String(bg) : null, poster ? String(poster) : null);
+      const logo = (ov as any)?.poster_logo ?? null;
+      const titleStr = selectedMovie?.title ?? null;
+      const yrRaw = d?.year ?? d?.released ?? d?.release_year ?? d?.releaseYear ?? selectedMovie?.year ?? null;
+      const year = (() => {
+        if (yrRaw == null) return null;
+        const s = String(yrRaw).trim();
+        if (!s || s === "0") return null;
+        const m = s.match(/\d{4}/);
+        return m ? m[0] : s;
+      })();
+      const countryLabel = getCountryLabel(d?.country ?? selectedMovie?.country) || null;
+      const genreVal = (() => {
+        const src = d?.genre ?? (Array.isArray(d?.tags) ? d?.tags.join(", ") : d?.tags) ?? selectedMovie?.tags;
+        if (Array.isArray(src)) {
+          const first = src.find((v) => v != null && String(v).trim().length > 0);
+          return first != null ? String(first).trim() : null;
+        }
+        if (src == null) return null;
+        const s = String(src);
+        const first = s
+          .split(/[,/|]/)
+          .map((p) => p.trim())
+          .filter(Boolean)[0];
+        return first || null;
+      })();
+      const getValidRating = (r: any): number | null => {
+        if (r == null) return null;
+        const v = parseFloat(String(r));
+        if (Number.isNaN(v)) return null;
+        if (String(r) === "0.0" || v === 0) return null;
+        return v;
+      };
+      const ratingKP = getValidRating(d?.rating_kp ?? selectedMovie?.rating);
+      const ratingIMDb = getValidRating(d?.rating_imdb);
+      const durationStr = (() => {
+        const raw = d?.duration ?? d?.time ?? d?.runtime ?? d?.length;
+        const toMinutes = (val: any): number | null => {
+          if (val == null) return null;
+          if (typeof val === "number" && !Number.isNaN(val)) return Math.round(val);
+          if (typeof val === "string") {
+            const s = val.trim().toLowerCase();
+            if (s.includes(":")) {
+              const parts = s.split(":").map((p) => parseInt(p, 10));
+              if (parts.every((n) => !Number.isNaN(n))) {
+                if (parts.length >= 2) {
+                  const h = parts[0];
+                  const m = parts[1];
+                  return h * 60 + m;
+                }
+              }
+            }
+            const hoursMatch = s.match(/(\d+)\s*(ч|час|часа|часов|h|hr|hour|hours)/);
+            const minutesMatch = s.match(/(\d+)\s*(мин|м|m|min|minute|minutes)/);
+            if (hoursMatch || minutesMatch) {
+              const h = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+              const m = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+              return h * 60 + m;
+            }
+            const num = parseInt(s.replace(/[^0-9]/g, ""), 10);
+            if (!Number.isNaN(num)) return num;
+          }
+          return null;
+        };
+        const mins = toMinutes(raw);
+        if (mins == null) return null;
+        if (mins % 60 === 0) return `${mins} мин`;
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        return h > 0 ? `${h}ч ${m} мин` : `${m} мин`;
+      })();
+      const metaObj = { ratingKP, ratingIMDb, year, country: countryLabel, genre: genreVal || null, duration: durationStr };
+      onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: selectedMovie ? String(selectedMovie.id) : null, meta: metaObj });
     } catch {}
   }, [selectedDetails, watchOpen]);
 
@@ -1131,6 +1221,19 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                           const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
                           const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
                           onBackdropOverrideChange?.(bg ? String(bg) : null, poster ? String(poster) : null);
+                          const logo = (ov as any)?.poster_logo ?? null;
+                          const titleStr = selectedMovie?.title ?? null;
+                          const ratingKP = (() => {
+                            const r = selectedMovie?.rating;
+                            if (r == null) return null;
+                            const v = parseFloat(String(r));
+                            if (Number.isNaN(v) || v === 0) return null;
+                            return v;
+                          })();
+                          const year = selectedMovie?.year ? String(selectedMovie.year) : null;
+                          const countryLabel = getCountryLabel(selectedMovie?.country) || null;
+                          const genre = getPrimaryGenreFromMovie(selectedMovie);
+                          onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: id, meta: { ratingKP, ratingIMDb: null, year, country: countryLabel, genre, duration: null } });
                         } catch {}
                         return;
                       }

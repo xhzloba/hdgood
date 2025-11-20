@@ -32,7 +32,7 @@ const SERIAL_CHANNELS: Channel[] = [
   },
 ]
 
-export function SerialsSection({ onBackdropOverrideChange }: { onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void }) {
+export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideChange }: { onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void; onHeroInfoOverrideChange?: (info: { title?: string | null; logo?: string | null; logoId?: string | null; meta?: { ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null } | null } | null) => void }) {
   const [active, setActive] = useState(0)
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
@@ -104,6 +104,7 @@ export function SerialsSection({ onBackdropOverrideChange }: { onBackdropOverrid
             onPagingInfo={handlePagingInfo}
             onWatchOpenChange={setWatchOpen}
             onBackdropOverrideChange={onBackdropOverrideChange}
+            onHeroInfoOverrideChange={onHeroInfoOverrideChange}
           />
         </div>
       </div>

@@ -77,6 +77,17 @@ export default function HomeClient({
   >({});
   const [overrideBg, setOverrideBg] = useState<string | null>(null);
   const [overridePoster, setOverridePoster] = useState<string | null>(null);
+  const [overrideHeroMeta, setOverrideHeroMeta] = useState<{
+    ratingKP?: number | null;
+    ratingIMDb?: number | null;
+    year?: string | null;
+    country?: string | null;
+    genre?: string | null;
+    duration?: string | null;
+  } | null>(null);
+  const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(null);
+  const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(null);
+  const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(null);
 
   const handleSelect = (cat: Category | null) => {
     setSelected(cat);
@@ -503,6 +514,10 @@ export default function HomeClient({
     }
   }, [currentId, metaMap]);
 
+  const hasOverrideBg = overrideBg != null;
+  const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
+  const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
+  const effMeta = overrideHeroMeta ?? meta;
   return (
     <PosterBackground
       posterUrl={overridePoster ?? currentPoster}
@@ -524,32 +539,38 @@ export default function HomeClient({
           />
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
-          {logoSrc && logoId ? (
-            <Link href={`/movie/${logoId}`} className="block">
+          {effLogoSrc && effLogoId ? (
+            <Link href={`/movie/${effLogoId}`} className="block">
               <img
-                src={logoSrc}
+                src={effLogoSrc}
                 alt="Логотип"
                 className="h-[96px] w-auto max-w-[80vw]"
               />
             </Link>
+          ) : hasOverrideBg && overrideHeroTitle ? (
+            <div className="h-[96px] flex items-center justify-center px-4">
+              <span className="text-2xl md:text-4xl font-semibold text-zinc-100 truncate max-w-[80vw]">
+                {overrideHeroTitle}
+              </span>
+            </div>
           ) : null}
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-1">
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
-            {meta ? (
+            {effMeta ? (
               (() => {
                 const yearVal =
-                  meta.year && String(meta.year).trim()
-                    ? String(meta.year).trim()
+                  effMeta.year && String(effMeta.year).trim()
+                    ? String(effMeta.year).trim()
                     : null;
                 const restArr = [
-                  meta.country,
-                  meta.genre,
-                  meta.duration,
+                  effMeta.country,
+                  effMeta.genre,
+                  effMeta.duration,
                 ].filter((v) => v && String(v).trim().length > 0) as string[];
                 return (
                   <span className="inline-block max-w-[80vw] truncate whitespace-nowrap">
-                    {(meta.ratingKP != null || meta.ratingIMDb != null) && (
+                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) && (
                       <>
                         <span className="inline-flex items-center gap-2 align-middle">
                           <img
@@ -559,14 +580,14 @@ export default function HomeClient({
                           />
                           <span
                             className={
-                              meta.ratingKP != null && meta.ratingKP > 8.5
+                              effMeta.ratingKP != null && effMeta.ratingKP > 8.5
                                 ? "font-semibold bg-clip-text text-transparent"
                                 : `${ratingColor(
-                                    meta.ratingKP ?? undefined
+                                    effMeta.ratingKP ?? undefined
                                   )} font-semibold`
                             }
                             style={
-                              meta.ratingKP != null && meta.ratingKP > 8.5
+                              effMeta.ratingKP != null && effMeta.ratingKP > 8.5
                                 ? {
                                     backgroundImage:
                                       "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
@@ -577,12 +598,12 @@ export default function HomeClient({
                                 : undefined
                             }
                           >
-                            {meta.ratingKP != null
-                              ? formatRatingLabel(meta.ratingKP)
+                            {effMeta.ratingKP != null
+                              ? formatRatingLabel(effMeta.ratingKP)
                               : "—"}
                           </span>
                         </span>
-                        {meta.ratingIMDb != null && (
+                        {effMeta.ratingIMDb != null && (
                           <span className="inline-flex items-center gap-2 align-middle ml-3">
                             <img
                               src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
@@ -591,14 +612,14 @@ export default function HomeClient({
                             />
                             <span
                               className={
-                                meta.ratingIMDb != null && meta.ratingIMDb > 8.5
+                                effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
                                   ? "font-semibold bg-clip-text text-transparent"
                                   : `${ratingColor(
-                                      meta.ratingIMDb ?? undefined
+                                      effMeta.ratingIMDb ?? undefined
                                     )} font-semibold`
                               }
                               style={
-                                meta.ratingIMDb != null && meta.ratingIMDb > 8.5
+                                effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
                                   ? {
                                       backgroundImage:
                                         "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
@@ -609,13 +630,13 @@ export default function HomeClient({
                                   : undefined
                               }
                             >
-                              {formatRatingLabel(meta.ratingIMDb)}
+                              {formatRatingLabel(effMeta.ratingIMDb)}
                             </span>
                           </span>
                         )}
                       </>
                     )}
-                    {(meta.ratingKP != null || meta.ratingIMDb != null) &&
+                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) &&
                       (yearVal || restArr.length > 0) && (
                         <span className="text-zinc-400/60"> / </span>
                       )}
@@ -645,11 +666,11 @@ export default function HomeClient({
         <section>
           <div className={`relative z-20 ${sectionMarginClass}`}>
             {isUhdMode ? (
-              <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
+              <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
             ) : isMoviesMode ? (
-              <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
+              <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
             ) : isSerialsMode ? (
-              <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
+              <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
             ) : (
               <TrendingSection activeBackdropId={currentId ?? undefined} />
             )}
