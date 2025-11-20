@@ -514,5 +514,15 @@
       "poster_colors.accentBl",
       "poster_colors.accentBr"
     ]
+  },
+  {
+    "id": "687c156007d98ef085098c4a",
+    "timestamp": "2025-11-20T07:15:10.669Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]

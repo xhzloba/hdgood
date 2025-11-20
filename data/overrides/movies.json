@@ -239,5 +239,10 @@
     "bg_poster": {
       "backdrop": "/movies/problems-shampa-backdrop.webp"
     }
+  },
+  "687c156007d98ef085098c4a": {
+    "bg_poster": {
+      "backdrop": "https://imagetmdb.com/t/p/original/5PJkK2iVXRO1ydrtgwuJdevmnOe.jpg"
+    }
   }
 }
