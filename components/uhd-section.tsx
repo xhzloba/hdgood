@@ -32,7 +32,7 @@ const UHD_CHANNELS: Channel[] = [
   },
 ]
 
-export function UhdSection() {
+export function UhdSection({ onBackdropOverrideChange }: { onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void }) {
   const [active, setActive] = useState(0)
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
@@ -104,6 +104,7 @@ export function UhdSection() {
             url={UHD_CHANNELS[active].playlist_url}
             onPagingInfo={handlePagingInfo}
             onWatchOpenChange={setWatchOpen}
+            onBackdropOverrideChange={onBackdropOverrideChange}
           />
         </div>
       </div>

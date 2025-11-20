@@ -75,6 +75,8 @@ export default function HomeClient({
       }
     >
   >({});
+  const [overrideBg, setOverrideBg] = useState<string | null>(null);
+  const [overridePoster, setOverridePoster] = useState<string | null>(null);
 
   const handleSelect = (cat: Category | null) => {
     setSelected(cat);
@@ -503,8 +505,8 @@ export default function HomeClient({
 
   return (
     <PosterBackground
-      posterUrl={currentPoster}
-      bgPosterUrl={currentBg}
+      posterUrl={overridePoster ?? currentPoster}
+      bgPosterUrl={overrideBg ?? currentBg}
       // colorOverrides={currentColors}
       disableMobileBackdrop
       simpleDarkCorners
@@ -643,11 +645,11 @@ export default function HomeClient({
         <section>
           <div className={`relative z-20 ${sectionMarginClass}`}>
             {isUhdMode ? (
-              <UhdSection />
+              <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
             ) : isMoviesMode ? (
-              <MoviesSection />
+              <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
             ) : isSerialsMode ? (
-              <SerialsSection />
+              <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
             ) : (
               <TrendingSection activeBackdropId={currentId ?? undefined} />
             )}

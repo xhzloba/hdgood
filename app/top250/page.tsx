@@ -20,6 +20,8 @@ export default function Top250Page() {
     genre?: string | null;
     duration?: string | null;
   } | null>(null);
+  const [overrideBg, setOverrideBg] = useState<string | null>(null);
+  const [overridePoster, setOverridePoster] = useState<string | null>(null);
   useEffect(() => {
     try {
       const ss = typeof window !== "undefined" ? window.sessionStorage : null;
@@ -36,7 +38,7 @@ export default function Top250Page() {
     } catch {}
   }, []);
   return (
-    <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade className="min-h-[100dvh] min-h-screen">
+    <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade className="min-h-[100dvh] min-h-screen" posterUrl={overridePoster ?? undefined} bgPosterUrl={overrideBg ?? undefined}>
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6 relative">
         <div className="mb-4 hidden md:block">
           <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
@@ -101,7 +103,7 @@ export default function Top250Page() {
                 </div>
               </div>
               <div className="mt-4 overflow-anchor-none">
-                <MovieGrid url={apiUrl} />
+                <MovieGrid url={apiUrl} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} />
               </div>
             </div>
           </div>

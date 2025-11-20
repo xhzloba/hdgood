@@ -29,6 +29,7 @@ interface MovieGridProps {
   navigateOnClick?: boolean;
   onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
   onWatchOpenChange?: (open: boolean) => void;
+  onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -132,7 +133,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -220,6 +221,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     try {
       onWatchOpenChange?.(watchOpen);
     } catch {}
+  }, [watchOpen]);
+
+  useEffect(() => {
+    if (!watchOpen) {
+      try { onBackdropOverrideChange?.(null, null); } catch {}
+      return;
+    }
   }, [watchOpen]);
 
   useEffect(() => {
@@ -539,6 +547,18 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     })();
     return () => controller.abort();
   }, [selectedMovie]);
+
+  useEffect(() => {
+    if (!watchOpen) return;
+    try {
+      const id = selectedMovie ? String(selectedMovie.id) : null;
+      const ov = id ? (overridesMap as any)[id] ?? null : null;
+      const d: any = selectedDetails || {};
+      const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
+      const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
+      onBackdropOverrideChange?.(bg ? String(bg) : null, poster ? String(poster) : null);
+    } catch {}
+  }, [selectedDetails, watchOpen]);
 
   useEffect(() => {
     if (!watchOpen || !selectedMovie) return;
@@ -1098,14 +1118,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       if (ctx) {
                         savePosterTransition({ movieId: String(selectedMovie.id), posterUrl: ctx.posterUrl, rect: ctx.rect });
                       }
-                    if (isArrowDesktopMode) {
-                      setInlineKpId(selectedKpId);
-                      setInlineIframeUrl(selectedIframeUrl);
-                      setWatchOpen(true);
-                      setPlayerVisible(true);
-                      setInfoVisible(true);
-                      return;
-                    }
+                      if (isArrowDesktopMode) {
+                        setInlineKpId(selectedKpId);
+                        setInlineIframeUrl(selectedIframeUrl);
+                        setWatchOpen(true);
+                        setPlayerVisible(true);
+                        setInfoVisible(true);
+                        try {
+                          const id = selectedMovie ? String(selectedMovie.id) : null;
+                          const ov = id ? (overridesMap as any)[id] ?? null : null;
+                          const d: any = selectedDetails || {};
+                          const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
+                          const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
+                          onBackdropOverrideChange?.(bg ? String(bg) : null, poster ? String(poster) : null);
+                        } catch {}
+                        return;
+                      }
                       router.push(`/movie/${selectedMovie.id}#watch`);
                     }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
