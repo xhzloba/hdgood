@@ -517,7 +517,7 @@ export default function HomeClient({
   const hasOverrideBg = overrideBg != null;
   const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
   const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
-  const effMeta = overrideHeroMeta ?? meta;
+  const effMeta = hasOverrideBg ? overrideHeroMeta : meta;
   return (
     <PosterBackground
       posterUrl={overridePoster ?? currentPoster}
@@ -557,7 +557,7 @@ export default function HomeClient({
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-1">
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
-            {effMeta ? (
+            {hasOverrideBg && effMeta ? (
               (() => {
                 const yearVal =
                   effMeta.year && String(effMeta.year).trim()
@@ -656,11 +656,7 @@ export default function HomeClient({
                   </span>
                 );
               })()
-            ) : (
-              <div className="flex justify-center">
-                <Skeleton className="h-5 md:h-6 w-[40vw] max-w-[540px]" />
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
         <section>

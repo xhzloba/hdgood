@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 interface PlayerSelectorProps {
@@ -35,6 +35,18 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
   const player2Available = Boolean(kpId);
   const player3Available = Boolean(kpId);
 
+  useEffect(() => {
+    if (selectedPlayer == null) {
+      if (player2Available) {
+        handlePlayerSelect(2);
+      } else if (player1Available) {
+        handlePlayerSelect(1);
+      } else if (player3Available) {
+        handlePlayerSelect(3);
+      }
+    }
+  }, [player2Available, player1Available, player3Available, kpId, iframeUrl, selectedPlayer]);
+
   const getPlayerUrl = (playerId: number | null) => {
     if (playerId === 1) return iframeUrl ?? null;
     if (playerId === 2) return getPlayer2Url();
@@ -45,8 +57,38 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
   const selectedUrl = getPlayerUrl(selectedPlayer);
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <div className="group relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+    <div className={`space-y-3 ${className}`}>
+      <div className="flex flex-wrap gap-2 justify-end">
+        {[1, 2, 3].map((playerId) => {
+          const isActive = selectedPlayer === playerId;
+          const disabled =
+            (playerId === 1 && !player1Available) ||
+            (playerId === 2 && !player2Available) ||
+            (playerId === 3 && !player3Available);
+          return (
+            <Button
+              key={playerId}
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePlayerSelect(playerId)}
+              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={
+                isActive
+                  ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
+                  : {
+                      backgroundImage:
+                        "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
+                    }
+              }
+              disabled={disabled}
+              aria-current={isActive}
+            >
+              Плеер {playerId}
+            </Button>
+          );
+        })}
+      </div>
+      <div className="group relative w-full aspect-video bg-transparent rounded-lg overflow-hidden">
         {selectedUrl ? (
           <iframe
             src={selectedUrl}
@@ -56,66 +98,16 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
             title="Movie Player"
           />
         ) : null}
-
-        {/* До выбора: центрированный прозрачный оверлей с меткой "Выберите источник" и кнопками */}
-        {!selectedUrl && (
-          <div className="absolute inset-0 z-10 p-2 flex items-center justify-center pointer-events-none">
-            <div className="flex flex-col items-center gap-3">
-              <div className="text-sm md:text-base text-white/90">
-                Выберите источник
-              </div>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {[1, 2, 3].map((playerId) => (
-                  <Button
-                    key={playerId}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handlePlayerSelect(playerId)}
-                    className="pointer-events-auto text-xs px-3 py-1.5 h-auto transition-all duration-200 border-0 text-white bg-zinc-800/60 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
-                    }}
-                    disabled={
-                      (playerId === 1 && !player1Available) ||
-                      (playerId === 2 && !player2Available) ||
-                      (playerId === 3 && !player3Available)
-                    }
-                  >
-                    Плеер {playerId}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
+        {selectedUrl && (
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-12 md:h-16 z-10"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0))",
+            }}
+          />
         )}
       </div>
-
-      {/* После выбора: кнопки под iframe, вне фрейма, выравнены слева */}
-      {selectedUrl && (
-        <div className="flex flex-wrap gap-2 justify-start">
-          {[1, 2, 3].map((playerId) => (
-            <Button
-              key={playerId}
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePlayerSelect(playerId)}
-              className="text-xs px-3 py-1.5 h-auto transition-all duration-200 border-0 text-white bg-zinc-800/60 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundImage:
-                  "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
-              }}
-              disabled={
-                (playerId === 1 && !player1Available) ||
-                (playerId === 2 && !player2Available) ||
-                (playerId === 3 && !player3Available)
-              }
-            >
-              Плеер {playerId}
-            </Button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

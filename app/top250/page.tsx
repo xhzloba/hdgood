@@ -51,7 +51,7 @@ export default function Top250Page() {
   const hasOverrideBg = overrideBg != null;
   const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
   const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
-  const effMeta = overrideHeroMeta ?? meta;
+  const effMeta = hasOverrideBg ? overrideHeroMeta : meta;
   return (
     <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade className="min-h-[100dvh] min-h-screen" posterUrl={overridePoster ?? undefined} bgPosterUrl={overrideBg ?? undefined}>
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6 relative">
@@ -73,7 +73,7 @@ export default function Top250Page() {
         </div>
         <div className="relative z-30 hidden md:flex justify-center mt-1">
           <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
-            {effMeta ? (
+            {hasOverrideBg && effMeta ? (
               (() => {
                 const yearVal = effMeta.year && String(effMeta.year).trim() ? String(effMeta.year).trim() : null;
                 const restArr = [effMeta.country, effMeta.genre, effMeta.duration].filter((v) => v && String(v).trim().length > 0) as string[];
@@ -108,11 +108,11 @@ export default function Top250Page() {
                   </span>
                 );
               })()
-            ) : (
+            ) : (!hasOverrideBg ? (
               <div className="flex justify-center">
                 <Skeleton className="h-5 md:h-6 w-[40vw] max-w-[540px]" />
               </div>
-            )}
+            ) : null)}
           </div>
         </div>
         <section className="relative">

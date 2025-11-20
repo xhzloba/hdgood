@@ -647,7 +647,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         return h > 0 ? `${h}ч ${m} мин` : `${m} мин`;
       })();
       const metaObj = { ratingKP, ratingIMDb, year, country: countryLabel, genre: genreVal || null, duration: durationStr };
-      onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: selectedMovie ? String(selectedMovie.id) : null, meta: metaObj });
+      if (!watchOpen) onHeroInfoOverrideChange?.({ title: null, logo: null, logoId: null, meta: metaObj });
     } catch {}
   }, [selectedDetails, watchOpen]);
 
@@ -844,24 +844,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   return (
     <div className="relative">
-      {isArrowDesktopMode && watchOpen ? (
-        <div className={`absolute inset-0 z-10 bg-zinc-950/70 backdrop-blur-sm transition-opacity duration-300 ${playerVisible ? "opacity-100" : "opacity-0"}`} />
-      ) : null}
+      {isArrowDesktopMode && watchOpen ? null : null}
       {isArrowDesktopMode && watchOpen && selectedMovie ? (
-        <div className={`relative z-20 p-4 md:p-5 bg-transparent border-transparent rounded-sm transition-all duration-300 ${playerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
-          <button
-            type="button"
-            aria-label="Закрыть"
-            onClick={() => {
-              setPlayerVisible(false);
-              setTimeout(() => {
-                setWatchOpen(false);
-              }, 200);
-            }}
-            className="absolute right-3 top-3 inline-flex items-center justify-center w-9 h-9 rounded-full text-zinc-300 hover:text-white hover:bg-zinc-700/40 transition-all duration-200"
-          >
-            <IconX size={18} />
-          </button>
+        <div
+          className={`relative z-20 p-4 md:p-5 bg-zinc-900/80 border border-zinc-800/60 rounded-sm transition-all duration-300 ${playerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+          style={{
+            WebkitMaskImage:
+              "radial-gradient(150% 150% at 50% 115%, black 70%, transparent 100%)",
+            maskImage:
+              "radial-gradient(150% 150% at 50% 115%, black 70%, transparent 100%)",
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            WebkitMaskSize: "100% 100%",
+            maskSize: "100% 100%",
+          }}
+        >
+          
 
           {showEscHint && (
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
@@ -872,19 +870,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
           )}
 
           <div className="space-y-4">
-            <div className="relative">
-              <div
-                className="pointer-events-none absolute -inset-6 md:-inset-10 opacity-60 blur-2xl"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(120% 120% at 50% 50%, rgba(var(--poster-accent-tl-rgb),0.35), rgba(var(--poster-accent-br-rgb),0) 60%)",
-                }}
-              />
-              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} />
-            </div>
-
             <div className="grid md:grid-cols-[minmax(90px,120px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
-              <div className="hidden md:block rounded-sm overflow-hidden bg-zinc-900 h-full">
+              <div className="hidden md:block rounded-sm overflow-hidden bg-transparent h-full">
                 {selectedMovie.poster ? (
                   <img src={selectedMovie.poster} alt="Постер" className="w-full h-full object-cover" />
                 ) : null}
@@ -965,6 +952,16 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
               </div>
             </div>
 
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute -inset-6 md:-inset-10 opacity-60"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(120% 120% at 50% 50%, rgba(var(--poster-accent-tl-rgb),0.35), rgba(var(--poster-accent-br-rgb),0) 60%)",
+                }}
+              />
+              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} />
+            </div>
           </div>
         </div>
       ) : null}
@@ -1234,7 +1231,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                           const year = selectedMovie?.year ? String(selectedMovie.year) : null;
                           const countryLabel = getCountryLabel(selectedMovie?.country) || null;
                           const genre = getPrimaryGenreFromMovie(selectedMovie);
-                          onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: id, meta: { ratingKP, ratingIMDb: null, year, country: countryLabel, genre, duration: null } });
+                          onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: id, meta: null });
                         } catch {}
                         return;
                       }
