@@ -200,6 +200,20 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   }, [url]);
 
   useEffect(() => {
+    setSelectedMovie(null);
+    setSelectedDetails(null);
+    setSelectedError(null);
+    setInfoVisible(false);
+    setInlinePlayerOpen(false);
+    setInlineClosing(false);
+    setInlineKpId(null);
+    setInlineIframeUrl(null);
+    setPlayerVisible(false);
+    setGridHeight(null);
+    setTileWidth(null);
+  }, [url]);
+
+  useEffect(() => {
     lastPagingRef.current = null;
   }, [url]);
 
@@ -1038,7 +1052,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       ) : null}
       <div ref={gridWrapRef} className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}>
       {showInlineInfo ? (
-        <div key={String(selectedMovie!.id)} className={`relative transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`} style={gridHeight != null ? { minHeight: gridHeight } : undefined}>
+        <div
+          key={String(selectedMovie!.id)}
+          className={`relative transition-all duration-300 ${inlinePlayerOpen ? (inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "") : (infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2")}`}
+          style={gridHeight != null ? { minHeight: gridHeight } : undefined}
+        >
           <div className="relative p-3 md:p-4 smoke-flash">
             <button
               type="button"
@@ -1046,6 +1064,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
               onClick={() => {
                 if (inlinePlayerOpen) {
                   setInlineClosing(true);
+                  setInfoVisible(false);
                   setPlayerVisible(false);
                   setTimeout(() => {
                     setInlinePlayerOpen(false);
