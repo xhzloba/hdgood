@@ -36,6 +36,7 @@ export function UhdSection() {
   const [active, setActive] = useState(0)
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
+  const [watchOpen, setWatchOpen] = useState(false)
   const handlePagingInfo = useCallback((info: { page: number; scrolledCount: number; isArrowMode: boolean }) => {
     setPaging((prev) => {
       if (!info.isArrowMode) return null;
@@ -62,7 +63,7 @@ export function UhdSection() {
     <section>
       <div className="p-5 rounded-sm">
         <div
-          className="sticky top-0 z-20 -mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 rounded-t-sm"
+          className={`sticky top-0 z-20 -mx-5 md:-mt-5 px-5 pt-0 md:pt-5 pb-3 rounded-t-sm transition-all duration-300 ${watchOpen ? "opacity-0 pointer-events-none -translate-y-2" : "opacity-100 translate-y-0"}`}
         >
           <div className="channel-tabs flex flex-wrap md:flex md:flex-nowrap items-center rounded-full px-1.5 py-0.5 gap-1.5 w-full">
             {UHD_CHANNELS.map((ch, idx) => (
@@ -80,18 +81,18 @@ export function UhdSection() {
                 {ch.title}
               </button>
             ))}
-            <span className="hidden md:inline-flex items-center gap-2 ml-auto text-[14px] md:text-[16px] text-zinc-300 font-medium">
+            <span className="hidden md:inline-flex items-center gap-2 ml-auto text-[13px] text-white font-medium">
               {paging && (
                 <>
-                  <span>Стр.</span>
+                  <span className="text-white">Стр.</span>
                   <span
                     className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
                     style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
                   >
                     {paging.page}
                   </span>
-                  <span className="text-zinc-500/60">•</span>
-                  <span>Пролистано</span>
+                  <span className="text-white">•</span>
+                  <span className="text-white">Пролистано</span>
                   <span className="text-white">{paging.scrolledCount}</span>
                 </>
               )}
@@ -102,6 +103,7 @@ export function UhdSection() {
           <MovieGrid
             url={UHD_CHANNELS[active].playlist_url}
             onPagingInfo={handlePagingInfo}
+            onWatchOpenChange={setWatchOpen}
           />
         </div>
       </div>

@@ -11,6 +11,7 @@ import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
 import NProgress from "nprogress";
+import { PlayerSelector } from "@/components/player-selector";
 
 interface Movie {
   id: string;
@@ -27,6 +28,7 @@ interface MovieGridProps {
   url: string;
   navigateOnClick?: boolean;
   onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
+  onWatchOpenChange?: (open: boolean) => void;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -130,7 +132,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -148,6 +150,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
   const posterContextRef = useRef<{ rect: DOMRect; posterUrl: string } | null>(null);
   const router = useRouter();
+  const [watchOpen, setWatchOpen] = useState<boolean>(false);
+  const [inlineKpId, setInlineKpId] = useState<string | null>(null);
+  const [inlineIframeUrl, setInlineIframeUrl] = useState<string | null>(null);
+  const [showEscHint, setShowEscHint] = useState<boolean>(false);
+  const [playerVisible, setPlayerVisible] = useState<boolean>(false);
 
   const perPage = 15;
 
@@ -167,6 +174,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     setPage(1);
     setPagesData([]);
     setLastPageEmpty(false);
+    setWatchOpen(false);
   }, [url]);
 
   useEffect(() => {
@@ -191,6 +199,40 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
       return () => mq?.removeEventListener("change", update);
     } catch {}
   }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setWatchOpen(false);
+      }
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", onKeyDown);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("keydown", onKeyDown);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      onWatchOpenChange?.(watchOpen);
+    } catch {}
+  }, [watchOpen]);
+
+  useEffect(() => {
+    if (watchOpen) {
+      if (typeof window !== "undefined") {
+        requestAnimationFrame(() => setPlayerVisible(true));
+      } else {
+        setPlayerVisible(true);
+      }
+    } else {
+      setPlayerVisible(false);
+    }
+  }, [watchOpen]);
 
 
   useEffect(() => {
@@ -498,6 +540,51 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     return () => controller.abort();
   }, [selectedMovie]);
 
+  useEffect(() => {
+    if (!watchOpen || !selectedMovie) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const tRes = await fetch(`https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`, {
+          signal: controller.signal,
+          headers: { Accept: "application/json" },
+        });
+        const tJson = tRes.ok ? await tRes.json() : null;
+        const kp = tJson?.kp_id || tJson?.data?.kp_id || null;
+        if (kp) {
+          setInlineKpId(String(kp));
+          const frRes = await fetch(`/api/franchise?kinopoisk_id=${kp}`, {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          });
+          const frJson = frRes.ok ? await frRes.json() : null;
+          const iframe = frJson?.iframe_url || null;
+          if (iframe) setInlineIframeUrl(String(iframe));
+        }
+      } catch {}
+    })();
+    return () => controller.abort();
+  }, [watchOpen, selectedMovie]);
+
+  useEffect(() => {
+    if (watchOpen && isDesktop) {
+      setShowEscHint(true);
+      const t = setTimeout(() => setShowEscHint(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [watchOpen, isDesktop]);
+
+  const selectedKpId = useMemo(() => {
+    const d: any = selectedDetails || {};
+    const kp = d?.kp_id ?? d?.kinopoisk_id ?? d?.details?.kp_id ?? d?.details?.kinopoisk_id;
+    return kp ? String(kp) : null;
+  }, [selectedDetails]);
+  const selectedIframeUrl = useMemo(() => {
+    const d: any = selectedDetails || {};
+    return (d?.iframe_url ?? null) as string | null;
+  }, [selectedDetails]);
+
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
@@ -646,7 +733,131 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
 
   return (
     <div className="relative">
-      <div className="relative">
+      {isArrowDesktopMode && watchOpen ? (
+        <div className={`absolute inset-0 z-10 bg-zinc-950/70 backdrop-blur-sm transition-opacity duration-300 ${playerVisible ? "opacity-100" : "opacity-0"}`} />
+      ) : null}
+      {isArrowDesktopMode && watchOpen && selectedMovie ? (
+        <div className={`relative z-20 p-4 md:p-5 bg-transparent border-transparent rounded-sm transition-all duration-300 ${playerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
+          <button
+            type="button"
+            aria-label="Закрыть"
+            onClick={() => {
+              setPlayerVisible(false);
+              setTimeout(() => {
+                setWatchOpen(false);
+              }, 200);
+            }}
+            className="absolute right-3 top-3 inline-flex items-center justify-center w-9 h-9 rounded-full text-zinc-300 hover:text-white hover:bg-zinc-700/40 transition-all duration-200"
+          >
+            <IconX size={18} />
+          </button>
+
+          {showEscHint && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
+              <div className="px-3 py-1.5 text-xs rounded-md shadow-md bg-zinc-900/85 border border-zinc-800/70 text-zinc-100 animate-in fade-in-0 slide-in-from-top-2">
+                Для выхода нажмите ESC
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute -inset-6 md:-inset-10 opacity-60 blur-2xl"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(120% 120% at 50% 50%, rgba(var(--poster-accent-tl-rgb),0.35), rgba(var(--poster-accent-br-rgb),0) 60%)",
+                }}
+              />
+              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} />
+            </div>
+
+            <div className="grid md:grid-cols-[minmax(90px,120px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
+              <div className="hidden md:block rounded-sm overflow-hidden bg-zinc-900 h-full">
+                {selectedMovie.poster ? (
+                  <img src={selectedMovie.poster} alt="Постер" className="w-full h-full object-cover" />
+                ) : null}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie.title || "Без названия"}>
+                    {selectedMovie.title || "Без названия"}
+                  </h3>
+                  {(() => {
+                    const rating = (selectedDetails as any)?.rating_kp ?? (selectedDetails as any)?.rating ?? selectedMovie.rating;
+                    return rating ? (
+                      <span className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(rating)}`}>{formatRatingLabel(rating)}</span>
+                    ) : null;
+                  })()}
+                  <button
+                    type="button"
+                    aria-label="Закрыть"
+                    onClick={() => {
+                      setPlayerVisible(false);
+                      setInfoVisible(false);
+                      setTimeout(() => {
+                        setWatchOpen(false);
+                        setSelectedMovie(null);
+                        setSelectedDetails(null);
+                        setSelectedError(null);
+                      }, 200);
+                    }}
+                    className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full text-white hover:bg-zinc-700/40 transition-all duration-200"
+                  >
+                    <IconX size={16} />
+                  </button>
+                </div>
+                <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
+                  {(() => {
+                    const d: any = selectedDetails || {};
+                    const year = d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year;
+                    const countryRaw = d.country ?? selectedMovie.country;
+                    const quality = d.quality ?? selectedMovie.quality;
+                    const parts: string[] = [];
+                    if (year) parts.push(String(year));
+                    if (quality) parts.push(String(quality));
+                    if (countryRaw) {
+                      const arr = Array.isArray(countryRaw) ? countryRaw : String(countryRaw).split(",").map((s) => s.trim()).filter(Boolean);
+                      if (arr.length > 0) parts.push(arr.join(" "));
+                    }
+                    return parts.length > 0 ? <div className="flex items-center gap-2">{parts.map((p, i) => (
+                      <span key={i} className="truncate">{p}</span>
+                    ))}</div> : null;
+                  })()}
+                </div>
+                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
+                  {selectedLoading ? (
+                    <div>
+                      <Skeleton className="h-3 w-[92%] mb-2" />
+                      <Skeleton className="h-3 w-[88%] mb-2" />
+                      <Skeleton className="h-3 w-[72%]" />
+                    </div>
+                  ) : (() => {
+                    const d: any = selectedDetails || {};
+                    const aboutRaw = d.about ?? d.description;
+                    const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
+                    return about ? (
+                      <p className="line-clamp-3 md:line-clamp-4">{about}</p>
+                    ) : (
+                      <div className="h-3" />
+                    );
+                  })()}
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <Link
+                    href={`/movie/${selectedMovie.id}`}
+                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                  >
+                    Подробнее
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      ) : null}
+      <div className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}>
       {isArrowDesktopMode && (
         <button
           onClick={handlePrevArrow}
@@ -807,8 +1018,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
       )}
       </div>
 
-      {!navigateOnClick && selectedMovie && (
-        <div key={String(selectedMovie.id)} className={`mt-3 md:mt-4 transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+      {!navigateOnClick && selectedMovie && (!isArrowDesktopMode || !watchOpen) && (
+        <div key={String(selectedMovie.id)} className={`relative mt-3 md:mt-4 transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
           <div className="relative p-3 md:p-4 smoke-flash">
             <button
               type="button"
@@ -887,6 +1098,14 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
                       if (ctx) {
                         savePosterTransition({ movieId: String(selectedMovie.id), posterUrl: ctx.posterUrl, rect: ctx.rect });
                       }
+                    if (isArrowDesktopMode) {
+                      setInlineKpId(selectedKpId);
+                      setInlineIframeUrl(selectedIframeUrl);
+                      setWatchOpen(true);
+                      setPlayerVisible(true);
+                      setInfoVisible(true);
+                      return;
+                    }
                       router.push(`/movie/${selectedMovie.id}#watch`);
                     }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
