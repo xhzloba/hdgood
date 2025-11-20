@@ -29,6 +29,7 @@ type PosterBackgroundProps = {
   // Простой режим: не извлекать цвета, а просто затемнять углы поверх bgPosterUrl
   simpleDarkCorners?: boolean
   softBottomFade?: boolean
+  strongUpperCorners?: boolean
 }
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
@@ -492,6 +493,7 @@ export function PosterBackground({
   disableMobileBackdrop,
   simpleDarkCorners,
   softBottomFade,
+  strongUpperCorners,
 }: PosterBackgroundProps) {
   type Palette = { corners: { tl: RGB; br: RGB; bl: RGB } | null; dominants: [RGB, RGB] | null }
   const [palette, setPalette] = React.useState<Palette>({ corners: null, dominants: null })
@@ -582,7 +584,7 @@ export function PosterBackground({
       if (bgPosterUrl) {
         const bottomFade = softBottomFade
           ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 12%, rgba(0,0,0,0.7) 26%, rgba(0,0,0,0.82) 38%, rgba(0,0,0,0.88) 100%)"
-          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 10%, rgba(0,0,0,0.85) 24%, rgba(0,0,0,0.95) 34%, rgba(0,0,0,0.95) 100%)"
+          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 10%, rgba(0,0,0,0.82) 24%, rgba(0,0,0,0.92) 34%, rgba(0,0,0,0.93) 100%)"
 
         const overlayGradients = [
           // только мягкое затемнение от боков к центру
@@ -590,6 +592,12 @@ export function PosterBackground({
           // нижняя растушёвка
           bottomFade,
         ]
+        if (strongUpperCorners) {
+          overlayGradients.unshift(
+            "radial-gradient(1000px 700px at 0% 0%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
+            "radial-gradient(1000px 700px at 100% 0%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+          )
+        }
 
         const gradientCount = overlayGradients.length
         const bgHeightStr = "cover"

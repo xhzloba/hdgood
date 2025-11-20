@@ -525,7 +525,8 @@ export default function HomeClient({
       // colorOverrides={currentColors}
       disableMobileBackdrop
       simpleDarkCorners
-      softBottomFade={true}
+      softBottomFade={!hasOverrideBg}
+      strongUpperCorners={hasOverrideBg}
       className="min-h-[100dvh] min-h-screen"
     >
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
