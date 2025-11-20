@@ -60,6 +60,10 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
     }
   }, [active])
 
+  useEffect(() => {
+    setPaging({ page: 1, scrolledCount: 5 })
+  }, [active])
+
   return (
     <section>
       <div className="p-5 rounded-sm">

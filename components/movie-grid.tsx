@@ -193,6 +193,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     setPagesData([]);
     setLastPageEmpty(false);
     setWatchOpen(false);
+    setSubIndex(0);
   }, [url]);
 
   useEffect(() => {
