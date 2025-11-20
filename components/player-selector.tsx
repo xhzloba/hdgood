@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 
 interface PlayerSelectorProps {
   onPlayerSelect?: (playerId: number) => void;
+  onClose?: () => void;
   iframeUrl?: string;
   kpId?: string;
   className?: string;
+  videoContainerClassName?: string;
 }
 
-export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = "" }: PlayerSelectorProps) {
+export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, className = "", videoContainerClassName = "" }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
 
   const handlePlayerSelect = (playerId: number) => {
@@ -58,7 +60,20 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex flex-wrap gap-2 justify-end">
+      <div className="flex items-center justify-between gap-2">
+        {onClose ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200"
+            style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+            aria-label="Закрыть"
+          >
+            Закрыть
+          </Button>
+        ) : <div />}
+        <div className="flex flex-wrap gap-2 justify-end">
         {[1, 2, 3].map((playerId) => {
           const isActive = selectedPlayer === playerId;
           const disabled =
@@ -87,8 +102,9 @@ export function PlayerSelector({ onPlayerSelect, iframeUrl, kpId, className = ""
             </Button>
           );
         })}
+        </div>
       </div>
-      <div className="group relative w-full aspect-video bg-transparent rounded-lg overflow-hidden">
+      <div className={`group relative w-full aspect-video rounded-lg overflow-hidden ${videoContainerClassName || "bg-transparent"}`}>
         {selectedUrl ? (
           <iframe
             src={selectedUrl}
