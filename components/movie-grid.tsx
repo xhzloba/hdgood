@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
+import NProgress from "nprogress";
 
 interface Movie {
   id: string;
@@ -136,6 +137,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     Array<{ page: number; data: any }>
   >([]);
   const [lastPageEmpty, setLastPageEmpty] = useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const [gridCols, setGridCols] = useState<number>(4);
   const [subIndex, setSubIndex] = useState<number>(0);
@@ -271,6 +273,16 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     });
   }, [next2Data, page]);
 
+  useEffect(() => {
+    try {
+      const hasCurrent = pagesData.some((p) => p.page === page);
+      if (hasCurrent && !isLoading && !isValidating && loadingMore) {
+        const t = setTimeout(() => setLoadingMore(false), 120);
+        return () => clearTimeout(t);
+      }
+    } catch {}
+  }, [page, pagesData, isLoading, isValidating, loadingMore]);
+
   const hasFirstResultsLoadedRef = useRef(false);
   useEffect(() => {
     try {
@@ -342,6 +354,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     const isMovieOrSerial = u.includes("type=movie") || u.includes("type=serial");
     const isUhdTag = /tag=(4K|4K%20HDR|4K%20DolbyV|60FPS)/.test(u);
     return (isList && (isMovieOrSerial || isUhdTag)) || u.includes("/api/search");
+  }, [url]);
+  const isMovieOrSerialList = useMemo(() => {
+    const u = String(url || "");
+    return u.includes("/v2/list") && (u.includes("type=movie") || u.includes("type=serial"));
   }, [url]);
   const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore;
   const currentPageEntry = useMemo(() => {
@@ -573,6 +589,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
   const handleLoadMore = () => {
     if (isLoading) return;
     if (lastPageEmpty) return;
+    setLoadingMore(true);
     setPage((p) => p + 1);
     setSubIndex(0);
   };
@@ -665,6 +682,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
             }}
             onClick={(e) => {
               if (navigateOnClick || !isDesktop) {
+                try { NProgress.set(0.2); NProgress.start(); } catch {}
                 router.push(`/movie/${movie.id}`);
                 return;
               }
@@ -880,7 +898,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
                   >
                     Подробнее
                   </Link>
-                  {selectedLoading && <Loader size="sm" />}
+                  {selectedLoading && (!isDesktop || !isMovieOrSerialList) && <Loader size="sm" />}
                   {selectedError && <span className="text-[12px] text-red-400">{selectedError}</span>}
                 </div>
               </div>
@@ -891,7 +909,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
 
       {showLoadMoreButton && (
         <div className="flex justify-center mt-4">
-          {isLoading ? (
+          {isLoading || loadingMore ? (
             // Анимированные синие три точки без обрамления (увеличенный размер)
             <Loader size="lg" />
           ) : (

@@ -149,7 +149,7 @@ function SearchResults() {
   const apiUrl = `/api/search?q=${encodeURIComponent(q)}`
   return (
     <div className="mt-6">
-      <MovieGrid url={apiUrl} />
+      <MovieGrid url={apiUrl} navigateOnClick />
     </div>
   )
 }
