@@ -216,5 +216,28 @@
         198
       ]
     }
+  },
+  "691e3de0f807186f77f752d1": {
+    "poster_colors": {
+      "accentTl": [
+        224,
+        204,
+        203
+      ],
+      "accentBl": [
+        222,
+        221,
+        238
+      ],
+      "accentBr": [
+        227,
+        228,
+        244
+      ]
+    },
+    "poster": "/movies/problems-shampa.webp",
+    "bg_poster": {
+      "backdrop": "/movies/problems-shampa-backdrop.webp"
+    }
   }
 }

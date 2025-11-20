@@ -482,5 +482,37 @@
       "poster_colors.accentBr"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "691e3de0f807186f77f752d1",
+    "timestamp": "2025-11-20T06:59:29.234Z",
+    "poster": "/movies/problems-shampa.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
+  },
+  {
+    "id": "691e3de0f807186f77f752d1",
+    "timestamp": "2025-11-20T07:00:34.948Z",
+    "poster": "/movies/problems-shampa.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "691e3de0f807186f77f752d1",
+    "timestamp": "2025-11-20T07:01:33.253Z",
+    "poster": "/movies/problems-shampa.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr"
+    ]
   }
 ]
