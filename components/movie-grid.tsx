@@ -353,7 +353,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
     const isList = u.includes("/v2/list");
     const isMovieOrSerial = u.includes("type=movie") || u.includes("type=serial");
     const isUhdTag = /tag=(4K|4K%20HDR|4K%20DolbyV|60FPS)/.test(u);
-    return (isList && (isMovieOrSerial || isUhdTag)) || u.includes("/api/search");
+    const isCompilation = u.includes("/v2/compilations/content");
+    return (isList && (isMovieOrSerial || isUhdTag)) || isCompilation || u.includes("/api/search");
   }, [url]);
   const isMovieOrSerialList = useMemo(() => {
     const u = String(url || "");
