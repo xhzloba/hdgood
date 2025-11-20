@@ -584,18 +584,18 @@ export function PosterBackground({
       if (bgPosterUrl) {
         const bottomFade = softBottomFade
           ? "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 12%, rgba(0,0,0,0.7) 26%, rgba(0,0,0,0.82) 38%, rgba(0,0,0,0.88) 100%)"
-          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 10%, rgba(0,0,0,0.82) 24%, rgba(0,0,0,0.92) 34%, rgba(0,0,0,0.93) 100%)"
+          : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.38) 10%, rgba(0,0,0,0.74) 24%, rgba(0,0,0,0.86) 34%, rgba(0,0,0,0.91) 100%)"
 
         const overlayGradients = [
-          // только мягкое затемнение от боков к центру
-          "linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 18%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.2) 82%, rgba(0,0,0,0.5) 100%)",
-          // нижняя растушёвка
+          strongUpperCorners
+            ? "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.16) 18%, rgba(0,0,0,0.04) 50%, rgba(0,0,0,0.16) 82%, rgba(0,0,0,0.35) 100%)"
+            : "linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 18%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.2) 82%, rgba(0,0,0,0.5) 100%)",
           bottomFade,
         ]
         if (strongUpperCorners) {
           overlayGradients.unshift(
-            "radial-gradient(1000px 700px at 0% 0%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
-            "radial-gradient(1000px 700px at 100% 0%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+            "radial-gradient(1000px 700px at 0% 0%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 55%, transparent 100%)",
+            "radial-gradient(1000px 700px at 100% 0%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 55%, transparent 100%)"
           )
         }
 
