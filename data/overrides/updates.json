@@ -524,5 +524,16 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68d5bb609906b3f36b1b168f",
+    "timestamp": "2025-11-20T08:00:33.409Z",
+    "poster": "/movies/bitva-poster.jpg",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop",
+      "poster"
+    ],
+    "addedPaths": []
   }
 ]

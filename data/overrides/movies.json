@@ -181,10 +181,10 @@
     }
   },
   "68d5bb609906b3f36b1b168f": {
+    "poster": "/movies/bitva-poster.jpg",
     "bg_poster": {
-      "backdrop": "https://imagetmdb.com/t/p/original/zpEWFNqoN8Qg1SzMMHmaGyOBTdW.jpg"
-    },
-    "poster": "https://imagetmdb.com/t/p/original/qcSFcQwcuzyWQ4UGsIa1y2WMozB.jpg"
+      "backdrop": "/movies/bitva-backdrop.jpg"
+    }
   },
   "691654e66274cfb19056f227": {
     "bg_poster": {
