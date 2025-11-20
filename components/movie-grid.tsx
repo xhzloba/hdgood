@@ -1040,11 +1040,23 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       {showInlineInfo ? (
         <div key={String(selectedMovie!.id)} className={`relative transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`} style={gridHeight != null ? { minHeight: gridHeight } : undefined}>
           <div className="relative p-3 md:p-4 smoke-flash">
-            {!inlinePlayerOpen && (
-              <button
-                type="button"
-                aria-label="Закрыть"
-                onClick={() => {
+            <button
+              type="button"
+              aria-label="Закрыть"
+              onClick={() => {
+                if (inlinePlayerOpen) {
+                  setInlineClosing(true);
+                  setPlayerVisible(false);
+                  setTimeout(() => {
+                    setInlinePlayerOpen(false);
+                    setInlineClosing(false);
+                    setSelectedMovie(null);
+                    setSelectedDetails(null);
+                    setSelectedError(null);
+                    setGridHeight(null);
+                    setTileWidth(null);
+                  }, 200);
+                } else {
                   setInfoVisible(false);
                   setTimeout(() => {
                     setSelectedMovie(null);
@@ -1053,14 +1065,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     setGridHeight(null);
                     setTileWidth(null);
                   }, 200);
-                }}
-                className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.8)] transition-all duration-200"
-              >
-                <IconX size={18} />
-              </button>
-            )}
+                }
+              }}
+              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.8)] transition-all duration-200"
+            >
+              <IconX size={18} />
+            </button>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
-              {!inlinePlayerOpen && (
               <div className="hidden md:block">
                 <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: tileWidth } : undefined}>
                   {selectedMovie!.poster ? (
@@ -1070,29 +1081,21 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   )}
                 </div>
               </div>
-              )}
               <div className="min-w-0 flex-1">
                 {inlinePlayerOpen ? (
-                  <div className={`relative mt-1 z-[10] ${inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "animate-in fade-in-0 zoom-in-95"}`}>
-                    <PlayerSelector
-                      onPlayerSelect={() => {}}
-                      onClose={() => {
-                        setInlineClosing(true);
-                        setPlayerVisible(false);
-                        setTimeout(() => {
-                          setInlinePlayerOpen(false);
-                          setInlineClosing(false);
-                          setSelectedMovie(null);
-                          setSelectedDetails(null);
-                          setSelectedError(null);
-                          setGridHeight(null);
-                          setTileWidth(null);
-                        }, 200);
-                      }}
-                      iframeUrl={inlineIframeUrl ?? selectedIframeUrl ?? undefined}
-                      kpId={inlineKpId ?? selectedKpId ?? undefined}
-                      videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
-                    />
+                  <div className={`relative mt-1 z-[10] mr-12 ${inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "animate-in fade-in-0 zoom-in-95"}`}>
+                    {(() => {
+                      const h = tileWidth != null ? Math.round(tileWidth * 3 / 2) : null;
+                      return (
+                        <PlayerSelector
+                          onPlayerSelect={() => {}}
+                          iframeUrl={inlineIframeUrl ?? selectedIframeUrl ?? undefined}
+                          kpId={inlineKpId ?? selectedKpId ?? undefined}
+                          videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
+                          videoContainerStyle={h != null ? { height: h } : undefined}
+                        />
+                      );
+                    })()}
                   </div>
                 ) : (
                   <>

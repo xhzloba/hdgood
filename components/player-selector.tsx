@@ -10,9 +10,10 @@ interface PlayerSelectorProps {
   kpId?: string;
   className?: string;
   videoContainerClassName?: string;
+  videoContainerStyle?: React.CSSProperties;
 }
 
-export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, className = "", videoContainerClassName = "" }: PlayerSelectorProps) {
+export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, className = "", videoContainerClassName = "", videoContainerStyle }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
 
   const handlePlayerSelect = (playerId: number) => {
@@ -58,22 +59,30 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
 
   const selectedUrl = getPlayerUrl(selectedPlayer);
 
+  const hasFixedStyle = !!videoContainerStyle && (videoContainerStyle.height != null || videoContainerStyle.width != null);
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center justify-between gap-2">
-        {onClose ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200"
-            style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-            aria-label="Закрыть"
-          >
-            Закрыть
-          </Button>
-        ) : <div />}
-        <div className="flex flex-wrap gap-2 justify-end">
+      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-lg overflow-hidden ${videoContainerClassName || "bg-transparent"}`} style={videoContainerStyle}>
+        {selectedUrl ? (
+          <iframe
+            src={selectedUrl}
+            className="w-full h-full border-0"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="Movie Player"
+          />
+        ) : null}
+        {selectedUrl && (
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-12 md:h-16 z-10"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0))",
+            }}
+          />
+        )}
+      </div>
+      <div className="flex flex-wrap gap-2 justify-end">
         {[1, 2, 3].map((playerId) => {
           const isActive = selectedPlayer === playerId;
           const disabled =
@@ -102,27 +111,6 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
             </Button>
           );
         })}
-        </div>
-      </div>
-      <div className={`group relative w-full aspect-video rounded-lg overflow-hidden ${videoContainerClassName || "bg-transparent"}`}>
-        {selectedUrl ? (
-          <iframe
-            src={selectedUrl}
-            className="w-full h-full border-0"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            title="Movie Player"
-          />
-        ) : null}
-        {selectedUrl && (
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-12 md:h-16 z-10"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0))",
-            }}
-          />
-        )}
       </div>
     </div>
   );
