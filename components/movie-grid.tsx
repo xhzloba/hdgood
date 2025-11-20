@@ -899,7 +899,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo }: MovieGridProps
                   >
                     Подробнее
                   </Link>
-                  {selectedLoading && (!isDesktop || !isMovieOrSerialList) && <Loader size="sm" />}
+                  
                   {selectedError && <span className="text-[12px] text-red-400">{selectedError}</span>}
                 </div>
               </div>
