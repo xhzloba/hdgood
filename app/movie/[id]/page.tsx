@@ -1069,8 +1069,8 @@ export default function MoviePage({
               )}
             </div>
             <div
-              className="w-full border rounded-lg overflow-hidden"
-              style={{ borderColor: "rgba(var(--poster-accent-tl-rgb), 0.35)" }}
+              className="w-full border rounded-xl overflow-hidden"
+              style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
             >
               <Button
                 id="watch-button"
@@ -1083,10 +1083,10 @@ export default function MoviePage({
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className="w-full h-12 text-white font-semibold tracking-wide rounded-lg transition-all duration-300 hover:brightness-110 active:brightness-95"
+                className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
                 style={{
                   backgroundImage:
-                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgb(var(--poster-accent-tl-rgb, var(--app-bg-rgb))), rgb(var(--poster-accent-br-rgb, var(--app-bg-rgb))))",
+                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
                 }}
                 aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
               >
@@ -1764,10 +1764,10 @@ export default function MoviePage({
                                       onClick={() =>
                                         closeEpisode(season.season)
                                       }
-                                      className="px-3 py-1 text-white text-sm rounded transition-all duration-200 hover:opacity-90"
+                                      className="px-3.5 py-1.5 text-white text-sm rounded-full transition-all duration-200 hover:opacity-90"
                                       style={{
-                                        backgroundColor: `rgb(var(--poster-accent-rgb))`,
-                                        boxShadow: `0 2px 8px rgba(var(--poster-accent-rgb), 0.3)`,
+                                        backgroundColor: `rgb(var(--ui-accent-rgb))`,
+                                        boxShadow: `0 2px 8px rgba(var(--ui-accent-rgb), 0.3)`,
                                       }}
                                     >
                                       Закрыть
@@ -1831,10 +1831,10 @@ export default function MoviePage({
                                             `Сезон ${season.season}`
                                           )
                                         }
-                                        className="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:opacity-90"
+                                        className="inline-flex items-center px-5 py-2.5 text-white text-sm font-medium rounded-full transition-all duration-200 hover:opacity-95"
                                         style={{
-                                          backgroundColor: `rgba(var(--poster-accent-rgb), 0.7)`,
-                                          boxShadow: `0 4px 12px rgba(var(--poster-accent-rgb), 0.15)`,
+                                          backgroundImage: `linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))`,
+                                          boxShadow: `0 4px 12px rgba(var(--ui-accent-rgb), 0.18)`,
                                         }}
                                       >
                                         <svg
@@ -1870,14 +1870,14 @@ export default function MoviePage({
                                                 style={
                                                   episode.iframe_url
                                                     ? ({
-                                                        "--hover-border-color": `rgb(var(--poster-accent-rgb))`,
+                                                        "--hover-border-color": `rgb(var(--ui-accent-rgb))`,
                                                       } as React.CSSProperties)
                                                     : {}
                                                 }
                                                 onMouseEnter={(e) => {
                                                   if (episode.iframe_url) {
-                                                    e.currentTarget.style.borderColor = `rgb(var(--poster-accent-rgb))`;
-                                                    e.currentTarget.style.backgroundColor = `rgba(var(--poster-accent-rgb), 0.15)`;
+                                                    e.currentTarget.style.borderColor = `rgb(var(--ui-accent-rgb))`;
+                                                    e.currentTarget.style.backgroundColor = `rgba(var(--ui-accent-rgb), 0.15)`;
                                                   }
                                                 }}
                                                 onMouseLeave={(e) => {
@@ -1915,7 +1915,7 @@ export default function MoviePage({
                                                     <div
                                                       className="transition-colors"
                                                       style={{
-                                                        color: `rgb(var(--poster-accent-rgb))`,
+                                                        color: `rgb(var(--ui-accent-rgb))`,
                                                       }}
                                                     >
                                                       <svg

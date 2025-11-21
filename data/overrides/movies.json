@@ -257,6 +257,23 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/8397379/w1500_55567524.png"
   },
   "6593f8b68914c04deaea15df": {
+    "poster_colors": {
+      "accentTl": [
+        139,
+        4,
+        11
+      ],
+      "accentBr": [
+        3,
+        84,
+        160
+      ],
+      "accentBl": [
+        43,
+        77,
+        80
+      ]
+    },
     "poster_logo": "/movies/logo/strangeer-logo.png"
   },
   "691f8f60f807186f7705ce53": {

@@ -95,13 +95,13 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
               variant="ghost"
               size="sm"
               onClick={() => handlePlayerSelect(playerId)}
-              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 h-9 px-5 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               style={
                 isActive
                   ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
                   : {
                       backgroundImage:
-                        "linear-gradient(90deg, rgba(var(--poster-accent-tl-rgb), 0.7), rgba(var(--poster-accent-br-rgb), 0.7))",
+                        "linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.32), rgba(var(--ui-accent-rgb), 0.48))",
                     }
               }
               disabled={disabled}
