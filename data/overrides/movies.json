@@ -258,5 +258,30 @@
   },
   "6593f8b68914c04deaea15df": {
     "poster_logo": "/movies/logo/strangeer-logo.png"
+  },
+  "691f8f60f807186f7705ce53": {
+    "poster_colors": {
+      "accentTl": [
+        16,
+        21,
+        24
+      ],
+      "accentBr": [
+        32,
+        38,
+        45
+      ],
+      "accentBl": [
+        31,
+        42,
+        51
+      ]
+    },
+    "bg_poster": {
+      "backdrop": "https://images.kinorium.com/movie/shot/10937069/w1500_55498895.jpg"
+    }
+  },
+  "68fff9779630419905edf2a5": {
+    "poster_logo": "https://images.kinorium.com/movie/plogo/9078233/w1500_55475548.png"
   }
 }

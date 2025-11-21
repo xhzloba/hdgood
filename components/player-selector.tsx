@@ -62,7 +62,7 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
   const hasFixedStyle = !!videoContainerStyle && (videoContainerStyle.height != null || videoContainerStyle.width != null);
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-lg overflow-hidden ${videoContainerClassName || "bg-transparent"}`} style={videoContainerStyle}>
+      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-lg overflow-hidden ${videoContainerClassName || "bg-black"}`} style={videoContainerStyle}>
         {selectedUrl ? (
           <iframe
             src={selectedUrl}
