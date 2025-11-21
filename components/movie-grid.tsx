@@ -176,6 +176,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const gridWrapRef = useRef<HTMLDivElement | null>(null);
   const [gridHeight, setGridHeight] = useState<number | null>(null);
   const [tileWidth, setTileWidth] = useState<number | null>(null);
+  const overlayPosterRef = useRef<HTMLDivElement | null>(null);
+  const [overlayPosterHeight, setOverlayPosterHeight] = useState<number | null>(null);
 
   const perPage = 15;
 
@@ -276,6 +278,21 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       setPlayerVisible(false);
     }
   }, [watchOpen]);
+
+  useEffect(() => {
+    try {
+      if (!watchOpen || !selectedMovie) {
+        setOverlayPosterHeight(null);
+        return;
+      }
+      const el = overlayPosterRef.current;
+      if (!el) return;
+      const width = el.offsetWidth;
+      if (width && width > 0) {
+        setOverlayPosterHeight(Math.round(width * 3 / 2));
+      }
+    } catch {}
+  }, [watchOpen, selectedMovie, playerVisible]);
 
 
   useEffect(() => {
@@ -952,10 +969,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
           )}
 
           <div className="space-y-4">
-            <div className="grid md:grid-cols-[minmax(90px,120px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
+            <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 {selectedMovie.poster ? (
-                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: tileWidth } : undefined}>
+                  <div ref={overlayPosterRef} className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
                     <img src={selectedMovie.poster} alt="Постер" className="w-full h-full object-cover" />
                   </div>
                 ) : null}
@@ -1045,7 +1062,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     "radial-gradient(120% 120% at 50% 50%, rgba(var(--poster-accent-tl-rgb),0.35), rgba(var(--poster-accent-br-rgb),0) 60%)",
                 }}
               />
-              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} />
+              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden" videoContainerStyle={overlayPosterHeight != null ? { height: overlayPosterHeight } : undefined} />
             </div>
           </div>
         </div>
@@ -1092,7 +1109,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             </button>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
-                <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: tileWidth } : undefined}>
+                <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
                   {selectedMovie!.poster ? (
                     <img src={selectedMovie!.poster} alt="Постер" className="w-full h-full object-cover" />
                   ) : (
@@ -1104,14 +1121,15 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 {inlinePlayerOpen ? (
                   <div className={`relative mt-1 z-[10] mr-12 ${inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "animate-in fade-in-0 zoom-in-95"}`}>
                     {(() => {
-                      const h = tileWidth != null ? Math.round(tileWidth * 3 / 2) : null;
+                      const w = tileWidth != null ? Math.max(tileWidth, 280) : 280;
+                      const h = Math.round(w * 3 / 2);
                       return (
                         <PlayerSelector
                           onPlayerSelect={() => {}}
                           iframeUrl={inlineIframeUrl ?? selectedIframeUrl ?? undefined}
                           kpId={inlineKpId ?? selectedKpId ?? undefined}
                           videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
-                          videoContainerStyle={h != null ? { height: h } : undefined}
+                          videoContainerStyle={{ height: h }}
                         />
                       );
                     })()}
@@ -1389,10 +1407,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             >
               <IconX size={18} />
             </button>
-            <div className="grid md:grid-cols-[minmax(90px,120px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
+            <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 {selectedMovie.poster ? (
-                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: tileWidth } : undefined}>
+                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
                     <img src={selectedMovie.poster} alt="Постер" className="w-full h-full object-cover" />
                   </div>
                 ) : null}
