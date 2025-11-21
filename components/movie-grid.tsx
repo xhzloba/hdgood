@@ -180,6 +180,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const [tileWidth, setTileWidth] = useState<number | null>(null);
   const overlayPosterRef = useRef<HTMLDivElement | null>(null);
   const [overlayPosterHeight, setOverlayPosterHeight] = useState<number | null>(null);
+  const overlayGlowRef = useRef<HTMLDivElement | null>(null);
 
   const perPage = 15;
 
@@ -1170,10 +1171,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
             <div className="relative">
               <div
-                className="pointer-events-none absolute -inset-6 md:-inset-10 opacity-60"
+                ref={overlayGlowRef}
+                className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[130px] md:h-[160px] opacity-70 animate-pulse"
                 style={{
                   backgroundImage:
-                    "radial-gradient(120% 120% at 50% 50%, rgba(var(--poster-accent-tl-rgb),0.35), rgba(var(--poster-accent-br-rgb),0) 60%)",
+                    "radial-gradient(320px 120px at 50% 52%, rgba(var(--ui-accent-rgb),0.55), rgba(0,0,0,0) 55%), radial-gradient(80% 40% at 50% 52%, rgba(var(--poster-accent-tl-rgb),0.18), rgba(0,0,0,0) 70%)",
+                  mixBlendMode: "screen",
+                  transition: "opacity 300ms ease",
                 }}
               />
               <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden" videoContainerStyle={overlayPosterHeight != null ? { height: overlayPosterHeight } : undefined} />
