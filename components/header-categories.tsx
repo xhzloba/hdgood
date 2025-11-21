@@ -383,7 +383,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
               <div
                 ref={containerRef}
-                className="inline-flex items-center rounded-full bg-zinc-900/35 px-1.5 py-0.5 relative"
+                className="inline-flex items-center rounded-full bg-zinc-900/50 px-1.5 py-0.5 relative"
               >
                 {indicator.visible && (
                   <div
