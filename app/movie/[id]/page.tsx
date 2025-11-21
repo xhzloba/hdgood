@@ -1580,7 +1580,11 @@ export default function MoviePage({
               </div>
 
               {/* Cast column list with "Показать ещё" */}
-              {Array.isArray(data.casts) && data.casts.length > 0 && (
+              {Array.isArray(data.casts) && data.casts.some((actor: any) => {
+                const title = String(actor?.title ?? '').trim()
+                const name = String(actor?.name ?? '').trim()
+                return !!(title || name)
+              }) && (
                 <div className="space-y-2 md:pl-8 hidden md:block">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-zinc-200 mb-3">
@@ -1633,7 +1637,11 @@ export default function MoviePage({
               </div>
             )}
 
-            {Array.isArray(data.casts) && data.casts.length > 0 && (
+            {Array.isArray(data.casts) && data.casts.some((actor: any) => {
+              const title = String(actor?.title ?? '').trim()
+              const name = String(actor?.name ?? '').trim()
+              return !!(title || name)
+            }) && (
               <div className="space-y-3 hidden md:block">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
                 <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
