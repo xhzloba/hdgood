@@ -511,25 +511,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   }, [currItemsLen, subIndex, isArrowDesktopMode, pagesData, page]);
   const scrolledCount = useMemo(() => Math.max(0, (page - 1) * perPage) + currEndIndex, [page, currEndIndex]);
 
-  const lastPagingRef = useRef<{ page: number; scrolled: number; arrow: boolean } | null>(null);
-  useEffect(() => {
-    const info = { page, scrolledCount, isArrowMode: isArrowDesktopMode };
-    const last = lastPagingRef.current;
-    const changed = !last || last.page !== info.page || last.scrolled !== info.scrolledCount || last.arrow !== info.isArrowMode;
-    if (!changed) return;
-    lastPagingRef.current = { page: info.page, scrolled: info.scrolledCount, arrow: info.isArrowMode };
-    try {
-      onPagingInfo?.(info);
-    } catch {}
-  }, [page, subIndex, scrolledCount, isArrowDesktopMode]);
-
-  useEffect(() => {
-    try {
-      onPagingInfo?.({ page, scrolledCount, isArrowMode: isArrowDesktopMode });
-    } catch {}
-  }, [url, isArrowDesktopMode]);
-
-  // Helpers for chunk navigation and pending selection effect
   const getChunkBounds = (pg: number, sIdx: number) => {
     const start = sIdx * chunkSize;
     const items = getItemsForPage(pg);
@@ -541,6 +522,36 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const { start, end, items } = getChunkBounds(pg, sIdx);
     return items.slice(start, end);
   };
+
+  const selectedScrolledCount = useMemo(() => {
+    if (!selectedMovie) return null;
+    const { start } = getChunkBounds(page, subIndex);
+    const chunkItems = getChunkItems(page, subIndex);
+    const idx = chunkItems.findIndex((m: any) => String(m?.id) === String(selectedMovie.id));
+    if (idx < 0) return null;
+    return prevItemsCount + start + idx + 1;
+  }, [selectedMovie, page, subIndex, prevItemsCount, pagesData]);
+  const effectiveScrolledCount = useMemo(() => {
+    return selectedScrolledCount != null ? selectedScrolledCount : scrolledCount;
+  }, [selectedScrolledCount, scrolledCount]);
+
+  const lastPagingRef = useRef<{ page: number; scrolled: number; arrow: boolean } | null>(null);
+  useEffect(() => {
+    const info = { page, scrolledCount: effectiveScrolledCount, isArrowMode: isArrowDesktopMode };
+    const last = lastPagingRef.current;
+    const changed = !last || last.page !== info.page || last.scrolled !== info.scrolledCount || last.arrow !== info.isArrowMode;
+    if (!changed) return;
+    lastPagingRef.current = { page: info.page, scrolled: info.scrolledCount, arrow: info.isArrowMode };
+    try {
+      onPagingInfo?.(info);
+    } catch {}
+  }, [page, subIndex, effectiveScrolledCount, isArrowDesktopMode]);
+
+  useEffect(() => {
+    try {
+      onPagingInfo?.({ page, scrolledCount: effectiveScrolledCount, isArrowMode: isArrowDesktopMode });
+    } catch {}
+  }, [url, isArrowDesktopMode]);
 
   
 
@@ -1197,9 +1208,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlinePrev}
                       disabled={disablePrev}
                       aria-label="Предыдущий фильм"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute left-[-56px] top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronLeft size={26} />
+                      <IconChevronLeft size={40} />
                     </button>
                   );
                 })()}
@@ -1214,9 +1225,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlineNext}
                       disabled={disableNext}
                       aria-label="Следующий фильм"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronRight size={26} />
+                      <IconChevronRight size={40} />
                     </button>
                   );
                 })()}
@@ -1524,9 +1535,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlinePrev}
                       disabled={disablePrev}
                       aria-label="Предыдущий фильм"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute left-[-56px] top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronLeft size={26} />
+                      <IconChevronLeft size={40} />
                     </button>
                   );
                 })()}
@@ -1541,9 +1552,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlineNext}
                       disabled={disableNext}
                       aria-label="Следующий фильм"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronRight size={26} />
+                      <IconChevronRight size={40} />
                     </button>
                   );
                 })()}
