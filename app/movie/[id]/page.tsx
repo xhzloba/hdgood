@@ -1662,14 +1662,14 @@ export default function MoviePage({
                           key={id}
                           src={src}
                           alt={title}
-                          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 ring-zinc-800 hover:z-10 flex-shrink-0"
+                          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover hover:z-10 flex-shrink-0"
                           onError={(e) => {
                             const parent = e.currentTarget.parentElement
                             if (parent) {
                               e.currentTarget.style.display = 'none'
                               const fallback = document.createElement('div')
                               fallback.setAttribute('aria-label', 'нет фото')
-                              fallback.className = 'w-16 h-16 md:w-20 md:h-20 rounded-full ring-2 ring-zinc-800 bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none'
+                              fallback.className = 'w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none'
                               fallback.textContent = 'нет фото'
                               parent.appendChild(fallback)
                             }
@@ -1678,7 +1678,7 @@ export default function MoviePage({
                       ) : (
                         <div
                           key={id}
-                          className="w-16 h-16 md:w-20 md:h-20 rounded-full ring-2 ring-zinc-800 bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
+                          className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
                           aria-label="нет фото"
                         >
                           нет фото
