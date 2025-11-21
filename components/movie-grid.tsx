@@ -1046,6 +1046,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 <div className="mt-3 flex items-center gap-2">
                   <Link
                     href={`/movie/${selectedMovie.id}`}
+                    onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
                     Подробнее
@@ -1198,6 +1199,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       </button>
                       <Link
                         href={`/movie/${selectedMovie!.id}`}
+                        onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
                         className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                       >
                         Подробнее
@@ -1250,6 +1252,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             onClick={(e) => {
               if (navigateOnClick || !isDesktop) {
                 try { NProgress.set(0.2); NProgress.start(); } catch {}
+                try { onBackdropOverrideChange?.(null, null); } catch {}
+                try { onHeroInfoOverrideChange?.(null); } catch {}
                 router.push(`/movie/${movie.id}`);
                 return;
               }
@@ -1474,6 +1478,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   </button>
                   <Link
                     href={`/movie/${selectedMovie.id}`}
+                    onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
                     Подробнее

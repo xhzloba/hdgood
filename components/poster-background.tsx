@@ -30,6 +30,7 @@ type PosterBackgroundProps = {
   simpleDarkCorners?: boolean
   softBottomFade?: boolean
   strongUpperCorners?: boolean
+  persistComposite?: boolean
 }
 
 function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
@@ -494,6 +495,7 @@ export function PosterBackground({
   simpleDarkCorners,
   softBottomFade,
   strongUpperCorners,
+  persistComposite,
 }: PosterBackgroundProps) {
   type Palette = { corners: { tl: RGB; br: RGB; bl: RGB } | null; dominants: [RGB, RGB] | null }
   const [palette, setPalette] = React.useState<Palette>({ corners: null, dominants: null })
@@ -891,12 +893,41 @@ export function PosterBackground({
   React.useEffect(() => {
     try {
       if (!simpleDarkCorners) return
+      if (persistComposite === false) return
       const payload = JSON.stringify({ img: lastCompImg, size: lastCompSize, pos: lastCompPos, url: lastCompUrl })
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem('homeBackdrop:lastComposite', payload)
       }
     } catch {}
-  }, [lastCompImg, lastCompSize, lastCompPos, lastCompUrl, simpleDarkCorners])
+  }, [lastCompImg, lastCompSize, lastCompPos, lastCompUrl, simpleDarkCorners, persistComposite])
+
+  React.useEffect(() => {
+    try {
+      if (!simpleDarkCorners) return
+      if (persistComposite !== false) return
+      if (bgPosterUrl) return
+      const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('homeBackdrop:lastComposite') : null
+      if (!raw) {
+        setLastCompImg(undefined)
+        setLastCompSize(undefined)
+        setLastCompPos(undefined)
+        setLastCompUrl(undefined)
+        return
+      }
+      const data = JSON.parse(raw)
+      if (data && data.img) {
+        setLastCompImg(data.img)
+        setLastCompSize(data.size)
+        setLastCompPos(data.pos)
+        setLastCompUrl(data.url)
+      } else {
+        setLastCompImg(undefined)
+        setLastCompSize(undefined)
+        setLastCompPos(undefined)
+        setLastCompUrl(undefined)
+      }
+    } catch {}
+  }, [bgPosterUrl, simpleDarkCorners, persistComposite])
 
   // Создаем стили для псевдоэлемента на мобильных устройствах
   const mobileBackgroundStyle = React.useMemo(() => {
