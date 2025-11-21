@@ -47,6 +47,7 @@ interface MovieGridProps {
         }
       | null
   ) => void;
+  resetOverridesOnNavigate?: boolean;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -150,7 +151,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange, resetOverridesOnNavigate }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -1046,7 +1047,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 <div className="mt-3 flex items-center gap-2">
                   <Link
                     href={`/movie/${selectedMovie.id}`}
-                    onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
+                    onClick={() => { if (resetOverridesOnNavigate) { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; } }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
                     Подробнее
@@ -1199,8 +1200,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       </button>
                       <Link
                         href={`/movie/${selectedMovie!.id}`}
-                        onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
-                        className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                        onClick={() => { if (resetOverridesOnNavigate) { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; } }}
+                        className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-зinc-800/60 shadow-xs transition-all duration-200"
                       >
                         Подробнее
                       </Link>
@@ -1252,8 +1253,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             onClick={(e) => {
               if (navigateOnClick || !isDesktop) {
                 try { NProgress.set(0.2); NProgress.start(); } catch {}
-                try { onBackdropOverrideChange?.(null, null); } catch {}
-                try { onHeroInfoOverrideChange?.(null); } catch {}
+                if (resetOverridesOnNavigate) {
+                  try { onBackdropOverrideChange?.(null, null); } catch {}
+                  try { onHeroInfoOverrideChange?.(null); } catch {}
+                }
                 router.push(`/movie/${movie.id}`);
                 return;
               }
