@@ -529,6 +529,19 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     } catch {}
   }, [url, isArrowDesktopMode]);
 
+  // Helpers for chunk navigation and pending selection effect
+  const getChunkBounds = (pg: number, sIdx: number) => {
+    const start = sIdx * chunkSize;
+    const items = getItemsForPage(pg);
+    const end = Math.min(start + chunkSize, items.length);
+    return { start, end, items };
+  };
+
+  const getChunkItems = (pg: number, sIdx: number) => {
+    const { start, end, items } = getChunkBounds(pg, sIdx);
+    return items.slice(start, end);
+  };
+
   
 
   // Batch-load overrides for current display ids.
@@ -734,6 +747,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   const [inlinePlayerOpen, setInlinePlayerOpen] = useState<boolean>(false);
   const [inlineClosing, setInlineClosing] = useState<boolean>(false);
+  const [pendingSelectDir, setPendingSelectDir] = useState<"next" | "prev" | null>(null);
 
   useEffect(() => {
     if (!inlinePlayerOpen || !selectedMovie) return;
@@ -777,6 +791,21 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       setTileWidth(tw > 0 ? tw : null);
     } catch {}
   }, [showInlineInfo, effectiveCols]);
+
+  useEffect(() => {
+    if (!pendingSelectDir) return;
+    const chunkItems = getChunkItems(page, subIndex);
+    if (chunkItems.length === 0) {
+      setPendingSelectDir(null);
+      return;
+    }
+    if (pendingSelectDir === "next") {
+      setSelectedMovie(chunkItems[0]);
+    } else {
+      setSelectedMovie(chunkItems[chunkItems.length - 1]);
+    }
+    setPendingSelectDir(null);
+  }, [page, subIndex, pagesData, pendingSelectDir]);
 
   useEffect(() => {
     if (!showInlineInfo || !selectedMovie) return;
@@ -930,6 +959,50 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     handleLoadMore();
   };
 
+  const handleInlinePrev = () => {
+    if (!selectedMovie) return;
+    setInlinePlayerOpen(false);
+    setInlineClosing(false);
+    setPlayerVisible(false);
+    const chunkItems = getChunkItems(page, subIndex);
+    const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
+    if (idx > 0) {
+      setSelectedMovie(chunkItems[idx - 1]);
+      setInfoVisible(false);
+      if (typeof window !== "undefined") {
+        requestAnimationFrame(() => setInfoVisible(true));
+      } else {
+        setInfoVisible(true);
+      }
+      return;
+    }
+    setPendingSelectDir("prev");
+    handlePrevArrow();
+  };
+
+  const handleInlineNext = () => {
+    if (!selectedMovie) return;
+    setInlinePlayerOpen(false);
+    setInlineClosing(false);
+    setPlayerVisible(false);
+    const chunkItems = getChunkItems(page, subIndex);
+    const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
+    if (idx >= 0 && idx < chunkItems.length - 1) {
+      setSelectedMovie(chunkItems[idx + 1]);
+      setInfoVisible(false);
+      if (typeof window !== "undefined") {
+        requestAnimationFrame(() => setInfoVisible(true));
+      } else {
+        setInfoVisible(true);
+      }
+      return;
+    }
+    setPendingSelectDir("next");
+    handleNextArrow();
+  };
+
+  
+
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   if (!isLoading && !isValidating && movies.length === 0) {
     return (
@@ -997,13 +1070,15 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       setInfoVisible(false);
                       setTimeout(() => {
                         setWatchOpen(false);
+                        setInlinePlayerOpen(false);
+                        setInlineClosing(false);
                         setSelectedMovie(null);
                         setSelectedDetails(null);
                         setSelectedError(null);
                         setTileWidth(null);
                       }, 200);
                     }}
-                    className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full text-white hover:bg-zinc-700/40 transition-all duration-200"
+                    className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
                   >
                     <IconX size={16} />
                   </button>
@@ -1083,8 +1158,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
               onClick={() => {
                 if (inlinePlayerOpen) {
                   setInlineClosing(true);
-                  setInfoVisible(false);
                   setPlayerVisible(false);
+                  setInfoVisible(false);
                   setTimeout(() => {
                     setInlinePlayerOpen(false);
                     setInlineClosing(false);
@@ -1105,10 +1180,48 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   }, 200);
                 }
               }}
-              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.8)] transition-all duration-200"
+              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
             >
               <IconX size={18} />
             </button>
+            {isDesktop && (
+              <>
+                {(() => {
+                  const chunkItems = getChunkItems(page, subIndex);
+                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
+                  const canPrevInChunk = idx > 0;
+                  const disablePrev = !canPrevInChunk && page <= 1 && subIndex <= 0;
+                  return (
+                    <button
+                      type="button"
+                      onClick={handleInlinePrev}
+                      disabled={disablePrev}
+                      aria-label="Предыдущий фильм"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <IconChevronLeft size={26} />
+                    </button>
+                  );
+                })()}
+                {(() => {
+                  const chunkItems = getChunkItems(page, subIndex);
+                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
+                  const canNextInChunk = idx >= 0 && idx < chunkItems.length - 1;
+                  const disableNext = (!canNextInChunk) && (subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty));
+                  return (
+                    <button
+                      type="button"
+                      onClick={handleInlineNext}
+                      disabled={disableNext}
+                      aria-label="Следующий фильм"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <IconChevronRight size={26} />
+                    </button>
+                  );
+                })()}
+              </>
+            )}
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
@@ -1398,22 +1511,44 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       {!showInlineInfo && !navigateOnClick && selectedMovie && (!isArrowDesktopMode || !watchOpen) && (
         <div key={String(selectedMovie.id)} className={`relative mt-3 md:mt-4 transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
           <div className="relative p-3 md:p-4 smoke-flash">
-            <button
-              type="button"
-              aria-label="Закрыть"
-              onClick={() => {
-                setInfoVisible(false);
-                setTimeout(() => {
-                  setSelectedMovie(null);
-                  setSelectedDetails(null);
-                  setSelectedError(null);
-                  setGridHeight(null);
-                }, 200);
-              }}
-              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-300 hover:text-white hover:bg-zinc-700/40 transition-all duration-200"
-            >
-              <IconX size={18} />
-            </button>
+            {isDesktop && (
+              <>
+                {(() => {
+                  const chunkItems = getChunkItems(page, subIndex);
+                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
+                  const canPrevInChunk = idx > 0;
+                  const disablePrev = !canPrevInChunk && page <= 1 && subIndex <= 0;
+                  return (
+                    <button
+                      type="button"
+                      onClick={handleInlinePrev}
+                      disabled={disablePrev}
+                      aria-label="Предыдущий фильм"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <IconChevronLeft size={26} />
+                    </button>
+                  );
+                })()}
+                {(() => {
+                  const chunkItems = getChunkItems(page, subIndex);
+                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
+                  const canNextInChunk = idx >= 0 && idx < chunkItems.length - 1;
+                  const disableNext = (!canNextInChunk) && (subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty));
+                  return (
+                    <button
+                      type="button"
+                      onClick={handleInlineNext}
+                      disabled={disableNext}
+                      aria-label="Следующий фильм"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-10 h-10 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <IconChevronRight size={26} />
+                    </button>
+                  );
+                })()}
+              </>
+            )}
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 {selectedMovie.poster ? (
