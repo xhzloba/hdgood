@@ -587,6 +587,7 @@ export function PosterBackground({
           : "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.38) 10%, rgba(0,0,0,0.74) 24%, rgba(0,0,0,0.86) 34%, rgba(0,0,0,0.91) 100%)"
 
         const overlayGradients = [
+          "linear-gradient(to bottom, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.26) 26%, transparent 60%)",
           strongUpperCorners
             ? "linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.16) 18%, rgba(0,0,0,0.04) 50%, rgba(0,0,0,0.16) 82%, rgba(0,0,0,0.35) 100%)"
             : "linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 18%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.2) 82%, rgba(0,0,0,0.5) 100%)",
@@ -647,6 +648,7 @@ export function PosterBackground({
         
         // Добавляем полупрозрачный оверлей поверх bg_poster
         const overlayGradients = [
+          'linear-gradient(to bottom, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.26) 26%, transparent 60%)',
           'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.4) 100%)',
           'radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%)'
         ]
@@ -766,6 +768,7 @@ export function PosterBackground({
     const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`
     // Базовые слои
     const layers = [
+      'linear-gradient(to bottom, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.26) 26%, transparent 60%)',
       `radial-gradient( 1600px 800px at 0% 0%, ${accentTL} 0%, transparent 70% )`,
       `radial-gradient( 2800px 1400px at 0% 100%, ${accentBL} 0%, rgba(${ar}, ${ag}, ${ab}, 0.18) 62%, transparent 86% )`,
       `linear-gradient( to right, rgba(${ar}, ${ag}, ${ab}, 0.32) 0%, rgba(${ar}, ${ag}, ${ab}, 0) 24% )`,
