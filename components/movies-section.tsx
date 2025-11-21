@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from "react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { MovieGrid } from "./movie-grid"
 
 interface Channel {
@@ -33,7 +34,21 @@ const MOVIE_CHANNELS: Channel[] = [
 ]
 
 export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChange }: { onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void; onHeroInfoOverrideChange?: (info: { title?: string | null; logo?: string | null; logoId?: string | null; meta?: { ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null } | null } | null) => void }) {
-  const [active, setActive] = useState(0)
+  const sp = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const preferPopular = sp?.get("tab") === "popular"
+  const popularIndex = MOVIE_CHANNELS.findIndex((c) => c.title === "Популярное")
+  const initialIdx = preferPopular && popularIndex >= 0 ? popularIndex : 0
+  const [active, setActive] = useState(initialIdx)
+
+  useEffect(() => {
+    if (!preferPopular) return
+    const id = setTimeout(() => {
+      try { router.replace(pathname) } catch {}
+    }, 0)
+    return () => clearTimeout(id)
+  }, [preferPopular, router, pathname])
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
   const [watchOpen, setWatchOpen] = useState(false)

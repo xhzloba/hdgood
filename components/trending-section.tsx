@@ -65,6 +65,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                 <MovieSlider
                   url={section.playlist_url}
                   title={section.title}
+                  viewAllHref={section.title === "Фильмы" ? "/movies?tab=popular" : section.title === "Сериалы" ? "/serials?tab=popular" : undefined}
                   compactOnMobile
                 />
               )}
