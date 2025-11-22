@@ -1377,7 +1377,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             )}
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
-                <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
+                <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
                   {selectedMovie!.poster && !errorImages.has(String(selectedMovie!.id)) ? (
                     <img
                       src={selectedMovie!.poster}
@@ -1752,7 +1752,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 {selectedMovie.poster ? (
-                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
+                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative">
                   {selectedMovie.poster && !errorImages.has(String(selectedMovie.id)) ? (
                   <img
                     src={selectedMovie.poster}
