@@ -679,5 +679,60 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T18:18:53.446Z",
+    "poster": "https://ru-images.kinorium.com/movie/1080/11998275.jpg?1763834781",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T18:19:16.449Z",
+    "poster": "https://ru-images.kinorium.com/movie/1080/11998275.jpg?1763834781",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T18:19:33.835Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T18:24:05.689Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "name",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T18:25:19.996Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "duration",
+      "about"
+    ]
   }
 ]
