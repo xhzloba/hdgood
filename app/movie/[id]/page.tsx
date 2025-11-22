@@ -154,7 +154,7 @@ import { ActorCard } from "@/components/actor-card";
 import { CastList } from "@/components/cast-list";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { TrailerPlayer } from "@/components/trailer-player";
-import { ratingColor } from "@/lib/utils";
+import { ratingColor, ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import { PosterBackground } from "@/components/poster-background";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
@@ -1078,6 +1078,7 @@ export default function MoviePage({
                   Нет постера
                 </div>
               )}
+              
             </div>
           <div
             className="w-full border rounded-xl overflow-hidden"
@@ -1161,36 +1162,28 @@ export default function MoviePage({
                         className="w-[10px] h-[24px]"
                       />
                     )}
-                  <span
-                    className={
-                      movie.rating_kp &&
-                      movie.rating_kp !== "0.0" &&
-                      parseFloat(String(movie.rating_kp)) > 8.5
-                        ? "font-medium bg-clip-text text-transparent"
-                        : ratingColor(
-                            movie.rating_kp && movie.rating_kp !== "0.0"
-                              ? movie.rating_kp
-                              : undefined
-                          ) + " font-medium"
-                    }
-                    style={
-                      movie.rating_kp &&
-                      movie.rating_kp !== "0.0" &&
-                      parseFloat(String(movie.rating_kp)) > 8.5
-                        ? {
-                            backgroundImage:
-                              "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
-                            WebkitBackgroundClip: "text",
-                            backgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                          }
-                        : undefined
-                    }
-                  >
-                    {movie.rating_kp && movie.rating_kp !== "0.0"
-                      ? movie.rating_kp
-                      : "—"}
-                  </span>
+                  {movie.rating_kp && movie.rating_kp !== "0.0" ? (
+                    parseFloat(String(movie.rating_kp)) > 8.5 ? (
+                      <span
+                        className="font-medium bg-clip-text text-transparent"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                          WebkitBackgroundClip: "text",
+                          backgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      >
+                        {formatRatingLabel(movie.rating_kp)}
+                      </span>
+                    ) : (
+                      <span className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(movie.rating_kp)}`}>
+                        {formatRatingLabel(movie.rating_kp)}
+                      </span>
+                    )
+                  ) : (
+                    <span className="text-zinc-500 font-medium">—</span>
+                  )}
                   {movie.rating_kp &&
                     movie.rating_kp !== "0.0" &&
                     parseFloat(String(movie.rating_kp)) > 8.5 && (
@@ -1216,36 +1209,28 @@ export default function MoviePage({
                         className="w-[10px] h-[24px]"
                       />
                     )}
-                  <span
-                    className={
-                      movie.rating_imdb &&
-                      movie.rating_imdb !== "0.0" &&
-                      parseFloat(String(movie.rating_imdb)) > 8.5
-                        ? "font-medium bg-clip-text text-transparent"
-                        : ratingColor(
-                            movie.rating_imdb && movie.rating_imdb !== "0.0"
-                              ? movie.rating_imdb
-                              : undefined
-                          ) + " font-medium"
-                    }
-                    style={
-                      movie.rating_imdb &&
-                      movie.rating_imdb !== "0.0" &&
-                      parseFloat(String(movie.rating_imdb)) > 8.5
-                        ? {
-                            backgroundImage:
-                              "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
-                            WebkitBackgroundClip: "text",
-                            backgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                          }
-                        : undefined
-                    }
-                  >
-                    {movie.rating_imdb && movie.rating_imdb !== "0.0"
-                      ? movie.rating_imdb
-                      : "—"}
-                  </span>
+                  {movie.rating_imdb && movie.rating_imdb !== "0.0" ? (
+                    parseFloat(String(movie.rating_imdb)) > 8.5 ? (
+                      <span
+                        className="font-medium bg-clip-text text-transparent"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                          WebkitBackgroundClip: "text",
+                          backgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      >
+                        {formatRatingLabel(movie.rating_imdb)}
+                      </span>
+                    ) : (
+                      <span className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(movie.rating_imdb)}`}>
+                        {formatRatingLabel(movie.rating_imdb)}
+                      </span>
+                    )
+                  ) : (
+                    <span className="text-zinc-500 font-medium">—</span>
+                  )}
                   {movie.rating_imdb &&
                     movie.rating_imdb !== "0.0" &&
                     parseFloat(String(movie.rating_imdb)) > 8.5 && (

@@ -69,7 +69,29 @@ export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trail
       .filter((src) => src.includes("youtube.com/embed"))
   }, [list])
 
-  if (!sources || sources.length === 0) return null
+  if (!sources || sources.length === 0) {
+    if (mode === "carousel") {
+      const desktopCarouselRatio = 16 / 9.5
+      return (
+        <div className="relative">
+          <AspectRatio ratio={desktopCarouselRatio}>
+            <div className="w-full h-full rounded border border-zinc-800/50 bg-zinc-900/50 flex items-center justify-center text-zinc-400 text-sm select-none">
+              нет трейлеров
+            </div>
+          </AspectRatio>
+        </div>
+      )
+    }
+    return (
+      <div className="space-y-3">
+        <AspectRatio ratio={16 / 9}>
+          <div className="w-full h-full rounded border border-zinc-800/50 bg-zinc-900/50 flex items-center justify-center text-zinc-400 text-sm select-none">
+            нет трейлеров
+          </div>
+        </AspectRatio>
+      </div>
+    )
+  }
 
   if (mode === "carousel") {
     const desktopCarouselRatio = 16 / 9.5
