@@ -305,6 +305,23 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     } catch {}
   }, [watchOpen, selectedMovie, playerVisible]);
 
+  useEffect(() => {
+    try {
+      setPage(1);
+      setSubIndex(0);
+      setSelectedMovie(null);
+      setSelectedDetails(null);
+      setSelectedError(null);
+      setInlinePlayerOpen(false);
+      setWatchOpen(false);
+      setPlayerVisible(false);
+      setInfoVisible(false);
+      setGridHeight(null);
+      setTileWidth(null);
+      onInlineInfoOpenChange?.(false);
+    } catch {}
+  }, [viewMode]);
+
 
   useEffect(() => {
     try {
