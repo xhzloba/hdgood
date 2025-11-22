@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect, useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 
@@ -69,6 +70,24 @@ export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trail
       .filter((src) => src.includes("youtube.com/embed"))
   }, [list])
 
+  const [statusMap, setStatusMap] = useState<Record<number, "loading" | "ok" | "timeout">>({})
+
+  useEffect(() => {
+    const initial: Record<number, "loading" | "ok" | "timeout"> = {}
+    const timers: number[] = []
+    sources.forEach((_, i) => {
+      initial[i] = "loading"
+      const tid = window.setTimeout(() => {
+        setStatusMap((prev) => ({ ...prev, [i]: prev[i] === "ok" ? "ok" : "timeout" }))
+      }, 3500)
+      timers.push(tid)
+    })
+    setStatusMap(initial)
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t))
+    }
+  }, [sources])
+
   if (!sources || sources.length === 0) {
     if (mode === "carousel") {
       const desktopCarouselRatio = 16 / 9.5
@@ -102,12 +121,24 @@ export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trail
             {sources.map((src, i) => (
               <CarouselItem key={i}>
                 <AspectRatio ratio={desktopCarouselRatio}>
-                  <iframe
-                    src={src}
-                    className="w-full h-full rounded border border-zinc-800/50"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <div className="relative w-full h-full">
+                    <iframe
+                      src={src}
+                      className="w-full h-full rounded border border-zinc-800/50"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      onLoad={() => setStatusMap((prev) => ({ ...prev, [i]: "ok" }))}
+                    />
+                    {statusMap[i] !== "ok" && (
+                      <div className="absolute inset-0 rounded border border-zinc-800/50 bg-zinc-900/80 flex items-center justify-center">
+                        {statusMap[i] === "timeout" ? (
+                          <span className="text-zinc-300 text-sm">YouTube недоступен без VPN</span>
+                        ) : (
+                          <Spinner className="size-6 text-zinc-300" />
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </AspectRatio>
               </CarouselItem>
             ))}
@@ -124,12 +155,24 @@ export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trail
       {sources.map((src, i) => (
         <div key={i} className="relative">
           <AspectRatio ratio={16 / 9}>
-            <iframe
-              src={src}
-              className="w-full h-full rounded border border-zinc-800/50"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <div className="relative w-full h-full">
+              <iframe
+                src={src}
+                className="w-full h-full rounded border border-zinc-800/50"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={() => setStatusMap((prev) => ({ ...prev, [i]: "ok" }))}
+              />
+              {statusMap[i] !== "ok" && (
+                <div className="absolute inset-0 rounded border border-zinc-800/50 bg-zinc-900/80 flex items-center justify-center">
+                  {statusMap[i] === "timeout" ? (
+                    <span className="text-zinc-300 text-sm">YouTube недоступен без VPN</span>
+                  ) : (
+                    <Spinner className="size-6 text-zinc-300" />
+                  )}
+                </div>
+              )}
+            </div>
           </AspectRatio>
         </div>
       ))}

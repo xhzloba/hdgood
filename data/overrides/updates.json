@@ -768,5 +768,25 @@
       "poster_colors.accentBr",
       "poster_colors.accentBl"
     ]
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-22T21:30:21.603Z",
+    "poster": "/movies/planeta-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-22T21:33:08.886Z",
+    "poster": "/movies/planeta-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
   }
 ]

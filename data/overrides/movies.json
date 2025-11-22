@@ -103,6 +103,12 @@
     "bg_poster": {
       "backdrop": "/movies/planeta.jpg"
     },
+    "trailers": [
+      {
+        "id": "VhWjsd7pXVw",
+        "name": "Хищник: Планета Смерти"
+      }
+    ],
     "poster_logo": "https://images-s.kinorium.com/movie/plogo/11084993/w1500_55545870.png",
     "franchise": {
       "budget": "$105 000 000",
