@@ -158,6 +158,22 @@ import { ratingColor, ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import { PosterBackground } from "@/components/poster-background";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
+function getPrimaryGenreFromItem(item: any): string | null {
+  const raw = item?.genre ?? item?.tags;
+  if (!raw) return null;
+  if (Array.isArray(raw)) {
+    const first = raw.find((v) => v != null && String(v).trim().length > 0);
+    return first != null ? String(first).trim() : null;
+  }
+  if (typeof raw === "string") {
+    const parts = raw
+      .split(/[,/|]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts[0] || null;
+  }
+  return null;
+}
 // Inline SVG icons to avoid external icon dependencies
 function IconThumbUp({ className = "" }: { className?: string }) {
   return (
@@ -2006,37 +2022,42 @@ export default function MoviePage({
             {/* Sequels & Prequels */}
             {Array.isArray(seqList) && seqList.length > 0 && (
               <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-zinc-200">
-                  Сиквелы и приквелы
-                </h2>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <h2 className="text-lg font-semibold text-zinc-200">Сиквелы и приквелы</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
                   {seqList.slice(0, 12).map((item: any, index: number) => {
-                    const id =
-                      item?.id ?? item?.details?.id ?? item?.movieId ?? index;
-                    const poster =
-                      item?.poster ??
-                      item?.details?.poster ??
-                      item?.cover ??
-                      item?.image;
-                    const title =
-                      item?.title ??
-                      item?.name ??
-                      item?.details?.name ??
-                      "Без названия";
-                    const year =
-                      item?.year ?? item?.released ?? item?.details?.released;
-                    const rating =
-                      item?.rating ??
-                      item?.rating_kp ??
-                      item?.details?.rating_kp ??
-                      item?.rating_imdb;
+                    const id = item?.id ?? item?.details?.id ?? item?.movieId ?? index;
+                    const poster = item?.poster ?? item?.details?.poster ?? item?.cover ?? item?.image;
+                    const title = item?.title ?? item?.name ?? item?.details?.name ?? "Без названия";
+                    const year = item?.year ?? item?.released ?? item?.details?.released;
+                    const rating = item?.rating ?? item?.rating_kp ?? item?.details?.rating_kp ?? item?.rating_imdb;
+                    const quality = item?.quality ?? item?.details?.quality;
+                    const genre = getPrimaryGenreFromItem(item);
                     return (
                       <Link
                         key={id}
                         href={`/movie/${id}`}
-                        className="bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                        className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                        onMouseMove={(e) => {
+                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          if (!posterEl) return;
+                          const rect = posterEl.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+                          const mx = x / rect.width * 2 - 1;
+                          const my = y / rect.height * 2 - 1;
+                          posterEl.style.setProperty('--x', `${x}px`);
+                          posterEl.style.setProperty('--y', `${y}px`);
+                          posterEl.style.setProperty('--mx', `${mx}`);
+                          posterEl.style.setProperty('--my', `${my}`);
+                        }}
+                        onMouseLeave={(e) => {
+                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          if (!posterEl) return;
+                          posterEl.style.setProperty('--mx', '0');
+                          posterEl.style.setProperty('--my', '0');
+                        }}
                       >
-                        <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center">
+                        <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
                           {poster ? (
                             <img
                               src={poster ?? "/placeholder.svg"}
@@ -2044,25 +2065,40 @@ export default function MoviePage({
                               decoding="async"
                               loading="lazy"
                               fetchPriority="low"
-                              className="w-full h-full object-cover"
+                              className="absolute inset-0 w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="text-zinc-600 text-[10px] text-center p-1">
-                              Нет постера
+                            <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                          )}
+                          {rating && (
+                            <div className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(rating)}`}>
+                              {formatRatingLabel(rating)}
                             </div>
                           )}
+                          {quality && (
+                            <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                              {String(quality)}
+                            </div>
+                          )}
+                          {poster && (
+                            <div
+                              className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                              style={{
+                                background: 'radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)',
+                              }}
+                            />
+                          )}
                         </div>
-                        <div className="p-2">
-                          <h3 className="text-[10px] font-medium line-clamp-2 mb-1 leading-tight text-zinc-200">
-                            {title}
-                          </h3>
-                          <div className="flex items-center justify-between text-[9px] text-zinc-500">
-                            {year && <span>{year}</span>}
-                            {rating && (
-                              <span className={ratingColor(rating)}>
-                                ★ {rating}
-                              </span>
-                            )}
+                        <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                          <div className="relative z-[2]">
+                            <h3 className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100" title={title}>
+                              {title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                              {year && <span>{year}</span>}
+                              {year && genre && <span className="text-zinc-500/60">•</span>}
+                              {genre && <span className="truncate max-w-[70%]">{genre}</span>}
+                            </div>
                           </div>
                         </div>
                       </Link>
@@ -2076,55 +2112,87 @@ export default function MoviePage({
             {Array.isArray(data.similars) && data.similars.length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-zinc-200">Похожие</h2>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                  {data.similars
-                    .slice(0, 12)
-                    .map((item: any, index: number) => (
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
+                  {data.similars.slice(0, 12).map((item: any, index: number) => {
+                    const id = item.id ?? item.details?.id ?? index;
+                    const poster = (item.poster || item.details?.poster) ?? null;
+                    const title = item.title || item.details?.name || "Без названия";
+                    const year = item.year || item.details?.released;
+                    const rating = item.rating || item.details?.rating_kp;
+                    const quality = item.quality || item.details?.quality;
+                    const genre = getPrimaryGenreFromItem(item);
+                    return (
                       <Link
-                        key={item.id || index}
-                        href={`/movie/${item.id ?? item.details?.id ?? index}`}
-                        className="bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                        key={id}
+                        href={`/movie/${id}`}
+                        className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                        onMouseMove={(e) => {
+                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          if (!posterEl) return;
+                          const rect = posterEl.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+                          const mx = x / rect.width * 2 - 1;
+                          const my = y / rect.height * 2 - 1;
+                          posterEl.style.setProperty('--x', `${x}px`);
+                          posterEl.style.setProperty('--y', `${y}px`);
+                          posterEl.style.setProperty('--mx', `${mx}`);
+                          posterEl.style.setProperty('--my', `${my}`);
+                        }}
+                        onMouseLeave={(e) => {
+                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          if (!posterEl) return;
+                          posterEl.style.setProperty('--mx', '0');
+                          posterEl.style.setProperty('--my', '0');
+                        }}
                       >
-                        <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center">
-                          {item.poster || item.details?.poster ? (
+                        <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                          {poster ? (
                             <img
-                              src={
-                                (item.poster || item.details?.poster) ??
-                                "/placeholder.svg"
-                              }
-                              alt={item.title || item.details?.name || "Постер"}
+                              src={poster}
+                              alt={title}
                               decoding="async"
                               loading="lazy"
                               fetchPriority="low"
-                              className="w-full h-full object-cover"
+                              className="absolute inset-0 w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="text-zinc-600 text-[10px] text-center p-1">
-                              Нет постера
+                            <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                          )}
+                          {rating && (
+                            <div className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(rating)}`}>
+                              {formatRatingLabel(rating)}
                             </div>
                           )}
+                          {quality && (
+                            <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                              {String(quality)}
+                            </div>
+                          )}
+                          {poster && (
+                            <div
+                              className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                              style={{
+                                background: 'radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)',
+                              }}
+                            />
+                          )}
                         </div>
-                        <div className="p-2">
-                          <h3 className="text-[10px] font-medium line-clamp-2 mb-1 leading-tight text-zinc-200">
-                            {item.title || item.details?.name || "Без названия"}
-                          </h3>
-                          <div className="flex items-center justify-between text-[9px] text-zinc-500">
-                            {(item.year || item.details?.released) && (
-                              <span>{item.year || item.details?.released}</span>
-                            )}
-                            {(item.rating || item.details?.rating_kp) && (
-                              <span
-                                className={ratingColor(
-                                  item.rating || item.details?.rating_kp
-                                )}
-                              >
-                                ★ {item.rating || item.details?.rating_kp}
-                              </span>
-                            )}
+                        <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                          <div className="relative z-[2]">
+                            <h3 className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100" title={title}>
+                              {title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                              {year && <span>{year}</span>}
+                              {year && genre && <span className="text-zinc-500/60">•</span>}
+                              {genre && <span className="truncate max-w-[70%]">{genre}</span>}
+                            </div>
                           </div>
                         </div>
                       </Link>
-                    ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
