@@ -72,6 +72,33 @@
     "name": "Протокол выхода"
   },
   "690d1a609cfe849a33163677": {
+    "poster_colors": {
+      "dominant1": [
+        207,
+        186,
+        159
+      ],
+      "dominant2": [
+        252,
+        232,
+        198
+      ],
+      "accentTl": [
+        250,
+        238,
+        219
+      ],
+      "accentBr": [
+        28,
+        57,
+        62
+      ],
+      "accentBl": [
+        20,
+        47,
+        56
+      ]
+    },
     "poster": "/movies/planeta-poster.jpg",
     "bg_poster": {
       "backdrop": "/movies/planeta.jpg"

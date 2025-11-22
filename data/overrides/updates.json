@@ -754,5 +754,19 @@
       "released"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-11-22T21:18:38.521Z",
+    "poster": "/movies/planeta-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
   }
 ]
