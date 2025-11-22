@@ -1059,6 +1059,9 @@ export default function MoviePage({
                 <img
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.name}
+                  decoding="async"
+                  loading="eager"
+                  fetchPriority="high"
                   className="w-full h-full object-cover"
                   onClick={copyIdentToClipboard}
                 />
@@ -2043,6 +2046,9 @@ export default function MoviePage({
                             <img
                               src={poster ?? "/placeholder.svg"}
                               alt={title}
+                              decoding="async"
+                              loading="lazy"
+                              fetchPriority="low"
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -2092,6 +2098,9 @@ export default function MoviePage({
                                 "/placeholder.svg"
                               }
                               alt={item.title || item.details?.name || "Постер"}
+                              decoding="async"
+                              loading="lazy"
+                              fetchPriority="low"
                               className="w-full h-full object-cover"
                             />
                           ) : (

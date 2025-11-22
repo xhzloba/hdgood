@@ -187,6 +187,9 @@ export function UpdatesSection() {
                         <img
                           src={poster}
                           alt={title || "Постер"}
+                          decoding="async"
+                          loading="lazy"
+                          fetchPriority="low"
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             // Фолбэк если постер не грузится

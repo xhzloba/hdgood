@@ -556,6 +556,9 @@ export default function AdminOverridesPage() {
                                 crossOrigin="anonymous"
                                 onClick={handlePosterClick}
                                 alt="Постер"
+                                decoding="async"
+                                loading="lazy"
+                                fetchPriority="low"
                                 className="h-[360px] w-auto rounded-sm shadow cursor-crosshair"
                                 title={activePickField ? "Кликни по постеру, чтобы выбрать цвет" : undefined}
                               />

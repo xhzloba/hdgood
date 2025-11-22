@@ -21,6 +21,9 @@ export function ActorCard({ id, title, poster }: ActorCardProps) {
           <img
             src={poster || "/placeholder.svg"}
             alt={title || "Актер"}
+            decoding="async"
+            loading="lazy"
+            fetchPriority="low"
             className="w-full h-full object-cover"
             onError={() => setError(true)}
           />

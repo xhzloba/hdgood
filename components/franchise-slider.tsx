@@ -221,7 +221,9 @@ export function FranchiseSlider() {
                     <img
                       src={posterSrc(item.poster)}
                       alt={item.title}
+                      decoding="async"
                       loading="lazy"
+                      fetchPriority="low"
                       className={`w-full h-full object-cover transition-all ease-out poster-media ${loadedImages.has(item.href) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"}`}
                       style={{ transition: "opacity 250ms ease-out, filter 500ms ease-out, transform 500ms ease-out", willChange: "opacity, filter, transform", WebkitMaskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", maskImage: "radial-gradient(farthest-side at 55% 50%, black 68%, transparent 100%)", WebkitMaskSize: "100% 100%", maskSize: "100% 100%", transform: "perspective(1000px) translate3d(var(--tx), var(--ty), 0) rotateY(var(--degy)) rotateX(var(--degx)) rotateZ(var(--degz)) scale(1.05)" }}
                       onLoad={() => setLoadedImages((prev) => {
@@ -250,8 +252,9 @@ export function FranchiseSlider() {
                         <img
                           src={item.overlay[0]}
                           alt={`${item.title} logo`}
-                          loading="lazy"
                           decoding="async"
+                          loading="lazy"
+                          fetchPriority="low"
                           className="h-12 md:h-14 lg:h-16 w-auto"
                         />
                       </div>

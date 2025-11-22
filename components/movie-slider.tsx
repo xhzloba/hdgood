@@ -418,6 +418,9 @@ export default function MovieSlider({
                           key={String(movie.id)}
                           src={movie.poster || "/placeholder.svg"}
                           alt={movie.title || "Постер"}
+                          decoding="async"
+                          loading={index < itemsPerView ? "eager" : "lazy"}
+                          fetchPriority={index < itemsPerView ? "high" : "low"}
                           className={`w-full h-full object-cover transition-all ease-out poster-media ${
                             loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                           }`}
@@ -438,7 +441,7 @@ export default function MovieSlider({
                           }}
                         />
                       ) : (
-                        <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                      <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
                       )}
                       {movie.poster && loadedImages.has(String(movie.id)) && (
                         <div

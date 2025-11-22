@@ -1183,7 +1183,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       src={selectedMovie.poster}
                       alt="Постер"
                       decoding="async"
-                      loading="eager"
+                      loading="lazy"
+                      fetchPriority="high"
                       className={`block w-full h-full object-cover transition-all ease-out poster-media ${
                         loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                       }`}
@@ -1383,7 +1384,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       src={selectedMovie!.poster}
                       alt="Постер"
                       decoding="async"
-                      loading="eager"
+                      loading="lazy"
+                      fetchPriority="high"
                       className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
                         loadedImages.has(String(selectedMovie!.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                       }`}
@@ -1758,7 +1760,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     src={selectedMovie.poster}
                     alt="Постер"
                     decoding="async"
-                    loading="eager"
+                    loading="lazy"
+                    fetchPriority="high"
                     className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
                       loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                     }`}
