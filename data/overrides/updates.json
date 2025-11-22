@@ -734,5 +734,25 @@
       "duration",
       "about"
     ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T20:39:40.103Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "released"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-11-22T20:40:28.007Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [
+      "released"
+    ],
+    "addedPaths": []
   }
 ]

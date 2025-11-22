@@ -1235,7 +1235,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
                   {(() => {
                     const d: any = selectedDetails || {};
-                    const year = d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year;
+                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                    const year = (
+                      ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
+                      ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
+                      d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year
+                    );
                     const countryRaw = d.country ?? selectedMovie.country;
                     const quality = d.quality ?? selectedMovie.quality;
                     const parts: string[] = [];
@@ -1432,7 +1437,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     <div className="mt-1 text-[12px] md:text-[13px] text-zinc-300">
                       {(() => {
                         const d: any = selectedDetails || {};
-                        const year = d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie!.year;
+                        const ov = (overridesMap as any)[String(selectedMovie!.id)] ?? null;
+                        const year = (
+                          ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
+                          ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
+                          d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie!.year
+                        );
                         const countryRaw = d.country ?? selectedMovie!.country;
                         const quality = d.quality ?? selectedMovie!.quality;
                         const parts: string[] = [];
@@ -1792,7 +1802,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
                   {(() => {
                     const d: any = selectedDetails || {};
-                    const year = d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year;
+                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                    const year = (
+                      ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
+                      ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
+                      d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year
+                    );
                     const countryRaw = d.country ?? selectedMovie.country;
                     const quality = d.quality ?? selectedMovie.quality;
                     const parts: string[] = [];
