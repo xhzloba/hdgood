@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 
 interface CastListProps {
   casts: any[]
@@ -135,12 +136,37 @@ export function CastList({ casts, maxInitial = 11 }: CastListProps) {
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-zinc-100 break-words whitespace-normal leading-tight">{popover.name}</div>
               <div className="mt-2">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 h-8 px-3 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
-                >
-                  Подписаться
-                </button>
+                {(() => {
+                  const actorId = (popover && (visible.find((a) => (a?.name ?? a?.title) === popover.name)?.id)) ?? null
+                  const href = actorId ? `/actor/${actorId}` : null
+                  if (!href) {
+                    return (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-2 h-8 px-3 rounded-full text-[12px] font-medium text-white bg-zinc-700/80 ring-1 ring-zinc-500/40 shadow-xs cursor-not-allowed"
+                        disabled
+                      >
+                        Профиль
+                      </button>
+                    )
+                  }
+                  return (
+                    <Link
+                      href={href}
+                      className="inline-flex items-center gap-2 h-8 px-3 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
+                      onClick={() => {
+                        try {
+                          const raw = localStorage.getItem("__actorInfo")
+                          const map = raw ? JSON.parse(raw) : {}
+                          map[String(actorId)] = { name: popover.name, photo: popover.photo }
+                          localStorage.setItem("__actorInfo", JSON.stringify(map))
+                        } catch {}
+                      }}
+                    >
+                      Профиль
+                    </Link>
+                  )
+                })()}
               </div>
             </div>
           </div>

@@ -30,6 +30,10 @@ type MovieSliderProps = {
   activeItemId?: string;
   // Только для главной: уменьшенные карточки на мобиле
   compactOnMobile?: boolean;
+  // Для страниц актёра: загрузить все страницы и показать все фильмы
+  fetchAllPages?: boolean;
+  // Сортировка по году: по убыванию (desc) или возрастанию (asc)
+  sortByYear?: "asc" | "desc";
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -120,6 +124,8 @@ export default function MovieSlider({
   loop = false,
   activeItemId,
   compactOnMobile,
+  fetchAllPages = false,
+  sortByYear,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
@@ -153,6 +159,37 @@ export default function MovieSlider({
     });
   }, [data, page]);
 
+  // Когда требуется загрузить все страницы (например, профиль актёра),
+  // последовательно подтягиваем следующие страницы, пока данные не закончатся
+  useEffect(() => {
+    if (!fetchAllPages) return;
+    if (!data) return;
+    let cancelled = false;
+    const already = new Set(pagesData.map((p) => p.page));
+    (async () => {
+      let next = page + 1;
+      for (let i = 0; i < 100; i++) {
+        if (cancelled) break;
+        if (already.has(next)) { next++; continue; }
+        try {
+          const nextUrl = makePageUrl(url, next);
+          const nd = await fetcher(nextUrl, 10000);
+          const items = extractMoviesFromData(nd);
+          if (!items || items.length === 0) break;
+          setPagesData((prev) => {
+            if (prev.some((p) => p.page === next)) return prev;
+            return [...prev, { page: next, data: nd }];
+          });
+          already.add(next);
+          next++;
+        } catch {
+          break;
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [fetchAllPages, data, page, url, pagesData]);
+
   let movies: any[] = [];
   pagesData
     .sort((a, b) => a.page - b.page)
@@ -169,7 +206,24 @@ export default function MovieSlider({
     return true;
   });
 
-  const display = movies.slice(0, perPage);
+  if (sortByYear) {
+    const toNum = (y: any) => {
+      const n = Number(String(y).replace(/[^0-9]/g, ""));
+      return Number.isFinite(n) ? n : NaN;
+    };
+    movies.sort((a: any, b: any) => {
+      const ya = toNum(a.year);
+      const yb = toNum(b.year);
+      const aU = Number.isNaN(ya);
+      const bU = Number.isNaN(yb);
+      if (aU && bU) return 0;
+      if (aU) return 1;
+      if (bU) return -1;
+      return sortByYear === "asc" ? ya - yb : yb - ya;
+    });
+  }
+
+  const display = fetchAllPages ? movies : movies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
   const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
