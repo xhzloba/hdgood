@@ -126,23 +126,25 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
                 >
                   <IconList size={14} />
                 </button>
-                <span className="inline-flex items-center gap-2 ml-2 text-[13px] text-white font-medium">
-                  {paging && (
-                    <>
-                      <span className="text-white">Стр.</span>
-                      <span
-                        className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
-                        style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-                      >
-                        {paging.page}
-                      </span>
-                      <span className="text-white">•</span>
-                      <span className="text-white">Пролистано</span>
-                      <span className="text-white">{paging.scrolledCount}</span>
-                    </>
-                  )}
-                </span>
               </div>
+            )}
+            {viewMode === "pagination" && (
+              <span className="hidden md:inline-flex items-center gap-2 ml-2 h-8 text-[13px] text-white font-medium">
+                {paging && (
+                  <>
+                    <span className="text-white">Стр.</span>
+                    <span
+                      className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
+                      style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                    >
+                      {paging.page}
+                    </span>
+                    <span className="text-white">•</span>
+                    <span className="text-white">Пролистано</span>
+                    <span className="text-white">{paging.scrolledCount}</span>
+                  </>
+                )}
+              </span>
             )}
           </div>
         </div>

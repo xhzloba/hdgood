@@ -878,27 +878,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   
 
-  const [gridTopY, setGridTopY] = useState<number>(0);
-  useEffect(() => {
-    try {
-      const el = gridWrapRef.current;
-      if (!el || typeof window === "undefined") return;
-      const rect = el.getBoundingClientRect();
-      const topY = rect.top + window.scrollY;
-      setGridTopY(topY);
-      const onResize = () => {
-        const r = el.getBoundingClientRect();
-        setGridTopY(r.top + window.scrollY);
-      };
-      window.addEventListener("resize", onResize);
-      return () => window.removeEventListener("resize", onResize);
-    } catch {}
-  }, []);
-
-  const baseRows = rowHeight ? Math.floor(gridTopY / rowHeight) : 0;
-  const basePad = rowHeight ? baseRows * rowHeight : 0;
-  const adjTopPad = virtualizationEnabled && rowHeight ? Math.max(0, vTopPad - basePad) : vTopPad;
-  const adjBottomPad = virtualizationEnabled && rowHeight ? Math.max(0, vBottomPad + basePad) : vBottomPad;
+  
 
   useEffect(() => {
     if (!showInlineInfo) return;
@@ -1512,8 +1492,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         </button>
       )}
       <div className={"grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"}>
-        {virtualizationEnabled && rowHeight ? (
-          <div style={{ height: adjTopPad, gridColumn: "1 / -1" }} />
+        {virtualizationEnabled && rowHeight && vTopPad > 0 ? (
+          <div style={{ height: vTopPad, gridColumn: "1 / -1" }} />
         ) : null}
         {(virtualizationEnabled && rowHeight ? finalDisplay.slice(vVirtStart, vVirtEnd) : finalDisplay).map((movie: any, index: number) => (
           <div
@@ -1671,8 +1651,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             </div>
           </div>
         ))}
-        {virtualizationEnabled && rowHeight ? (
-          <div style={{ height: adjBottomPad, gridColumn: "1 / -1" }} />
+        {virtualizationEnabled && rowHeight && vBottomPad > 0 ? (
+          <div style={{ height: vBottomPad, gridColumn: "1 / -1" }} />
         ) : null}
       </div>
       {isArrowDesktopMode && (

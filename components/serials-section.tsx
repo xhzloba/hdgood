@@ -141,7 +141,7 @@ export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideCha
               </div>
             )}
             {viewMode === "pagination" && (
-              <span className="hidden md:inline-flex items-center gap-2 ml-2 text-[13px] text-white font-medium">
+              <span className="hidden md:inline-flex items-center gap-2 ml-2 h-8 text-[13px] text-white font-medium">
                 {paging && (
                   <>
                     <span className="text-white">Стр.</span>

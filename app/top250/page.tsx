@@ -91,7 +91,7 @@ export default function Top250Page() {
           <div className="relative z-20 mt-[1vh] md:mt-[4vh]">
             <div className="p-5">
               <div className="-mx-5 px-5 pt-0 md:pt-5 pb-3">
-                <div className="flex items-center justify-between">
+                <div className="channel-tabs flex items-center rounded-full px-1.5 py-0.5 gap-1.5 w-full">
                   <h1 className="text-lg md:text-xl font-semibold text-zinc-200">Топ 250 фильмов</h1>
                   {isDesktop && (
                     <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
