@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
@@ -640,6 +640,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     });
   }, [display, overridesMap]);
 
+  const applyOverridesToMovie = useCallback((m: any) => {
+    const ov = overridesMap[String(m?.id)] || null;
+    const patchedPoster = ov && ov.poster ? ov.poster : m?.poster;
+    const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m?.title;
+    return { ...(m || {}), poster: patchedPoster, title: patchedTitle };
+  }, [overridesMap]);
+
   useEffect(() => {
     try {
       const el = gridWrapRef.current;
@@ -901,12 +908,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       return;
     }
     if (pendingSelectDir === "next") {
-      setSelectedMovie(chunkItems[0]);
+      setSelectedMovie(applyOverridesToMovie(chunkItems[0]));
     } else {
-      setSelectedMovie(chunkItems[chunkItems.length - 1]);
+      setSelectedMovie(applyOverridesToMovie(chunkItems[chunkItems.length - 1]));
     }
     setPendingSelectDir(null);
-  }, [page, subIndex, pagesData, pendingSelectDir]);
+  }, [page, subIndex, pagesData, pendingSelectDir, applyOverridesToMovie]);
 
   useEffect(() => {
     if (!showInlineInfo || !selectedMovie) return;
@@ -1074,7 +1081,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const chunkItems = getChunkItems(page, subIndex);
     const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
     if (idx > 0) {
-      setSelectedMovie(chunkItems[idx - 1]);
+      setSelectedMovie(applyOverridesToMovie(chunkItems[idx - 1]));
       setInfoVisible(false);
       if (typeof window !== "undefined") {
         requestAnimationFrame(() => {
@@ -1100,7 +1107,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const chunkItems = getChunkItems(page, subIndex);
     const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
     if (idx >= 0 && idx < chunkItems.length - 1) {
-      setSelectedMovie(chunkItems[idx + 1]);
+      setSelectedMovie(applyOverridesToMovie(chunkItems[idx + 1]));
       setInfoVisible(false);
       if (typeof window !== "undefined") {
         requestAnimationFrame(() => {
