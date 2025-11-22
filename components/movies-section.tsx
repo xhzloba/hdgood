@@ -124,7 +124,7 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
                   style={viewMode === "pagination" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
                   title="Режим пагинации"
                 >
-                  <IconLayoutGrid size={14} />
+                  <IconLayoutGrid size={14} className={viewMode === "pagination" ? undefined : "text-zinc-400"} />
                 </button>
                 <button
                   onClick={() => setViewMode("loadmore")}
@@ -136,7 +136,7 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
                   style={viewMode === "loadmore" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
                   title="Режим загрузки"
                 >
-                  <IconList size={14} />
+                  <IconList size={14} className={viewMode === "loadmore" ? undefined : "text-zinc-400"} />
                 </button>
               </div>
             )}
