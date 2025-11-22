@@ -3,6 +3,7 @@
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { MovieGrid } from "./movie-grid"
+import { IconLayoutGrid, IconList } from "@tabler/icons-react"
 
 interface Channel {
   title: string
@@ -41,6 +42,9 @@ export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideCha
   const popularIndex = SERIAL_CHANNELS.findIndex((c) => c.title === "Популярное")
   const initialIdx = preferPopular && popularIndex >= 0 ? popularIndex : 0
   const [active, setActive] = useState(initialIdx)
+  const [viewMode, setViewMode] = useState<"pagination" | "loadmore">("pagination")
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [inlineInfoOpen, setInlineInfoOpen] = useState(false)
 
   useEffect(() => {
     if (!preferPopular) return
@@ -49,6 +53,15 @@ export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideCha
     }, 0)
     return () => clearTimeout(id)
   }, [preferPopular, router, pathname])
+
+  useEffect(() => {
+    const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null
+    const update = () => setIsDesktop(!!mq?.matches)
+    update()
+    mq?.addEventListener("change", update)
+    return () => mq?.removeEventListener("change", update)
+  }, [])
+
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
   const [watchOpen, setWatchOpen] = useState(false)
@@ -99,22 +112,52 @@ export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideCha
                 {ch.title}
               </button>
             ))}
-            <span className="hidden md:inline-flex items-center gap-2 ml-auto text-[13px] text-white font-medium">
-              {paging && (
-                <>
-                  <span className="text-white">Стр.</span>
-                  <span
-                    className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
-                    style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-                  >
-                    {paging.page}
-                  </span>
-                  <span className="text-white">•</span>
-                  <span className="text-white">Пролистано</span>
-                  <span className="text-white">{paging.scrolledCount}</span>
-                </>
-              )}
-            </span>
+            {isDesktop && !watchOpen && (
+              <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+                <button
+                  onClick={() => setViewMode("pagination")}
+                  className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                    viewMode === "pagination"
+                      ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                  style={viewMode === "pagination" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                  title="Режим пагинации"
+                >
+                  <IconLayoutGrid size={14} />
+                </button>
+                <button
+                  onClick={() => setViewMode("loadmore")}
+                  className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                    viewMode === "loadmore"
+                      ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                  style={viewMode === "loadmore" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                  title="Режим загрузки"
+                >
+                  <IconList size={14} />
+                </button>
+              </div>
+            )}
+            {viewMode === "pagination" && (
+              <span className="hidden md:inline-flex items-center gap-2 ml-2 text-[13px] text-white font-medium">
+                {paging && (
+                  <>
+                    <span className="text-white">Стр.</span>
+                    <span
+                      className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
+                      style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                    >
+                      {paging.page}
+                    </span>
+                    <span className="text-white">•</span>
+                    <span className="text-white">Пролистано</span>
+                    <span className="text-white">{paging.scrolledCount}</span>
+                  </>
+                )}
+              </span>
+            )}
           </div>
         </div>
         <div className="mt-4 overflow-anchor-none">
@@ -124,6 +167,8 @@ export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideCha
             onWatchOpenChange={setWatchOpen}
             onBackdropOverrideChange={onBackdropOverrideChange}
             onHeroInfoOverrideChange={onHeroInfoOverrideChange}
+            viewMode={isDesktop ? viewMode : undefined}
+            onInlineInfoOpenChange={setInlineInfoOpen}
           />
         </div>
       </div>

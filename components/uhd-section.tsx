@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useLayoutEffect, useCallback, useEffect } from "react"
+import { IconLayoutGrid, IconList } from "@tabler/icons-react"
 import { MovieGrid } from "./movie-grid"
 
 interface Channel {
@@ -37,12 +38,26 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
   const prevYRef = useRef<number | null>(null)
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null)
   const [watchOpen, setWatchOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<"pagination" | "loadmore">("pagination")
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [inlineInfoOpen, setInlineInfoOpen] = useState(false)
   const handlePagingInfo = useCallback((info: { page: number; scrolledCount: number; isArrowMode: boolean }) => {
     setPaging((prev) => {
       if (!info.isArrowMode) return null;
       if (prev && prev.page === info.page && prev.scrolledCount === info.scrolledCount) return prev;
       return { page: info.page, scrolledCount: info.scrolledCount };
     });
+  }, [])
+
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const mq = window.matchMedia("(min-width: 768px)");
+      const update = () => setIsDesktop(!!mq.matches);
+      update();
+      mq.addEventListener("change", update);
+      return () => mq.removeEventListener("change", update);
+    } catch {}
   }, [])
   const preserveScroll = (cb: () => void) => {
     if (typeof window !== "undefined") {
@@ -85,22 +100,50 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
                 {ch.title}
               </button>
             ))}
-            <span className="hidden md:inline-flex items-center gap-2 ml-auto text-[13px] text-white font-medium">
-              {paging && (
-                <>
-                  <span className="text-white">Стр.</span>
-                  <span
-                    className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
-                    style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-                  >
-                    {paging.page}
-                  </span>
-                  <span className="text-white">•</span>
-                  <span className="text-white">Пролистано</span>
-                  <span className="text-white">{paging.scrolledCount}</span>
-                </>
-              )}
-            </span>
+            {isDesktop && !watchOpen && (
+              <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+                <button
+                  onClick={() => setViewMode("pagination")}
+                  className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                    viewMode === "pagination"
+                      ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                  style={viewMode === "pagination" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                  title="Режим пагинации"
+                >
+                  <IconLayoutGrid size={14} />
+                </button>
+                <button
+                  onClick={() => setViewMode("loadmore")}
+                  className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                    viewMode === "loadmore"
+                      ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                  style={viewMode === "loadmore" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                  title="Режим загрузки"
+                >
+                  <IconList size={14} />
+                </button>
+                <span className="inline-flex items-center gap-2 ml-2 text-[13px] text-white font-medium">
+                  {paging && (
+                    <>
+                      <span className="text-white">Стр.</span>
+                      <span
+                        className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
+                        style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                      >
+                        {paging.page}
+                      </span>
+                      <span className="text-white">•</span>
+                      <span className="text-white">Пролистано</span>
+                      <span className="text-white">{paging.scrolledCount}</span>
+                    </>
+                  )}
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-4 overflow-anchor-none">
@@ -110,6 +153,8 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
             onWatchOpenChange={setWatchOpen}
             onBackdropOverrideChange={onBackdropOverrideChange}
             onHeroInfoOverrideChange={onHeroInfoOverrideChange}
+            viewMode={isDesktop ? viewMode : undefined}
+            onInlineInfoOpenChange={setInlineInfoOpen}
           />
         </div>
       </div>

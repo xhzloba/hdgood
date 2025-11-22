@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,12 +25,13 @@ interface Movie {
   tags?: string[] | string;
 }
 
-interface MovieGridProps {
-  url: string;
-  navigateOnClick?: boolean;
-  onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
-  onWatchOpenChange?: (open: boolean) => void;
-  onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void;
+  interface MovieGridProps {
+    url: string;
+    navigateOnClick?: boolean;
+    onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
+    onWatchOpenChange?: (open: boolean) => void;
+    onInlineInfoOpenChange?: (open: boolean) => void;
+    onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void;
   onHeroInfoOverrideChange?: (
     info:
       | {
@@ -48,6 +50,7 @@ interface MovieGridProps {
       | null
   ) => void;
   resetOverridesOnNavigate?: boolean;
+  viewMode?: "pagination" | "loadmore";
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -151,7 +154,7 @@ const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange, resetOverridesOnNavigate }: MovieGridProps) {
+export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onInlineInfoOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange, resetOverridesOnNavigate, viewMode }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -181,6 +184,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const overlayPosterRef = useRef<HTMLDivElement | null>(null);
   const [overlayPosterHeight, setOverlayPosterHeight] = useState<number | null>(null);
   const overlayGlowRef = useRef<HTMLDivElement | null>(null);
+  const [virtStart, setVirtStart] = useState<number>(0);
+  const [virtEnd, setVirtEnd] = useState<number>(0);
+  const [virtTopPad, setVirtTopPad] = useState<number>(0);
+  const [virtBottomPad, setVirtBottomPad] = useState<number>(0);
+  const [rowHeight, setRowHeight] = useState<number | null>(null);
 
   const perPage = 15;
 
@@ -305,9 +313,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       const mqlLg = window.matchMedia("(min-width: 1024px)");
       const mqlMd = window.matchMedia("(min-width: 768px)");
       const computeCols = () => {
-        if (mqlXl.matches) return 6;
+        if (mqlXl.matches) return 5;
         if (mqlLg.matches) return 5;
-        if (mqlMd.matches) return 4;
+        if (mqlMd.matches) return 5;
         return 2;
       };
       const updateCols = () => setGridCols(computeCols());
@@ -324,6 +332,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       };
     } catch {}
   }, []);
+
+  
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
   const { data, error, isLoading, isValidating } = useSWR<string>(
@@ -465,11 +475,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const u = String(url || "");
     return u.includes("/v2/list") && (u.includes("type=movie") || u.includes("type=serial"));
   }, [url]);
-  const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore;
+  const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore && (!viewMode || viewMode === "pagination");
   const currentPageEntry = useMemo(() => {
     return pagesData.find((p) => p.page === page) || null;
   }, [pagesData, page]);
   const effectiveCols = useMemo(() => (isArrowDesktopMode ? 5 : gridCols), [isArrowDesktopMode, gridCols]);
+  useEffect(() => {
+    try {
+      const el = gridWrapRef.current;
+      if (!el) return;
+      const w = el.clientWidth;
+      const cols = effectiveCols;
+      const gaps = (cols - 1) * 8;
+      const tw = Math.floor((w - gaps) / cols);
+      setTileWidth(tw > 0 ? tw : null);
+    } catch {}
+  }, [effectiveCols]);
   const chunkSize = 5;
   const getItemsForPage = (pg: number) => {
     const entry = pagesData.find((p) => p.page === pg) || null;
@@ -601,6 +622,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       return { ...m, poster: patchedPoster, title: patchedTitle };
     });
   }, [display, overridesMap]);
+
+  useEffect(() => {
+    try {
+      const el = gridWrapRef.current;
+      if (!el) return;
+      const card = el.querySelector('[data-card-item="true"]') as HTMLElement | null;
+      if (card && card.offsetHeight) {
+        setRowHeight(card.offsetHeight + 8);
+        return;
+      }
+      if (tileWidth != null) {
+        const h = Math.round(tileWidth * 3 / 2) + (isDesktop ? 68 : 56) + 8;
+        setRowHeight(h);
+      }
+    } catch {}
+  }, [finalDisplay, isDesktop, tileWidth]);
 
   useEffect(() => {
     if (!selectedMovie) return;
@@ -789,8 +826,62 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     return () => controller.abort();
   }, [inlinePlayerOpen, selectedMovie]);
 
-  const showLoadMoreButton = !lastPageEmpty && !hideLoadMore && !isArrowDesktopMode;
+  const isLoadMoreMode = viewMode === "loadmore";
+  const showLoadMoreButton = !lastPageEmpty && !hideLoadMore && (!isArrowDesktopMode || isLoadMoreMode);
   const showInlineInfo = !navigateOnClick && !!selectedMovie;
+  useEffect(() => {
+    try {
+      onInlineInfoOpenChange?.(!!showInlineInfo);
+    } catch {}
+  }, [showInlineInfo]);
+
+  useEffect(() => {
+    try {
+      const open = (!!selectedMovie) || inlinePlayerOpen || watchOpen;
+      onInlineInfoOpenChange?.(open);
+    } catch {}
+  }, [selectedMovie, inlinePlayerOpen, watchOpen]);
+
+  const virtualizationEnabled = (!isArrowDesktopMode) && ((viewMode === "loadmore") || (viewMode === "pagination"));
+
+  const totalRows = useMemo(() => Math.ceil(finalDisplay.length / effectiveCols), [finalDisplay.length, effectiveCols]);
+  const rowVirtualizer = useWindowVirtualizer({
+    count: virtualizationEnabled && rowHeight ? totalRows : 0,
+    estimateSize: () => rowHeight || 0,
+    overscan: 3,
+  });
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const vStartRow = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? virtualItems[0].index : 0;
+  const vEndRowExclusive = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? (virtualItems[virtualItems.length - 1].index + 1) : totalRows;
+  const vVirtStart = vStartRow * effectiveCols;
+  const vVirtEnd = Math.min(finalDisplay.length, vEndRowExclusive * effectiveCols);
+  const vTopPad = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const vLastEnd = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? (virtualItems[virtualItems.length - 1].start + virtualItems[virtualItems.length - 1].size) : 0;
+  const vBottomPad = virtualizationEnabled && rowHeight ? Math.max(0, totalRows * (rowHeight || 0) - vLastEnd) : 0;
+
+  
+
+  const [gridTopY, setGridTopY] = useState<number>(0);
+  useEffect(() => {
+    try {
+      const el = gridWrapRef.current;
+      if (!el || typeof window === "undefined") return;
+      const rect = el.getBoundingClientRect();
+      const topY = rect.top + window.scrollY;
+      setGridTopY(topY);
+      const onResize = () => {
+        const r = el.getBoundingClientRect();
+        setGridTopY(r.top + window.scrollY);
+      };
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    } catch {}
+  }, []);
+
+  const baseRows = rowHeight ? Math.floor(gridTopY / rowHeight) : 0;
+  const basePad = rowHeight ? baseRows * rowHeight : 0;
+  const adjTopPad = virtualizationEnabled && rowHeight ? Math.max(0, vTopPad - basePad) : vTopPad;
+  const adjBottomPad = virtualizationEnabled && rowHeight ? Math.max(0, vBottomPad + basePad) : vBottomPad;
 
   useEffect(() => {
     if (!showInlineInfo) return;
@@ -845,9 +936,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const isDesktopNow = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
     const skeletonCount = typeof window === "undefined"
       ? 5
+      : isLoadMoreMode
+      ? (isDesktopNow ? perPage : perPage)
       : (isArrowDesktopMode ? effectiveCols : (isDesktopNow ? 5 : perPage));
+    const gridClass = "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
+      <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
@@ -878,9 +972,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     (isLoading || isValidating) &&
     !pagesData.some((p) => p.page === page)
   ) {
-    const skeletonCount = effectiveCols;
+    const isDesktopNow = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+    const skeletonCount = isLoadMoreMode ? (isDesktopNow ? perPage : perPage) : effectiveCols;
+    const gridClass = "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
+      <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
@@ -1103,19 +1199,20 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   <button
                     type="button"
                     aria-label="Закрыть"
-                    onClick={() => {
-                      setPlayerVisible(false);
-                      setInfoVisible(false);
-                      setTimeout(() => {
-                        setWatchOpen(false);
-                        setInlinePlayerOpen(false);
-                        setInlineClosing(false);
-                        setSelectedMovie(null);
-                        setSelectedDetails(null);
-                        setSelectedError(null);
-                        setTileWidth(null);
-                      }, 200);
-                    }}
+        onClick={() => {
+          setPlayerVisible(false);
+          setInfoVisible(false);
+          setTimeout(() => {
+            setWatchOpen(false);
+            setInlinePlayerOpen(false);
+            setInlineClosing(false);
+            setSelectedMovie(null);
+            setSelectedDetails(null);
+            setSelectedError(null);
+            setTileWidth(null);
+            try { onInlineInfoOpenChange?.(false) } catch {}
+          }, 200);
+        }}
                     className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
                   >
                     <IconX size={16} />
@@ -1209,6 +1306,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     setSelectedError(null);
                     setGridHeight(null);
                     setTileWidth(null);
+                    try { onInlineInfoOpenChange?.(false) } catch {}
                   }, 200);
                 } else {
                   setInfoVisible(false);
@@ -1218,6 +1316,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     setSelectedError(null);
                     setGridHeight(null);
                     setTileWidth(null);
+                    try { onInlineInfoOpenChange?.(false) } catch {}
                   }, 200);
                 }
               }}
@@ -1395,11 +1494,15 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
           <IconChevronLeft size={20} />
         </button>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
-        {finalDisplay.map((movie: any, index: number) => (
+      <div className={"grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"}>
+        {virtualizationEnabled && rowHeight ? (
+          <div style={{ height: adjTopPad, gridColumn: "1 / -1" }} />
+        ) : null}
+        {(virtualizationEnabled && rowHeight ? finalDisplay.slice(vVirtStart, vVirtEnd) : finalDisplay).map((movie: any, index: number) => (
           <div
             key={movie.id || index}
             className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            data-card-item="true"
             onMouseMove={(e) => {
               const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
               if (!posterEl) return;
@@ -1420,7 +1523,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
               posterEl.style.setProperty('--my', '0');
             }}
             onClick={(e) => {
-              if (navigateOnClick || !isDesktop) {
+              if (navigateOnClick || !isDesktop || isLoadMoreMode) {
                 try { NProgress.set(0.2); NProgress.start(); } catch {}
                 if (resetOverridesOnNavigate) {
                   try { onBackdropOverrideChange?.(null, null); } catch {}
@@ -1444,6 +1547,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   setSelectedError(null);
                   setGridHeight(null);
                   setTileWidth(null);
+                  try { onInlineInfoOpenChange?.(false) } catch {}
                 }, 200);
                 return;
               }
@@ -1459,6 +1563,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 }
               } catch {}
               setSelectedMovie(movie);
+              try { onInlineInfoOpenChange?.(true) } catch {}
               setInfoVisible(false);
               if (typeof window !== "undefined") {
                 requestAnimationFrame(() => setInfoVisible(true));
@@ -1473,8 +1578,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.title || "Постер"}
                   decoding="async"
-                  loading={index < effectiveCols ? "eager" : "lazy"}
-                  fetchPriority={index < effectiveCols ? "high" : "low"}
+                  loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
+                  fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
                   className={`w-full h-full object-cover transition-all ease-out poster-media ${
                     loadedImages.has(String(movie.id))
                       ? "opacity-100 blur-0 scale-100"
@@ -1549,6 +1654,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             </div>
           </div>
         ))}
+        {virtualizationEnabled && rowHeight ? (
+          <div style={{ height: adjBottomPad, gridColumn: "1 / -1" }} />
+        ) : null}
       </div>
       {isArrowDesktopMode && (
         <button

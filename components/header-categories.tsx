@@ -79,7 +79,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   const isSearchActive = pathname.startsWith("/search")
   const isMoviesTabActive = pathname.startsWith("/movies")
   const isSerialsTabActive = pathname.startsWith("/serials")
-  const isUhdTabActive = pathname.startsWith("/uhd")
+  const isUhdTabActive = pathname.startsWith("/uhd") || pathname.startsWith("/4k")
 
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false })

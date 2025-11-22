@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IconLayoutGrid, IconList } from "@tabler/icons-react";
 import Link from "next/link";
 import { HeaderCategories } from "@/components/header-categories";
 import { MovieGrid } from "@/components/movie-grid";
@@ -31,6 +32,10 @@ export default function Top250Page() {
   const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(null);
   const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(null);
   const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"pagination" | "loadmore">("pagination");
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [inlineInfoOpen, setInlineInfoOpen] = useState(false);
+  const [watchOpen, setWatchOpen] = useState(false);
   useEffect(() => {
     try {
       const ss = typeof window !== "undefined" ? window.sessionStorage : null;
@@ -44,6 +49,16 @@ export default function Top250Page() {
         const data = JSON.parse(raw);
         if (data && data.meta) setMeta(data.meta);
       }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const mq = window.matchMedia("(min-width: 768px)");
+      const update = () => setIsDesktop(!!mq.matches);
+      update();
+      mq.addEventListener("change", update);
+      return () => mq.removeEventListener("change", update);
     } catch {}
   }, []);
   const hasOverrideBg = overrideBg != null;
@@ -78,10 +93,38 @@ export default function Top250Page() {
               <div className="-mx-5 px-5 pt-0 md:pt-5 pb-3">
                 <div className="flex items-center justify-between">
                   <h1 className="text-lg md:text-xl font-semibold text-zinc-200">Топ 250 фильмов</h1>
+                  {isDesktop && (
+                    <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+                      <button
+                        onClick={() => setViewMode("pagination")}
+                        className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                          viewMode === "pagination"
+                            ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        }`}
+                        style={viewMode === "pagination" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                        title="Режим пагинации"
+                      >
+                        <IconLayoutGrid size={14} />
+                      </button>
+                      <button
+                        onClick={() => setViewMode("loadmore")}
+                        className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                          viewMode === "loadmore"
+                            ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        }`}
+                        style={viewMode === "loadmore" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
+                        title="Режим загрузки"
+                      >
+                        <IconList size={14} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-4 overflow-anchor-none">
-                <MovieGrid url={apiUrl} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+                <MovieGrid url={apiUrl} viewMode={viewMode} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} onInlineInfoOpenChange={setInlineInfoOpen} onWatchOpenChange={setWatchOpen} />
               </div>
             </div>
           </div>
