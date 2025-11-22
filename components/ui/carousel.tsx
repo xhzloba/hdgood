@@ -4,10 +4,8 @@ import * as React from 'react'
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -173,21 +171,17 @@ function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
 
 function CarouselPrevious({
   className,
-  variant = 'ghost',
-  size = 'icon',
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<'button'>) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
-    <Button
+    <button
       data-slot="carousel-previous"
-      variant={variant}
-      size={size}
       className={cn(
-        'absolute size-8 rounded-full z-10 bg-gradient-to-b from-white via-zinc-100 to-zinc-300 text-black ring-1 ring-white/30 shadow-md transition-colors hover:to-zinc-400 hover:ring-white/40',
+        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-1/2 left-2 -translate-y-1/2'
+          ? 'top-1/2 left-[-72px] -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -195,29 +189,27 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="text-black" />
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ color: 'currentColor' }}>
+        <path d="M15 6l-6 6l6 6"></path>
+      </svg>
       <span className="sr-only">Previous slide</span>
-    </Button>
+    </button>
   )
 }
 
 function CarouselNext({
   className,
-  variant = 'ghost',
-  size = 'icon',
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<'button'>) {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (
-    <Button
+    <button
       data-slot="carousel-next"
-      variant={variant}
-      size={size}
       className={cn(
-        'absolute size-8 rounded-full z-10 bg-gradient-to-b from-white via-zinc-100 to-zinc-300 text-black ring-1 ring-white/30 shadow-md transition-colors hover:to-zinc-400 hover:ring-white/40',
+        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-1/2 right-2 -translate-y-1/2'
+          ? 'top-1/2 right-[-72px] -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -225,9 +217,11 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="text-black" />
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ color: 'currentColor' }}>
+        <path d="M9 6l6 6l-6 6"></path>
+      </svg>
       <span className="sr-only">Next slide</span>
-    </Button>
+    </button>
   )
 }
 

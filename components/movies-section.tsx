@@ -92,6 +92,10 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
     setPaging({ page: 1, scrolledCount: 5 })
   }, [active])
 
+  useEffect(() => {
+    setViewMode("pagination")
+  }, [active])
+
   return (
     <section>
       <div className="p-5 rounded-sm">
@@ -162,6 +166,7 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
         </div>
         <div className="mt-4 overflow-anchor-none">
           <MovieGrid
+            key={`${MOVIE_CHANNELS[active].playlist_url}:${viewMode}`}
             url={MOVIE_CHANNELS[active].playlist_url}
             onPagingInfo={handlePagingInfo}
             onWatchOpenChange={setWatchOpen}

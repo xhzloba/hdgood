@@ -155,6 +155,7 @@ const overridesCacheRef =
 
 export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onInlineInfoOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange, resetOverridesOnNavigate, viewMode }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [errorImages, setErrorImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
     Array<{ page: number; data: any }>
@@ -1027,6 +1028,15 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     });
   };
 
+  const handleImageError = (id: string | number) => {
+    const key = String(id);
+    setErrorImages((prev) => {
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
+  };
+
   const handleLoadMore = () => {
     if (isLoading) return;
     if (lastPageEmpty) return;
@@ -1167,26 +1177,26 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   <div className="space-y-4">
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
-                {selectedMovie.poster ? (
+                {selectedMovie.poster && !errorImages.has(String(selectedMovie.id)) ? (
                   <div ref={overlayPosterRef} className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
                     <img
                       src={selectedMovie.poster}
                       alt="Постер"
                       decoding="async"
                       loading="eager"
-                      className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                      className={`block w-full h-full object-cover transition-all ease-out poster-media ${
                         loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                       }`}
                       style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                       onLoad={() => handleImageLoad(selectedMovie.id)}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                        const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                        if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>';
-                      }}
+                      onError={() => handleImageError(selectedMovie.id)}
                     />
                   </div>
-                ) : null}
+                ) : (
+                  selectedMovie.poster ? (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
+                  ) : null
+                )}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -1340,9 +1350,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlinePrev}
                       disabled={disablePrev}
                       aria-label="Предыдущий фильм"
-                      className="absolute left-[-56px] top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronLeft size={40} />
+                      <IconChevronLeft size={72} />
                     </button>
                   );
                 })()}
@@ -1357,9 +1367,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlineNext}
                       disabled={disableNext}
                       aria-label="Следующий фильм"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronRight size={40} />
+                      <IconChevronRight size={72} />
                     </button>
                   );
                 })()}
@@ -1368,22 +1378,18 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
                 <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
-                  {selectedMovie!.poster ? (
+                  {selectedMovie!.poster && !errorImages.has(String(selectedMovie!.id)) ? (
                     <img
                       src={selectedMovie!.poster}
                       alt="Постер"
                       decoding="async"
                       loading="eager"
-                      className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                      className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
                         loadedImages.has(String(selectedMovie!.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                       }`}
                       style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                       onLoad={() => handleImageLoad(selectedMovie!.id)}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                        const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                        if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>';
-                      }}
+                      onError={() => handleImageError(selectedMovie!.id)}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
@@ -1575,11 +1581,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             }}
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-              {movie.poster ? (
+              {movie.poster && !errorImages.has(String(movie.id)) ? (
                 isLoadMoreMode ? (
                   <a
                     href={`/movie/${movie.id}`}
-                    className="block"
+                    className="block absolute inset-0"
                     onClick={(e) => {
                       if (
                         e.button === 0 &&
@@ -1595,21 +1601,14 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       decoding="async"
                       loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
                       fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
-                      className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                      className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
                         loadedImages.has(String(movie.id))
                           ? "opacity-100 blur-0 scale-100"
                           : "opacity-0 blur-md scale-[1.02]"
                       }`}
                       style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                       onLoad={() => handleImageLoad(movie.id)}
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        const parent = e.currentTarget.parentElement;
-                        if (parent) {
-                          parent.innerHTML =
-                            '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
-                        }
-                      }}
+                      onError={() => handleImageError(movie.id)}
                     />
                   </a>
                 ) : (
@@ -1619,27 +1618,24 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     decoding="async"
                     loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
                     fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
-                    className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                    className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
                       loadedImages.has(String(movie.id))
                         ? "opacity-100 blur-0 scale-100"
                         : "opacity-0 blur-md scale-[1.02]"
                     }`}
                     style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
                     onLoad={() => handleImageLoad(movie.id)}
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML =
-                          '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
-                      }
-                    }}
+                    onError={() => handleImageError(movie.id)}
                   />
                 )
               ) : (
-                <div className="text-zinc-600 text-[10px] text-center p-1">
-                  Нет постера
-                </div>
+                isLoadMoreMode ? (
+                  <a href={`/movie/${movie.id}`} className="block">
+                    <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                  </a>
+                ) : (
+                  <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                )
               )}
               {movie.poster && loadedImages.has(String(movie.id)) && (
                 <div
@@ -1728,9 +1724,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlinePrev}
                       disabled={disablePrev}
                       aria-label="Предыдущий фильм"
-                      className="absolute left-[-56px] top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronLeft size={40} />
+                      <IconChevronLeft size={72} />
                     </button>
                   );
                 })()}
@@ -1745,9 +1741,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       onClick={handleInlineNext}
                       disabled={disableNext}
                       aria-label="Следующий фильм"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-16 h-16 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      <IconChevronRight size={40} />
+                      <IconChevronRight size={72} />
                     </button>
                   );
                 })()}
@@ -1757,22 +1753,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
               <div className="hidden md:block">
                 {selectedMovie.poster ? (
                   <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
-                    <img
-                      src={selectedMovie.poster}
-                      alt="Постер"
-                      decoding="async"
-                      loading="eager"
-                      className={`w-full h-full object-cover transition-all ease-out poster-media ${
-                        loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
-                      }`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                      onLoad={() => handleImageLoad(selectedMovie.id)}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = "none";
-                        const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                        if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-зinc-600 text-[10px]">Нет постера</div>';
-                      }}
-                    />
+                  {selectedMovie.poster && !errorImages.has(String(selectedMovie.id)) ? (
+                  <img
+                    src={selectedMovie.poster}
+                    alt="Постер"
+                    decoding="async"
+                    loading="eager"
+                    className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                      loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                    }`}
+                    style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                    onLoad={() => handleImageLoad(selectedMovie.id)}
+                    onError={() => handleImageError(selectedMovie.id)}
+                  />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
+                  )}
                   </div>
                 ) : null}
               </div>
