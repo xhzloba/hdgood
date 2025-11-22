@@ -5,7 +5,8 @@ import { HeaderCategories } from "@/components/header-categories";
 import { PosterBackground } from "@/components/poster-background";
 import { MovieGrid } from "@/components/movie-grid";
 import Link from "next/link";
-import { IconLayoutGrid, IconList } from "@tabler/icons-react";
+import { IconLayoutGrid, IconList, IconFilter } from "@tabler/icons-react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 
 export default function ActorPage() {
   const params = useParams() as { id?: string };
@@ -14,6 +15,7 @@ export default function ActorPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"pagination" | "loadmore">("pagination");
+  const [sortMode, setSortMode] = useState<"default" | "rating" | "year">("default");
   const [inlineInfoOpen, setInlineInfoOpen] = useState<boolean>(false);
   const [watchOpen, setWatchOpen] = useState<boolean>(false);
   const [paging, setPaging] = useState<{ page: number; scrolledCount: number } | null>(null);
@@ -54,7 +56,12 @@ export default function ActorPage() {
     } catch {}
   }, [id]);
 
-  const apiUrl = useMemo(() => `https://api.vokino.pro/v2/list?cast=${encodeURIComponent(id)}`, [id]);
+  const apiUrl = useMemo(() => {
+    let base = `https://api.vokino.pro/v2/list?cast=${encodeURIComponent(id)}`;
+    if (sortMode === "rating") base += "&sort=rating";
+    else if (sortMode === "year") base += "&sort=new";
+    return base;
+  }, [id, sortMode]);
 
   useEffect(() => {
     const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null;
@@ -177,6 +184,27 @@ export default function ActorPage() {
                       <IconList size={14} className={viewMode === "loadmore" ? undefined : "text-zinc-400"} />
                     </button>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                            sortMode === "default" ? "text-zinc-400 hover:text-zinc-200" : "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                          }`}
+                          style={sortMode === "default" ? undefined : { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" }}
+                          title="Фильтры"
+                        >
+                          <IconFilter size={14} className={sortMode === "default" ? "text-zinc-400" : undefined} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Сортировка</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup value={sortMode} onValueChange={(v) => setSortMode(v as any)}>
+                          <DropdownMenuRadioItem value="default">По умолчанию</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="rating">По рейтингу</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="year">По году (новые)</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     {viewMode === "pagination" && (
                       <span className="hidden md:inline-flex items-center gap-2 ml-2 h-8 text-[13px] text-white font-medium">
                         {paging && (
