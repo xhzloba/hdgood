@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
-import NProgress from "nprogress";
 import { PlayerSelector } from "@/components/player-selector";
 
 interface Movie {
@@ -1528,7 +1527,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             }}
             onClick={(e) => {
               if (navigateOnClick || !isDesktop || isLoadMoreMode) {
-                try { NProgress.set(0.2); NProgress.start(); } catch {}
                 if (resetOverridesOnNavigate) {
                   try { onBackdropOverrideChange?.(null, null); } catch {}
                   try { onHeroInfoOverrideChange?.(null); } catch {}
@@ -1578,28 +1576,66 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
           >
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
               {movie.poster ? (
-                <img
-                  src={movie.poster || "/placeholder.svg"}
-                  alt={movie.title || "Постер"}
-                  decoding="async"
-                  loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
-                  fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
-                  className={`w-full h-full object-cover transition-all ease-out poster-media ${
-                    loadedImages.has(String(movie.id))
-                      ? "opacity-100 blur-0 scale-100"
-                      : "opacity-0 blur-md scale-[1.02]"
-                  }`}
-                  style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                  onLoad={() => handleImageLoad(movie.id)}
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML =
-                        '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
-                    }
-                  }}
-                />
+                isLoadMoreMode ? (
+                  <a
+                    href={`/movie/${movie.id}`}
+                    className="block"
+                    onClick={(e) => {
+                      if (
+                        e.button === 0 &&
+                        !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <img
+                      src={movie.poster || "/placeholder.svg"}
+                      alt={movie.title || "Постер"}
+                      decoding="async"
+                      loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
+                      fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
+                      className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                        loadedImages.has(String(movie.id))
+                          ? "opacity-100 blur-0 scale-100"
+                          : "opacity-0 blur-md scale-[1.02]"
+                      }`}
+                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                      onLoad={() => handleImageLoad(movie.id)}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML =
+                            '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
+                        }
+                      }}
+                    />
+                  </a>
+                ) : (
+                  <img
+                    src={movie.poster || "/placeholder.svg"}
+                    alt={movie.title || "Постер"}
+                    decoding="async"
+                    loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
+                    fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
+                    className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                      loadedImages.has(String(movie.id))
+                        ? "opacity-100 blur-0 scale-100"
+                        : "opacity-0 blur-md scale-[1.02]"
+                    }`}
+                    style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                    onLoad={() => handleImageLoad(movie.id)}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML =
+                          '<div class="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>';
+                      }
+                    }}
+                  />
+                )
               ) : (
                 <div className="text-zinc-600 text-[10px] text-center p-1">
                   Нет постера
