@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useMemo } from "react"
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 type Trailer = {
@@ -55,36 +56,51 @@ function getEmbedSrcFromTrailer(t: any): string | null {
   return url || null
 }
 
-export function TrailerPlayer({ trailers }: { trailers?: Trailer[] | Trailer }) {
+export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trailer; mode?: "stack" | "carousel" }) {
   const list: Trailer[] = useMemo(() => {
     if (Array.isArray(trailers)) return trailers
     return trailers ? [trailers] : []
   }, [trailers])
 
-  // Start with no trailer selected; show player only after click
-  const [index, setIndex] = useState<number | null>(null)
-  const [fullscreen, setFullscreen] = useState(false)
+  const sources: string[] = useMemo(() => {
+    return list
+      .map((t) => getEmbedSrcFromTrailer(t))
+      .filter((src): src is string => Boolean(src))
+      .filter((src) => src.includes("youtube.com/embed"))
+  }, [list])
 
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFullscreen(false)
-    }
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [])
+  if (!sources || sources.length === 0) return null
 
-  if (!list || list.length === 0) return null
-
-  const current = index != null ? list[Math.max(0, Math.min(index, list.length - 1))] : undefined
-  const src = current ? getEmbedSrcFromTrailer(current) : null
+  if (mode === "carousel") {
+    const desktopCarouselRatio = 16 / 9.5
+    return (
+      <div className="relative">
+        <Carousel opts={{ align: "start", loop: false }}>
+          <CarouselContent>
+            {sources.map((src, i) => (
+              <CarouselItem key={i}>
+                <AspectRatio ratio={desktopCarouselRatio}>
+                  <iframe
+                    src={src}
+                    className="w-full h-full rounded border border-zinc-800/50"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </AspectRatio>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="w-12 h-12 !left-[-32px] [&>svg]:w-8 [&>svg]:h-8" />
+          <CarouselNext className="w-12 h-12 !right-[-32px] [&>svg]:w-8 [&>svg]:h-8" />
+        </Carousel>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-zinc-200">Трейлеры</h2>
-
-      {/* Player appears only after selecting a trailer */}
-      {src ? (
-        <div className="relative">
+      {sources.map((src, i) => (
+        <div key={i} className="relative">
           <AspectRatio ratio={16 / 9}>
             <iframe
               src={src}
@@ -94,52 +110,7 @@ export function TrailerPlayer({ trailers }: { trailers?: Trailer[] | Trailer }) 
             />
           </AspectRatio>
         </div>
-      ) : (
-        <div className="text-sm text-zinc-400">Выберите трейлер ниже, чтобы воспроизвести</div>
-      )}
-
-      {fullscreen && src && (
-        <div className="fixed inset-0 z-50 bg-black/90">
-          <button
-            type="button"
-            onClick={() => setFullscreen(false)}
-            aria-label="Закрыть"
-            className="absolute right-4 top-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 px-3 py-1.5 rounded"
-          >
-            Закрыть
-          </button>
-          <div className="w-full h-full flex items-center justify-center p-4">
-            <div className="w-[90vw] max-w-[1200px]">
-              <AspectRatio ratio={16 / 9}>
-                <iframe
-                  src={src}
-                  className="w-full h-full rounded border border-zinc-700"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </AspectRatio>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Trailer list */}
-      <div className="flex flex-wrap gap-2">
-        {list.map((t, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            className={
-              "text-[12px] px-3 py-1.5 rounded border transition-colors " +
-              (index === i
-                ? "bg-zinc-800 border-zinc-700 text-zinc-200"
-                : "bg-zinc-900/60 border-zinc-800/50 text-zinc-300 hover:bg-zinc-800/60")
-            }
-          >
-            {t.name || `Трейлер ${i + 1}`}
-          </button>
-        ))}
-      </div>
+      ))}
     </div>
   )
 }

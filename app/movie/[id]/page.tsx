@@ -692,6 +692,12 @@ export default function MoviePage({
                 <Skeleton className="w-full h-full" />
               </div>
               <Skeleton className="w-full h-12 rounded" />
+              {/* Trailer skeleton under poster (desktop only), matches trailer carousel ratio */}
+              <div className="hidden md:block">
+                <AspectRatio ratio={16 / 9.5}>
+                  <Skeleton className="w-full h-full rounded border border-zinc-800/50" />
+                </AspectRatio>
+              </div>
             </div>
 
             {/* Info Skeleton */}
@@ -731,10 +737,12 @@ export default function MoviePage({
                 </div>
               </div>
 
-              {/* Trailer */}
-              <div className="space-y-2">
+              {/* Trailer (mobile only) */}
+              <div className="space-y-2 md:hidden">
                 <Skeleton className="h-6 w-32" />
-                <Skeleton className="aspect-video w-full rounded" />
+                <AspectRatio ratio={16 / 9}>
+                  <Skeleton className="w-full h-full rounded" />
+                </AspectRatio>
               </div>
 
               {/* Description */}
@@ -1071,33 +1079,37 @@ export default function MoviePage({
                 </div>
               )}
             </div>
-            <div
-              className="w-full border rounded-xl overflow-hidden"
-              style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
+          <div
+            className="w-full border rounded-xl overflow-hidden"
+            style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
+          >
+            <Button
+              id="watch-button"
+              variant="secondary"
+              size="lg"
+              onClick={() => {
+                const newShowPlayerSelector = !showPlayerSelector;
+                setShowPlayerSelector(newShowPlayerSelector);
+                if (newShowPlayerSelector) {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+              className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
+              }}
+              aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
             >
-              <Button
-                id="watch-button"
-                variant="secondary"
-                size="lg"
-                onClick={() => {
-                  const newShowPlayerSelector = !showPlayerSelector;
-                  setShowPlayerSelector(newShowPlayerSelector);
-                  if (newShowPlayerSelector) {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }
-                }}
-                className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
-                }}
-                aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
-              >
-                <Play className="size-5 opacity-90" />
-                <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
-              </Button>
-            </div>
-            
+              <Play className="size-5 opacity-90" />
+              <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
+            </Button>
+          </div>
+
+          <div id="watch" className="mt-3 hidden md:block">
+            <TrailerPlayer mode="carousel" trailers={(movie as any).trailers ?? (data as any).trailers} />
+          </div>
+
           </div>
 
           {/* Info */}
@@ -1700,11 +1712,9 @@ export default function MoviePage({
               </div>
             )}
 
-            {/* Трейлеры (moved after description) */}
-            <div id="watch">
-              <TrailerPlayer
-                trailers={(movie as any).trailers ?? (data as any).trailers}
-              />
+            {/* Трейлеры для мобильной версии — сразу после блока «Актеры» */}
+            <div className="mt-3 md:hidden">
+              <TrailerPlayer trailers={(movie as any).trailers ?? (data as any).trailers} />
             </div>
 
             {/* Сезоны и эпизоды */}

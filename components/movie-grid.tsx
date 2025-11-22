@@ -633,10 +633,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     return (display || []).map((m: any) => {
       const ov = overridesMap[String(m.id)] || null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
-      // Применяем переопределённое название, если задано (поддержка name/title)
-      const patchedTitle =
-        ov && (ov.name || ov.title) ? ov.name || ov.title : m.title;
-      return { ...m, poster: patchedPoster, title: patchedTitle };
+      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
+      const patchedYear = (
+        (ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
+          ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear) as any
+      ) ?? m.year;
+      return { ...m, poster: patchedPoster, title: patchedTitle, year: patchedYear };
     });
   }, [display, overridesMap]);
 
@@ -644,7 +646,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const ov = overridesMap[String(m?.id)] || null;
     const patchedPoster = ov && ov.poster ? ov.poster : m?.poster;
     const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m?.title;
-    return { ...(m || {}), poster: patchedPoster, title: patchedTitle };
+    const patchedYear = (
+      (ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
+        ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear) as any
+    ) ?? m?.year;
+    return { ...(m || {}), poster: patchedPoster, title: patchedTitle, year: patchedYear };
   }, [overridesMap]);
 
   useEffect(() => {
