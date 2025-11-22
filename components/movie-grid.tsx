@@ -1259,7 +1259,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     </div>
                   ) : (() => {
                     const d: any = selectedDetails || {};
-                    const aboutRaw = d.about ?? d.description;
+                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                    const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
                     const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
                     return about ? (
                       <p className="line-clamp-3 md:line-clamp-4">{about}</p>
@@ -1455,7 +1456,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                         </div>
                       ) : (() => {
                         const d: any = selectedDetails || {};
-                        const aboutRaw = d.about ?? d.description;
+                        const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                        const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
                         const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
                         return about ? (
                           <p className="line-clamp-3 md:line-clamp-4">{about}</p>
@@ -1814,7 +1816,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                     </div>
                   ) : (() => {
                     const d: any = selectedDetails || {};
-                    const aboutRaw = d.about ?? d.description;
+                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                    const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
                     const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
                     return about ? (
                       <p className="line-clamp-3 md:line-clamp-4">{about}</p>
