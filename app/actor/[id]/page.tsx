@@ -22,6 +22,23 @@ export default function ActorPage() {
   const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(null);
   const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(null);
   const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(null);
+  const [initialBackdropSet, setInitialBackdropSet] = useState<boolean>(false);
+
+  const handleBackdropOverrideChange = useCallback((bg: string | null, poster?: string | null) => {
+    if (viewMode === "loadmore") {
+      if (initialBackdropSet) return;
+      if (bg == null && (poster == null || poster === null)) return;
+    }
+    setOverrideBg(bg ?? null);
+    setOverridePoster(poster ?? null);
+  }, [viewMode, initialBackdropSet]);
+
+  const handleHeroInfoOverrideChange = useCallback((info: { title?: string | null; logo?: string | null; logoId?: string | null } | null) => {
+    if (viewMode === "loadmore" && info == null) return;
+    setOverrideHeroTitle(info?.title ?? null);
+    setOverrideHeroLogoSrc(info?.logo ?? null);
+    setOverrideHeroLogoId(info?.logoId ?? null);
+  }, [viewMode]);
 
   useEffect(() => {
     try {
@@ -74,6 +91,7 @@ export default function ActorPage() {
         if (!cancelled) {
           setOverrideBg(bg ?? null);
           setOverridePoster(poster ?? null);
+          setInitialBackdropSet(true);
         }
       } catch {}
     })();
@@ -86,7 +104,8 @@ export default function ActorPage() {
       bgPosterUrl={overrideBg ?? undefined}
       disableMobileBackdrop
       simpleDarkCorners
-      softBottomFade
+      softBottomFade={!overrideBg}
+      strongUpperCorners={!!overrideBg}
       className="min-h-[100dvh] min-h-screen"
     >
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-6 pb-6">
@@ -131,8 +150,9 @@ export default function ActorPage() {
                   </div>
                 </div>
                 {isDesktop && !watchOpen && (
-                  <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-                    <button
+                  <div className="hidden md:flex items-center gap-2 ml-auto">
+                    <div className={`${viewMode === "pagination" && inlineInfoOpen ? "opacity-0 pointer-events-none" : "opacity-100"} flex items-center gap-2`}>
+                      <button
                       onClick={() => setViewMode("pagination")}
                       className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
                         viewMode === "pagination"
@@ -144,7 +164,7 @@ export default function ActorPage() {
                     >
                       <IconLayoutGrid size={14} className={viewMode === "pagination" ? undefined : "text-zinc-400"} />
                     </button>
-                    <button
+                      <button
                       onClick={() => setViewMode("loadmore")}
                       className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
                         viewMode === "loadmore"
@@ -156,6 +176,7 @@ export default function ActorPage() {
                     >
                       <IconList size={14} className={viewMode === "loadmore" ? undefined : "text-zinc-400"} />
                     </button>
+                    </div>
                     {viewMode === "pagination" && (
                       <span className="hidden md:inline-flex items-center gap-2 ml-2 h-8 text-[13px] text-white font-medium">
                         {paging && (
@@ -185,8 +206,8 @@ export default function ActorPage() {
                 onPagingInfo={handlePagingInfo}
                 onWatchOpenChange={setWatchOpen}
                 onInlineInfoOpenChange={setInlineInfoOpen}
-                onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }}
-                onHeroInfoOverrideChange={(info) => { setOverrideHeroTitle(info?.title ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); }}
+                onBackdropOverrideChange={handleBackdropOverrideChange}
+                onHeroInfoOverrideChange={handleHeroInfoOverrideChange}
                 viewMode={isDesktop ? viewMode : undefined}
                 resetOverridesOnNavigate
               />
