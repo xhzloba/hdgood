@@ -798,5 +798,15 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "691f8f60f807186f7705ce53",
+    "timestamp": "2025-11-23T21:18:38.171Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "intro_video"
+    ]
   }
 ]

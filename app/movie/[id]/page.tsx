@@ -9,7 +9,9 @@ import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 
 // Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
-const movieOverrideCache: Record<string, any> = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+const movieOverrideCache: Record<string, any> =
+  (globalThis as any).__movieOverridesCache ||
+  ((globalThis as any).__movieOverridesCache = {});
 
 const fetcher = async (
   url: string,
@@ -80,10 +82,10 @@ const fetchFranchise = async (
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const response = await fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 
@@ -153,11 +155,15 @@ const formatDate = (dateString: string | null | undefined): string => {
 import { ActorCard } from "@/components/actor-card";
 import { CastList } from "@/components/cast-list";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { TrailerPlayer, getEmbedSrcFromTrailer } from "@/components/trailer-player";
+import {
+  TrailerPlayer,
+  getEmbedSrcFromTrailer,
+} from "@/components/trailer-player";
 import { ratingColor, ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import { PosterBackground } from "@/components/poster-background";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
+import { VideoPoster, VideoPosterRef } from "@/components/video-poster";
 function getPrimaryGenreFromItem(item: any): string | null {
   const raw = item?.genre ?? item?.tags;
   if (!raw) return null;
@@ -241,7 +247,9 @@ export default function MoviePage({
   const [isDesktop, setIsDesktop] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
-  
+  const videoPosterRef = useRef<VideoPosterRef>(null);
+  const [isVideoLooping, setIsVideoLooping] = useState(false);
+
   const normalizeTrailers = (val: any): any[] => {
     try {
       if (Array.isArray(val)) return val.filter(Boolean);
@@ -256,7 +264,7 @@ export default function MoviePage({
   const rawTrailers = useMemo(() => {
     try {
       const ov = (overrideData as any)?.trailers;
-      const dt = ((data as any)?.details?.trailers ?? (data as any)?.trailers);
+      const dt = (data as any)?.details?.trailers ?? (data as any)?.trailers;
       const ovN = normalizeTrailers(ov);
       const dtN = normalizeTrailers(dt);
       return ovN.length > 0 ? ovN : dtN;
@@ -278,15 +286,22 @@ export default function MoviePage({
 
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-    const name = (data?.name ?? overrideData?.name ?? "") || (typeof (data as any)?.movie === "object" ? (data as any).movie?.name ?? "" : "");
-    const descRaw = (data?.about ?? (data as any)?.description ?? overrideData?.about ?? "") as any;
+    const name =
+      (data?.name ?? overrideData?.name ?? "") ||
+      (typeof (data as any)?.movie === "object"
+        ? (data as any).movie?.name ?? ""
+        : "");
+    const descRaw = (data?.about ??
+      (data as any)?.description ??
+      overrideData?.about ??
+      "") as any;
     const desc = Array.isArray(descRaw)
       ? descRaw.filter(Boolean).join(" ")
       : String(descRaw || "").trim();
-    
+
     // Получаем год из данных фильма
     const movie = data || overrideData;
-    const yearRaw = 
+    const yearRaw =
       (movie as any)?.year ??
       (movie as any)?.released ??
       (movie as any)?.release_year ??
@@ -299,18 +314,27 @@ export default function MoviePage({
         if (match) yearPart = ` (${match[0]})`;
       }
     }
-    
+
     // Формируем заголовок с названием и годом
-    const title = name ? `Смотреть онлайн: ${name}${yearPart}` : "Смотреть онлайн в 4K качестве";
+    const title = name
+      ? `Смотреть онлайн: ${name}${yearPart}`
+      : "Смотреть онлайн в 4K качестве";
     const text = [desc || null, shareUrl].filter(Boolean).join("\n\n");
     const files: File[] | undefined = shareFiles;
 
-    const hasWebShare = typeof navigator !== "undefined" && typeof (navigator as any).share === "function";
-    const isSecure = typeof window !== "undefined" && (window as any).isSecureContext === true;
-    const isTopLevel = typeof window !== "undefined" && window.top === window.self;
+    const hasWebShare =
+      typeof navigator !== "undefined" &&
+      typeof (navigator as any).share === "function";
+    const isSecure =
+      typeof window !== "undefined" && (window as any).isSecureContext === true;
+    const isTopLevel =
+      typeof window !== "undefined" && window.top === window.self;
     if (hasWebShare && isSecure && isTopLevel) {
       try {
-        const canShareFiles = files && (navigator as any).canShare && (navigator as any).canShare({ files });
+        const canShareFiles =
+          files &&
+          (navigator as any).canShare &&
+          (navigator as any).canShare({ files });
         if (canShareFiles) {
           await (navigator as any).share({ title, text, files });
         } else {
@@ -318,8 +342,7 @@ export default function MoviePage({
         }
         toast({ title: "Ссылка отправлена" });
       } catch (e: any) {
-        const msg = String(e?.name || e || "")
-          .toLowerCase();
+        const msg = String(e?.name || e || "").toLowerCase();
         if (msg.includes("aborterror")) {
           return; // пользователь отменил — ничего не делаем
         }
@@ -331,7 +354,9 @@ export default function MoviePage({
     }
 
     try {
-      await navigator.clipboard.writeText(`${title ? title + "\n\n" : ""}${text}`);
+      await navigator.clipboard.writeText(
+        `${title ? title + "\n\n" : ""}${text}`
+      );
     } catch {
       try {
         const textarea = document.createElement("textarea");
@@ -371,7 +396,11 @@ export default function MoviePage({
   };
 
   useEffect(() => {
-    const posterUrl = (overrideData as any)?.poster ?? (data as any)?.poster ?? (data as any)?.details?.poster ?? (data as any)?.movie?.poster;
+    const posterUrl =
+      (overrideData as any)?.poster ??
+      (data as any)?.poster ??
+      (data as any)?.details?.poster ??
+      (data as any)?.movie?.poster;
     if (!posterUrl || typeof posterUrl !== "string" || !posterUrl.trim()) {
       setShareFiles(undefined);
       return;
@@ -379,7 +408,9 @@ export default function MoviePage({
     let cancelled = false;
     (async () => {
       try {
-        const proxyUrl = `/api/share-poster?url=${encodeURIComponent(posterUrl)}`;
+        const proxyUrl = `/api/share-poster?url=${encodeURIComponent(
+          posterUrl
+        )}`;
         const res = await fetch(proxyUrl, { cache: "force-cache" });
         if (!res.ok) {
           if (!cancelled) setShareFiles(undefined);
@@ -388,9 +419,12 @@ export default function MoviePage({
         const blob = await res.blob();
         let outBlob: Blob = blob;
         let outExt = (blob.type.split("/")[1] || "jpg").toLowerCase();
-        const canShare = typeof navigator !== "undefined" && (navigator as any).canShare;
+        const canShare =
+          typeof navigator !== "undefined" && (navigator as any).canShare;
         if (canShare) {
-          const testFile = new File([blob], `poster.${outExt}` , { type: blob.type });
+          const testFile = new File([blob], `poster.${outExt}`, {
+            type: blob.type,
+          });
           const ok = (navigator as any).canShare({ files: [testFile] });
           const preferredType = "image/jpeg";
           if (!ok && blob.type !== preferredType) {
@@ -409,7 +443,11 @@ export default function MoviePage({
                 }
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 if (typeof (canvas as any).toBlob === "function") {
-                  (canvas as any).toBlob((b: Blob | null) => resolve(b || null), preferredType, 0.92);
+                  (canvas as any).toBlob(
+                    (b: Blob | null) => resolve(b || null),
+                    preferredType,
+                    0.92
+                  );
                 } else {
                   try {
                     const dataUrl = canvas.toDataURL(preferredType, 0.92);
@@ -434,13 +472,17 @@ export default function MoviePage({
             }
           }
         }
-        const file = new File([outBlob], `poster-${id || "movie"}.${outExt}`, { type: outBlob.type || "image/jpeg" });
+        const file = new File([outBlob], `poster-${id || "movie"}.${outExt}`, {
+          type: outBlob.type || "image/jpeg",
+        });
         if (!cancelled) setShareFiles([file]);
       } catch {
         if (!cancelled) setShareFiles(undefined);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id, overrideData, data]);
 
   // Функция переключения открытия/закрытия сезона
@@ -475,15 +517,16 @@ export default function MoviePage({
 
   useEffect(() => {
     try {
-      const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null;
+      const mq =
+        typeof window !== "undefined"
+          ? window.matchMedia("(min-width: 768px)")
+          : null;
       const update = () => setIsDesktop(!!mq?.matches);
       update();
       mq?.addEventListener("change", update);
       return () => mq?.removeEventListener("change", update);
     } catch {}
   }, []);
-
-  
 
   // Загружаем динамический override из JSON API
   useEffect(() => {
@@ -497,16 +540,18 @@ export default function MoviePage({
 
     (async () => {
       try {
-        const res = await fetch(`/api/overrides/movies/${id}`, { cache: "no-store" });
+        const res = await fetch(`/api/overrides/movies/${id}`, {
+          cache: "no-store",
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) || null;
         if (!cancelled) {
           setOverrideData(data);
           movieOverrideCache[id] = data;
           try {
-            const ref: any = (globalThis as any)
-            const cache = (ref.__movieOverridesCache ||= {})
-            cache[id] = data
+            const ref: any = globalThis as any;
+            const cache = (ref.__movieOverridesCache ||= {});
+            cache[id] = data;
           } catch {}
         }
       } catch {
@@ -872,7 +917,9 @@ export default function MoviePage({
     tForOverride.includes("tv") ||
     tForOverride.includes("сериал");
   // Применяем override приоритетно ко всем полям
-  const override = overrideData ?? (isSerialForOverride ? getSeriesOverride(id) : getMovieOverride(id));
+  const override =
+    overrideData ??
+    (isSerialForOverride ? getSeriesOverride(id) : getMovieOverride(id));
   if (override) {
     const deepMergePreferOverride = (base: any, ov: any) => {
       if (!ov || typeof ov !== "object") return base;
@@ -907,7 +954,10 @@ export default function MoviePage({
         }
         return result;
       };
-      franchise = deepMergePreferOverrideFr(franchise || {}, override.franchise);
+      franchise = deepMergePreferOverrideFr(
+        franchise || {},
+        override.franchise
+      );
     }
   }
 
@@ -916,8 +966,6 @@ export default function MoviePage({
     : Array.isArray((data as any).sequelsAndPrequels)
     ? (data as any).sequelsAndPrequels
     : [];
-
-  
 
   const detailsTitle = (() => {
     const typeRaw = (movie as any).type ?? (data as any).type ?? "";
@@ -1105,7 +1153,9 @@ export default function MoviePage({
     <PosterBackground
       posterUrl={movie.poster}
       // Сначала используем API backdrop, если есть; иначе — локальный из overrides
-      bgPosterUrl={(movie as any).backdrop || (movie as any).bg_poster?.backdrop}
+      bgPosterUrl={
+        (movie as any).backdrop || (movie as any).bg_poster?.backdrop
+      }
       colorOverrides={(movie as any).poster_colors || null}
       className="min-h-[100dvh] min-h-screen"
     >
@@ -1127,10 +1177,55 @@ export default function MoviePage({
           {/* Poster */}
           <div className="space-y-4 md:sticky md:top-20 md:self-start">
             <div
-              className="aspect-[2/3] bg-zinc-950 rounded overflow-hidden w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none"
+              className="aspect-[2/3] bg-zinc-950 rounded overflow-hidden w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none relative"
               style={{ boxShadow: "0 6px 18px rgba(0,0,0,0.28)" }}
             >
-              {movie.poster && !posterError ? (
+              {movie.intro_video ? (
+                <>
+                  <VideoPoster
+                    ref={videoPosterRef}
+                    src={movie.intro_video}
+                    poster={movie.poster}
+                    className="w-full h-full"
+                    alt={movie.name}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (videoPosterRef.current) {
+                        videoPosterRef.current.replay();
+                        videoPosterRef.current.toggleLoop();
+                        setIsVideoLooping((prev) => !prev);
+                      }
+                    }}
+                    className="absolute bottom-2 right-2 z-10 inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-black shadow-lg transition-all duration-200"
+                    aria-label={
+                      isVideoLooping ? "Отключить повтор" : "Включить повтор"
+                    }
+                  >
+                    {isVideoLooping ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="w-5 h-5 ml-0.5"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    )}
+                  </button>
+                </>
+              ) : movie.poster && !posterError ? (
                 <img
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.name}
@@ -1138,9 +1233,15 @@ export default function MoviePage({
                   loading="eager"
                   fetchPriority="high"
                   className={`w-full h-full object-cover transition-all ease-out poster-media ${
-                    posterLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                    posterLoaded
+                      ? "opacity-100 blur-0 scale-100"
+                      : "opacity-0 blur-md scale-[1.02]"
                   }`}
-                  style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                  style={{
+                    transition:
+                      "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                    willChange: "opacity, filter, transform",
+                  }}
                   onLoad={() => setPosterLoaded(true)}
                   onError={() => setPosterError(true)}
                   onClick={copyIdentToClipboard}
@@ -1150,43 +1251,45 @@ export default function MoviePage({
                   Нет постера
                 </div>
               )}
-              
             </div>
-          <div
-            className="w-full border rounded-xl overflow-hidden"
-            style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
-          >
-            <Button
-              id="watch-button"
-              variant="secondary"
-              size="lg"
-              onClick={() => {
-                const newShowPlayerSelector = !showPlayerSelector;
-                setShowPlayerSelector(newShowPlayerSelector);
-                if (newShowPlayerSelector) {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-              }}
-              className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
-              style={{
-                backgroundImage:
-                  "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
-              }}
-              aria-label={showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
+            <div
+              className="w-full border rounded-xl overflow-hidden"
+              style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
             >
-              <Play className="size-5 opacity-90" />
-              <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
-            </Button>
-          </div>
-
-          {isDesktop ? (
-            <div id="watch" className="mt-3 relative">
-              {hasTrailers ? (
-                <TrailerPlayer mode="carousel" trailers={rawTrailers} />
-              ) : null}
+              <Button
+                id="watch-button"
+                variant="secondary"
+                size="lg"
+                onClick={() => {
+                  const newShowPlayerSelector = !showPlayerSelector;
+                  setShowPlayerSelector(newShowPlayerSelector);
+                  if (newShowPlayerSelector) {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
+                }}
+                aria-label={
+                  showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"
+                }
+              >
+                <Play className="size-5 opacity-90" />
+                <span>
+                  {showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
+                </span>
+              </Button>
             </div>
-          ) : null}
 
+            {isDesktop ? (
+              <div id="watch" className="mt-3 relative">
+                {hasTrailers ? (
+                  <TrailerPlayer mode="carousel" trailers={rawTrailers} />
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           {/* Info */}
@@ -1194,16 +1297,21 @@ export default function MoviePage({
             {/* Player Selector - показывается только после клика на "Смотреть" */}
             {showPlayerSelector && (
               <PlayerSelector
-                onPlayerSelect={(playerId: number) => setSelectedPlayer(playerId)}
+                onPlayerSelect={(playerId: number) =>
+                  setSelectedPlayer(playerId)
+                }
                 iframeUrl={franchise?.iframe_url}
                 kpId={kpId}
                 className="mb-4"
               />
             )}
-            
+
             <div className="space-y-1">
               <h1 className="text-3xl font-bold text-zinc-100">
-                <span>{movie.name}{titleYear ? ` (${titleYear})` : ""}</span>
+                <span>
+                  {movie.name}
+                  {titleYear ? ` (${titleYear})` : ""}
+                </span>
                 <Button
                   onClick={handleShare}
                   variant="ghost"
@@ -1253,7 +1361,11 @@ export default function MoviePage({
                         {formatRatingLabel(movie.rating_kp)}
                       </span>
                     ) : (
-                      <span className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(movie.rating_kp)}`}>
+                      <span
+                        className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(
+                          movie.rating_kp
+                        )}`}
+                      >
                         {formatRatingLabel(movie.rating_kp)}
                       </span>
                     )
@@ -1300,7 +1412,11 @@ export default function MoviePage({
                         {formatRatingLabel(movie.rating_imdb)}
                       </span>
                     ) : (
-                      <span className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(movie.rating_imdb)}`}>
+                      <span
+                        className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(
+                          movie.rating_imdb
+                        )}`}
+                      >
                         {formatRatingLabel(movie.rating_imdb)}
                       </span>
                     )
@@ -1386,7 +1502,9 @@ export default function MoviePage({
 
             {/* Desktop header with toggle placed right next to title */}
             <div className="hidden md:flex items-center gap-3 mb-4">
-              <h2 className="text-lg font-semibold text-zinc-200">{detailsTitle}</h2>
+              <h2 className="text-lg font-semibold text-zinc-200">
+                {detailsTitle}
+              </h2>
               <button
                 type="button"
                 onClick={() => setDetailsOpen((prev) => !prev)}
@@ -1397,12 +1515,18 @@ export default function MoviePage({
                     "linear-gradient(165deg, rgba(255,255,255,0.98) 18%, rgba(245,245,245,0.90) 60%, rgba(255,255,255,0.98) 100%)",
                 }}
               >
-                <span className="text-[12px] leading-none">{detailsOpen ? "−" : "+"}</span>
+                <span className="text-[12px] leading-none">
+                  {detailsOpen ? "−" : "+"}
+                </span>
               </button>
             </div>
 
             {/* Meta + Cast side-by-side */}
-              <div className={`grid md:grid-cols-2 gap-16 ${detailsOpen ? "" : "md:hidden"}`}>
+            <div
+              className={`grid md:grid-cols-2 gap-16 ${
+                detailsOpen ? "" : "md:hidden"
+              }`}
+            >
               {/* Meta Info */}
               <div className="space-y-2 text-sm">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3 md:hidden">
@@ -1481,14 +1605,23 @@ export default function MoviePage({
                   <span className="text-zinc-200">
                     {(() => {
                       const val = franchise?.design || movie.design;
-                      if (!val || String(val).trim() === "" || val === "null" || val === "undefined") return "—";
+                      if (
+                        !val ||
+                        String(val).trim() === "" ||
+                        val === "null" ||
+                        val === "undefined"
+                      )
+                        return "—";
                       if (Array.isArray(val)) {
-                        const filtered = val.filter(v => v && String(v).trim() !== "");
+                        const filtered = val.filter(
+                          (v) => v && String(v).trim() !== ""
+                        );
                         if (filtered.length === 0) return "—";
                         return filtered.join(", ");
                       }
                       const str = String(val).trim();
-                      if (str === "" || str === "null" || str === "undefined") return "—";
+                      if (str === "" || str === "null" || str === "undefined")
+                        return "—";
                       // Разделяем имена: вставляем запятую между строчной и заглавной буквой
                       const formatted = str.replace(
                         /([a-zа-яё])([A-ZА-ЯЁ])/g,
@@ -1503,14 +1636,23 @@ export default function MoviePage({
                   <span className="text-zinc-200">
                     {(() => {
                       const val = franchise?.operator || movie.operator;
-                      if (!val || String(val).trim() === "" || val === "null" || val === "undefined") return "—";
+                      if (
+                        !val ||
+                        String(val).trim() === "" ||
+                        val === "null" ||
+                        val === "undefined"
+                      )
+                        return "—";
                       if (Array.isArray(val)) {
-                        const filtered = val.filter(v => v && String(v).trim() !== "");
+                        const filtered = val.filter(
+                          (v) => v && String(v).trim() !== ""
+                        );
                         if (filtered.length === 0) return "—";
                         return filtered.join(", ");
                       }
                       const str = String(val).trim();
-                      if (str === "" || str === "null" || str === "undefined") return "—";
+                      if (str === "" || str === "null" || str === "undefined")
+                        return "—";
                       // Разделяем имена: вставляем запятую между строчной и заглавной буквой
                       const formatted = str.replace(
                         /([a-zа-яё])([A-ZА-ЯЁ])/g,
@@ -1525,7 +1667,9 @@ export default function MoviePage({
                   <span className="text-zinc-200">{movie.age || "—"}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Рейтинг MPAA:</span>
+                  <span className="text-zinc-400 min-w-[120px]">
+                    Рейтинг MPAA:
+                  </span>
                   <span className="text-zinc-200">
                     {(() => {
                       const v = franchise?.rate_mpaa;
@@ -1540,7 +1684,9 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Сборы США:</span>
+                  <span className="text-zinc-400 min-w-[120px]">
+                    Сборы США:
+                  </span>
                   <span className="text-zinc-200">
                     {(() => {
                       const v = franchise?.fees_use;
@@ -1549,7 +1695,9 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Сборы мир:</span>
+                  <span className="text-zinc-400 min-w-[120px]">
+                    Сборы мир:
+                  </span>
                   <span className="text-zinc-200">
                     {(() => {
                       const v = franchise?.fees_world;
@@ -1626,17 +1774,16 @@ export default function MoviePage({
                 </div>
 
                 {/* Количество сезонов для сериалов */}
-                {franchise?.seasons &&
-                  Array.isArray(franchise?.seasons) && (
-                    <div className="flex gap-2">
-                      <span className="text-zinc-400 min-w-[120px]">
-                        Сезонов:
-                      </span>
-                      <span className="text-zinc-200">
-                        {franchise?.seasons.length}
-                      </span>
-                    </div>
-                  )}
+                {franchise?.seasons && Array.isArray(franchise?.seasons) && (
+                  <div className="flex gap-2">
+                    <span className="text-zinc-400 min-w-[120px]">
+                      Сезонов:
+                    </span>
+                    <span className="text-zinc-200">
+                      {franchise?.seasons.length}
+                    </span>
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <span className="text-zinc-400 min-w-[120px]">Время:</span>
                   <span className="text-zinc-200">{formatDuration()}</span>
@@ -1649,56 +1796,72 @@ export default function MoviePage({
                 </div>
                 {movie.about && (
                   <div className="mt-6 space-y-2 md:hidden">
-                    <h2 className="text-lg font-semibold text-zinc-200">Описание</h2>
-                    <p className="text-sm text-zinc-400 leading-relaxed">{movie.about}</p>
+                    <h2 className="text-lg font-semibold text-zinc-200">
+                      Описание
+                    </h2>
+                    <p className="text-sm text-zinc-400 leading-relaxed">
+                      {movie.about}
+                    </p>
                   </div>
                 )}
               </div>
 
               {/* Cast column list with "Показать ещё" */}
-              {Array.isArray(data.casts) && data.casts.some((actor: any) => {
-                const title = String(actor?.title ?? '').trim()
-                const name = String(actor?.name ?? '').trim()
-                return !!(title || name)
-              }) && (
-                <div className="space-y-2 md:pl-8 hidden md:block">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-zinc-200 mb-3">
-                      В ролях
-                    </h2>
-                  </div>
-                  <CastList casts={data.casts} maxInitial={11} />
-                  {(() => {
-                    const raw = franchise?.actors_dubl ?? movie.actors_dubl;
+              {Array.isArray(data.casts) &&
+                data.casts.some((actor: any) => {
+                  const title = String(actor?.title ?? "").trim();
+                  const name = String(actor?.name ?? "").trim();
+                  return !!(title || name);
+                }) && (
+                  <div className="space-y-2 md:pl-8 hidden md:block">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-semibold text-zinc-200 mb-3">
+                        В ролях
+                      </h2>
+                    </div>
+                    <CastList casts={data.casts} maxInitial={11} />
+                    {(() => {
+                      const raw = franchise?.actors_dubl ?? movie.actors_dubl;
 
-                    const toList = (val: any): string[] => {
-                      if (!val) return [];
-                      if (Array.isArray(val)) {
-                        return val.map((v) => String(v).trim()).filter(Boolean);
-                      }
-                      const str = String(val).trim();
-                      if (!str || str === "null" || str === "undefined") return [];
-                      const normalized = str.replace(/([a-zа-яё])([A-ZА-ЯЁ])/g, "$1, $2");
-                      return normalized
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean);
-                    };
+                      const toList = (val: any): string[] => {
+                        if (!val) return [];
+                        if (Array.isArray(val)) {
+                          return val
+                            .map((v) => String(v).trim())
+                            .filter(Boolean);
+                        }
+                        const str = String(val).trim();
+                        if (!str || str === "null" || str === "undefined")
+                          return [];
+                        const normalized = str.replace(
+                          /([a-zа-яё])([A-ZА-ЯЁ])/g,
+                          "$1, $2"
+                        );
+                        return normalized
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+                      };
 
-                    const names = toList(raw);
-                    if (names.length === 0) return null;
+                      const names = toList(raw);
+                      if (names.length === 0) return null;
 
-                    return (
-                      <div className="mt-6 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актёры дубляжа</h2>
+                      return (
+                        <div className="mt-6 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-zinc-200 mb-3">
+                              Актёры дубляжа
+                            </h2>
+                          </div>
+                          <CastList
+                            casts={names.map((name) => ({ name }))}
+                            maxInitial={11}
+                          />
                         </div>
-                        <CastList casts={names.map((name) => ({ name }))} maxInitial={11} />
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+                      );
+                    })()}
+                  </div>
+                )}
             </div>
 
             {/* Description (moved above actors avatars) */}
@@ -1713,72 +1876,90 @@ export default function MoviePage({
               </div>
             )}
 
-            {Array.isArray(data.casts) && data.casts.some((actor: any) => {
-              const title = String(actor?.title ?? '').trim()
-              const name = String(actor?.name ?? '').trim()
-              return !!(title || name)
-            }) && (
-              <div className="space-y-3 hidden md:block">
-                <h2 className="text-lg font-semibold text-zinc-200 mb-3">Актеры</h2>
-                <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
-                  {data.casts
-                    .filter((actor: any) => {
-                      const title = String(actor?.title ?? '').trim()
-                      const name = String(actor?.name ?? '').trim()
-                      return !!(title || name)
-                    })
-                    .map((actor: any, index: number) => {
-                      const id = actor?.id ?? index
-                      const title = String(actor?.title ?? '').trim() || String(actor?.name ?? '').trim()
-                      const posterCandidate =
-                        actor?.poster ??
-                        actor?.photo ??
-                        actor?.image ??
-                        actor?.avatar ??
-                        actor?.picture ??
-                        actor?.pic
-                      const src = String(posterCandidate ?? '').trim()
-                      const invalids = ['null','undefined','—','none','n/a','no-image']
-                      const isImageLike = src.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) || src.startsWith('/') || src.startsWith('http')
-                      const hasPoster = !!src && !invalids.includes(src.toLowerCase()) && isImageLike
-                      return hasPoster ? (
-                        <img
-                          key={id}
-                          src={src}
-                          alt={title}
-                          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover hover:z-10 flex-shrink-0"
-                          onError={(e) => {
-                            const parent = e.currentTarget.parentElement
-                            if (parent) {
-                              e.currentTarget.style.display = 'none'
-                              const fallback = document.createElement('div')
-                              fallback.setAttribute('aria-label', 'нет фото')
-                              fallback.className = 'w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none'
-                              fallback.textContent = 'нет фото'
-                              parent.appendChild(fallback)
-                            }
-                          }}
-                        />
-                      ) : (
-                        <div
-                          key={id}
-                          className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
-                          aria-label="нет фото"
-                        >
-                          нет фото
-                        </div>
-                      )
-                    })}
+            {Array.isArray(data.casts) &&
+              data.casts.some((actor: any) => {
+                const title = String(actor?.title ?? "").trim();
+                const name = String(actor?.name ?? "").trim();
+                return !!(title || name);
+              }) && (
+                <div className="space-y-3 hidden md:block">
+                  <h2 className="text-lg font-semibold text-zinc-200 mb-3">
+                    Актеры
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-2 lg:gap-0 lg:-space-x-3 py-1">
+                    {data.casts
+                      .filter((actor: any) => {
+                        const title = String(actor?.title ?? "").trim();
+                        const name = String(actor?.name ?? "").trim();
+                        return !!(title || name);
+                      })
+                      .map((actor: any, index: number) => {
+                        const id = actor?.id ?? index;
+                        const title =
+                          String(actor?.title ?? "").trim() ||
+                          String(actor?.name ?? "").trim();
+                        const posterCandidate =
+                          actor?.poster ??
+                          actor?.photo ??
+                          actor?.image ??
+                          actor?.avatar ??
+                          actor?.picture ??
+                          actor?.pic;
+                        const src = String(posterCandidate ?? "").trim();
+                        const invalids = [
+                          "null",
+                          "undefined",
+                          "—",
+                          "none",
+                          "n/a",
+                          "no-image",
+                        ];
+                        const isImageLike =
+                          src.startsWith("data:image") ||
+                          /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) ||
+                          src.startsWith("/") ||
+                          src.startsWith("http");
+                        const hasPoster =
+                          !!src &&
+                          !invalids.includes(src.toLowerCase()) &&
+                          isImageLike;
+                        return hasPoster ? (
+                          <img
+                            key={id}
+                            src={src}
+                            alt={title}
+                            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover hover:z-10 flex-shrink-0"
+                            onError={(e) => {
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                e.currentTarget.style.display = "none";
+                                const fallback = document.createElement("div");
+                                fallback.setAttribute("aria-label", "нет фото");
+                                fallback.className =
+                                  "w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none";
+                                fallback.textContent = "нет фото";
+                                parent.appendChild(fallback);
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div
+                            key={id}
+                            className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
+                            aria-label="нет фото"
+                          >
+                            нет фото
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Трейлеры для мобильной версии — сразу после блока «Актеры» */}
             {!isDesktop ? (
               <div className="mt-3 relative">
-                {hasTrailers ? (
-                  <TrailerPlayer trailers={rawTrailers} />
-                ) : null}
+                {hasTrailers ? <TrailerPlayer trailers={rawTrailers} /> : null}
               </div>
             ) : null}
 
@@ -2081,19 +2262,33 @@ export default function MoviePage({
               return <TriviaSection trivia={triviaStr} />;
             })()}
 
-            
-
             {/* Sequels & Prequels */}
             {Array.isArray(seqList) && seqList.length > 0 && (
               <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-zinc-200">Сиквелы и приквелы</h2>
+                <h2 className="text-lg font-semibold text-zinc-200">
+                  Сиквелы и приквелы
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
                   {seqList.slice(0, 12).map((item: any, index: number) => {
-                    const id = item?.id ?? item?.details?.id ?? item?.movieId ?? index;
-                    const poster = item?.poster ?? item?.details?.poster ?? item?.cover ?? item?.image;
-                    const title = item?.title ?? item?.name ?? item?.details?.name ?? "Без названия";
-                    const year = item?.year ?? item?.released ?? item?.details?.released;
-                    const rating = item?.rating ?? item?.rating_kp ?? item?.details?.rating_kp ?? item?.rating_imdb;
+                    const id =
+                      item?.id ?? item?.details?.id ?? item?.movieId ?? index;
+                    const poster =
+                      item?.poster ??
+                      item?.details?.poster ??
+                      item?.cover ??
+                      item?.image;
+                    const title =
+                      item?.title ??
+                      item?.name ??
+                      item?.details?.name ??
+                      "Без названия";
+                    const year =
+                      item?.year ?? item?.released ?? item?.details?.released;
+                    const rating =
+                      item?.rating ??
+                      item?.rating_kp ??
+                      item?.details?.rating_kp ??
+                      item?.rating_imdb;
                     const quality = item?.quality ?? item?.details?.quality;
                     const genre = getPrimaryGenreFromItem(item);
                     return (
@@ -2102,23 +2297,29 @@ export default function MoviePage({
                         href={`/movie/${id}`}
                         className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
                         onMouseMove={(e) => {
-                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          const posterEl =
+                            (e.currentTarget.querySelector(
+                              ".poster-card"
+                            ) as HTMLElement) || null;
                           if (!posterEl) return;
                           const rect = posterEl.getBoundingClientRect();
                           const x = e.clientX - rect.left;
                           const y = e.clientY - rect.top;
-                          const mx = x / rect.width * 2 - 1;
-                          const my = y / rect.height * 2 - 1;
-                          posterEl.style.setProperty('--x', `${x}px`);
-                          posterEl.style.setProperty('--y', `${y}px`);
-                          posterEl.style.setProperty('--mx', `${mx}`);
-                          posterEl.style.setProperty('--my', `${my}`);
+                          const mx = (x / rect.width) * 2 - 1;
+                          const my = (y / rect.height) * 2 - 1;
+                          posterEl.style.setProperty("--x", `${x}px`);
+                          posterEl.style.setProperty("--y", `${y}px`);
+                          posterEl.style.setProperty("--mx", `${mx}`);
+                          posterEl.style.setProperty("--my", `${my}`);
                         }}
                         onMouseLeave={(e) => {
-                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
+                          const posterEl =
+                            (e.currentTarget.querySelector(
+                              ".poster-card"
+                            ) as HTMLElement) || null;
                           if (!posterEl) return;
-                          posterEl.style.setProperty('--mx', '0');
-                          posterEl.style.setProperty('--my', '0');
+                          posterEl.style.setProperty("--mx", "0");
+                          posterEl.style.setProperty("--my", "0");
                         }}
                       >
                         <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
@@ -2132,10 +2333,16 @@ export default function MoviePage({
                               className="absolute inset-0 w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                            <div className="text-zinc-600 text-[10px] text-center p-1">
+                              Нет постера
+                            </div>
                           )}
                           {rating && (
-                            <div className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(rating)}`}>
+                            <div
+                              className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
+                                rating
+                              )}`}
+                            >
                               {formatRatingLabel(rating)}
                             </div>
                           )}
@@ -2148,20 +2355,30 @@ export default function MoviePage({
                             <div
                               className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
                               style={{
-                                background: 'radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)',
+                                background:
+                                  "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
                               }}
                             />
                           )}
                         </div>
                         <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
                           <div className="relative z-[2]">
-                            <h3 className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100" title={title}>
+                            <h3
+                              className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                              title={title}
+                            >
                               {title}
                             </h3>
                             <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                               {year && <span>{year}</span>}
-                              {year && genre && <span className="text-zinc-500/60">•</span>}
-                              {genre && <span className="truncate max-w-[70%]">{genre}</span>}
+                              {year && genre && (
+                                <span className="text-zinc-500/60">•</span>
+                              )}
+                              {genre && (
+                                <span className="truncate max-w-[70%]">
+                                  {genre}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2177,86 +2394,112 @@ export default function MoviePage({
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-zinc-200">Похожие</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2">
-                  {data.similars.slice(0, 12).map((item: any, index: number) => {
-                    const id = item.id ?? item.details?.id ?? index;
-                    const poster = (item.poster || item.details?.poster) ?? null;
-                    const title = item.title || item.details?.name || "Без названия";
-                    const year = item.year || item.details?.released;
-                    const rating = item.rating || item.details?.rating_kp;
-                    const quality = item.quality || item.details?.quality;
-                    const genre = getPrimaryGenreFromItem(item);
-                    return (
-                      <Link
-                        key={id}
-                        href={`/movie/${id}`}
-                        className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
-                        onMouseMove={(e) => {
-                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
-                          if (!posterEl) return;
-                          const rect = posterEl.getBoundingClientRect();
-                          const x = e.clientX - rect.left;
-                          const y = e.clientY - rect.top;
-                          const mx = x / rect.width * 2 - 1;
-                          const my = y / rect.height * 2 - 1;
-                          posterEl.style.setProperty('--x', `${x}px`);
-                          posterEl.style.setProperty('--y', `${y}px`);
-                          posterEl.style.setProperty('--mx', `${mx}`);
-                          posterEl.style.setProperty('--my', `${my}`);
-                        }}
-                        onMouseLeave={(e) => {
-                          const posterEl = (e.currentTarget.querySelector('.poster-card') as HTMLElement) || null;
-                          if (!posterEl) return;
-                          posterEl.style.setProperty('--mx', '0');
-                          posterEl.style.setProperty('--my', '0');
-                        }}
-                      >
-                        <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-                          {poster ? (
-                            <img
-                              src={poster}
-                              alt={title}
-                              decoding="async"
-                              loading="lazy"
-                              fetchPriority="low"
-                              className="absolute inset-0 w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
-                          )}
-                          {rating && (
-                            <div className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(rating)}`}>
-                              {formatRatingLabel(rating)}
-                            </div>
-                          )}
-                          {quality && (
-                            <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                              {String(quality)}
-                            </div>
-                          )}
-                          {poster && (
-                            <div
-                              className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
-                              style={{
-                                background: 'radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)',
-                              }}
-                            />
-                          )}
-                        </div>
-                        <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                          <div className="relative z-[2]">
-                            <h3 className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100" title={title}>
-                              {title}
-                            </h3>
-                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
-                              {year && <span>{year}</span>}
-                              {year && genre && <span className="text-zinc-500/60">•</span>}
-                              {genre && <span className="truncate max-w-[70%]">{genre}</span>}
+                  {data.similars
+                    .slice(0, 12)
+                    .map((item: any, index: number) => {
+                      const id = item.id ?? item.details?.id ?? index;
+                      const poster =
+                        (item.poster || item.details?.poster) ?? null;
+                      const title =
+                        item.title || item.details?.name || "Без названия";
+                      const year = item.year || item.details?.released;
+                      const rating = item.rating || item.details?.rating_kp;
+                      const quality = item.quality || item.details?.quality;
+                      const genre = getPrimaryGenreFromItem(item);
+                      return (
+                        <Link
+                          key={id}
+                          href={`/movie/${id}`}
+                          className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                          onMouseMove={(e) => {
+                            const posterEl =
+                              (e.currentTarget.querySelector(
+                                ".poster-card"
+                              ) as HTMLElement) || null;
+                            if (!posterEl) return;
+                            const rect = posterEl.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            const mx = (x / rect.width) * 2 - 1;
+                            const my = (y / rect.height) * 2 - 1;
+                            posterEl.style.setProperty("--x", `${x}px`);
+                            posterEl.style.setProperty("--y", `${y}px`);
+                            posterEl.style.setProperty("--mx", `${mx}`);
+                            posterEl.style.setProperty("--my", `${my}`);
+                          }}
+                          onMouseLeave={(e) => {
+                            const posterEl =
+                              (e.currentTarget.querySelector(
+                                ".poster-card"
+                              ) as HTMLElement) || null;
+                            if (!posterEl) return;
+                            posterEl.style.setProperty("--mx", "0");
+                            posterEl.style.setProperty("--my", "0");
+                          }}
+                        >
+                          <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                            {poster ? (
+                              <img
+                                src={poster}
+                                alt={title}
+                                decoding="async"
+                                loading="lazy"
+                                fetchPriority="low"
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-zinc-600 text-[10px] text-center p-1">
+                                Нет постера
+                              </div>
+                            )}
+                            {rating && (
+                              <div
+                                className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
+                                  rating
+                                )}`}
+                              >
+                                {formatRatingLabel(rating)}
+                              </div>
+                            )}
+                            {quality && (
+                              <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                                {String(quality)}
+                              </div>
+                            )}
+                            {poster && (
+                              <div
+                                className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                                style={{
+                                  background:
+                                    "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                                }}
+                              />
+                            )}
+                          </div>
+                          <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                            <div className="relative z-[2]">
+                              <h3
+                                className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                                title={title}
+                              >
+                                {title}
+                              </h3>
+                              <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                                {year && <span>{year}</span>}
+                                {year && genre && (
+                                  <span className="text-zinc-500/60">•</span>
+                                )}
+                                {genre && (
+                                  <span className="truncate max-w-[70%]">
+                                    {genre}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                        </Link>
+                      );
+                    })}
                 </div>
               </div>
             )}

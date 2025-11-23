@@ -12,6 +12,7 @@ import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
 import { PlayerSelector } from "@/components/player-selector";
+import { VideoPoster } from "@/components/video-poster";
 
 interface Movie {
   id: string;
@@ -24,29 +25,34 @@ interface Movie {
   tags?: string[] | string;
 }
 
-  interface MovieGridProps {
-    url: string;
-    navigateOnClick?: boolean;
-    onPagingInfo?: (info: { page: number; scrolledCount: number; isArrowMode: boolean }) => void;
-    onWatchOpenChange?: (open: boolean) => void;
-    onInlineInfoOpenChange?: (open: boolean) => void;
-    onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void;
+interface MovieGridProps {
+  url: string;
+  navigateOnClick?: boolean;
+  onPagingInfo?: (info: {
+    page: number;
+    scrolledCount: number;
+    isArrowMode: boolean;
+  }) => void;
+  onWatchOpenChange?: (open: boolean) => void;
+  onInlineInfoOpenChange?: (open: boolean) => void;
+  onBackdropOverrideChange?: (
+    bg: string | null,
+    poster?: string | null
+  ) => void;
   onHeroInfoOverrideChange?: (
-    info:
-      | {
-          title?: string | null;
-          logo?: string | null;
-          logoId?: string | null;
-          meta?: {
-            ratingKP?: number | null;
-            ratingIMDb?: number | null;
-            year?: string | null;
-            country?: string | null;
-            genre?: string | null;
-            duration?: string | null;
-          } | null;
-        }
-      | null
+    info: {
+      title?: string | null;
+      logo?: string | null;
+      logoId?: string | null;
+      meta?: {
+        ratingKP?: number | null;
+        ratingIMDb?: number | null;
+        year?: string | null;
+        country?: string | null;
+        genre?: string | null;
+        duration?: string | null;
+      } | null;
+    } | null
   ) => void;
   resetOverridesOnNavigate?: boolean;
   viewMode?: "pagination" | "loadmore";
@@ -146,14 +152,23 @@ function getPrimaryGenreFromMovie(movie: any): string | null {
   return null;
 }
 
-
 // Бейдж качества: белый фон, чёрный текст, нейтральный бело‑серый бордер
 
 const overridesCacheRef =
   (globalThis as any).__movieOverridesCache ||
   ((globalThis as any).__movieOverridesCache = {});
 
-export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChange, onInlineInfoOpenChange, onBackdropOverrideChange, onHeroInfoOverrideChange, resetOverridesOnNavigate, viewMode }: MovieGridProps) {
+export function MovieGrid({
+  url,
+  navigateOnClick,
+  onPagingInfo,
+  onWatchOpenChange,
+  onInlineInfoOpenChange,
+  onBackdropOverrideChange,
+  onHeroInfoOverrideChange,
+  resetOverridesOnNavigate,
+  viewMode,
+}: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [errorImages, setErrorImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState<number>(1);
@@ -171,7 +186,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const [selectedError, setSelectedError] = useState<string | null>(null);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
   const [infoSwitching, setInfoSwitching] = useState<boolean>(false);
-  const posterContextRef = useRef<{ rect: DOMRect; posterUrl: string } | null>(null);
+  const posterContextRef = useRef<{ rect: DOMRect; posterUrl: string } | null>(
+    null
+  );
   const router = useRouter();
   const [watchOpen, setWatchOpen] = useState<boolean>(false);
   const [inlineKpId, setInlineKpId] = useState<string | null>(null);
@@ -182,7 +199,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const [gridHeight, setGridHeight] = useState<number | null>(null);
   const [tileWidth, setTileWidth] = useState<number | null>(null);
   const overlayPosterRef = useRef<HTMLDivElement | null>(null);
-  const [overlayPosterHeight, setOverlayPosterHeight] = useState<number | null>(null);
+  const [overlayPosterHeight, setOverlayPosterHeight] = useState<number | null>(
+    null
+  );
   const overlayGlowRef = useRef<HTMLDivElement | null>(null);
   const [virtStart, setVirtStart] = useState<number>(0);
   const [virtEnd, setVirtEnd] = useState<number>(0);
@@ -241,7 +260,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   useEffect(() => {
     try {
-      const mq = typeof window !== "undefined" ? window.matchMedia("(min-width: 768px)") : null;
+      const mq =
+        typeof window !== "undefined"
+          ? window.matchMedia("(min-width: 768px)")
+          : null;
       const update = () => setIsDesktop(!!mq?.matches);
       update();
       mq?.addEventListener("change", update);
@@ -273,8 +295,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   useEffect(() => {
     if (!watchOpen && !selectedMovie) {
-      try { onBackdropOverrideChange?.(null, null); } catch {}
-      try { onHeroInfoOverrideChange?.(null); } catch {}
+      try {
+        onBackdropOverrideChange?.(null, null);
+      } catch {}
+      try {
+        onHeroInfoOverrideChange?.(null);
+      } catch {}
     }
   }, [watchOpen, selectedMovie]);
 
@@ -300,7 +326,7 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       if (!el) return;
       const width = el.offsetWidth;
       if (width && width > 0) {
-        setOverlayPosterHeight(Math.round(width * 3 / 2));
+        setOverlayPosterHeight(Math.round((width * 3) / 2));
       }
     } catch {}
   }, [watchOpen, selectedMovie, playerVisible]);
@@ -321,7 +347,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       onInlineInfoOpenChange?.(false);
     } catch {}
   }, [viewMode]);
-
 
   useEffect(() => {
     try {
@@ -349,8 +374,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       };
     } catch {}
   }, []);
-
-  
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
   const { data, error, isLoading, isValidating } = useSWR<string>(
@@ -418,15 +441,19 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const hasFirstResultsLoadedRef = useRef(false);
   useEffect(() => {
     try {
-      const isSearch = (String(url || "").includes("/api/search"));
+      const isSearch = String(url || "").includes("/api/search");
       if (!isSearch) return;
       if (hasFirstResultsLoadedRef.current) return;
       const firstEntry = pagesData.find((p) => p.page === 1) || null;
       const hasData = !!firstEntry;
-      const arr = hasData ? (extractMoviesFromData(firstEntry!.data) || []) : [];
+      const arr = hasData ? extractMoviesFromData(firstEntry!.data) || [] : [];
       const ok = Array.isArray(arr) && arr.length > 0;
       const finished = !isLoading && !isValidating;
-      if ((ok && finished) || (error && finished) || (lastPageEmpty && finished)) {
+      if (
+        (ok && finished) ||
+        (error && finished) ||
+        (lastPageEmpty && finished)
+      ) {
         if (typeof window !== "undefined") {
           hasFirstResultsLoadedRef.current = true;
           window.dispatchEvent(new CustomEvent("search:firstResultsLoaded"));
@@ -483,21 +510,36 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   const isArrowCandidate = useMemo(() => {
     const u = String(url || "");
     const isList = u.includes("/v2/list");
-    const isMovieOrSerial = u.includes("type=movie") || u.includes("type=serial");
+    const isMovieOrSerial =
+      u.includes("type=movie") || u.includes("type=serial");
     const isUhdTag = /tag=(4K|4K%20HDR|4K%20DolbyV|60FPS)/.test(u);
     const isCompilation = u.includes("/v2/compilations/content");
     const isCastList = u.includes("cast=");
-    return (isList && (isMovieOrSerial || isUhdTag || isCastList)) || isCompilation || u.includes("/api/search");
+    return (
+      (isList && (isMovieOrSerial || isUhdTag || isCastList)) ||
+      isCompilation ||
+      u.includes("/api/search")
+    );
   }, [url]);
   const isMovieOrSerialList = useMemo(() => {
     const u = String(url || "");
-    return u.includes("/v2/list") && (u.includes("type=movie") || u.includes("type=serial"));
+    return (
+      u.includes("/v2/list") &&
+      (u.includes("type=movie") || u.includes("type=serial"))
+    );
   }, [url]);
-  const isArrowDesktopMode = isDesktop && isArrowCandidate && !hideLoadMore && (!viewMode || viewMode === "pagination");
+  const isArrowDesktopMode =
+    isDesktop &&
+    isArrowCandidate &&
+    !hideLoadMore &&
+    (!viewMode || viewMode === "pagination");
   const currentPageEntry = useMemo(() => {
     return pagesData.find((p) => p.page === page) || null;
   }, [pagesData, page]);
-  const effectiveCols = useMemo(() => (isArrowDesktopMode ? 5 : gridCols), [isArrowDesktopMode, gridCols]);
+  const effectiveCols = useMemo(
+    () => (isArrowDesktopMode ? 5 : gridCols),
+    [isArrowDesktopMode, gridCols]
+  );
   useEffect(() => {
     try {
       const el = gridWrapRef.current;
@@ -541,7 +583,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         }
       }, 0);
   }, [pagesData, page]);
-  const currItemsLen = useMemo(() => getItemsForPage(page).length, [pagesData, page]);
+  const currItemsLen = useMemo(
+    () => getItemsForPage(page).length,
+    [pagesData, page]
+  );
   const currEndIndex = useMemo(() => {
     const base = Math.min(currItemsLen, (subIndex + 1) * chunkSize);
     const hasCurrent = pagesData.some((p) => p.page === page);
@@ -550,7 +595,10 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     }
     return base;
   }, [currItemsLen, subIndex, isArrowDesktopMode, pagesData, page]);
-  const scrolledCount = useMemo(() => Math.max(0, (page - 1) * perPage) + currEndIndex, [page, currEndIndex]);
+  const scrolledCount = useMemo(
+    () => Math.max(0, (page - 1) * perPage) + currEndIndex,
+    [page, currEndIndex]
+  );
 
   const getChunkBounds = (pg: number, sIdx: number) => {
     const start = sIdx * chunkSize;
@@ -568,21 +616,41 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     if (!selectedMovie) return null;
     const { start } = getChunkBounds(page, subIndex);
     const chunkItems = getChunkItems(page, subIndex);
-    const idx = chunkItems.findIndex((m: any) => String(m?.id) === String(selectedMovie.id));
+    const idx = chunkItems.findIndex(
+      (m: any) => String(m?.id) === String(selectedMovie.id)
+    );
     if (idx < 0) return null;
     return prevItemsCount + start + idx + 1;
   }, [selectedMovie, page, subIndex, prevItemsCount, pagesData]);
   const effectiveScrolledCount = useMemo(() => {
-    return selectedScrolledCount != null ? selectedScrolledCount : scrolledCount;
+    return selectedScrolledCount != null
+      ? selectedScrolledCount
+      : scrolledCount;
   }, [selectedScrolledCount, scrolledCount]);
 
-  const lastPagingRef = useRef<{ page: number; scrolled: number; arrow: boolean } | null>(null);
+  const lastPagingRef = useRef<{
+    page: number;
+    scrolled: number;
+    arrow: boolean;
+  } | null>(null);
   useEffect(() => {
-    const info = { page, scrolledCount: effectiveScrolledCount, isArrowMode: isArrowDesktopMode };
+    const info = {
+      page,
+      scrolledCount: effectiveScrolledCount,
+      isArrowMode: isArrowDesktopMode,
+    };
     const last = lastPagingRef.current;
-    const changed = !last || last.page !== info.page || last.scrolled !== info.scrolledCount || last.arrow !== info.isArrowMode;
+    const changed =
+      !last ||
+      last.page !== info.page ||
+      last.scrolled !== info.scrolledCount ||
+      last.arrow !== info.isArrowMode;
     if (!changed) return;
-    lastPagingRef.current = { page: info.page, scrolled: info.scrolledCount, arrow: info.isArrowMode };
+    lastPagingRef.current = {
+      page: info.page,
+      scrolled: info.scrolledCount,
+      arrow: info.isArrowMode,
+    };
     try {
       onPagingInfo?.(info);
     } catch {}
@@ -590,11 +658,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   useEffect(() => {
     try {
-      onPagingInfo?.({ page, scrolledCount: effectiveScrolledCount, isArrowMode: isArrowDesktopMode });
+      onPagingInfo?.({
+        page,
+        scrolledCount: effectiveScrolledCount,
+        isArrowMode: isArrowDesktopMode,
+      });
     } catch {}
   }, [url, isArrowDesktopMode]);
-
-  
 
   // Batch-load overrides for current display ids.
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({
@@ -634,37 +704,70 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     return (display || []).map((m: any) => {
       const ov = overridesMap[String(m.id)] || null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
-      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
-      const patchedYear = (
-        (ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
-          ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear) as any
-      ) ?? m.year;
-      return { ...m, poster: patchedPoster, title: patchedTitle, year: patchedYear };
+      const patchedIntroVideo =
+        ov && ov.intro_video ? ov.intro_video : undefined;
+      const patchedTitle =
+        ov && (ov.name || ov.title) ? ov.name || ov.title : m.title;
+      const patchedYear =
+        ((ov?.year ??
+          ov?.released ??
+          ov?.release_year ??
+          ov?.releaseYear ??
+          ov?.details?.year ??
+          ov?.details?.released ??
+          ov?.details?.release_year ??
+          ov?.details?.releaseYear) as any) ?? m.year;
+      return {
+        ...m,
+        poster: patchedPoster,
+        title: patchedTitle,
+        year: patchedYear,
+        intro_video: patchedIntroVideo,
+      };
     });
   }, [display, overridesMap]);
 
-  const applyOverridesToMovie = useCallback((m: any) => {
-    const ov = overridesMap[String(m?.id)] || null;
-    const patchedPoster = ov && ov.poster ? ov.poster : m?.poster;
-    const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m?.title;
-    const patchedYear = (
-      (ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
-        ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear) as any
-    ) ?? m?.year;
-    return { ...(m || {}), poster: patchedPoster, title: patchedTitle, year: patchedYear };
-  }, [overridesMap]);
+  const applyOverridesToMovie = useCallback(
+    (m: any) => {
+      const ov = overridesMap[String(m?.id)] || null;
+      const patchedPoster = ov && ov.poster ? ov.poster : m?.poster;
+      const patchedIntroVideo =
+        ov && ov.intro_video ? ov.intro_video : undefined;
+      const patchedTitle =
+        ov && (ov.name || ov.title) ? ov.name || ov.title : m?.title;
+      const patchedYear =
+        ((ov?.year ??
+          ov?.released ??
+          ov?.release_year ??
+          ov?.releaseYear ??
+          ov?.details?.year ??
+          ov?.details?.released ??
+          ov?.details?.release_year ??
+          ov?.details?.releaseYear) as any) ?? m?.year;
+      return {
+        ...(m || {}),
+        poster: patchedPoster,
+        title: patchedTitle,
+        year: patchedYear,
+        intro_video: patchedIntroVideo,
+      };
+    },
+    [overridesMap]
+  );
 
   useEffect(() => {
     try {
       const el = gridWrapRef.current;
       if (!el) return;
-      const card = el.querySelector('[data-card-item="true"]') as HTMLElement | null;
+      const card = el.querySelector(
+        '[data-card-item="true"]'
+      ) as HTMLElement | null;
       if (card && card.offsetHeight) {
         setRowHeight(card.offsetHeight + 8);
         return;
       }
       if (tileWidth != null) {
-        const h = Math.round(tileWidth * 3 / 2) + (isDesktop ? 68 : 56) + 8;
+        const h = Math.round((tileWidth * 3) / 2) + (isDesktop ? 68 : 56) + 8;
         setRowHeight(h);
       }
     } catch {}
@@ -678,11 +781,17 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const controller = new AbortController();
     (async () => {
       try {
-        const res = await fetch(`https://api.vokino.pro/v2/view/${selectedMovie.id}`, {
-          signal: controller.signal,
-          headers: { Accept: "application/json", "Content-Type": "application/json" },
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `https://api.vokino.pro/v2/view/${selectedMovie.id}`,
+          {
+            signal: controller.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            cache: "no-store",
+          }
+        );
         if (!res.ok) throw new Error(String(res.status));
         const json = await res.json();
         setSelectedDetails(json?.details ?? json ?? null);
@@ -701,14 +810,26 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       const id = selectedMovie ? String(selectedMovie.id) : null;
       const ov = id ? (overridesMap as any)[id] ?? null : null;
       const d: any = selectedDetails || {};
-      const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
-      const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
+      const bg =
+        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) ||
+        (d && (d.backdrop || d?.bg_poster?.backdrop)) ||
+        null;
+      const poster =
+        (ov && (ov.poster || ov?.bg_poster?.poster)) ||
+        (d && (d.poster || d?.bg_poster?.poster)) ||
+        (selectedMovie?.poster ?? null);
       if (bg) {
         onBackdropOverrideChange?.(String(bg), poster ? String(poster) : null);
       }
       const logo = (ov as any)?.poster_logo ?? null;
       const titleStr = selectedMovie?.title ?? null;
-      const yrRaw = d?.year ?? d?.released ?? d?.release_year ?? d?.releaseYear ?? selectedMovie?.year ?? null;
+      const yrRaw =
+        d?.year ??
+        d?.released ??
+        d?.release_year ??
+        d?.releaseYear ??
+        selectedMovie?.year ??
+        null;
       const year = (() => {
         if (yrRaw == null) return null;
         const s = String(yrRaw).trim();
@@ -716,11 +837,17 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         const m = s.match(/\d{4}/);
         return m ? m[0] : s;
       })();
-      const countryLabel = getCountryLabel(d?.country ?? selectedMovie?.country) || null;
+      const countryLabel =
+        getCountryLabel(d?.country ?? selectedMovie?.country) || null;
       const genreVal = (() => {
-        const src = d?.genre ?? (Array.isArray(d?.tags) ? d?.tags.join(", ") : d?.tags) ?? selectedMovie?.tags;
+        const src =
+          d?.genre ??
+          (Array.isArray(d?.tags) ? d?.tags.join(", ") : d?.tags) ??
+          selectedMovie?.tags;
         if (Array.isArray(src)) {
-          const first = src.find((v) => v != null && String(v).trim().length > 0);
+          const first = src.find(
+            (v) => v != null && String(v).trim().length > 0
+          );
           return first != null ? String(first).trim() : null;
         }
         if (src == null) return null;
@@ -744,7 +871,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         const raw = d?.duration ?? d?.time ?? d?.runtime ?? d?.length;
         const toMinutes = (val: any): number | null => {
           if (val == null) return null;
-          if (typeof val === "number" && !Number.isNaN(val)) return Math.round(val);
+          if (typeof val === "number" && !Number.isNaN(val))
+            return Math.round(val);
           if (typeof val === "string") {
             const s = val.trim().toLowerCase();
             if (s.includes(":")) {
@@ -757,8 +885,12 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 }
               }
             }
-            const hoursMatch = s.match(/(\d+)\s*(ч|час|часа|часов|h|hr|hour|hours)/);
-            const minutesMatch = s.match(/(\d+)\s*(мин|м|m|min|minute|minutes)/);
+            const hoursMatch = s.match(
+              /(\d+)\s*(ч|час|часа|часов|h|hr|hour|hours)/
+            );
+            const minutesMatch = s.match(
+              /(\d+)\s*(мин|м|m|min|minute|minutes)/
+            );
             if (hoursMatch || minutesMatch) {
               const h = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
               const m = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
@@ -776,8 +908,21 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
         const m = mins % 60;
         return h > 0 ? `${h}ч ${m} мин` : `${m} мин`;
       })();
-      const metaObj = { ratingKP, ratingIMDb, year, country: countryLabel, genre: genreVal || null, duration: durationStr };
-      if (!watchOpen) onHeroInfoOverrideChange?.({ title: null, logo: null, logoId: null, meta: metaObj });
+      const metaObj = {
+        ratingKP,
+        ratingIMDb,
+        year,
+        country: countryLabel,
+        genre: genreVal || null,
+        duration: durationStr,
+      };
+      if (!watchOpen)
+        onHeroInfoOverrideChange?.({
+          title: null,
+          logo: null,
+          logoId: null,
+          meta: metaObj,
+        });
     } catch {}
   }, [selectedDetails, watchOpen]);
 
@@ -786,10 +931,13 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     const controller = new AbortController();
     (async () => {
       try {
-        const tRes = await fetch(`https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`, {
-          signal: controller.signal,
-          headers: { Accept: "application/json" },
-        });
+        const tRes = await fetch(
+          `https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+          {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+          }
+        );
         const tJson = tRes.ok ? await tRes.json() : null;
         const kp = tJson?.kp_id || tJson?.data?.kp_id || null;
         if (kp) {
@@ -818,7 +966,11 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   const selectedKpId = useMemo(() => {
     const d: any = selectedDetails || {};
-    const kp = d?.kp_id ?? d?.kinopoisk_id ?? d?.details?.kp_id ?? d?.details?.kinopoisk_id;
+    const kp =
+      d?.kp_id ??
+      d?.kinopoisk_id ??
+      d?.details?.kp_id ??
+      d?.details?.kinopoisk_id;
     return kp ? String(kp) : null;
   }, [selectedDetails]);
   const selectedIframeUrl = useMemo(() => {
@@ -828,17 +980,22 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   const [inlinePlayerOpen, setInlinePlayerOpen] = useState<boolean>(false);
   const [inlineClosing, setInlineClosing] = useState<boolean>(false);
-  const [pendingSelectDir, setPendingSelectDir] = useState<"next" | "prev" | null>(null);
+  const [pendingSelectDir, setPendingSelectDir] = useState<
+    "next" | "prev" | null
+  >(null);
 
   useEffect(() => {
     if (!inlinePlayerOpen || !selectedMovie) return;
     const controller = new AbortController();
     (async () => {
       try {
-        const tRes = await fetch(`https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`, {
-          signal: controller.signal,
-          headers: { Accept: "application/json" },
-        });
+        const tRes = await fetch(
+          `https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+          {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+          }
+        );
         const tJson = tRes.ok ? await tRes.json() : null;
         const kp = tJson?.kp_id || tJson?.data?.kp_id || null;
         if (kp) {
@@ -858,7 +1015,8 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
   }, [inlinePlayerOpen, selectedMovie]);
 
   const isLoadMoreMode = viewMode === "loadmore";
-  const showLoadMoreButton = !lastPageEmpty && !hideLoadMore && (!isArrowDesktopMode || isLoadMoreMode);
+  const showLoadMoreButton =
+    !lastPageEmpty && !hideLoadMore && (!isArrowDesktopMode || isLoadMoreMode);
   const showInlineInfo = !navigateOnClick && !!selectedMovie;
   useEffect(() => {
     try {
@@ -868,31 +1026,51 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
 
   useEffect(() => {
     try {
-      const open = (!!selectedMovie) || inlinePlayerOpen || watchOpen;
+      const open = !!selectedMovie || inlinePlayerOpen || watchOpen;
       onInlineInfoOpenChange?.(open);
     } catch {}
   }, [selectedMovie, inlinePlayerOpen, watchOpen]);
 
-  const virtualizationEnabled = (!isArrowDesktopMode) && ((viewMode === "loadmore") || (viewMode === "pagination"));
+  const virtualizationEnabled =
+    !isArrowDesktopMode &&
+    (viewMode === "loadmore" || viewMode === "pagination");
 
-  const totalRows = useMemo(() => Math.ceil(finalDisplay.length / effectiveCols), [finalDisplay.length, effectiveCols]);
+  const totalRows = useMemo(
+    () => Math.ceil(finalDisplay.length / effectiveCols),
+    [finalDisplay.length, effectiveCols]
+  );
   const rowVirtualizer = useWindowVirtualizer({
     count: virtualizationEnabled && rowHeight ? totalRows : 0,
     estimateSize: () => rowHeight || 0,
     overscan: 3,
   });
   const virtualItems = rowVirtualizer.getVirtualItems();
-  const vStartRow = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? virtualItems[0].index : 0;
-  const vEndRowExclusive = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? (virtualItems[virtualItems.length - 1].index + 1) : totalRows;
+  const vStartRow =
+    virtualizationEnabled && rowHeight && virtualItems.length > 0
+      ? virtualItems[0].index
+      : 0;
+  const vEndRowExclusive =
+    virtualizationEnabled && rowHeight && virtualItems.length > 0
+      ? virtualItems[virtualItems.length - 1].index + 1
+      : totalRows;
   const vVirtStart = vStartRow * effectiveCols;
-  const vVirtEnd = Math.min(finalDisplay.length, vEndRowExclusive * effectiveCols);
-  const vTopPad = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? virtualItems[0].start : 0;
-  const vLastEnd = virtualizationEnabled && rowHeight && virtualItems.length > 0 ? (virtualItems[virtualItems.length - 1].start + virtualItems[virtualItems.length - 1].size) : 0;
-  const vBottomPad = virtualizationEnabled && rowHeight ? Math.max(0, totalRows * (rowHeight || 0) - vLastEnd) : 0;
-
-  
-
-  
+  const vVirtEnd = Math.min(
+    finalDisplay.length,
+    vEndRowExclusive * effectiveCols
+  );
+  const vTopPad =
+    virtualizationEnabled && rowHeight && virtualItems.length > 0
+      ? virtualItems[0].start
+      : 0;
+  const vLastEnd =
+    virtualizationEnabled && rowHeight && virtualItems.length > 0
+      ? virtualItems[virtualItems.length - 1].start +
+        virtualItems[virtualItems.length - 1].size
+      : 0;
+  const vBottomPad =
+    virtualizationEnabled && rowHeight
+      ? Math.max(0, totalRows * (rowHeight || 0) - vLastEnd)
+      : 0;
 
   useEffect(() => {
     if (!showInlineInfo) return;
@@ -917,7 +1095,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     if (pendingSelectDir === "next") {
       setSelectedMovie(applyOverridesToMovie(chunkItems[0]));
     } else {
-      setSelectedMovie(applyOverridesToMovie(chunkItems[chunkItems.length - 1]));
+      setSelectedMovie(
+        applyOverridesToMovie(chunkItems[chunkItems.length - 1])
+      );
     }
     setPendingSelectDir(null);
   }, [page, subIndex, pagesData, pendingSelectDir, applyOverridesToMovie]);
@@ -928,29 +1108,54 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       const id = String(selectedMovie.id);
       const ov = (overridesMap as any)[id] ?? null;
       const d: any = selectedDetails || {};
-      const bg = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || (d && (d.backdrop || d?.bg_poster?.backdrop)) || null;
-      const poster = (ov && (ov.poster || ov?.bg_poster?.poster)) || (d && (d.poster || d?.bg_poster?.poster)) || (selectedMovie?.poster ?? null);
+      const bg =
+        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) ||
+        (d && (d.backdrop || d?.bg_poster?.backdrop)) ||
+        null;
+      const poster =
+        (ov && (ov.poster || ov?.bg_poster?.poster)) ||
+        (d && (d.poster || d?.bg_poster?.poster)) ||
+        (selectedMovie?.poster ?? null);
       const bgVal = bg ? String(bg) : null;
       if (bgVal) {
         onBackdropOverrideChange?.(bgVal, poster ? String(poster) : null);
       }
 
-      const logo = (ov as any)?.poster_logo ?? (d as any)?.poster_logo ?? (d as any)?.logo ?? null;
+      const logo =
+        (ov as any)?.poster_logo ??
+        (d as any)?.poster_logo ??
+        (d as any)?.logo ??
+        null;
       const titleStr = selectedMovie?.title ?? null;
-      onHeroInfoOverrideChange?.({ title: titleStr, logo: logo ? String(logo) : null, logoId: id, meta: null });
+      onHeroInfoOverrideChange?.({
+        title: titleStr,
+        logo: logo ? String(logo) : null,
+        logoId: id,
+        meta: null,
+      });
     } catch {}
   }, [showInlineInfo, selectedMovie, selectedDetails, overridesMap]);
 
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
-    const isDesktopNow = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
-    const skeletonCount = typeof window === "undefined"
-      ? 5
-      : isLoadMoreMode
-      ? (isDesktopNow ? perPage : perPage)
-      : (isArrowDesktopMode ? effectiveCols : (isDesktopNow ? 5 : perPage));
-    const gridClass = "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
+    const isDesktopNow =
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 768px)").matches;
+    const skeletonCount =
+      typeof window === "undefined"
+        ? 5
+        : isLoadMoreMode
+        ? isDesktopNow
+          ? perPage
+          : perPage
+        : isArrowDesktopMode
+        ? effectiveCols
+        : isDesktopNow
+        ? 5
+        : perPage;
+    const gridClass =
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -983,9 +1188,16 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     (isLoading || isValidating) &&
     !pagesData.some((p) => p.page === page)
   ) {
-    const isDesktopNow = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
-    const skeletonCount = isLoadMoreMode ? (isDesktopNow ? perPage : perPage) : effectiveCols;
-    const gridClass = "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
+    const isDesktopNow =
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 768px)").matches;
+    const skeletonCount = isLoadMoreMode
+      ? isDesktopNow
+        ? perPage
+        : perPage
+      : effectiveCols;
+    const gridClass =
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -1075,7 +1287,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
       return;
     }
     const nextEntry = pagesData.find((p) => p.page === page + 1) || null;
-    const nextLen = nextEntry ? extractMoviesFromData(nextEntry.data).length : 0;
+    const nextLen = nextEntry
+      ? extractMoviesFromData(nextEntry.data).length
+      : 0;
     if (nextEntry) {
       if (nextLen === 0) {
         return;
@@ -1095,7 +1309,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     setPlayerVisible(false);
     setInfoSwitching(true);
     const chunkItems = getChunkItems(page, subIndex);
-    const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
+    const idx = chunkItems.findIndex(
+      (m: any) => String(m.id) === String(selectedMovie.id)
+    );
     if (idx > 0) {
       setSelectedMovie(applyOverridesToMovie(chunkItems[idx - 1]));
       setInfoVisible(false);
@@ -1121,7 +1337,9 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     setPlayerVisible(false);
     setInfoSwitching(true);
     const chunkItems = getChunkItems(page, subIndex);
-    const idx = chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id));
+    const idx = chunkItems.findIndex(
+      (m: any) => String(m.id) === String(selectedMovie.id)
+    );
     if (idx >= 0 && idx < chunkItems.length - 1) {
       setSelectedMovie(applyOverridesToMovie(chunkItems[idx + 1]));
       setInfoVisible(false);
@@ -1140,8 +1358,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     handleNextArrow();
   };
 
-  
-
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   if (!isLoading && !isValidating && movies.length === 0) {
     return (
@@ -1153,13 +1369,16 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
     );
   }
 
-
   return (
     <div className="relative">
       {isArrowDesktopMode && watchOpen ? null : null}
       {isArrowDesktopMode && watchOpen && selectedMovie ? (
         <div
-          className={`relative z-20 p-4 md:p-5 bg-zinc-900/80 border border-zinc-800/60 rounded-sm transition-all duration-300 ${playerVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
+          className={`relative z-20 p-4 md:p-5 bg-zinc-900/80 border border-zinc-800/60 rounded-sm transition-all duration-300 ${
+            playerVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-2"
+          }`}
           style={{
             WebkitMaskImage:
               "radial-gradient(150% 150% at 50% 115%, black 70%, transparent 100%)",
@@ -1171,8 +1390,6 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             maskSize: "100% 100%",
           }}
         >
-          
-
           {showEscHint && (
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
               <div className="px-3 py-1.5 text-xs rounded-md shadow-md bg-zinc-900/85 border border-zinc-800/70 text-zinc-100 animate-in fade-in-0 slide-in-from-top-2">
@@ -1181,11 +1398,26 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
             </div>
           )}
 
-                  <div className="space-y-4">
+          <div className="space-y-4">
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
-                {selectedMovie.poster && !errorImages.has(String(selectedMovie.id)) ? (
-                  <div ref={overlayPosterRef} className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]">
+                {selectedMovie.intro_video ? (
+                  <div
+                    ref={overlayPosterRef}
+                    className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]"
+                  >
+                    <VideoPoster
+                      src={selectedMovie.intro_video}
+                      poster={selectedMovie.poster}
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : selectedMovie.poster &&
+                  !errorImages.has(String(selectedMovie.id)) ? (
+                  <div
+                    ref={overlayPosterRef}
+                    className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3]"
+                  >
                     <img
                       src={selectedMovie.poster}
                       alt="Постер"
@@ -1193,47 +1425,67 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       loading="lazy"
                       fetchPriority="high"
                       className={`block w-full h-full object-cover transition-all ease-out poster-media ${
-                        loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                        loadedImages.has(String(selectedMovie.id))
+                          ? "opacity-100 blur-0 scale-100"
+                          : "opacity-0 blur-md scale-[1.02]"
                       }`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                      style={{
+                        transition:
+                          "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                        willChange: "opacity, filter, transform",
+                      }}
                       onLoad={() => handleImageLoad(selectedMovie.id)}
                       onError={() => handleImageError(selectedMovie.id)}
                     />
                   </div>
-                ) : (
-                  selectedMovie.poster ? (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
-                  ) : null
-                )}
+                ) : selectedMovie.poster ? (
+                  <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
+                    Нет постера
+                  </div>
+                ) : null}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie.title || "Без названия"}>
+                  <h3
+                    className="text-sm md:text-base font-semibold text-zinc-100 truncate"
+                    title={selectedMovie.title || "Без названия"}
+                  >
                     {selectedMovie.title || "Без названия"}
                   </h3>
                   {(() => {
-                    const rating = (selectedDetails as any)?.rating_kp ?? (selectedDetails as any)?.rating ?? selectedMovie.rating;
+                    const rating =
+                      (selectedDetails as any)?.rating_kp ??
+                      (selectedDetails as any)?.rating ??
+                      selectedMovie.rating;
                     return rating ? (
-                      <span className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(rating)}`}>{formatRatingLabel(rating)}</span>
+                      <span
+                        className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                          rating
+                        )}`}
+                      >
+                        {formatRatingLabel(rating)}
+                      </span>
                     ) : null;
                   })()}
                   <button
                     type="button"
                     aria-label="Закрыть"
-        onClick={() => {
-          setPlayerVisible(false);
-          setInfoVisible(false);
-          setTimeout(() => {
-            setWatchOpen(false);
-            setInlinePlayerOpen(false);
-            setInlineClosing(false);
-            setSelectedMovie(null);
-            setSelectedDetails(null);
-            setSelectedError(null);
-            setTileWidth(null);
-            try { onInlineInfoOpenChange?.(false) } catch {}
-          }, 200);
-        }}
+                    onClick={() => {
+                      setPlayerVisible(false);
+                      setInfoVisible(false);
+                      setTimeout(() => {
+                        setWatchOpen(false);
+                        setInlinePlayerOpen(false);
+                        setInlineClosing(false);
+                        setSelectedMovie(null);
+                        setSelectedDetails(null);
+                        setSelectedError(null);
+                        setTileWidth(null);
+                        try {
+                          onInlineInfoOpenChange?.(false);
+                        } catch {}
+                      }, 200);
+                    }}
                     className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
                   >
                     <IconX size={16} />
@@ -1242,24 +1494,45 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                 <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
                   {(() => {
                     const d: any = selectedDetails || {};
-                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                    const year = (
-                      ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
-                      ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
-                      d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year
-                    );
+                    const ov =
+                      (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                    const year =
+                      ov?.year ??
+                      ov?.released ??
+                      ov?.release_year ??
+                      ov?.releaseYear ??
+                      ov?.details?.year ??
+                      ov?.details?.released ??
+                      ov?.details?.release_year ??
+                      ov?.details?.releaseYear ??
+                      d.year ??
+                      d.released ??
+                      d.release_year ??
+                      d.releaseYear ??
+                      selectedMovie.year;
                     const countryRaw = d.country ?? selectedMovie.country;
                     const quality = d.quality ?? selectedMovie.quality;
                     const parts: string[] = [];
                     if (year) parts.push(String(year));
                     if (quality) parts.push(String(quality));
                     if (countryRaw) {
-                      const arr = Array.isArray(countryRaw) ? countryRaw : String(countryRaw).split(",").map((s) => s.trim()).filter(Boolean);
+                      const arr = Array.isArray(countryRaw)
+                        ? countryRaw
+                        : String(countryRaw)
+                            .split(",")
+                            .map((s) => s.trim())
+                            .filter(Boolean);
                       if (arr.length > 0) parts.push(arr.join(" "));
                     }
-                    return parts.length > 0 ? <div className="flex items-center gap-2">{parts.map((p, i) => (
-                      <span key={i} className="truncate">{p}</span>
-                    ))}</div> : null;
+                    return parts.length > 0 ? (
+                      <div className="flex items-center gap-2">
+                        {parts.map((p, i) => (
+                          <span key={i} className="truncate">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null;
                   })()}
                 </div>
                 <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
@@ -1269,22 +1542,44 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                       <Skeleton className="h-3 w-[88%] mb-2" />
                       <Skeleton className="h-3 w-[72%]" />
                     </div>
-                  ) : (() => {
-                    const d: any = selectedDetails || {};
-                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                    const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
-                    const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
-                    return about ? (
-                      <p className="line-clamp-3 md:line-clamp-4">{about}</p>
-                    ) : (
-                      <div className="h-3" />
-                    );
-                  })()}
+                  ) : (
+                    (() => {
+                      const d: any = selectedDetails || {};
+                      const ov =
+                        (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                      const aboutRaw =
+                        ov?.about ??
+                        ov?.description ??
+                        ov?.details?.about ??
+                        ov?.details?.description ??
+                        ov?.franchise?.about ??
+                        ov?.franchise?.description ??
+                        d.about ??
+                        d.description;
+                      const about = Array.isArray(aboutRaw)
+                        ? aboutRaw.filter(Boolean).join(" ")
+                        : String(aboutRaw || "").trim();
+                      return about ? (
+                        <p className="line-clamp-3 md:line-clamp-4">{about}</p>
+                      ) : (
+                        <div className="h-3" />
+                      );
+                    })()
+                  )}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
                   <Link
                     href={`/movie/${selectedMovie.id}`}
-                    onClick={() => { if (resetOverridesOnNavigate) { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; } }}
+                    onClick={() => {
+                      if (resetOverridesOnNavigate) {
+                        try {
+                          onBackdropOverrideChange?.(null, null);
+                        } catch {}
+                        try {
+                          onHeroInfoOverrideChange?.(null);
+                        } catch {}
+                      }
+                    }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
                     Подробнее
@@ -1304,574 +1599,919 @@ export function MovieGrid({ url, navigateOnClick, onPagingInfo, onWatchOpenChang
                   transition: "opacity 300ms ease",
                 }}
               />
-              <PlayerSelector onPlayerSelect={() => {}} iframeUrl={inlineIframeUrl ?? undefined} kpId={inlineKpId ?? undefined} videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden" videoContainerStyle={overlayPosterHeight != null ? { height: overlayPosterHeight } : undefined} />
+              <PlayerSelector
+                onPlayerSelect={() => {}}
+                iframeUrl={inlineIframeUrl ?? undefined}
+                kpId={inlineKpId ?? undefined}
+                videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
+                videoContainerStyle={
+                  overlayPosterHeight != null
+                    ? { height: overlayPosterHeight }
+                    : undefined
+                }
+              />
             </div>
           </div>
         </div>
       ) : null}
-      <div ref={gridWrapRef} className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}>
-      {showInlineInfo ? (
-        <div
-          key={String(selectedMovie!.id)}
-          className={`relative transition-all duration-300 ${inlinePlayerOpen ? (inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "") : (infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2")}`}
-          style={gridHeight != null ? { minHeight: gridHeight } : undefined}
-        >
-          <div className="relative p-3 md:p-4 smoke-flash">
-            <button
-              type="button"
-              aria-label="Закрыть"
-              onClick={() => {
-                if (inlinePlayerOpen) {
-                  setInlineClosing(true);
-                  setPlayerVisible(false);
-                  setInfoVisible(false);
-                  setTimeout(() => {
-                    setInlinePlayerOpen(false);
-                    setInlineClosing(false);
-                    setSelectedMovie(null);
-                    setSelectedDetails(null);
-                    setSelectedError(null);
-                    setGridHeight(null);
-                    setTileWidth(null);
-                    try { onInlineInfoOpenChange?.(false) } catch {}
-                  }, 200);
-                } else {
-                  setInfoVisible(false);
-                  setTimeout(() => {
-                    setSelectedMovie(null);
-                    setSelectedDetails(null);
-                    setSelectedError(null);
-                    setGridHeight(null);
-                    setTileWidth(null);
-                    try { onInlineInfoOpenChange?.(false) } catch {}
-                  }, 200);
-                }
-              }}
-              className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
-            >
-              <IconX size={18} />
-            </button>
-            {isDesktop && (
-              <>
-                {(() => {
-                  const chunkItems = getChunkItems(page, subIndex);
-                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
-                  const canPrevInChunk = idx > 0;
-                  const disablePrev = !canPrevInChunk && page <= 1 && subIndex <= 0;
-                  return (
-                    <button
-                      type="button"
-                      onClick={handleInlinePrev}
-                      disabled={disablePrev}
-                      aria-label="Предыдущий фильм"
-                      className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <IconChevronLeft size={72} />
-                    </button>
-                  );
-                })()}
-                {(() => {
-                  const chunkItems = getChunkItems(page, subIndex);
-                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
-                  const canNextInChunk = idx >= 0 && idx < chunkItems.length - 1;
-                  const disableNext = (!canNextInChunk) && (subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty));
-                  return (
-                    <button
-                      type="button"
-                      onClick={handleInlineNext}
-                      disabled={disableNext}
-                      aria-label="Следующий фильм"
-                      className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <IconChevronRight size={72} />
-                    </button>
-                  );
-                })()}
-              </>
-            )}
-            <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
-              <div className="hidden md:block">
-                <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative" style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : { width: 280 }}>
-                  {selectedMovie!.poster && !errorImages.has(String(selectedMovie!.id)) ? (
-                    <img
-                      src={selectedMovie!.poster}
-                      alt="Постер"
-                      decoding="async"
-                      loading="lazy"
-                      fetchPriority="high"
-                      className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                        loadedImages.has(String(selectedMovie!.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+      <div
+        ref={gridWrapRef}
+        className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}
+      >
+        {showInlineInfo ? (
+          <div
+            key={String(selectedMovie!.id)}
+            className={`relative transition-all duration-300 ${
+              inlinePlayerOpen
+                ? inlineClosing
+                  ? "animate-out fade-out-0 zoom-out-95"
+                  : ""
+                : infoVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2"
+            }`}
+            style={gridHeight != null ? { minHeight: gridHeight } : undefined}
+          >
+            <div className="relative p-3 md:p-4 smoke-flash">
+              <button
+                type="button"
+                aria-label="Закрыть"
+                onClick={() => {
+                  if (inlinePlayerOpen) {
+                    setInlineClosing(true);
+                    setPlayerVisible(false);
+                    setInfoVisible(false);
+                    setTimeout(() => {
+                      setInlinePlayerOpen(false);
+                      setInlineClosing(false);
+                      setSelectedMovie(null);
+                      setSelectedDetails(null);
+                      setSelectedError(null);
+                      setGridHeight(null);
+                      setTileWidth(null);
+                      try {
+                        onInlineInfoOpenChange?.(false);
+                      } catch {}
+                    }, 200);
+                  } else {
+                    setInfoVisible(false);
+                    setTimeout(() => {
+                      setSelectedMovie(null);
+                      setSelectedDetails(null);
+                      setSelectedError(null);
+                      setGridHeight(null);
+                      setTileWidth(null);
+                      try {
+                        onInlineInfoOpenChange?.(false);
+                      } catch {}
+                    }, 200);
+                  }
+                }}
+                className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
+              >
+                <IconX size={18} />
+              </button>
+              {isDesktop && (
+                <>
+                  {(() => {
+                    const chunkItems = getChunkItems(page, subIndex);
+                    const idx = selectedMovie
+                      ? chunkItems.findIndex(
+                          (m: any) => String(m.id) === String(selectedMovie.id)
+                        )
+                      : -1;
+                    const canPrevInChunk = idx > 0;
+                    const disablePrev =
+                      !canPrevInChunk && page <= 1 && subIndex <= 0;
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleInlinePrev}
+                        disabled={disablePrev}
+                        aria-label="Предыдущий фильм"
+                        className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <IconChevronLeft size={72} />
+                      </button>
+                    );
+                  })()}
+                  {(() => {
+                    const chunkItems = getChunkItems(page, subIndex);
+                    const idx = selectedMovie
+                      ? chunkItems.findIndex(
+                          (m: any) => String(m.id) === String(selectedMovie.id)
+                        )
+                      : -1;
+                    const canNextInChunk =
+                      idx >= 0 && idx < chunkItems.length - 1;
+                    const disableNext =
+                      !canNextInChunk &&
+                      subIndex >= currChunkCount - 1 &&
+                      (nextPageItemsLen === 0 ||
+                        (nextPageItemsLen == null && lastPageEmpty));
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleInlineNext}
+                        disabled={disableNext}
+                        aria-label="Следующий фильм"
+                        className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <IconChevronRight size={72} />
+                      </button>
+                    );
+                  })()}
+                </>
+              )}
+              <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
+                <div className="hidden md:block">
+                  <div
+                    className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative"
+                    style={
+                      tileWidth != null
+                        ? { width: Math.max(tileWidth, 280) }
+                        : { width: 280 }
+                    }
+                  >
+                    {selectedMovie!.intro_video ? (
+                      <VideoPoster
+                        src={selectedMovie!.intro_video}
+                        poster={selectedMovie!.poster}
+                        className="absolute inset-0 w-full h-full"
+                      />
+                    ) : selectedMovie!.poster &&
+                      !errorImages.has(String(selectedMovie!.id)) ? (
+                      <img
+                        src={selectedMovie!.poster}
+                        alt="Постер"
+                        decoding="async"
+                        loading="lazy"
+                        fetchPriority="high"
+                        className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                          loadedImages.has(String(selectedMovie!.id))
+                            ? "opacity-100 blur-0 scale-100"
+                            : "opacity-0 blur-md scale-[1.02]"
+                        }`}
+                        style={{
+                          transition:
+                            "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                          willChange: "opacity, filter, transform",
+                        }}
+                        onLoad={() => handleImageLoad(selectedMovie!.id)}
+                        onError={() => handleImageError(selectedMovie!.id)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
+                        Нет постера
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  {inlinePlayerOpen ? (
+                    <div
+                      className={`relative mt-1 z-[10] mr-12 ${
+                        inlineClosing
+                          ? "animate-out fade-out-0 zoom-out-95"
+                          : "animate-in fade-in-0 zoom-in-95"
                       }`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                      onLoad={() => handleImageLoad(selectedMovie!.id)}
-                      onError={() => handleImageError(selectedMovie!.id)}
-                    />
+                    >
+                      {(() => {
+                        const w =
+                          tileWidth != null ? Math.max(tileWidth, 280) : 280;
+                        const h = Math.round((w * 3) / 2);
+                        return (
+                          <PlayerSelector
+                            onPlayerSelect={() => {}}
+                            iframeUrl={
+                              inlineIframeUrl ?? selectedIframeUrl ?? undefined
+                            }
+                            kpId={inlineKpId ?? selectedKpId ?? undefined}
+                            videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
+                            videoContainerStyle={{ height: h }}
+                          />
+                        );
+                      })()}
+                    </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
+                    <>
+                      <div className="flex items-center gap-2">
+                        <h3
+                          className="text-sm md:text-base font-semibold text-zinc-100 truncate"
+                          title={selectedMovie!.title || "Без названия"}
+                        >
+                          {selectedMovie!.title || "Без названия"}
+                        </h3>
+                        {(() => {
+                          const rating =
+                            (selectedDetails as any)?.rating_kp ??
+                            (selectedDetails as any)?.rating ??
+                            selectedMovie!.rating;
+                          return rating ? (
+                            <span
+                              className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                                rating
+                              )}`}
+                            >
+                              {formatRatingLabel(rating)}
+                            </span>
+                          ) : null;
+                        })()}
+                      </div>
+                      <div className="mt-1 text-[12px] md:text-[13px] text-zinc-300">
+                        {(() => {
+                          const d: any = selectedDetails || {};
+                          const ov =
+                            (overridesMap as any)[String(selectedMovie!.id)] ??
+                            null;
+                          const year =
+                            ov?.year ??
+                            ov?.released ??
+                            ov?.release_year ??
+                            ov?.releaseYear ??
+                            ov?.details?.year ??
+                            ov?.details?.released ??
+                            ov?.details?.release_year ??
+                            ov?.details?.releaseYear ??
+                            d.year ??
+                            d.released ??
+                            d.release_year ??
+                            d.releaseYear ??
+                            selectedMovie!.year;
+                          const countryRaw =
+                            d.country ?? selectedMovie!.country;
+                          const quality = d.quality ?? selectedMovie!.quality;
+                          const parts: string[] = [];
+                          if (year) parts.push(String(year));
+                          if (quality) parts.push(String(quality));
+                          if (countryRaw) {
+                            const arr = Array.isArray(countryRaw)
+                              ? countryRaw
+                              : String(countryRaw)
+                                  .split(",")
+                                  .map((s) => s.trim())
+                                  .filter(Boolean);
+                            if (arr.length > 0) parts.push(arr.join(" "));
+                          }
+                          return parts.length > 0 ? (
+                            <div className="flex items-center gap-2">
+                              {parts.map((p, i) => (
+                                <span key={i} className="truncate">
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null;
+                        })()}
+                      </div>
+                      <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 min-h-[66px] md:min-h-[84px]">
+                        {selectedLoading ? (
+                          <div>
+                            <Skeleton className="h-3 w-[92%] mb-2" />
+                            <Skeleton className="h-3 w-[88%] mb-2" />
+                            <Skeleton className="h-3 w-[72%]" />
+                          </div>
+                        ) : (
+                          (() => {
+                            const d: any = selectedDetails || {};
+                            const ov =
+                              (overridesMap as any)[String(selectedMovie.id)] ??
+                              null;
+                            const aboutRaw =
+                              ov?.about ??
+                              ov?.description ??
+                              ov?.details?.about ??
+                              ov?.details?.description ??
+                              ov?.franchise?.about ??
+                              ov?.franchise?.description ??
+                              d.about ??
+                              d.description;
+                            const about = Array.isArray(aboutRaw)
+                              ? aboutRaw.filter(Boolean).join(" ")
+                              : String(aboutRaw || "").trim();
+                            return about ? (
+                              <p className="line-clamp-3 md:line-clamp-4">
+                                {about}
+                              </p>
+                            ) : (
+                              <div className="h-3" />
+                            );
+                          })()
+                        )}
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInlineKpId(selectedKpId);
+                            setInlineIframeUrl(selectedIframeUrl);
+                            setInlinePlayerOpen(true);
+                            setPlayerVisible(true);
+                          }}
+                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
+                        >
+                          Смотреть онлайн
+                        </button>
+                        <Link
+                          href={`/movie/${selectedMovie!.id}`}
+                          onClick={() => {
+                            if (resetOverridesOnNavigate) {
+                              try {
+                                onBackdropOverrideChange?.(null, null);
+                              } catch {}
+                              try {
+                                onHeroInfoOverrideChange?.(null);
+                              } catch {}
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-зinc-800/60 shadow-xs transition-all duration-200"
+                        >
+                          Подробнее
+                        </Link>
+                        {selectedError && (
+                          <span className="text-[12px] text-red-400">
+                            {selectedError}
+                          </span>
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
-              <div className="min-w-0 flex-1">
-                {inlinePlayerOpen ? (
-                  <div className={`relative mt-1 z-[10] mr-12 ${inlineClosing ? "animate-out fade-out-0 zoom-out-95" : "animate-in fade-in-0 zoom-in-95"}`}>
-                    {(() => {
-                      const w = tileWidth != null ? Math.max(tileWidth, 280) : 280;
-                      const h = Math.round(w * 3 / 2);
-                      return (
-                        <PlayerSelector
-                          onPlayerSelect={() => {}}
-                          iframeUrl={inlineIframeUrl ?? selectedIframeUrl ?? undefined}
-                          kpId={inlineKpId ?? selectedKpId ?? undefined}
-                          videoContainerClassName="bg-zinc-900 rounded-[10px] overflow-hidden"
-                          videoContainerStyle={{ height: h }}
+            </div>
+          </div>
+        ) : (
+          <>
+            {isArrowDesktopMode && (
+              <button
+                onClick={handlePrevArrow}
+                disabled={page <= 1 && subIndex <= 0}
+                className="hidden md:flex items-center justify-center absolute left-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Предыдущая страница"
+              >
+                <IconChevronLeft size={20} />
+              </button>
+            )}
+            <div
+              className={
+                "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"
+              }
+            >
+              {virtualizationEnabled && rowHeight && vTopPad > 0 ? (
+                <div style={{ height: vTopPad, gridColumn: "1 / -1" }} />
+              ) : null}
+              {(virtualizationEnabled && rowHeight
+                ? finalDisplay.slice(vVirtStart, vVirtEnd)
+                : finalDisplay
+              ).map((movie: any, index: number) => (
+                <div
+                  key={movie.id || index}
+                  className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+                  data-card-item="true"
+                  onMouseMove={(e) => {
+                    const posterEl = e.currentTarget.querySelector(
+                      ".poster-card"
+                    ) as HTMLElement;
+                    if (!posterEl) return;
+                    const rect = posterEl.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const mx = (x / rect.width) * 2 - 1;
+                    const my = (y / rect.height) * 2 - 1;
+                    posterEl.style.setProperty("--x", `${x}px`);
+                    posterEl.style.setProperty("--y", `${y}px`);
+                    posterEl.style.setProperty("--mx", `${mx}`);
+                    posterEl.style.setProperty("--my", `${my}`);
+                  }}
+                  onMouseLeave={(e) => {
+                    const posterEl = e.currentTarget.querySelector(
+                      ".poster-card"
+                    ) as HTMLElement;
+                    if (!posterEl) return;
+                    posterEl.style.setProperty("--mx", "0");
+                    posterEl.style.setProperty("--my", "0");
+                  }}
+                  onClick={(e) => {
+                    if (navigateOnClick || !isDesktop || isLoadMoreMode) {
+                      if (resetOverridesOnNavigate) {
+                        try {
+                          onBackdropOverrideChange?.(null, null);
+                        } catch {}
+                        try {
+                          onHeroInfoOverrideChange?.(null);
+                        } catch {}
+                      }
+                      router.push(`/movie/${movie.id}`);
+                      return;
+                    }
+                    const posterEl = e.currentTarget.querySelector(
+                      ".aspect-\\[2\\/3\\]"
+                    ) as HTMLElement;
+                    if (posterEl && movie.poster) {
+                      const rect = posterEl.getBoundingClientRect();
+                      posterContextRef.current = {
+                        rect,
+                        posterUrl: movie.poster,
+                      };
+                    } else {
+                      posterContextRef.current = null;
+                    }
+                    if (
+                      selectedMovie &&
+                      String(selectedMovie.id) === String(movie.id)
+                    ) {
+                      setInfoVisible(false);
+                      setTimeout(() => {
+                        setSelectedMovie(null);
+                        setSelectedDetails(null);
+                        setSelectedError(null);
+                        setGridHeight(null);
+                        setTileWidth(null);
+                        try {
+                          onInlineInfoOpenChange?.(false);
+                        } catch {}
+                      }, 200);
+                      return;
+                    }
+                    setGridHeight(
+                      gridWrapRef.current
+                        ? gridWrapRef.current.offsetHeight
+                        : null
+                    );
+                    try {
+                      const el = gridWrapRef.current;
+                      if (el) {
+                        const w = el.clientWidth;
+                        const cols = effectiveCols;
+                        const gaps = (cols - 1) * 8;
+                        const tw = Math.floor((w - gaps) / cols);
+                        setTileWidth(tw > 0 ? tw : null);
+                      }
+                    } catch {}
+                    setSelectedMovie(movie);
+                    try {
+                      onInlineInfoOpenChange?.(true);
+                    } catch {}
+                    setInfoVisible(false);
+                    if (typeof window !== "undefined") {
+                      requestAnimationFrame(() => setInfoVisible(true));
+                    } else {
+                      setInfoVisible(true);
+                    }
+                  }}
+                >
+                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                    {movie.intro_video ? (
+                      isLoadMoreMode ? (
+                        <a
+                          href={`/movie/${movie.id}`}
+                          className="block absolute inset-0"
+                          onClick={(e) => {
+                            if (
+                              e.button === 0 &&
+                              !(
+                                e.metaKey ||
+                                e.ctrlKey ||
+                                e.shiftKey ||
+                                e.altKey
+                              )
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          <VideoPoster
+                            src={movie.intro_video}
+                            poster={movie.poster}
+                            className="absolute inset-0 w-full h-full"
+                            onPosterLoad={() => handleImageLoad(movie.id)}
+                          />
+                        </a>
+                      ) : (
+                        <VideoPoster
+                          src={movie.intro_video}
+                          poster={movie.poster}
+                          className="absolute inset-0 w-full h-full"
+                          onPosterLoad={() => handleImageLoad(movie.id)}
                         />
-                      );
-                    })()}
+                      )
+                    ) : movie.poster && !errorImages.has(String(movie.id)) ? (
+                      isLoadMoreMode ? (
+                        <a
+                          href={`/movie/${movie.id}`}
+                          className="block absolute inset-0"
+                          onClick={(e) => {
+                            if (
+                              e.button === 0 &&
+                              !(
+                                e.metaKey ||
+                                e.ctrlKey ||
+                                e.shiftKey ||
+                                e.altKey
+                              )
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          <img
+                            src={movie.poster || "/placeholder.svg"}
+                            alt={movie.title || "Постер"}
+                            decoding="async"
+                            loading={
+                              (virtualizationEnabled && rowHeight
+                                ? vVirtStart + index
+                                : index) < effectiveCols
+                                ? "eager"
+                                : "lazy"
+                            }
+                            fetchPriority={
+                              (virtualizationEnabled && rowHeight
+                                ? vVirtStart + index
+                                : index) < effectiveCols
+                                ? "high"
+                                : "low"
+                            }
+                            className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                              loadedImages.has(String(movie.id))
+                                ? "opacity-100 blur-0 scale-100"
+                                : "opacity-0 blur-md scale-[1.02]"
+                            }`}
+                            style={{
+                              transition:
+                                "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                              willChange: "opacity, filter, transform",
+                            }}
+                            onLoad={() => handleImageLoad(movie.id)}
+                            onError={() => handleImageError(movie.id)}
+                          />
+                        </a>
+                      ) : (
+                        <img
+                          src={movie.poster || "/placeholder.svg"}
+                          alt={movie.title || "Постер"}
+                          decoding="async"
+                          loading={
+                            (virtualizationEnabled && rowHeight
+                              ? vVirtStart + index
+                              : index) < effectiveCols
+                              ? "eager"
+                              : "lazy"
+                          }
+                          fetchPriority={
+                            (virtualizationEnabled && rowHeight
+                              ? vVirtStart + index
+                              : index) < effectiveCols
+                              ? "high"
+                              : "low"
+                          }
+                          className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                            loadedImages.has(String(movie.id))
+                              ? "opacity-100 blur-0 scale-100"
+                              : "opacity-0 blur-md scale-[1.02]"
+                          }`}
+                          style={{
+                            transition:
+                              "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                            willChange: "opacity, filter, transform",
+                          }}
+                          onLoad={() => handleImageLoad(movie.id)}
+                          onError={() => handleImageError(movie.id)}
+                        />
+                      )
+                    ) : isLoadMoreMode ? (
+                      <a href={`/movie/${movie.id}`} className="block">
+                        <div className="text-zinc-600 text-[10px] text-center p-1">
+                          Нет постера
+                        </div>
+                      </a>
+                    ) : (
+                      <div className="text-zinc-600 text-[10px] text-center p-1">
+                        Нет постера
+                      </div>
+                    )}
+                    {(movie.poster || movie.intro_video) &&
+                      loadedImages.has(String(movie.id)) && (
+                        <div
+                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                          style={{
+                            background:
+                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                          }}
+                        />
+                      )}
+                    {movie.rating && (
+                      <div
+                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
+                          movie.rating
+                        )}`}
+                      >
+                        {formatRatingLabel(movie.rating)}
+                      </div>
+                    )}
+                    {movie.quality && (
+                      <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                        {String(movie.quality)}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie!.title || "Без названия"}>
-                        {selectedMovie!.title || "Без названия"}
+                  {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
+                  <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                    <div className="relative z-[2]">
+                      <h3
+                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                        title={movie.title || "Без названия"}
+                      >
+                        {movie.title || "Без названия"}
                       </h3>
                       {(() => {
-                        const rating = (selectedDetails as any)?.rating_kp ?? (selectedDetails as any)?.rating ?? selectedMovie!.rating;
-                        return rating ? (
-                          <span className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(rating)}`}>{formatRatingLabel(rating)}</span>
-                        ) : null;
-                      })()}
-                    </div>
-                    <div className="mt-1 text-[12px] md:text-[13px] text-zinc-300">
-                      {(() => {
-                        const d: any = selectedDetails || {};
-                        const ov = (overridesMap as any)[String(selectedMovie!.id)] ?? null;
-                        const year = (
-                          ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
-                          ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
-                          d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie!.year
+                        const year = movie.year ? String(movie.year) : null;
+                        const genre = getPrimaryGenreFromMovie(movie);
+                        if (!year && !genre) return null;
+                        return (
+                          <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                            {year && <span>{year}</span>}
+                            {year && genre && (
+                              <span className="text-zinc-500/60">•</span>
+                            )}
+                            {genre && (
+                              <span className="truncate max-w-[70%]">
+                                {genre}
+                              </span>
+                            )}
+                          </div>
                         );
-                        const countryRaw = d.country ?? selectedMovie!.country;
-                        const quality = d.quality ?? selectedMovie!.quality;
-                        const parts: string[] = [];
-                        if (year) parts.push(String(year));
-                        if (quality) parts.push(String(quality));
-                        if (countryRaw) {
-                          const arr = Array.isArray(countryRaw) ? countryRaw : String(countryRaw).split(",").map((s) => s.trim()).filter(Boolean);
-                          if (arr.length > 0) parts.push(arr.join(" "));
-                        }
-                        return parts.length > 0 ? <div className="flex items-center gap-2">{parts.map((p, i) => (
-                          <span key={i} className="truncate">{p}</span>
-                        ))}</div> : null;
                       })()}
                     </div>
-                    <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 min-h-[66px] md:min-h-[84px]">
-                      {selectedLoading ? (
-                        <div>
-                          <Skeleton className="h-3 w-[92%] mb-2" />
-                          <Skeleton className="h-3 w-[88%] mb-2" />
-                          <Skeleton className="h-3 w-[72%]" />
+                  </div>
+                </div>
+              ))}
+              {virtualizationEnabled && rowHeight && vBottomPad > 0 ? (
+                <div style={{ height: vBottomPad, gridColumn: "1 / -1" }} />
+              ) : null}
+            </div>
+            {isArrowDesktopMode && (
+              <button
+                onClick={handleNextArrow}
+                disabled={
+                  subIndex >= currChunkCount - 1 &&
+                  (nextPageItemsLen === 0 ||
+                    (nextPageItemsLen == null && lastPageEmpty))
+                }
+                className="hidden md:flex items-center justify-center absolute right-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Следующая страница"
+              >
+                <IconChevronRight size={20} />
+              </button>
+            )}
+          </>
+        )}
+      </div>
+
+      {!showInlineInfo &&
+        !navigateOnClick &&
+        selectedMovie &&
+        (!isArrowDesktopMode || !watchOpen) && (
+          <div
+            key={String(selectedMovie.id)}
+            className={`relative mt-3 md:mt-4 transition-all duration-300 ${
+              infoVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2"
+            }`}
+          >
+            <div className="relative p-3 md:p-4 smoke-flash">
+              {isDesktop && (
+                <>
+                  {(() => {
+                    const chunkItems = getChunkItems(page, subIndex);
+                    const idx = selectedMovie
+                      ? chunkItems.findIndex(
+                          (m: any) => String(m.id) === String(selectedMovie.id)
+                        )
+                      : -1;
+                    const canPrevInChunk = idx > 0;
+                    const disablePrev =
+                      !canPrevInChunk && page <= 1 && subIndex <= 0;
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleInlinePrev}
+                        disabled={disablePrev}
+                        aria-label="Предыдущий фильм"
+                        className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <IconChevronLeft size={72} />
+                      </button>
+                    );
+                  })()}
+                  {(() => {
+                    const chunkItems = getChunkItems(page, subIndex);
+                    const idx = selectedMovie
+                      ? chunkItems.findIndex(
+                          (m: any) => String(m.id) === String(selectedMovie.id)
+                        )
+                      : -1;
+                    const canNextInChunk =
+                      idx >= 0 && idx < chunkItems.length - 1;
+                    const disableNext =
+                      !canNextInChunk &&
+                      subIndex >= currChunkCount - 1 &&
+                      (nextPageItemsLen === 0 ||
+                        (nextPageItemsLen == null && lastPageEmpty));
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleInlineNext}
+                        disabled={disableNext}
+                        aria-label="Следующий фильм"
+                        className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <IconChevronRight size={72} />
+                      </button>
+                    );
+                  })()}
+                </>
+              )}
+              <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
+                <div className="hidden md:block">
+                  {selectedMovie.intro_video ? (
+                    <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative">
+                      <VideoPoster
+                        src={selectedMovie.intro_video}
+                        poster={selectedMovie.poster}
+                        className="absolute inset-0 w-full h-full"
+                      />
+                    </div>
+                  ) : selectedMovie.poster ? (
+                    <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative">
+                      {selectedMovie.poster &&
+                      !errorImages.has(String(selectedMovie.id)) ? (
+                        <img
+                          src={selectedMovie.poster}
+                          alt="Постер"
+                          decoding="async"
+                          loading="lazy"
+                          fetchPriority="high"
+                          className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                            loadedImages.has(String(selectedMovie.id))
+                              ? "opacity-100 blur-0 scale-100"
+                              : "opacity-0 blur-md scale-[1.02]"
+                          }`}
+                          style={{
+                            transition:
+                              "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                            willChange: "opacity, filter, transform",
+                          }}
+                          onLoad={() => handleImageLoad(selectedMovie.id)}
+                          onError={() => handleImageError(selectedMovie.id)}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
+                          Нет постера
                         </div>
-                      ) : (() => {
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3
+                      className="text-sm md:text-base font-semibold text-zinc-100 truncate"
+                      title={selectedMovie.title || "Без названия"}
+                    >
+                      {selectedMovie.title || "Без названия"}
+                    </h3>
+                    {(() => {
+                      const rating =
+                        (selectedDetails as any)?.rating_kp ??
+                        (selectedDetails as any)?.rating ??
+                        selectedMovie.rating;
+                      return rating ? (
+                        <span
+                          className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                            rating
+                          )}`}
+                        >
+                          {formatRatingLabel(rating)}
+                        </span>
+                      ) : null;
+                    })()}
+                  </div>
+                  <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
+                    {(() => {
+                      const d: any = selectedDetails || {};
+                      const ov =
+                        (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                      const year =
+                        ov?.year ??
+                        ov?.released ??
+                        ov?.release_year ??
+                        ov?.releaseYear ??
+                        ov?.details?.year ??
+                        ov?.details?.released ??
+                        ov?.details?.release_year ??
+                        ov?.details?.releaseYear ??
+                        d.year ??
+                        d.released ??
+                        d.release_year ??
+                        d.releaseYear ??
+                        selectedMovie.year;
+                      const countryRaw = d.country ?? selectedMovie.country;
+                      const quality = d.quality ?? selectedMovie.quality;
+                      const parts: string[] = [];
+                      if (year) parts.push(String(year));
+                      if (quality) parts.push(String(quality));
+                      if (countryRaw) {
+                        const arr = Array.isArray(countryRaw)
+                          ? countryRaw
+                          : String(countryRaw)
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                        if (arr.length > 0) parts.push(arr.join(" "));
+                      }
+                      return parts.length > 0 ? (
+                        <div className="flex items-center gap-2">
+                          {parts.map((p, i) => (
+                            <span key={i} className="truncate">
+                              {p}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                  <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
+                    {selectedLoading ? (
+                      <div>
+                        <Skeleton className="h-3 w-[92%] mb-2" />
+                        <Skeleton className="h-3 w-[88%] mb-2" />
+                        <Skeleton className="h-3 w-[72%]" />
+                      </div>
+                    ) : (
+                      (() => {
                         const d: any = selectedDetails || {};
-                        const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                        const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
-                        const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
+                        const ov =
+                          (overridesMap as any)[String(selectedMovie.id)] ??
+                          null;
+                        const aboutRaw =
+                          ov?.about ??
+                          ov?.description ??
+                          ov?.details?.about ??
+                          ov?.details?.description ??
+                          ov?.franchise?.about ??
+                          ov?.franchise?.description ??
+                          d.about ??
+                          d.description;
+                        const about = Array.isArray(aboutRaw)
+                          ? aboutRaw.filter(Boolean).join(" ")
+                          : String(aboutRaw || "").trim();
                         return about ? (
-                          <p className="line-clamp-3 md:line-clamp-4">{about}</p>
+                          <p className="line-clamp-3 md:line-clamp-4">
+                            {about}
+                          </p>
                         ) : (
                           <div className="h-3" />
                         );
-                      })()}
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setInlineKpId(selectedKpId);
-                          setInlineIframeUrl(selectedIframeUrl);
-                          setInlinePlayerOpen(true);
-                          setPlayerVisible(true);
-                        }}
-                        className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
-                      >
-                        Смотреть онлайн
-                      </button>
-                      <Link
-                        href={`/movie/${selectedMovie!.id}`}
-                        onClick={() => { if (resetOverridesOnNavigate) { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; } }}
-                        className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-зinc-800/60 shadow-xs transition-all duration-200"
-                      >
-                        Подробнее
-                      </Link>
-                      {selectedError && <span className="text-[12px] text-red-400">{selectedError}</span>}
-                    </div>
-                  </>
-                )}
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      ) : (
-      <>
-      {isArrowDesktopMode && (
-        <button
-          onClick={handlePrevArrow}
-          disabled={page <= 1 && subIndex <= 0}
-          className="hidden md:flex items-center justify-center absolute left-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Предыдущая страница"
-        >
-          <IconChevronLeft size={20} />
-        </button>
-      )}
-      <div className={"grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"}>
-        {virtualizationEnabled && rowHeight && vTopPad > 0 ? (
-          <div style={{ height: vTopPad, gridColumn: "1 / -1" }} />
-        ) : null}
-        {(virtualizationEnabled && rowHeight ? finalDisplay.slice(vVirtStart, vVirtEnd) : finalDisplay).map((movie: any, index: number) => (
-          <div
-            key={movie.id || index}
-            className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
-            data-card-item="true"
-            onMouseMove={(e) => {
-              const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
-              if (!posterEl) return;
-              const rect = posterEl.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const y = e.clientY - rect.top;
-              const mx = x / rect.width * 2 - 1;
-              const my = y / rect.height * 2 - 1;
-              posterEl.style.setProperty('--x', `${x}px`);
-              posterEl.style.setProperty('--y', `${y}px`);
-              posterEl.style.setProperty('--mx', `${mx}`);
-              posterEl.style.setProperty('--my', `${my}`);
-            }}
-            onMouseLeave={(e) => {
-              const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
-              if (!posterEl) return;
-              posterEl.style.setProperty('--mx', '0');
-              posterEl.style.setProperty('--my', '0');
-            }}
-            onClick={(e) => {
-              if (navigateOnClick || !isDesktop || isLoadMoreMode) {
-                if (resetOverridesOnNavigate) {
-                  try { onBackdropOverrideChange?.(null, null); } catch {}
-                  try { onHeroInfoOverrideChange?.(null); } catch {}
-                }
-                router.push(`/movie/${movie.id}`);
-                return;
-              }
-              const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement;
-              if (posterEl && movie.poster) {
-                const rect = posterEl.getBoundingClientRect();
-                posterContextRef.current = { rect, posterUrl: movie.poster };
-              } else {
-                posterContextRef.current = null;
-              }
-              if (selectedMovie && String(selectedMovie.id) === String(movie.id)) {
-                setInfoVisible(false);
-                setTimeout(() => {
-                  setSelectedMovie(null);
-                  setSelectedDetails(null);
-                  setSelectedError(null);
-                  setGridHeight(null);
-                  setTileWidth(null);
-                  try { onInlineInfoOpenChange?.(false) } catch {}
-                }, 200);
-                return;
-              }
-              setGridHeight(gridWrapRef.current ? gridWrapRef.current.offsetHeight : null);
-              try {
-                const el = gridWrapRef.current;
-                if (el) {
-                  const w = el.clientWidth;
-                  const cols = effectiveCols;
-                  const gaps = (cols - 1) * 8;
-                  const tw = Math.floor((w - gaps) / cols);
-                  setTileWidth(tw > 0 ? tw : null);
-                }
-              } catch {}
-              setSelectedMovie(movie);
-              try { onInlineInfoOpenChange?.(true) } catch {}
-              setInfoVisible(false);
-              if (typeof window !== "undefined") {
-                requestAnimationFrame(() => setInfoVisible(true));
-              } else {
-                setInfoVisible(true);
-              }
-            }}
-          >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-              {movie.poster && !errorImages.has(String(movie.id)) ? (
-                isLoadMoreMode ? (
-                  <a
-                    href={`/movie/${movie.id}`}
-                    className="block absolute inset-0"
-                    onClick={(e) => {
-                      if (
-                        e.button === 0 &&
-                        !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
-                      ) {
-                        e.preventDefault();
-                      }
-                    }}
-                  >
-                    <img
-                      src={movie.poster || "/placeholder.svg"}
-                      alt={movie.title || "Постер"}
-                      decoding="async"
-                      loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
-                      fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
-                      className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                        loadedImages.has(String(movie.id))
-                          ? "opacity-100 blur-0 scale-100"
-                          : "opacity-0 blur-md scale-[1.02]"
-                      }`}
-                      style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                      onLoad={() => handleImageLoad(movie.id)}
-                      onError={() => handleImageError(movie.id)}
-                    />
-                  </a>
-                ) : (
-                  <img
-                    src={movie.poster || "/placeholder.svg"}
-                    alt={movie.title || "Постер"}
-                    decoding="async"
-                    loading={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "eager" : "lazy"}
-                    fetchPriority={(virtualizationEnabled && rowHeight ? (vVirtStart + index) : index) < effectiveCols ? "high" : "low"}
-                    className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                      loadedImages.has(String(movie.id))
-                        ? "opacity-100 blur-0 scale-100"
-                        : "opacity-0 blur-md scale-[1.02]"
-                    }`}
-                    style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                    onLoad={() => handleImageLoad(movie.id)}
-                    onError={() => handleImageError(movie.id)}
-                  />
-                )
-              ) : (
-                isLoadMoreMode ? (
-                  <a href={`/movie/${movie.id}`} className="block">
-                    <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
-                  </a>
-                ) : (
-                  <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
-                )
-              )}
-              {movie.poster && loadedImages.has(String(movie.id)) && (
-                <div
-                  className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
-                  style={{
-                    background:
-                      "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                  }}
-                />
-              )}
-              {movie.rating && (
-                <div
-                  className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
-                    movie.rating
-                  )}`}
-                >
-                  {formatRatingLabel(movie.rating)}
-                </div>
-              )}
-              {movie.quality && (
-                <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[3] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                  {String(movie.quality)}
-                </div>
-              )}
-            </div>
-            {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
-            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-              <div className="relative z-[2]">
-                <h3
-                  className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
-                  title={movie.title || "Без названия"}
-                >
-                  {movie.title || "Без названия"}
-                </h3>
-                {(() => {
-                  const year = movie.year ? String(movie.year) : null;
-                  const genre = getPrimaryGenreFromMovie(movie);
-                  if (!year && !genre) return null;
-                  return (
-                    <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
-                      {year && <span>{year}</span>}
-                      {year && genre && (
-                        <span className="text-zinc-500/60">•</span>
-                      )}
-                      {genre && (
-                        <span className="truncate max-w-[70%]">{genre}</span>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        ))}
-        {virtualizationEnabled && rowHeight && vBottomPad > 0 ? (
-          <div style={{ height: vBottomPad, gridColumn: "1 / -1" }} />
-        ) : null}
-      </div>
-      {isArrowDesktopMode && (
-        <button
-          onClick={handleNextArrow}
-          disabled={(subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty))}
-          className="hidden md:flex items-center justify-center absolute right-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Следующая страница"
-        >
-          <IconChevronRight size={20} />
-        </button>
-      )}
-      </>
-      )}
-      </div>
-
-      {!showInlineInfo && !navigateOnClick && selectedMovie && (!isArrowDesktopMode || !watchOpen) && (
-        <div key={String(selectedMovie.id)} className={`relative mt-3 md:mt-4 transition-all duration-300 ${infoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
-          <div className="relative p-3 md:p-4 smoke-flash">
-            {isDesktop && (
-              <>
-                {(() => {
-                  const chunkItems = getChunkItems(page, subIndex);
-                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
-                  const canPrevInChunk = idx > 0;
-                  const disablePrev = !canPrevInChunk && page <= 1 && subIndex <= 0;
-                  return (
-                    <button
-                      type="button"
-                      onClick={handleInlinePrev}
-                      disabled={disablePrev}
-                      aria-label="Предыдущий фильм"
-                      className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <IconChevronLeft size={72} />
-                    </button>
-                  );
-                })()}
-                {(() => {
-                  const chunkItems = getChunkItems(page, subIndex);
-                  const idx = selectedMovie ? chunkItems.findIndex((m: any) => String(m.id) === String(selectedMovie.id)) : -1;
-                  const canNextInChunk = idx >= 0 && idx < chunkItems.length - 1;
-                  const disableNext = (!canNextInChunk) && (subIndex >= currChunkCount - 1) && ((nextPageItemsLen === 0) || (nextPageItemsLen == null && lastPageEmpty));
-                  return (
-                    <button
-                      type="button"
-                      onClick={handleInlineNext}
-                      disabled={disableNext}
-                      aria-label="Следующий фильм"
-                      className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <IconChevronRight size={72} />
-                    </button>
-                  );
-                })()}
-              </>
-            )}
-            <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
-              <div className="hidden md:block">
-                {selectedMovie.poster ? (
-                  <div className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative">
-                  {selectedMovie.poster && !errorImages.has(String(selectedMovie.id)) ? (
-                  <img
-                    src={selectedMovie.poster}
-                    alt="Постер"
-                    decoding="async"
-                    loading="lazy"
-                    fetchPriority="high"
-                    className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                      loadedImages.has(String(selectedMovie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
-                    }`}
-                    style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                    onLoad={() => handleImageLoad(selectedMovie.id)}
-                    onError={() => handleImageError(selectedMovie.id)}
-                  />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">Нет постера</div>
-                  )}
+                      })()
+                    )}
                   </div>
-                ) : null}
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm md:text-base font-semibold text-zinc-100 truncate" title={selectedMovie.title || "Без названия"}>
-                    {selectedMovie.title || "Без названия"}
-                  </h3>
-                  {(() => {
-                    const rating = (selectedDetails as any)?.rating_kp ?? (selectedDetails as any)?.rating ?? selectedMovie.rating;
-                    return rating ? (
-                      <span className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(rating)}`}>{formatRatingLabel(rating)}</span>
-                    ) : null;
-                  })()}
-                </div>
-                <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
-                  {(() => {
-                    const d: any = selectedDetails || {};
-                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                    const year = (
-                      ov?.year ?? ov?.released ?? ov?.release_year ?? ov?.releaseYear ??
-                      ov?.details?.year ?? ov?.details?.released ?? ov?.details?.release_year ?? ov?.details?.releaseYear ??
-                      d.year ?? d.released ?? d.release_year ?? d.releaseYear ?? selectedMovie.year
-                    );
-                    const countryRaw = d.country ?? selectedMovie.country;
-                    const quality = d.quality ?? selectedMovie.quality;
-                    const parts: string[] = [];
-                    if (year) parts.push(String(year));
-                    if (quality) parts.push(String(quality));
-                    if (countryRaw) {
-                      const arr = Array.isArray(countryRaw) ? countryRaw : String(countryRaw).split(",").map((s) => s.trim()).filter(Boolean);
-                      if (arr.length > 0) parts.push(arr.join(" "));
-                    }
-                    return parts.length > 0 ? <div className="flex items-center gap-2">{parts.map((p, i) => (
-                      <span key={i} className="truncate">{p}</span>
-                    ))}</div> : null;
-                  })()}
-                </div>
-                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
-                  {selectedLoading ? (
-                    <div>
-                      <Skeleton className="h-3 w-[92%] mb-2" />
-                      <Skeleton className="h-3 w-[88%] mb-2" />
-                      <Skeleton className="h-3 w-[72%]" />
-                    </div>
-                  ) : (() => {
-                    const d: any = selectedDetails || {};
-                    const ov = (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                    const aboutRaw = (ov?.about ?? ov?.description ?? ov?.details?.about ?? ov?.details?.description ?? ov?.franchise?.about ?? ov?.franchise?.description) ?? (d.about ?? d.description);
-                    const about = Array.isArray(aboutRaw) ? aboutRaw.filter(Boolean).join(" ") : String(aboutRaw || "").trim();
-                    return about ? (
-                      <p className="line-clamp-3 md:line-clamp-4">{about}</p>
-                    ) : (
-                      <div className="h-3" />
-                    );
-                  })()}
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <button
-                    type="button"
-                    disabled
-                    aria-disabled
-                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white/70 border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),0.6)] to-[rgba(var(--ui-accent-rgb),0.5)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.15)] shadow-xs cursor-not-allowed"
-                  >
-                    Смотреть онлайн
-                  </button>
-                  <Link
-                    href={`/movie/${selectedMovie.id}`}
-                    onClick={() => { try { onBackdropOverrideChange?.(null, null); } catch {}; try { onHeroInfoOverrideChange?.(null); } catch {}; }}
-                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
-                  >
-                    Подробнее
-                  </Link>
-                  
-                  {selectedError && <span className="text-[12px] text-red-400">{selectedError}</span>}
+                  <div className="mt-3 flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled
+                      aria-disabled
+                      className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white/70 border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),0.6)] to-[rgba(var(--ui-accent-rgb),0.5)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.15)] shadow-xs cursor-not-allowed"
+                    >
+                      Смотреть онлайн
+                    </button>
+                    <Link
+                      href={`/movie/${selectedMovie.id}`}
+                      onClick={() => {
+                        try {
+                          onBackdropOverrideChange?.(null, null);
+                        } catch {}
+                        try {
+                          onHeroInfoOverrideChange?.(null);
+                        } catch {}
+                      }}
+                      className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                    >
+                      Подробнее
+                    </Link>
+
+                    {selectedError && (
+                      <span className="text-[12px] text-red-400">
+                        {selectedError}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {showLoadMoreButton && (
         <div className="flex justify-center mt-4">

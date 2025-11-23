@@ -6,14 +6,17 @@ export type ContentOverride = {
   backdrop?: string;
   bg_poster?: BgPoster;
   poster_logo?: string;
+  intro_video?: string;
 };
 
 // Импортируем данные из отдельных файлов
 import { moviesOverrides } from "../data/overrides/movies";
 import { seriesOverrides as seriesOverridesData } from "../data/overrides/series";
 
-export const movieOverrides: Record<string, ContentOverride> = moviesOverrides as Record<string, ContentOverride>;
-export const seriesOverrides: Record<string, ContentOverride> = seriesOverridesData as Record<string, ContentOverride>;
+export const movieOverrides: Record<string, ContentOverride> =
+  moviesOverrides as Record<string, ContentOverride>;
+export const seriesOverrides: Record<string, ContentOverride> =
+  seriesOverridesData as Record<string, ContentOverride>;
 
 export function getMovieOverride(id: string): ContentOverride | null {
   return movieOverrides[String(id)] ?? null;
