@@ -196,12 +196,12 @@ export default function ActorPage() {
                           <IconFilter size={14} className={sortMode === "default" ? "text-zinc-400" : undefined} />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="rounded-xl border-0 p-1 shadow-md bg-zinc-900/90 backdrop-blur-sm">
                         <DropdownMenuLabel>Сортировка</DropdownMenuLabel>
                         <DropdownMenuRadioGroup value={sortMode} onValueChange={(v) => setSortMode(v as any)}>
-                          <DropdownMenuRadioItem value="default">По умолчанию</DropdownMenuRadioItem>
-                          <DropdownMenuRadioItem value="rating">По рейтингу</DropdownMenuRadioItem>
-                          <DropdownMenuRadioItem value="year">По году (новые)</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem className="rounded-full pr-3 pl-8 py-2" value="default">По умолчанию</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem className="rounded-full pr-3 pl-8 py-2" value="rating">По рейтингу</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem className="rounded-full pr-3 pl-8 py-2" value="year">По году (новые)</DropdownMenuRadioItem>
                         </DropdownMenuRadioGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
