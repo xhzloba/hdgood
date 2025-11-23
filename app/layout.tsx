@@ -83,6 +83,38 @@ export default function RootLayout({
         {children}
         <MobileBottomNav />
         <Toaster />
+        <a
+          href="https://www.liveinternet.ru/click"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-hidden="true"
+          tabIndex={-1}
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            margin: -1,
+            overflow: 'hidden',
+            clip: 'rect(0,0,0,0)',
+            border: 0,
+          }}
+        >
+          <img
+            id="licnt157D"
+            width={88}
+            height={15}
+            style={{ border: 0 }}
+            title="LiveInternet: показано число посетителей за сегодня"
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAIBTAA7"
+            alt=""
+          />
+        </a>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(d,s){var el=d.getElementById('licnt157D');if(!el)return;el.src='https://counter.yadro.ru/hit?t26.6;r'+escape(d.referrer)+((typeof(s)=='undefined')?'':';s'+s.width+'*'+s.height+'*'+(s.colorDepth?s.colorDepth:s.pixelDepth))+';u'+escape(d.URL)+';h'+escape(d.title.substring(0,150))+';'+Math.random()})(document,screen)",
+          }}
+        />
         <Analytics />
       </body>
     </html>
