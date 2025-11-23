@@ -124,7 +124,24 @@ export default function Top250Page() {
                 </div>
               </div>
               <div className="mt-4 overflow-anchor-none">
-                <MovieGrid url={apiUrl} viewMode={viewMode} onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} onInlineInfoOpenChange={setInlineInfoOpen} onWatchOpenChange={setWatchOpen} />
+                <MovieGrid
+                  key={`${apiUrl}:${viewMode}`}
+                  url={apiUrl}
+                  viewMode={isDesktop ? viewMode : undefined}
+                  onBackdropOverrideChange={(bg, poster) => {
+                    setOverrideBg(bg ?? null);
+                    setOverridePoster(poster ?? null);
+                  }}
+                  onHeroInfoOverrideChange={(info) => {
+                    setOverrideHeroMeta(info?.meta ?? null);
+                    setOverrideHeroLogoSrc(info?.logo ?? null);
+                    setOverrideHeroLogoId(info?.logoId ?? null);
+                    setOverrideHeroTitle(info?.title ?? null);
+                  }}
+                  onInlineInfoOpenChange={setInlineInfoOpen}
+                  onWatchOpenChange={setWatchOpen}
+                  resetOverridesOnNavigate
+                />
               </div>
             </div>
           </div>

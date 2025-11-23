@@ -788,5 +788,15 @@
     "addedPaths": [
       "trailers"
     ]
+  },
+  {
+    "id": "6593f8678914c04deae97c9e",
+    "timestamp": "2025-11-23T01:03:17.276Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
