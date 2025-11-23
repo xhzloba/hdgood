@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
 import NextTopLoader from "nextjs-toploader";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ShortcutNavigator } from "@/components/shortcut-navigator";
@@ -84,10 +83,6 @@ export default function RootLayout({
         {children}
         <MobileBottomNav />
         <Toaster />
-        <Script id="_waudrw" strategy="afterInteractive">
-          {`var _wau = _wau || []; _wau.push(["tab", "uz3rrlpjpr", "drw", "left-lower"]);`}
-        </Script>
-        <Script src="https://waust.at/t.js" strategy="afterInteractive" />
         <Analytics />
       </body>
     </html>
