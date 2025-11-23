@@ -241,12 +241,24 @@ export default function MoviePage({
   const [isDesktop, setIsDesktop] = useState(false);
   const [trailerSkInit, setTrailerSkInit] = useState(true);
 
+  const normalizeTrailers = (val: any): any[] => {
+    try {
+      if (Array.isArray(val)) return val.filter(Boolean);
+      if (val && typeof val === "object") return [val];
+      if (typeof val === "string" && val.trim()) return [{ url: val.trim() }];
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
   const rawTrailers = useMemo(() => {
     try {
-      const details = (data as any)?.details;
-      const t = (details as any)?.trailers ?? (data as any)?.trailers ?? (overrideData as any)?.trailers;
-      if (Array.isArray(t)) return t;
-      return t ? [t] : [];
+      const ov = (overrideData as any)?.trailers;
+      const dt = ((data as any)?.details?.trailers ?? (data as any)?.trailers);
+      const ovN = normalizeTrailers(ov);
+      const dtN = normalizeTrailers(dt);
+      return ovN.length > 0 ? ovN : dtN;
     } catch {
       return [] as any[];
     }
