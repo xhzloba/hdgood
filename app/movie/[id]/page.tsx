@@ -8,8 +8,8 @@ import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 
-// Кеш dynamic overrides по id фильма, переживает размонтирование страницы
-const movieOverrideCache: Record<string, any> = {};
+// Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
+const movieOverrideCache: Record<string, any> = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
 
 const fetcher = async (
   url: string,
