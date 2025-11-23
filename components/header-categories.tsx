@@ -83,8 +83,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
 
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false })
-  const EXTRA_Y = 10
-  const EXTRA_X = 2
+  const EXTRA_Y = 24
+  const EXTRA_X = 6
   const animIdRef = useRef<number | null>(null)
   const baselineRef = useRef<{ top: number; height: number }>({ top: 0, height: 0 })
   const initializedRef = useRef(false)
@@ -383,15 +383,17 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
               <div
                 ref={containerRef}
-                className="inline-flex items-center rounded-full bg-zinc-900/50 px-1.5 py-0.5 relative"
+                className="inline-flex items-center rounded-full bg-zinc-900/50 pl-1.5 pr-1.5 py-0.5 relative"
               >
                 {indicator.visible && (
                   <div
-                    className="absolute left-0 top-0 z-0 rounded-full transition-none pointer-events-none tab-active-effect"
+                    className="absolute left-0 top-0 z-0 rounded-full pointer-events-none"
                     style={{
                       transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`,
                       width: indicator.width,
                       height: indicator.height,
+                      backgroundColor: "rgb(var(--ui-accent-rgb))",
+                      boxShadow: "0 18px 36px rgba(0,0,0,0.6), 0 0 0 2px rgba(var(--ui-accent-rgb),0.4)",
                       willChange: "transform,width,height",
                     }}
                   />
