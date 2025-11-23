@@ -157,6 +157,7 @@ function SearchResults() {
 export default function SearchPage() {
   const [logoSrc, setLogoSrc] = useState<string | null>(null)
   const [logoId, setLogoId] = useState<string | null>(null)
+  const [bgUrl, setBgUrl] = useState<string | null>(null)
 
   useEffect(() => {
     try {
@@ -169,8 +170,40 @@ export default function SearchPage() {
     } catch {}
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    try {
+      const ss = typeof window !== "undefined" ? window.sessionStorage : null
+      const lastKey = ss ? ss.getItem("homeBackdrop:lastKey") : null
+      if (lastKey && lastKey.trim().length > 0) {
+        setBgUrl(lastKey.trim())
+        return
+      }
+    } catch {}
+    ;(async () => {
+      try {
+        const res = await fetch("https://api.vokino.pro/v2/list?sort=popular", {
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        })
+        if (!res.ok) return
+        const data = await res.json()
+        const items: any[] = Array.isArray(data) ? data : (Array.isArray(data?.channels) ? data.channels : [])
+        for (const it of items) {
+          const d = it?.details || it
+          const bg = (d?.backdrop as string) || (d?.bg_poster?.backdrop as string) || (it?.backdrop as string) || (it?.bg_poster?.backdrop as string) || ""
+          if (typeof bg === "string" && bg.trim().length > 0) {
+            if (!cancelled) setBgUrl(bg.trim())
+            break
+          }
+        }
+      } catch {}
+    })()
+    return () => { cancelled = true }
+  }, [])
+
   return (
-    <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade className="min-h-[100dvh] min-h-screen">
+    <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade persistComposite={false} bgPosterUrl={bgUrl ?? undefined} className="min-h-[100dvh] min-h-screen">
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-10 relative">
         <div className="mb-4 hidden md:block">
           <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
