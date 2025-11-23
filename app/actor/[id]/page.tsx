@@ -27,10 +27,8 @@ export default function ActorPage() {
   const [initialBackdropSet, setInitialBackdropSet] = useState<boolean>(false);
 
   const handleBackdropOverrideChange = useCallback((bg: string | null, poster?: string | null) => {
-    if (viewMode === "loadmore") {
-      if (initialBackdropSet) return;
-      if (bg == null && (poster == null || poster === null)) return;
-    }
+    if (bg == null && (poster == null || poster === null)) return;
+    if (viewMode === "loadmore" && initialBackdropSet) return;
     setOverrideBg(bg ?? null);
     setOverridePoster(poster ?? null);
   }, [viewMode, initialBackdropSet]);
@@ -113,6 +111,7 @@ export default function ActorPage() {
       simpleDarkCorners
       softBottomFade={!overrideBg}
       strongUpperCorners={!!overrideBg}
+      persistComposite={false}
       className="min-h-[100dvh] min-h-screen"
     >
       <main className="mx-auto max-w-7xl px-0 md:px-6 pt-6 pb-6">
