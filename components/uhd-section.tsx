@@ -150,11 +150,13 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
         </div>
         <div className="mt-4 overflow-anchor-none">
           <MovieGrid
+            key={`${UHD_CHANNELS[active].playlist_url}:${viewMode}`}
             url={UHD_CHANNELS[active].playlist_url}
             onPagingInfo={handlePagingInfo}
             onWatchOpenChange={setWatchOpen}
             onBackdropOverrideChange={onBackdropOverrideChange}
             onHeroInfoOverrideChange={onHeroInfoOverrideChange}
+            resetOverridesOnNavigate
             viewMode={isDesktop ? viewMode : undefined}
             onInlineInfoOpenChange={setInlineInfoOpen}
           />
