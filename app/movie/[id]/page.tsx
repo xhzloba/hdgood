@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Share2 } from "lucide-react";
@@ -153,7 +153,7 @@ const formatDate = (dateString: string | null | undefined): string => {
 import { ActorCard } from "@/components/actor-card";
 import { CastList } from "@/components/cast-list";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { TrailerPlayer } from "@/components/trailer-player";
+import { TrailerPlayer, getEmbedSrcFromTrailer } from "@/components/trailer-player";
 import { ratingColor, ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import { PosterBackground } from "@/components/poster-background";
 import { TriviaSection } from "@/components/trivia-section";
@@ -240,6 +240,28 @@ export default function MoviePage({
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
   const [isDesktop, setIsDesktop] = useState(false);
   const [trailerSkInit, setTrailerSkInit] = useState(true);
+
+  const rawTrailers = useMemo(() => {
+    try {
+      const details = (data as any)?.details;
+      const t = (details as any)?.trailers ?? (data as any)?.trailers ?? (overrideData as any)?.trailers;
+      if (Array.isArray(t)) return t;
+      return t ? [t] : [];
+    } catch {
+      return [] as any[];
+    }
+  }, [data, overrideData]);
+
+  const hasTrailers = useMemo(() => {
+    try {
+      return (rawTrailers || []).some((t: any) => {
+        const src = getEmbedSrcFromTrailer(t);
+        return !!src && src.includes("youtube.com/embed");
+      });
+    } catch {
+      return false;
+    }
+  }, [rawTrailers]);
 
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -889,6 +911,8 @@ export default function MoviePage({
     ? (data as any).sequelsAndPrequels
     : [];
 
+  
+
   const detailsTitle = (() => {
     const typeRaw = (movie as any).type ?? (data as any).type ?? "";
     const t = String(typeRaw).toLowerCase();
@@ -1150,8 +1174,11 @@ export default function MoviePage({
                 <AspectRatio ratio={16 / 9.5}>
                   <Skeleton className="w-full h-full rounded border border-zinc-800/50" />
                 </AspectRatio>
-              ) : null}
-              <TrailerPlayer mode="carousel" trailers={(movie as any).trailers ?? (data as any).trailers} />
+              ) : (
+                hasTrailers ? (
+                  <TrailerPlayer mode="carousel" trailers={rawTrailers} />
+                ) : null
+              )}
             </div>
           ) : null}
 
@@ -1748,8 +1775,11 @@ export default function MoviePage({
                   <AspectRatio ratio={16 / 9}>
                     <Skeleton className="w-full h-full rounded" />
                   </AspectRatio>
-                ) : null}
-                <TrailerPlayer trailers={(movie as any).trailers ?? (data as any).trailers} />
+                ) : (
+                  hasTrailers ? (
+                    <TrailerPlayer trailers={rawTrailers} />
+                  ) : null
+                )}
               </div>
             ) : null}
 

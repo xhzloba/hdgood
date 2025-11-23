@@ -22,7 +22,7 @@ function extractYoutubeId(url: string | undefined): string | null {
   return idFromParam || idFromShort || null
 }
 
-function getEmbedSrcFromTrailer(t: any): string | null {
+export function getEmbedSrcFromTrailer(t: any): string | null {
   if (!t) return null
   const id = t?.id ?? t?.key ?? t?.youtubeId
   const url = t?.url ?? t?.link ?? t?.src
