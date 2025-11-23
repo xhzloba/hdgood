@@ -239,7 +239,7 @@ export default function MoviePage({
   const [overrideData, setOverrideData] = useState<any>(null);
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
   const [isDesktop, setIsDesktop] = useState(false);
-  const [trailerSkInit, setTrailerSkInit] = useState(true);
+  
 
   const normalizeTrailers = (val: any): any[] => {
     try {
@@ -482,10 +482,7 @@ export default function MoviePage({
     } catch {}
   }, []);
 
-  useEffect(() => {
-    const tid = setTimeout(() => setTrailerSkInit(false), 450);
-    return () => clearTimeout(tid);
-  }, []);
+  
 
   // Загружаем динамический override из JSON API
   useEffect(() => {
@@ -760,13 +757,11 @@ export default function MoviePage({
               </div>
               <Skeleton className="w-full h-12 rounded" />
               {/* Trailer skeleton under poster (desktop only), matches trailer carousel ratio */}
-              {isDesktop ? (
-                <div>
-                  <AspectRatio ratio={16 / 9.5}>
-                    <Skeleton className="w-full h-full rounded border border-zinc-800/50" />
-                  </AspectRatio>
-                </div>
-              ) : null}
+              <div className="hidden md:block">
+                <AspectRatio ratio={16 / 9.5}>
+                  <Skeleton className="w-full h-full rounded border border-zinc-800/50" />
+                </AspectRatio>
+              </div>
             </div>
 
             {/* Info Skeleton */}
@@ -807,14 +802,12 @@ export default function MoviePage({
               </div>
 
               {/* Trailer (mobile only) */}
-              {!isDesktop ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-32" />
-                  <AspectRatio ratio={16 / 9}>
-                    <Skeleton className="w-full h-full rounded" />
-                  </AspectRatio>
-                </div>
-              ) : null}
+              <div className="space-y-2 md:hidden">
+                <Skeleton className="h-6 w-32" />
+                <AspectRatio ratio={16 / 9}>
+                  <Skeleton className="w-full h-full rounded" />
+                </AspectRatio>
+              </div>
 
               {/* Description */}
               <div className="space-y-2">
@@ -1182,15 +1175,9 @@ export default function MoviePage({
 
           {isDesktop ? (
             <div id="watch" className="mt-3 relative">
-              {trailerSkInit ? (
-                <AspectRatio ratio={16 / 9.5}>
-                  <Skeleton className="w-full h-full rounded border border-zinc-800/50" />
-                </AspectRatio>
-              ) : (
-                hasTrailers ? (
-                  <TrailerPlayer mode="carousel" trailers={rawTrailers} />
-                ) : null
-              )}
+              {hasTrailers ? (
+                <TrailerPlayer mode="carousel" trailers={rawTrailers} />
+              ) : null}
             </div>
           ) : null}
 
@@ -1783,15 +1770,9 @@ export default function MoviePage({
             {/* Трейлеры для мобильной версии — сразу после блока «Актеры» */}
             {!isDesktop ? (
               <div className="mt-3 relative">
-                {trailerSkInit ? (
-                  <AspectRatio ratio={16 / 9}>
-                    <Skeleton className="w-full h-full rounded" />
-                  </AspectRatio>
-                ) : (
-                  hasTrailers ? (
-                    <TrailerPlayer trailers={rawTrailers} />
-                  ) : null
-                )}
+                {hasTrailers ? (
+                  <TrailerPlayer trailers={rawTrailers} />
+                ) : null}
               </div>
             ) : null}
 
