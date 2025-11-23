@@ -239,8 +239,9 @@ export default function MoviePage({
   const [overrideData, setOverrideData] = useState<any>(null);
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [posterLoaded, setPosterLoaded] = useState(false);
+  const [posterError, setPosterError] = useState(false);
   
-
   const normalizeTrailers = (val: any): any[] => {
     try {
       if (Array.isArray(val)) return val.filter(Boolean);
@@ -1129,14 +1130,19 @@ export default function MoviePage({
               className="aspect-[2/3] bg-zinc-950 rounded overflow-hidden w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none"
               style={{ boxShadow: "0 6px 18px rgba(0,0,0,0.28)" }}
             >
-              {movie.poster ? (
+              {movie.poster && !posterError ? (
                 <img
                   src={movie.poster || "/placeholder.svg"}
                   alt={movie.name}
                   decoding="async"
                   loading="eager"
                   fetchPriority="high"
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                    posterLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                  }`}
+                  style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                  onLoad={() => setPosterLoaded(true)}
+                  onError={() => setPosterError(true)}
                   onClick={copyIdentToClipboard}
                 />
               ) : (
