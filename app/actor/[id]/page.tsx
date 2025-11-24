@@ -91,8 +91,34 @@ export default function ActorPage() {
         })();
         if (!first) return;
         const d = first?.details ?? first;
-        const bg = d?.backdrop ?? d?.bg_poster?.backdrop ?? null;
-        const poster = d?.poster ?? d?.bg_poster?.poster ?? bg ?? null;
+        const ident = d?.id ?? first?.id ?? null;
+        let bg = d?.backdrop ?? d?.bg_poster?.backdrop ?? null;
+        let poster = d?.poster ?? d?.bg_poster?.poster ?? bg ?? null;
+        if (ident) {
+          try {
+            const ovRes = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(String(ident))}`, { headers: { Accept: "application/json" }, cache: "no-store" });
+            if (ovRes.ok) {
+              const ovData = await ovRes.json();
+              const ov = ovData?.[String(ident)] ?? null;
+              if (ov) {
+                bg = (ov?.bg_poster?.backdrop ?? ov?.backdrop ?? bg) ?? null;
+                poster = (ov?.bg_poster?.poster ?? ov?.poster ?? poster ?? bg) ?? null;
+                const logo = ov?.poster_logo ?? null;
+                if (logo) {
+                  setOverrideHeroLogoSrc(String(logo));
+                  setOverrideHeroLogoId(String(ident));
+                } else {
+                  setOverrideHeroLogoSrc(null);
+                  setOverrideHeroLogoId(null);
+                }
+                const titleOverride = (ov?.name ?? ov?.title) ?? null;
+                if (titleOverride) {
+                  setOverrideHeroTitle(String(titleOverride));
+                }
+              }
+            }
+          } catch {}
+        }
         if (!cancelled) {
           setOverrideBg(bg ?? null);
           setOverridePoster(poster ?? null);
