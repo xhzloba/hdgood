@@ -1550,7 +1550,7 @@ export default function MoviePage({
               }`}
             >
               {/* Meta Info */}
-              <div className="space-y-2 text-sm">
+              <div className="hidden md:block space-y-2 text-sm">
                 <h2 className="text-lg font-semibold text-zinc-200 mb-3 md:hidden">
                   {detailsTitle}
                 </h2>
@@ -1816,16 +1816,7 @@ export default function MoviePage({
                     {movie.type || data.type || "—"}
                   </span>
                 </div>
-                {movie.about && (
-                  <div className="mt-6 space-y-2 md:hidden">
-                    <h2 className="text-lg font-semibold text-zinc-200">
-                      Описание
-                    </h2>
-                    <p className="text-sm text-zinc-400 leading-relaxed">
-                      {movie.about}
-                    </p>
-                  </div>
-                )}
+                
               </div>
 
               {/* Cast column list with "Показать ещё" */}
@@ -1886,13 +1877,20 @@ export default function MoviePage({
                 )}
             </div>
 
+            {movie.about && (
+              <div className="mt-6 space-y-2 md:hidden">
+                <h2 className="text-lg font-semibold text-zinc-200">Описание</h2>
+                <p className="text-sm text-white leading-relaxed">{movie.about}</p>
+              </div>
+            )}
+
             {/* Description (moved above actors avatars) */}
             {movie.about && (
               <div className="space-y-2 hidden md:block">
                 <h2 className="text-lg font-semibold text-zinc-200">
                   Описание
                 </h2>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-white leading-relaxed">
                   {movie.about}
                 </p>
               </div>
