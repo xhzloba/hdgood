@@ -943,5 +943,18 @@
       "poster_colors.accentBl"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "65942fa9f9adc4da8a109610",
+    "timestamp": "2025-11-25T07:07:48.345Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
   }
 ]

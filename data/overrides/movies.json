@@ -427,5 +427,29 @@
     "bg_poster": {
       "backdrop": "https://images.kinorium.com/movie/poster/10034263/w1500_55532016.jpg"
     }
+  },
+  "65942fa9f9adc4da8a109610": {
+    "poster_colors": {
+      "accentTr": [
+        53,
+        197,
+        193
+      ],
+      "accentBr": [
+        138,
+        0,
+        2
+      ],
+      "accentBl": [
+        147,
+        1,
+        2
+      ],
+      "accentTl": [
+        49,
+        198,
+        194
+      ]
+    }
   }
 }
