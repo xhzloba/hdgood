@@ -1671,7 +1671,7 @@ export function MovieGrid({
               </div>
             </div>
 
-            <div className="relative md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+            <div className="relative w-full md:max-w-none md:mx-0 mx-auto">
               <div
                 ref={overlayGlowRef}
                 className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[130px] md:h-[160px] opacity-70 animate-pulse"
@@ -1716,44 +1716,46 @@ export function MovieGrid({
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
             <div className="relative p-3 md:p-4 smoke-flash">
-              <button
-                type="button"
-                aria-label="Закрыть"
-                onClick={() => {
-                  if (inlinePlayerOpen) {
-                    setInlineClosing(true);
-                    setPlayerVisible(false);
-                    setInfoVisible(false);
-                    setTimeout(() => {
-                      setInlinePlayerOpen(false);
-                      setInlineClosing(false);
-                      setSelectedMovie(null);
-                      setSelectedDetails(null);
-                      setSelectedError(null);
-                      setGridHeight(null);
-                      setTileWidth(null);
-                      try {
-                        onInlineInfoOpenChange?.(false);
-                      } catch {}
-                    }, 200);
-                  } else {
-                    setInfoVisible(false);
-                    setTimeout(() => {
-                      setSelectedMovie(null);
-                      setSelectedDetails(null);
-                      setSelectedError(null);
-                      setGridHeight(null);
-                      setTileWidth(null);
-                      try {
-                        onInlineInfoOpenChange?.(false);
-                      } catch {}
-                    }, 200);
-                  }
-                }}
-                className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
-              >
-                <IconX size={18} />
-              </button>
+              {!inlinePlayerOpen && (
+                <button
+                  type="button"
+                  aria-label="Закрыть"
+                  onClick={() => {
+                    if (inlinePlayerOpen) {
+                      setInlineClosing(true);
+                      setPlayerVisible(false);
+                      setInfoVisible(false);
+                      setTimeout(() => {
+                        setInlinePlayerOpen(false);
+                        setInlineClosing(false);
+                        setSelectedMovie(null);
+                        setSelectedDetails(null);
+                        setSelectedError(null);
+                        setGridHeight(null);
+                        setTileWidth(null);
+                        try {
+                          onInlineInfoOpenChange?.(false);
+                        } catch {}
+                      }, 200);
+                    } else {
+                      setInfoVisible(false);
+                      setTimeout(() => {
+                        setSelectedMovie(null);
+                        setSelectedDetails(null);
+                        setSelectedError(null);
+                        setGridHeight(null);
+                        setTileWidth(null);
+                        try {
+                          onInlineInfoOpenChange?.(false);
+                        } catch {}
+                      }, 200);
+                    }
+                  }}
+                  className="absolute right-2 top-2 inline-flex items-center justify-center w-8 h-8 rounded-full border border-[rgba(var(--ui-accent-rgb),0.55)] text-[rgba(var(--ui-accent-rgb),1)] hover:bg-[rgba(var(--ui-accent-rgb),0.12)] hover:border-[rgba(var(--ui-accent-rgb),0.85)] transition-all duration-200"
+                >
+                  <IconX size={18} />
+                </button>
+              )}
               {isDesktop && (
                 <>
                   {(() => {
@@ -1851,30 +1853,30 @@ export function MovieGrid({
                   </div>
                 </div>
                 <div
-                  className="min-w-0 flex-1 md:mx-0 mx-auto"
-                  style={
-                    isDesktop
-                      ? undefined
-                      : {
-                          width:
-                            tileWidth != null
-                              ? Math.max(tileWidth, 280)
-                              : "calc((100% - 8px)/2)",
-                        }
-                  }
-                >
-                  {inlinePlayerOpen ? (
-                    <div
-                      className={`relative mt-1 z-[10] md:mr-12 md:mx-0 mx-auto ${
+                className="min-w-0 flex-1 md:mx-0 mx-auto"
+                style={
+                  isDesktop
+                    ? undefined
+                    : inlinePlayerOpen
+                    ? { width: "100%" }
+                    : {
+                        width:
+                          tileWidth != null
+                            ? Math.max(tileWidth, 280)
+                            : "calc((100% - 8px)/2)",
+                      }
+                }
+              >
+                {inlinePlayerOpen ? (
+                  <div
+                      className={`relative mt-1 z-[10] w-full md:mr-12 md:mx-0 mx-auto ${
                         inlineClosing
                           ? "animate-out fade-out-0 zoom-out-95"
                           : "animate-in fade-in-0 zoom-in-95"
                       }`}
-                      style={{ width: (tileWidth != null ? Math.max(tileWidth, 280) : 280) }}
                     >
                       {(() => {
-                        const w =
-                          tileWidth != null ? Math.max(tileWidth, 280) : 280;
+                        const w = tileWidth != null ? Math.max(tileWidth, 280) : 280;
                         const h = Math.round((w * 3) / 2);
                         return (
                           <PlayerSelector
