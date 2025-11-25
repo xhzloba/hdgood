@@ -791,7 +791,7 @@ export default function MoviePage({
         </header>
 
         {/* Content */}
-        <div className="max-w-6xl mx-auto px-4 py-8 relative z-0">
+        <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
           <div className="grid md:grid-cols-[300px_1fr] gap-8">
             {/* Poster Skeleton */}
             <div className="space-y-4 md:sticky md:top-20 md:self-start">
@@ -801,7 +801,9 @@ export default function MoviePage({
               >
                 <Skeleton className="w-full h-full" />
               </div>
-              <Skeleton className="w-full h-12 rounded" />
+              <div className="w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none">
+                <Skeleton className="w-full h-12 rounded-xl" />
+              </div>
               {/* Trailer skeleton under poster (desktop only), matches trailer carousel ratio */}
               <div className="hidden md:block">
                 <AspectRatio ratio={16 / 9.5}>
@@ -812,14 +814,14 @@ export default function MoviePage({
 
             {/* Info Skeleton */}
             <div className="space-y-6">
-              <div>
-                <Skeleton className="h-9 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2" />
+              <div className="md:max-w-none max-w-[280px] md:mx-0 mx-auto md:text-left text-center">
+                <Skeleton className="h-9 w-[92%] mb-2 md:mx-0 mx-auto" />
+                <Skeleton className="h-4 w-[68%] md:mx-0 mx-auto" />
               </div>
 
               {/* Ratings */}
               <div className="grid md:grid-cols-2 gap-8 md:gap-16">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 md:justify-start justify-center">
                   <Skeleton className="w-16 h-6 rounded" />
                   <Skeleton className="w-16 h-6 rounded" />
                 </div>
@@ -830,8 +832,8 @@ export default function MoviePage({
 
               {/* Meta + Cast */}
               <div className="grid md:grid-cols-2 gap-8 md:gap-16">
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-32 mb-4" />
+                <div className="space-y-2 md:max-w-none max-w-[280px] md:mx-0 mx-auto md:text-left text-center">
+                  <Skeleton className="h-6 w-32 mb-4 hidden md:block" />
                   {Array.from({ length: 15 }).map((_, i) => (
                     <div key={i} className="flex gap-2">
                       <Skeleton className="h-4 w-[120px]" />
@@ -850,9 +852,11 @@ export default function MoviePage({
               
 
               {/* Description */}
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-20 w-full" />
+              <div className="space-y-2 md:max-w-none max-w-[280px] md:mx-0 mx-auto text-left md:text-left">
+                <Skeleton className="h-6 w-32 md:mx-0 mx-auto" />
+                <Skeleton className="h-3 w-[92%] mb-2 md:mx-0 mx-auto" />
+                <Skeleton className="h-3 w-[88%] mb-2 md:mx-0 mx-auto" />
+                <Skeleton className="h-3 w-[72%] md:mx-0 mx-auto" />
               </div>
 
               {/* Actor cards */}
@@ -1166,7 +1170,7 @@ export default function MoviePage({
       </header>
 
       {/* Movie Details */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8">
         <div className="grid md:grid-cols-[300px_1fr] gap-8">
           {/* Poster */}
           <div className="space-y-4 md:sticky md:top-20 md:self-start">

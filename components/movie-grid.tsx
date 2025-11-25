@@ -1224,13 +1224,13 @@ export function MovieGrid({
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
               <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-              <div className="relative">
-                <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-2 md:h-3 w-10" />
-                  <Skeleton className="h-2 md:h-3 w-16" />
+              <div className="relative md:text-left text-center">
+                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 md:mx-0 mx-auto" />
+                <div className="flex items-center gap-2 md:justify-start justify-center">
+                  <Skeleton className="h-2 md:h-3 w-10 md:mx-0 mx-auto" />
+                  <Skeleton className="h-2 md:h-3 w-16 md:mx-0 mx-auto" />
                 </div>
               </div>
             </div>
@@ -1265,13 +1265,13 @@ export function MovieGrid({
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               <Skeleton className="w-full h-full" />
             </div>
-            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
               <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-              <div className="relative">
-                <Skeleton className="h-3 md:h-4 w-3/4 mb-2" />
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-2 md:h-3 w-10" />
-                  <Skeleton className="h-2 md:h-3 w-16" />
+              <div className="relative md:text-left text-center">
+                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 md:mx-0 mx-auto" />
+                <div className="flex items-center gap-2 md:justify-start justify-center">
+                  <Skeleton className="h-2 md:h-3 w-10 md:mx-0 mx-auto" />
+                  <Skeleton className="h-2 md:h-3 w-16 md:mx-0 mx-auto" />
                 </div>
               </div>
             </div>
@@ -1501,10 +1501,22 @@ export function MovieGrid({
                   </div>
                 ) : null}
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
+              <div
+                className="min-w-0 md:max-w-none md:mx-0 mx-auto"
+                style={
+                  isDesktop
+                    ? undefined
+                    : {
+                        width:
+                          tileWidth != null
+                            ? Math.max(tileWidth, 280)
+                            : "calc((100% - 8px)/2)",
+                      }
+                }
+              >
+                <div className="flex items-center gap-2 md:justify-start justify-center">
                   <h3
-                    className="text-sm md:text-base font-semibold text-zinc-100 truncate"
+                    className="text-sm md:text-base font-semibold text-zinc-100 truncate md:text-left text-center"
                     title={selectedMovie.title || "Без названия"}
                   >
                     {selectedMovie.title || "Без названия"}
@@ -1514,15 +1526,21 @@ export function MovieGrid({
                       (selectedDetails as any)?.rating_kp ??
                       (selectedDetails as any)?.rating ??
                       selectedMovie.rating;
-                    return rating ? (
-                      <span
-                        className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
-                          rating
-                        )}`}
-                      >
-                        {formatRatingLabel(rating)}
-                      </span>
-                    ) : null;
+                    if (rating) {
+                      return (
+                        <span
+                          className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                            rating
+                          )}`}
+                        >
+                          {formatRatingLabel(rating)}
+                        </span>
+                      );
+                    }
+                    if (selectedLoading) {
+                      return <Skeleton className="h-[18px] w-10 rounded-sm" />;
+                    }
+                    return null;
                   })()}
                   <button
                     type="button"
@@ -1548,56 +1566,64 @@ export function MovieGrid({
                     <IconX size={16} />
                   </button>
                 </div>
-                <div className="mt-1 text-[12px] md:text-[13px] text-zinc-400">
-                  {(() => {
-                    const d: any = selectedDetails || {};
-                    const ov =
-                      (overridesMap as any)[String(selectedMovie.id)] ?? null;
-                    const year =
-                      ov?.year ??
-                      ov?.released ??
-                      ov?.release_year ??
-                      ov?.releaseYear ??
-                      ov?.details?.year ??
-                      ov?.details?.released ??
-                      ov?.details?.release_year ??
-                      ov?.details?.releaseYear ??
-                      d.year ??
-                      d.released ??
-                      d.release_year ??
-                      d.releaseYear ??
-                      selectedMovie.year;
-                    const countryRaw = d.country ?? selectedMovie.country;
-                    const quality = d.quality ?? selectedMovie.quality;
-                    const parts: string[] = [];
-                    if (year) parts.push(String(year));
-                    if (quality) parts.push(String(quality));
-                    if (countryRaw) {
-                      const arr = Array.isArray(countryRaw)
-                        ? countryRaw
-                        : String(countryRaw)
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean);
-                      if (arr.length > 0) parts.push(arr.join(" "));
-                    }
-                    return parts.length > 0 ? (
-                      <div className="flex items-center gap-2">
-                        {parts.map((p, i) => (
-                          <span key={i} className="truncate">
-                            {p}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null;
-                  })()}
+                <div className="hidden md:block mt-1 text-[12px] md:text-[13px] text-zinc-400 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                  {selectedLoading ? (
+                    <div className="flex items-center gap-2 md:justify-start justify-center">
+                      <Skeleton className="h-3 w-10" />
+                      <Skeleton className="h-3 w-14" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  ) : (
+                    (() => {
+                      const d: any = selectedDetails || {};
+                      const ov =
+                        (overridesMap as any)[String(selectedMovie.id)] ?? null;
+                      const year =
+                        ov?.year ??
+                        ov?.released ??
+                        ov?.release_year ??
+                        ov?.releaseYear ??
+                        ov?.details?.year ??
+                        ov?.details?.released ??
+                        ov?.details?.release_year ??
+                        ov?.details?.releaseYear ??
+                        d.year ??
+                        d.released ??
+                        d.release_year ??
+                        d.releaseYear ??
+                        selectedMovie.year;
+                      const countryRaw = d.country ?? selectedMovie.country;
+                      const quality = d.quality ?? selectedMovie.quality;
+                      const parts: string[] = [];
+                      if (year) parts.push(String(year));
+                      if (quality) parts.push(String(quality));
+                      if (countryRaw) {
+                        const arr = Array.isArray(countryRaw)
+                          ? countryRaw
+                          : String(countryRaw)
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                        if (arr.length > 0) parts.push(arr.join(" "));
+                      }
+                      return parts.length > 0 ? (
+                        <div className="flex items-center gap-2 md:justify-start justify-center">
+                          {parts.map((p, i) => (
+                            <span key={i} className="truncate">
+                              {p}
+                            </span>
+                          ))}
+                          </div>
+                      ) : null;
+                    })()
+                  )}
                 </div>
-                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
+                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px] text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                   {selectedLoading ? (
                     <div>
-                      <Skeleton className="h-3 w-[92%] mb-2" />
-                      <Skeleton className="h-3 w-[88%] mb-2" />
-                      <Skeleton className="h-3 w-[72%]" />
+                      <Skeleton className="h-3 w-full md:w-[92%] mb-2" />
+                      <Skeleton className="h-3 w-full md:w-[88%] mb-2" />
+                      <Skeleton className="h-3 w-full md:w-[72%]" />
                     </div>
                   ) : (
                     (() => {
@@ -1645,7 +1671,7 @@ export function MovieGrid({
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative md:max-w-none max-w-[280px] md:mx-0 mx-auto">
               <div
                 ref={overlayGlowRef}
                 className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[130px] md:h-[160px] opacity-70 animate-pulse"
@@ -1824,14 +1850,27 @@ export function MovieGrid({
                     )}
                   </div>
                 </div>
-                <div className="min-w-0 flex-1">
+                <div
+                  className="min-w-0 flex-1 md:mx-0 mx-auto"
+                  style={
+                    isDesktop
+                      ? undefined
+                      : {
+                          width:
+                            tileWidth != null
+                              ? Math.max(tileWidth, 280)
+                              : "calc((100% - 8px)/2)",
+                        }
+                  }
+                >
                   {inlinePlayerOpen ? (
                     <div
-                      className={`relative mt-1 z-[10] mr-12 ${
+                      className={`relative mt-1 z-[10] md:mr-12 md:mx-0 mx-auto ${
                         inlineClosing
                           ? "animate-out fade-out-0 zoom-out-95"
                           : "animate-in fade-in-0 zoom-in-95"
                       }`}
+                      style={{ width: (tileWidth != null ? Math.max(tileWidth, 280) : 280) }}
                     >
                       {(() => {
                         const w =
@@ -1860,73 +1899,87 @@ export function MovieGrid({
                           {selectedMovie!.title || "Без названия"}
                         </h3>
                         {(() => {
-                          const rating =
-                            (selectedDetails as any)?.rating_kp ??
-                            (selectedDetails as any)?.rating ??
-                            selectedMovie!.rating;
-                          return rating ? (
-                            <span
-                              className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
-                                rating
-                              )}`}
-                            >
-                              {formatRatingLabel(rating)}
-                            </span>
-                          ) : null;
-                        })()}
+                      const rating =
+                        (selectedDetails as any)?.rating_kp ??
+                        (selectedDetails as any)?.rating ??
+                        selectedMovie!.rating;
+                      if (rating) {
+                        return (
+                          <span
+                            className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                              rating
+                            )}`}
+                          >
+                            {formatRatingLabel(rating)}
+                          </span>
+                        );
+                      }
+                      if (selectedLoading) {
+                        return <Skeleton className="h-[18px] w-10 rounded-sm" />;
+                      }
+                      return null;
+                    })()}
+                  </div>
+                  <div className="hidden md:block mt-1 text-[12px] md:text-[13px] text-zinc-300 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                    {selectedLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-3 w-10" />
+                        <Skeleton className="h-3 w-14" />
+                        <Skeleton className="h-3 w-20" />
                       </div>
-                      <div className="mt-1 text-[12px] md:text-[13px] text-zinc-300">
-                        {(() => {
-                          const d: any = selectedDetails || {};
-                          const ov =
-                            (overridesMap as any)[String(selectedMovie!.id)] ??
-                            null;
-                          const year =
-                            ov?.year ??
-                            ov?.released ??
-                            ov?.release_year ??
-                            ov?.releaseYear ??
-                            ov?.details?.year ??
-                            ov?.details?.released ??
-                            ov?.details?.release_year ??
-                            ov?.details?.releaseYear ??
-                            d.year ??
-                            d.released ??
-                            d.release_year ??
-                            d.releaseYear ??
-                            selectedMovie!.year;
-                          const countryRaw =
-                            d.country ?? selectedMovie!.country;
-                          const quality = d.quality ?? selectedMovie!.quality;
-                          const parts: string[] = [];
-                          if (year) parts.push(String(year));
-                          if (quality) parts.push(String(quality));
-                          if (countryRaw) {
-                            const arr = Array.isArray(countryRaw)
-                              ? countryRaw
-                              : String(countryRaw)
-                                  .split(",")
-                                  .map((s) => s.trim())
-                                  .filter(Boolean);
-                            if (arr.length > 0) parts.push(arr.join(" "));
-                          }
-                          return parts.length > 0 ? (
-                            <div className="flex items-center gap-2">
-                              {parts.map((p, i) => (
-                                <span key={i} className="truncate">
-                                  {p}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null;
-                        })()}
+                    ) : (
+                      (() => {
+                        const d: any = selectedDetails || {};
+                        const ov =
+                          (overridesMap as any)[String(selectedMovie!.id)] ??
+                          null;
+                        const year =
+                          ov?.year ??
+                          ov?.released ??
+                          ov?.release_year ??
+                          ov?.releaseYear ??
+                          ov?.details?.year ??
+                          ov?.details?.released ??
+                          ov?.details?.release_year ??
+                          ov?.details?.releaseYear ??
+                          d.year ??
+                          d.released ??
+                          d.release_year ??
+                          d.releaseYear ??
+                          selectedMovie!.year;
+                        const countryRaw =
+                          d.country ?? selectedMovie!.country;
+                        const quality = d.quality ?? selectedMovie!.quality;
+                        const parts: string[] = [];
+                        if (year) parts.push(String(year));
+                        if (quality) parts.push(String(quality));
+                        if (countryRaw) {
+                          const arr = Array.isArray(countryRaw)
+                            ? countryRaw
+                            : String(countryRaw)
+                                .split(",")
+                                .map((s) => s.trim())
+                                .filter(Boolean);
+                          if (arr.length > 0) parts.push(arr.join(" "));
+                        }
+                        return parts.length > 0 ? (
+                      <div className="flex items-center gap-2 md:justify-start justify-center">
+                        {parts.map((p, i) => (
+                          <span key={i} className="truncate">
+                            {p}
+                          </span>
+                        ))}
                       </div>
-                      <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 min-h-[66px] md:min-h-[84px]">
+                    ) : null;
+                  })()
+                )}
+              </div>
+                      <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 min-h-[66px] md:min-h-[84px] text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                         {selectedLoading ? (
                           <div>
-                            <Skeleton className="h-3 w-[92%] mb-2" />
-                            <Skeleton className="h-3 w-[88%] mb-2" />
-                            <Skeleton className="h-3 w-[72%]" />
+                            <Skeleton className="h-3 w-full md:w-[92%] mb-2" />
+                            <Skeleton className="h-3 w-full md:w-[88%] mb-2" />
+                            <Skeleton className="h-3 w-full md:w-[72%]" />
                           </div>
                         ) : (
                           (() => {
@@ -1956,11 +2009,32 @@ export function MovieGrid({
                           })()
                         )}
                       </div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setInlineKpId(selectedKpId);
+                      <div
+                        className="mt-3 flex items-center gap-2 md:justify-start justify-center md:mx-0 mx-auto"
+                        style={
+                          isDesktop
+                            ? undefined
+                            : {
+                                width:
+                                  tileWidth != null
+                                    ? Math.max(tileWidth, 280)
+                                    : "calc((100% - 8px)/2)",
+                              }
+                        }
+                      >
+                        {selectedLoading ? (
+                          isDesktop ? (
+                            <div className="flex items-center gap-2 justify-start w-full">
+                              <Skeleton className="h-9 w-[140px] rounded-full" />
+                              <Skeleton className="h-9 w-[110px] rounded-full" />
+                            </div>
+                          ) : null
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInlineKpId(selectedKpId);
                             setInlineIframeUrl(selectedIframeUrl);
                             setInlinePlayerOpen(true);
                             setPlayerVisible(true);
@@ -1981,7 +2055,7 @@ export function MovieGrid({
                               } catch {}
                             }
                           }}
-                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-зinc-800/60 shadow-xs transition-all duration-200"
+                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                         >
                           Подробнее
                         </Link>
@@ -1989,6 +2063,8 @@ export function MovieGrid({
                           <span className="text-[12px] text-red-400">
                             {selectedError}
                           </span>
+                        )}
+                          </>
                         )}
                       </div>
                     </>
@@ -2070,6 +2146,11 @@ export function MovieGrid({
                         rect,
                         posterUrl: movie.poster,
                       };
+                      try {
+                        if (!isDesktop && rect && rect.width) {
+                          setTileWidth(Math.round(rect.width));
+                        }
+                      } catch {}
                     } else {
                       posterContextRef.current = null;
                     }
@@ -2274,10 +2355,10 @@ export function MovieGrid({
                     )}
                   </div>
                   {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
-                  <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                    <div className="relative z-[2]">
+                  <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
+                    <div className="relative z-[2] md:text-left text-center">
                       <h3
-                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100 md:text-left text-center"
                         title={movie.title || "Без названия"}
                       >
                         {movie.title || "Без названия"}
@@ -2287,7 +2368,7 @@ export function MovieGrid({
                         const genre = getPrimaryGenreFromMovie(movie);
                         if (!year && !genre) return null;
                         return (
-                          <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                          <div className="flex items-center gap-2 md:justify-start justify-center text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                             {year && <span>{year}</span>}
                             {year && genre && (
                               <span className="text-zinc-500/60">•</span>
@@ -2432,7 +2513,10 @@ export function MovieGrid({
                     </div>
                   ) : null}
                 </div>
-                <div className="min-w-0">
+              <div
+                className="min-w-0 md:mx-0 mx-auto"
+                style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : undefined}
+              >
                   <div className="flex items-center gap-2">
                     <h3
                       className="text-sm md:text-base font-semibold text-zinc-100 truncate"
@@ -2503,9 +2587,9 @@ export function MovieGrid({
                   <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px]">
                     {selectedLoading ? (
                       <div>
-                        <Skeleton className="h-3 w-[92%] mb-2" />
-                        <Skeleton className="h-3 w-[88%] mb-2" />
-                        <Skeleton className="h-3 w-[72%]" />
+                        <Skeleton className="h-3 w-full md:w-[92%] mb-2" />
+                        <Skeleton className="h-3 w-full md:w-[88%] mb-2" />
+                        <Skeleton className="h-3 w-full md:w-[72%]" />
                       </div>
                     ) : (
                       (() => {

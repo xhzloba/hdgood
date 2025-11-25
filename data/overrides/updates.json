@@ -1071,5 +1071,15 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-11-25T11:59:28.930Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
   }
 ]
