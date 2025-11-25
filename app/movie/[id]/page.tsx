@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
@@ -244,7 +245,11 @@ export default function MoviePage({
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 768px)").matches
+      : true
+  );
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const videoPosterRef = useRef<VideoPosterRef>(null);
@@ -792,6 +797,7 @@ export default function MoviePage({
 
         {/* Content */}
         <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
+          {isDesktop ? (
           <div className="grid md:grid-cols-[300px_1fr] gap-8">
             {/* Poster Skeleton */}
             <div className="space-y-4 md:sticky md:top-20 md:self-start">
@@ -879,6 +885,11 @@ export default function MoviePage({
               </div>
             </div>
           </div>
+          ) : (
+            <div className="flex items-center justify-center min-h-[calc(100dvh-64px)]">
+              <Loader size="lg" />
+            </div>
+          )}
         </div>
       </div>
     );
