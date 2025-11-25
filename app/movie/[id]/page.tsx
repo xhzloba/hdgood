@@ -1555,40 +1555,40 @@ export default function MoviePage({
                   {detailsTitle}
                 </h2>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Год:</span>
-                  <span className="text-zinc-200">{movie.released || "—"}</span>
+                  <span className="text-white min-w-[120px]">Год:</span>
+                  <span className="text-white">{movie.released || "—"}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Релиз:</span>
-                  <span className="text-zinc-200">{formatReleaseDate()}</span>
+                  <span className="text-white min-w-[120px]">Релиз:</span>
+                  <span className="text-white">{formatReleaseDate()}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Страна:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Страна:</span>
+                  <span className="text-white">
                     {Array.isArray(movie.country)
                       ? movie.country.join(", ")
                       : movie.country || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Жанр:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Жанр:</span>
+                  <span className="text-white">
                     {Array.isArray(movie.genre)
                       ? movie.genre.join(", ")
                       : movie.genre || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Режиссер:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Режиссер:</span>
+                  <span className="text-white">
                     {Array.isArray(movie.director)
                       ? movie.director.join(", ")
                       : movie.director || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Продюсер:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Продюсер:</span>
+                  <span className="text-white">
                     {(() => {
                       const val = franchise?.producer || movie.producer;
                       if (!val) return "—";
@@ -1604,10 +1604,8 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">
-                    Сценарист:
-                  </span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Сценарист:</span>
+                  <span className="text-white">
                     {(() => {
                       const val = franchise?.screenwriter || movie.screenwriter;
                       if (!val) return "—";
@@ -1623,8 +1621,8 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Художник:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Художник:</span>
+                  <span className="text-white">
                     {(() => {
                       const val = franchise?.design || movie.design;
                       if (
@@ -1654,8 +1652,8 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Оператор:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Оператор:</span>
+                  <span className="text-white">
                     {(() => {
                       const val = franchise?.operator || movie.operator;
                       if (
@@ -1685,14 +1683,14 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Возраст:</span>
-                  <span className="text-zinc-200">{movie.age || "—"}</span>
+                  <span className="text-white min-w-[120px]">Возраст:</span>
+                  <span className="text-white">{movie.age || "—"}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">
+                  <span className="text-white min-w-[120px]">
                     Рейтинг MPAA:
                   </span>
-                  <span className="text-zinc-200">
+                  <span className="text-white">
                     {(() => {
                       const v = franchise?.rate_mpaa;
                       return v && String(v).trim() !== "" ? v : "—";
@@ -1700,16 +1698,16 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Бюджет:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Бюджет:</span>
+                  <span className="text-white">
                     {franchise?.budget || movie.budget || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">
+                  <span className="text-white min-w-[120px]">
                     Сборы США:
                   </span>
-                  <span className="text-zinc-200">
+                  <span className="text-white">
                     {(() => {
                       const v = franchise?.fees_use;
                       return v && String(v).trim() !== "" ? v : "—";
@@ -1728,8 +1726,8 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Сборы РФ:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Сборы РФ:</span>
+                  <span className="text-white">
                     {(() => {
                       const v = franchise?.fees_rus;
                       return v && String(v).trim() !== "" ? v : "—";
@@ -1737,34 +1735,34 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Премьера:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Премьера:</span>
+                  <span className="text-white">
                     {formatDate(franchise?.premier || movie.premier)}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">
+                  <span className="text-white min-w-[120px]">
                     Премьера РФ:
                   </span>
-                  <span className="text-zinc-200">
+                  <span className="text-white">
                     {formatDate(franchise?.premier_rus || movie.premier_rus)}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Статус:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Статус:</span>
+                  <span className="text-white">
                     {franchise?.serial_status || movie.serial_status || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Слоган:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Слоган:</span>
+                  <span className="text-white">
                     {franchise?.slogan || movie.slogan || "—"}
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Качество:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Качество:</span>
+                  <span className="text-white">
                     {(() => {
                       const quality = franchise?.quality || movie.quality;
                       const tags = Array.isArray(movie.tags)
@@ -1778,8 +1776,8 @@ export default function MoviePage({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Озвучка:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Озвучка:</span>
+                  <span className="text-white">
                     {(() => {
                       const val = franchise?.voiceActing || movie.voiceActing;
                       if (!val) return "—";
@@ -1798,21 +1796,21 @@ export default function MoviePage({
                 {/* Количество сезонов для сериалов */}
                 {franchise?.seasons && Array.isArray(franchise?.seasons) && (
                   <div className="flex gap-2">
-                    <span className="text-zinc-400 min-w-[120px]">
-                      Сезонов:
-                    </span>
-                    <span className="text-zinc-200">
-                      {franchise?.seasons.length}
-                    </span>
-                  </div>
+                  <span className="text-white min-w-[120px]">
+                    Сезонов:
+                  </span>
+                  <span className="text-white">
+                    {franchise?.seasons.length}
+                  </span>
+                </div>
                 )}
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Время:</span>
-                  <span className="text-zinc-200">{formatDuration()}</span>
+                  <span className="text-white min-w-[120px]">Время:</span>
+                  <span className="text-white">{formatDuration()}</span>
                 </div>
                 <div className="flex gap-2">
-                  <span className="text-zinc-400 min-w-[120px]">Тип:</span>
-                  <span className="text-zinc-200">
+                  <span className="text-white min-w-[120px]">Тип:</span>
+                  <span className="text-white">
                     {movie.type || data.type || "—"}
                   </span>
                 </div>
@@ -1978,8 +1976,13 @@ export default function MoviePage({
 
             {/* Трейлеры для мобильной версии — сразу после блока «Актеры» */}
             {!isDesktop ? (
-              <div className="mt-3 relative">
-                {hasTrailers ? <TrailerPlayer trailers={rawTrailers} /> : null}
+              <div className="mt-3 relative space-y-2">
+                {hasTrailers ? (
+                  <>
+                    <h2 className="text-lg font-semibold text-zinc-200">Трейлеры</h2>
+                    <TrailerPlayer trailers={rawTrailers} />
+                  </>
+                ) : null}
               </div>
             ) : null}
 
