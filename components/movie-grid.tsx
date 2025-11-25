@@ -274,7 +274,7 @@ export function MovieGrid({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setWatchOpen(false);
+        handleCloseInline();
       }
     };
     if (typeof window !== "undefined") {
@@ -1197,8 +1197,12 @@ export function MovieGrid({
     try {
       if (typeof window === "undefined") return;
       const onKey = (e: KeyboardEvent) => {
-        if (!showInlineInfo || inlinePlayerOpen) return;
         const k = e.key;
+        if (k === "Escape") {
+          handleCloseInline();
+          return;
+        }
+        if (!showInlineInfo || inlinePlayerOpen) return;
         if (k !== "ArrowLeft" && k !== "ArrowRight") return;
         const t = e.target as any;
         const tn = String(t?.tagName || "").toLowerCase();
@@ -1380,6 +1384,24 @@ export function MovieGrid({
     }
     if (lastPageEmpty || isLoading) return;
     handleLoadMore();
+  };
+
+  const handleCloseInline = () => {
+    setPlayerVisible(false);
+    setInfoVisible(false);
+    setTimeout(() => {
+      setWatchOpen(false);
+      setInlinePlayerOpen(false);
+      setInlineClosing(false);
+      setSelectedMovie(null);
+      setSelectedDetails(null);
+      setSelectedError(null);
+      setGridHeight(null);
+      setTileWidth(null);
+      try {
+        onInlineInfoOpenChange?.(false);
+      } catch {}
+    }, 200);
   };
 
   const handleInlinePrev = () => {
