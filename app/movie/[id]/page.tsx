@@ -1247,7 +1247,7 @@ export default function MoviePage({
               )}
             </div>
             <div
-              className="w-full border rounded-xl overflow-hidden"
+              className="w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none border rounded-xl overflow-hidden"
               style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
             >
               <Button
@@ -1301,7 +1301,7 @@ export default function MoviePage({
             )}
 
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-zinc-100">
+              <h1 className="text-3xl font-bold text-zinc-100 text-center md:text-left">
                 <span>
                   {movie.name}
                   {titleYear ? ` (${titleYear})` : ""}
@@ -1317,14 +1317,42 @@ export default function MoviePage({
                 </Button>
               </h1>
               {movie.originalname && movie.originalname !== movie.name && (
-                <p className="text-sm text-zinc-500">{movie.originalname}</p>
+                <p className="text-sm text-zinc-500 text-center md:text-left">{movie.originalname}</p>
               )}
+              {(() => {
+                const hasYear = !!(titleYear && titleYear.length > 0)
+                const genreRaw = (movie as any).genre
+                const hasGenre = Array.isArray(genreRaw)
+                  ? genreRaw.length > 0
+                  : !!genreRaw
+                const countryRaw = (movie as any).country
+                const countryStr = Array.isArray(countryRaw)
+                  ? countryRaw.join(", ")
+                  : countryRaw ? String(countryRaw) : ""
+                const hasCountry = !!(countryStr && countryStr.trim() !== "")
+                if (!hasYear && !hasGenre && !hasCountry) return null
+                const parts: string[] = []
+                if (hasCountry) parts.push(countryStr)
+                if (hasYear) parts.push(titleYear as string)
+                if (hasGenre)
+                  parts.push(Array.isArray(genreRaw) ? genreRaw.join(", ") : String(genreRaw))
+                return (
+                  <div className="text-sm text-zinc-400 text-center md:hidden">
+                    {parts.map((p, i) => (
+                      <span key={i}>
+                        {i > 0 && <span className="text-zinc-500/60 mx-1">•</span>}
+                        <span>{p}</span>
+                      </span>
+                    ))}
+                  </div>
+                )
+              })()}
             </div>
 
             {/* Ratings */}
             <div className="grid md:grid-cols-2 gap-16 items-start text-sm">
               {/* Left: KP & IMDb */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 justify-center md:justify-start">
                 <div className="py-1 rounded flex items-center gap-2">
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
@@ -1430,8 +1458,8 @@ export default function MoviePage({
               </div>
               {/* Right: HDBOX summary aligned to start of Cast column */}
               {ratingHdbox != null && (
-                <div className="flex flex-col md:pl-8">
-                  <div className="flex items-center gap-2">
+                <div className="hidden md:flex flex-col items-center text-center md:items-start md:text-left md:pl-8">
+                  <div className="flex items-center gap-2 justify-center md:justify-start">
                     {ratingHdbox > 8.5 ? (
                       <img
                         src="data:image/svg+xml,%3csvg width='10' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M7.26 19.395s1.385-.617 1.768-1.806c.382-1.188-.384-2.498-.384-2.498s-1.386.618-1.768 1.806c-.382 1.189.384 2.498.384 2.498Z' fill='url(%23a)'/%3e%3cpath d='M6.583 19.679s-1.457.422-2.516-.24c-1.058-.662-1.317-2.157-1.317-2.157s1.457-.422 2.515.24c1.059.662 1.318 2.157 1.318 2.157Z' fill='url(%23b)'/%3e%3cpath d='M5.793 15.217s-.142-1.51.706-2.427c.847-.916 2.364-.892 2.364-.892s.143 1.51-.705 2.427-2.365.892-2.365.892Z' fill='url(%23c)'/%3e%3cpath d='M5.547 6.953s1.848-.823 2.357-2.407c.733-2.278-.28-4.048-.28-4.048s-2.344.66-3.085 2.965c-.742 2.305 1.008 3.49 1.008 3.49Z' fill='url(%23d)'/%3e%3cpath d='M4.806 10.864s-2.353-.03-3.626-1.488C-.094 7.918.194 5.583.194 5.583s2.353.029 3.626 1.487c1.274 1.459.986 3.794.986 3.794Z' fill='url(%23e)'/%3e%3cpath d='M5.484 10.822s-.189-2.014.942-3.235c1.13-1.221 3.153-1.188 3.153-1.188s.19 2.014-.942 3.236c-1.13 1.221-3.153 1.187-3.153 1.187Z' fill='url(%23f)'/%3e%3cpath d='M5.32 15.337s-1.989.366-3.305-.653C.698 13.665.554 11.648.554 11.648s1.99-.366 3.305.653c1.317 1.018 1.462 3.036 1.462 3.036Z' fill='url(%23g)'/%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M6.313 3.167c.205.034-.51 4.06-.544 4.264-.59 3.547-.394 9.795 3.33 15.285a.384.384 0 0 1-.08.518.373.373 0 0 1-.536-.083C4.61 17.453 4.416 10.978 5.025 7.308c.034-.205 1.083-4.175 1.288-4.141Z' fill='url(%23h)'/%3e%3cdefs%3e%3clinearGradient id='a' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='b' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='c' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='d' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='e' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='f' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='g' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3clinearGradient id='h' x1='3.7' y1='3.033' x2='9.68' y2='12.801' gradientUnits='userSpaceOnUse'%3e%3cstop stop-color='%23FFD25E'/%3e%3cstop offset='1' stop-color='%23B59646'/%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e"
@@ -1481,7 +1509,7 @@ export default function MoviePage({
                       />
                     )}
                   </div>
-                  <span className="text-xs text-zinc-400 mt-0.5">
+                  <span className="hidden md:inline text-xs text-zinc-400 mt-0.5">
                     {ratingHdbox > 8.5
                       ? "Шедевр"
                       : ratingHdbox >= 7
