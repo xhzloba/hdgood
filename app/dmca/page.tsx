@@ -34,7 +34,6 @@ export default function DmcaPage() {
                   src="https://pbs.twimg.com/profile_images/1243623122089041920/gVZIvphd_400x400.jpg"
                   alt="TMDB"
                   className="h-5 w-5 rounded"
-                  style={{ boxShadow: "0 0 0 2px rgba(var(--ui-accent-rgb), 0.5)" }}
                 />
               </div>
               <div className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs text-white"
