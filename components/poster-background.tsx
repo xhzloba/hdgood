@@ -830,7 +830,7 @@ export function PosterBackground({
           const [erbl, egbl, ebbl2] = enhanceColor(rbl, gbl, bbl2);
 
           // 4 угла как в примере — circle farthest-side
-          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.85)`;
+          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 1)`;
           const accentTR = `rgba(${ertr}, ${egtr}, ${ebtr}, 0.85)`;
           const accentBR = `rgba(${erbr}, ${egbr}, ${ebbr}, 0.85)`;
           const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.85)`;
@@ -841,8 +841,9 @@ export function PosterBackground({
           const accentBase = `${ar}, ${ag}, ${ab}`;
 
           // 4 угла с circle farthest-side как в примере
+          // TL более плотный — держится до 50%, потом плавно в transparent
           overlayGradients.push(
-            `radial-gradient(circle farthest-side at top left, ${accentTL}, transparent 70%)`,
+            `radial-gradient(circle farthest-side at top left, ${accentTL} 0%, ${accentTL} 35%, rgba(${ertl}, ${egtl}, ${ebtl}, 0.5) 55%, transparent 75%)`,
             `radial-gradient(circle farthest-side at top right, ${accentTR}, transparent 70%)`,
             `radial-gradient(circle farthest-side at bottom right, ${accentBR}, transparent 70%)`,
             `radial-gradient(circle farthest-side at bottom left, ${accentBL}, transparent 70%)`
@@ -951,7 +952,7 @@ export function PosterBackground({
     const [rtr, gtr, btr] = useTr2 || [0, 0, 0];
     const [rbr, gbr, bbr] = useBr2 || [0, 0, 0];
     const [rbl, gbl, bbl2] = useBl2 || [0, 0, 0];
-    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.85)`;
+    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 1)`;
     const accentTR = `rgba(${rtr}, ${gtr}, ${btr}, 0.85)`;
     const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.85)`;
     const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.85)`;
@@ -960,9 +961,10 @@ export function PosterBackground({
     const ab = Math.round((btl + btr + bbr + bbl2) / 4);
     const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`;
     // Базовые слои — 4 угла с circle farthest-side
+    // TL более плотный — держится до 50%, потом плавно в transparent
     const layers = [
       "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.22) 26%, transparent 60%)",
-      `radial-gradient(circle farthest-side at top left, ${accentTL}, transparent 70%)`,
+      `radial-gradient(circle farthest-side at top left, ${accentTL} 0%, ${accentTL} 35%, rgba(${rtl}, ${gtl}, ${btl}, 0.5) 55%, transparent 75%)`,
       `radial-gradient(circle farthest-side at top right, ${accentTR}, transparent 70%)`,
       `radial-gradient(circle farthest-side at bottom right, ${accentBR}, transparent 70%)`,
       `radial-gradient(circle farthest-side at bottom left, ${accentBL}, transparent 70%)`,
