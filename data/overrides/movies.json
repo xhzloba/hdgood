@@ -338,6 +338,28 @@
     }
   },
   "68fff9779630419905edf2a5": {
+    "poster_colors": {
+      "accentTl": [
+        58,
+        103,
+        108
+      ],
+      "accentBl": [
+        79,
+        10,
+        10
+      ],
+      "accentBr": [
+        71,
+        8,
+        8
+      ],
+      "accentTr": [
+        46,
+        90,
+        92
+      ]
+    },
     "poster_logo": "https://images.kinorium.com/movie/plogo/9078233/w1500_55475548.png"
   },
   "6593fdc6e264662a2fc5ec3b": {

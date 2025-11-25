@@ -349,6 +349,8 @@ export default function AdminOverridesPage() {
       next["poster_colors.dominant2"] = asCsv(pc.dominant2);
     if (pc?.accentTl != null)
       next["poster_colors.accentTl"] = asCsv(pc.accentTl);
+    if (pc?.accentTr != null)
+      next["poster_colors.accentTr"] = asCsv(pc.accentTr);
     if (pc?.accentBr != null)
       next["poster_colors.accentBr"] = asCsv(pc.accentBr);
     if (pc?.accentBl != null)
@@ -585,7 +587,7 @@ export default function AdminOverridesPage() {
             <div className="text-xs text-zinc-400 mb-4">
               Слева загружается постер по текущему ident. Цвета извлекаются
               автоматически, как на детальной странице. Ниже можно задать свои
-              цвета для 3 углов и 2 доминантов.
+              цвета для 4 углов и 2 доминантов.
             </div>
 
             <div className="grid md:grid-cols-[320px_1fr] gap-4">
@@ -637,6 +639,9 @@ export default function AdminOverridesPage() {
                     accentTl:
                       parseColor(formValues["poster_colors.accentTl"]) ||
                       (existingOverride as any)?.poster_colors?.accentTl,
+                    accentTr:
+                      parseColor(formValues["poster_colors.accentTr"]) ||
+                      (existingOverride as any)?.poster_colors?.accentTr,
                     accentBr:
                       parseColor(formValues["poster_colors.accentBr"]) ||
                       (existingOverride as any)?.poster_colors?.accentBr,
@@ -680,7 +685,7 @@ export default function AdminOverridesPage() {
                           </div>
                           <div
                             ref={previewVarsRef}
-                            className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 bg-zinc-900/40"
+                            className="grid grid-cols-3 gap-2 p-3 bg-zinc-900/40"
                           >
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">
@@ -744,6 +749,26 @@ export default function AdminOverridesPage() {
                             </div>
                             <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
                               <div className="text-[11px] text-zinc-400 mb-1">
+                                Accent TR
+                              </div>
+                              <button
+                                type="button"
+                                className="w-11 h-11 rounded border border-zinc-700/50"
+                                style={{
+                                  backgroundColor:
+                                    "rgba(var(--poster-accent-tr-rgb), 1)",
+                                }}
+                                title="Кликни, чтобы подставить в Accent TR"
+                                onClick={() =>
+                                  setFieldFromCssVar(
+                                    "poster_colors.accentTr",
+                                    "--poster-accent-tr-rgb"
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="p-2 rounded border border-zinc-700/60 bg-zinc-900/40">
+                              <div className="text-[11px] text-zinc-400 mb-1">
                                 Accent BR
                               </div>
                               <button
@@ -799,14 +824,14 @@ export default function AdminOverridesPage() {
                   Вводи как "r,g,b" или HEX "#rrggbb". Пустые поля — берутся из
                   авто-извлечения.
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">
                       Dominant #1
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <input
-                        className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
                         value={formValues["poster_colors.dominant1"] ?? ""}
                         onChange={(e) =>
                           updateField("poster_colors.dominant1", e.target.value)
@@ -855,9 +880,9 @@ export default function AdminOverridesPage() {
                     <label className="block text-xs text-zinc-400 mb-1">
                       Dominant #2
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <input
-                        className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
                         value={formValues["poster_colors.dominant2"] ?? ""}
                         onChange={(e) =>
                           updateField("poster_colors.dominant2", e.target.value)
@@ -906,9 +931,9 @@ export default function AdminOverridesPage() {
                     <label className="block text-xs text-zinc-400 mb-1">
                       Accent TL (верх-лево)
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <input
-                        className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
                         value={formValues["poster_colors.accentTl"] ?? ""}
                         onChange={(e) =>
                           updateField("poster_colors.accentTl", e.target.value)
@@ -955,11 +980,62 @@ export default function AdminOverridesPage() {
                   </div>
                   <div>
                     <label className="block text-xs text-zinc-400 mb-1">
+                      Accent TR (верх-право)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      <input
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        value={formValues["poster_colors.accentTr"] ?? ""}
+                        onChange={(e) =>
+                          updateField("poster_colors.accentTr", e.target.value)
+                        }
+                        placeholder={(() => {
+                          const v = (existingOverride as any)?.poster_colors
+                            ?.accentTr;
+                          return Array.isArray(v) ? v.join(",") : "";
+                        })()}
+                      />
+                      <button
+                        type="button"
+                        className="h-8 px-2 bg-zinc-700/60 hover:bg-zinc-600 rounded text-xs"
+                        onClick={async () => {
+                          const hex = await pickWithEyedropper();
+                          if (hex) updateField("poster_colors.accentTr", hex);
+                        }}
+                      >
+                        Пипетка
+                      </button>
+                      <button
+                        type="button"
+                        className={`h-8 px-2 rounded text-xs ${
+                          activePickField === "poster_colors.accentTr"
+                            ? "text-white"
+                            : "bg-zinc-700/60 hover:bg-zinc-600"
+                        }`}
+                        onClick={() =>
+                          setActivePickField((p) =>
+                            p === "poster_colors.accentTr"
+                              ? null
+                              : "poster_colors.accentTr"
+                          )
+                        }
+                        style={
+                          activePickField === "poster_colors.accentTr"
+                            ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
+                            : undefined
+                        }
+                      >
+                        С постера
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-400 mb-1">
                       Accent BR (низ-право)
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <input
-                        className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
                         value={formValues["poster_colors.accentBr"] ?? ""}
                         onChange={(e) =>
                           updateField("poster_colors.accentBr", e.target.value)
@@ -1008,9 +1084,9 @@ export default function AdminOverridesPage() {
                     <label className="block text-xs text-zinc-400 mb-1">
                       Accent BL (низ-лево)
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <input
-                        className="flex-1 h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                        className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
                         value={formValues["poster_colors.accentBl"] ?? ""}
                         onChange={(e) =>
                           updateField("poster_colors.accentBl", e.target.value)
