@@ -674,10 +674,21 @@ export function MovieGrid({
     () => (display || []).map((m: any) => String(m.id)).join(","),
     [display]
   );
+  const [pendingOverrideIds, setPendingOverrideIds] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (!idsString) return;
+    const idsArray = idsString.split(",").filter(Boolean);
     const controller = new AbortController();
+    setPendingOverrideIds((prev) => {
+      const next = new Set(prev);
+      for (const id of idsArray) {
+        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap)) next.add(id);
+      }
+      return next;
+    });
     (async () => {
       try {
         const res = await fetch(
@@ -688,14 +699,32 @@ export function MovieGrid({
             headers: { Accept: "application/json" },
           }
         );
-        if (!res.ok) return;
-        const data = (await res.json()) || {};
+        const ok = res.ok;
+        const data = ok ? (await res.json()) || {} : {};
         setOverridesMap((prev) => {
-          const next = { ...prev, ...data };
+          const next: Record<string, any> = { ...prev, ...data };
+          for (const id of idsArray) {
+            if (!(id in next)) next[id] = null;
+          }
           Object.assign(overridesCacheRef, next);
           return next;
         });
-      } catch {}
+      } catch {
+        setOverridesMap((prev) => {
+          const next: Record<string, any> = { ...prev };
+          for (const id of idsArray) {
+            if (!(id in next)) next[id] = null;
+          }
+          Object.assign(overridesCacheRef, next);
+          return next;
+        });
+      } finally {
+        setPendingOverrideIds((prev) => {
+          const next = new Set(prev);
+          for (const id of idsArray) next.delete(id);
+          return next;
+        });
+      }
     })();
     return () => controller.abort();
   }, [idsString]);
@@ -754,6 +783,11 @@ export function MovieGrid({
     },
     [overridesMap]
   );
+
+  useEffect(() => {
+    if (!selectedMovie) return;
+    setSelectedMovie((prev: any) => applyOverridesToMovie(prev));
+  }, [overridesMap]);
 
   useEffect(() => {
     try {
@@ -2061,137 +2095,138 @@ export function MovieGrid({
                   }}
                 >
                   <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-                    {movie.intro_video ? (
-                      isLoadMoreMode ? (
-                        <a
-                          href={`/movie/${movie.id}`}
-                          className="block absolute inset-0"
-                          onClick={(e) => {
-                            if (
-                              e.button === 0 &&
-                              !(
-                                e.metaKey ||
-                                e.ctrlKey ||
-                                e.shiftKey ||
-                                e.altKey
-                              )
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
+                    {(() => {
+                      const idStr = String(movie.id);
+                      const ovEntry = (overridesMap as any)[idStr];
+                      const known = ovEntry !== undefined;
+                      const posterSrc = known ? (ovEntry?.poster ?? movie.poster ?? null) : null;
+                      const hasVideo = !!movie.intro_video;
+                      const waiting = !known;
+                      if (hasVideo) {
+                        if (waiting) {
+                          return isLoadMoreMode ? (
+                            <a
+                              href={`/movie/${movie.id}`}
+                              className="block absolute inset-0"
+                              onClick={(e) => {
+                                if (
+                                  e.button === 0 &&
+                                  !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <Skeleton className="absolute inset-0 w-full h-full" />
+                            </a>
+                          ) : (
+                            <Skeleton className="absolute inset-0 w-full h-full" />
+                          );
+                        }
+                        return isLoadMoreMode ? (
+                          <a
+                            href={`/movie/${movie.id}`}
+                            className="block absolute inset-0"
+                            onClick={(e) => {
+                              if (
+                                e.button === 0 &&
+                                !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <VideoPoster
+                              src={movie.intro_video}
+                              poster={posterSrc || undefined}
+                              className="absolute inset-0 w-full h-full"
+                              onPosterLoad={() => handleImageLoad(movie.id)}
+                            />
+                          </a>
+                        ) : (
                           <VideoPoster
                             src={movie.intro_video}
-                            poster={movie.poster}
+                            poster={posterSrc || undefined}
                             className="absolute inset-0 w-full h-full"
                             onPosterLoad={() => handleImageLoad(movie.id)}
                           />
-                        </a>
-                      ) : (
-                        <VideoPoster
-                          src={movie.intro_video}
-                          poster={movie.poster}
-                          className="absolute inset-0 w-full h-full"
-                          onPosterLoad={() => handleImageLoad(movie.id)}
-                        />
-                      )
-                    ) : movie.poster && !errorImages.has(String(movie.id)) ? (
-                      isLoadMoreMode ? (
-                        <a
-                          href={`/movie/${movie.id}`}
-                          className="block absolute inset-0"
-                          onClick={(e) => {
-                            if (
-                              e.button === 0 &&
-                              !(
-                                e.metaKey ||
-                                e.ctrlKey ||
-                                e.shiftKey ||
-                                e.altKey
-                              )
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
+                        );
+                      }
+                      if (posterSrc && !errorImages.has(String(movie.id))) {
+                        const eager = (virtualizationEnabled && rowHeight ? vVirtStart + index : index) < effectiveCols;
+                        const cls = `absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                          loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                        }`;
+                        const style = { transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" } as const;
+                        return isLoadMoreMode ? (
+                          <a
+                            href={`/movie/${movie.id}`}
+                            className="block absolute inset-0"
+                            onClick={(e) => {
+                              if (e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <img
+                              src={posterSrc || "/placeholder.svg"}
+                              alt={movie.title || "Постер"}
+                              decoding="async"
+                              loading={eager ? "eager" : "lazy"}
+                              fetchPriority={eager ? "high" : "low"}
+                              className={cls}
+                              style={style}
+                              onLoad={() => handleImageLoad(movie.id)}
+                              onError={() => handleImageError(movie.id)}
+                            />
+                          </a>
+                        ) : (
                           <img
-                            src={movie.poster || "/placeholder.svg"}
+                            src={posterSrc || "/placeholder.svg"}
                             alt={movie.title || "Постер"}
                             decoding="async"
-                            loading={
-                              (virtualizationEnabled && rowHeight
-                                ? vVirtStart + index
-                                : index) < effectiveCols
-                                ? "eager"
-                                : "lazy"
-                            }
-                            fetchPriority={
-                              (virtualizationEnabled && rowHeight
-                                ? vVirtStart + index
-                                : index) < effectiveCols
-                                ? "high"
-                                : "low"
-                            }
-                            className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                              loadedImages.has(String(movie.id))
-                                ? "opacity-100 blur-0 scale-100"
-                                : "opacity-0 blur-md scale-[1.02]"
-                            }`}
-                            style={{
-                              transition:
-                                "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
-                              willChange: "opacity, filter, transform",
-                            }}
+                            loading={eager ? "eager" : "lazy"}
+                            fetchPriority={eager ? "high" : "low"}
+                            className={cls}
+                            style={style}
                             onLoad={() => handleImageLoad(movie.id)}
                             onError={() => handleImageError(movie.id)}
                           />
+                        );
+                      }
+                      if (waiting) {
+                        return isLoadMoreMode ? (
+                          <a href={`/movie/${movie.id}`} className="block">
+                            <Skeleton className="absolute inset-0 w-full h-full" />
+                          </a>
+                        ) : (
+                          <Skeleton className="absolute inset-0 w-full h-full" />
+                        );
+                      }
+                      return isLoadMoreMode ? (
+                        <a href={`/movie/${movie.id}`} className="block">
+                          <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
                         </a>
                       ) : (
-                        <img
-                          src={movie.poster || "/placeholder.svg"}
-                          alt={movie.title || "Постер"}
-                          decoding="async"
-                          loading={
-                            (virtualizationEnabled && rowHeight
-                              ? vVirtStart + index
-                              : index) < effectiveCols
-                              ? "eager"
-                              : "lazy"
-                          }
-                          fetchPriority={
-                            (virtualizationEnabled && rowHeight
-                              ? vVirtStart + index
-                              : index) < effectiveCols
-                              ? "high"
-                              : "low"
-                          }
-                          className={`absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
-                            loadedImages.has(String(movie.id))
-                              ? "opacity-100 blur-0 scale-100"
-                              : "opacity-0 blur-md scale-[1.02]"
-                          }`}
+                        <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                      );
+                    })()}
+                    {(() => {
+                      const idStr = String(movie.id);
+                      const ovEntry = (overridesMap as any)[idStr];
+                      const known = ovEntry !== undefined;
+                      const posterSrc = known ? (ovEntry?.poster ?? movie.poster ?? null) : null;
+                      return (posterSrc || movie.intro_video) && loadedImages.has(String(movie.id)) ? (
+                        <div
+                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
                           style={{
-                            transition:
-                              "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
-                            willChange: "opacity, filter, transform",
+                            background:
+                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
                           }}
-                          onLoad={() => handleImageLoad(movie.id)}
-                          onError={() => handleImageError(movie.id)}
                         />
-                      )
-                    ) : isLoadMoreMode ? (
-                      <a href={`/movie/${movie.id}`} className="block">
-                        <div className="text-zinc-600 text-[10px] text-center p-1">
-                          Нет постера
-                        </div>
-                      </a>
-                    ) : (
-                      <div className="text-zinc-600 text-[10px] text-center p-1">
-                        Нет постера
-                      </div>
-                    )}
-                    {(movie.poster || movie.intro_video) &&
-                      loadedImages.has(String(movie.id)) && (
+                      ) : null;
+                    })()}
+                      {loadedImages.has(String(movie.id)) && (
                         <div
                           className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
                           style={{

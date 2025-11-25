@@ -162,10 +162,10 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/11046576/w1500_55390653.png"
   },
   "68d5bcbdc8c62006017914a8": {
+    "poster_logo": "/movies/logo/1.png",
     "bg_poster": {
-      "backdrop": "https://images.kinorium.com/movie/poster/2021785/w1500_55267492.jpg"
-    },
-    "poster_logo": "https://images.kinorium.com/movie/plogo/2021785/w1500_55215314.png"
+      "backdrop": "/movies/1.jpg"
+    }
   },
   "691654e274e3057d2efdfb0f": {
     "poster_colors": {
@@ -220,6 +220,7 @@
     }
   },
   "68d5bb609906b3f36b1b168f": {
+    "poster_logo": "/movies/logo/3.webp",
     "poster": "/movies/bitva-poster.jpg",
     "bg_poster": {
       "backdrop": "/movies/bitva-backdrop.jpg"
@@ -423,6 +424,7 @@
     "poster_logo": "https://images.kinorium.com/movie/logo_light/472809/original_54860499.png"
   },
   "6924d565cf9d2a9df5d9277f": {
+    "poster_logo": "/movies/logo/2.webp",
     "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/4483445/43159550-3bce-4a03-b304-97dbfe8a9f01/600x900",
     "bg_poster": {
       "backdrop": "https://images.kinorium.com/movie/poster/10034263/w1500_55532016.jpg"
@@ -478,6 +480,15 @@
         38,
         32
       ]
+    }
+  },
+  "6593f87e8914c04deae9aa7f": {
+    "poster_logo": "/movies/logo/4.png"
+  },
+  "6907d463402995ec3f114882": {
+    "poster_logo": "/movies/logo/5.png",
+    "bg_poster": {
+      "backdrop": "https://kinopoisk-ru.clstorage.net/3RJ043Q67/f11ebecpeG5R/GG3CMg3LhW2TyH4X3WETFbfTrjm6MXamcg5mXRkPXdrsoIBvzlol9QJ4knIAPvX_G4_ydWfhgnFqjVuGqL1PdFy40yasrgA84qmOUr1kMsRXY5oJv1Syx6M747htDF65zgZyncxJ81cASZf2YesAOv5rtnCjxFaAXruNV96a3BFqHVOTaco0vkdKvKX-YsCDxqB_DdrBNmKCD2ZOmi99Wk70IM4uyyBFAbmEtEcbUal-SNbysjbxAYy63vMfyOwDq5zAc5kLl25HisyUfwNz8PUTr-zYIZaCEE4lvkiMD-h9lhMN3nuhZ9O497dEK3Ioj7r1gNLEoFLdeC4B_6kMA9pNcCA7yDR8dVt8xA8BAfNGc61t6rFnULMexexKr5xY7zdhv10LUUcB-lZ117lC2W-7NaJiReBDjajM4e0arWCqH2Hxa2ombaVqnwfPANCjRULfP1pgF2DRPFQPa22OWk81UTwdewBW8krFJadpksuOOTRjslRSoCzJTdC_mQ2ySL-wUgu5R-yXy1wVvbEzwgayr_0KAoWx8F2078sPTepMp1DvvmmgV_L6dGc0KXLrfvnUI3KVkQEvWJ-xbJisMIqMkWAKqeS-xApMRe_CAkF2AP9tqQFnILOuBT64z77ZXiTTLG0KcKcQeoSmF9tgyg3oRvCyZvCjXOj-wY3KTbIqjkHBKlh13NcZPtZN03ExhFENHMphl6CDrjQNGG692W10kGycyMO2o-pUJ9Y7gTuNCfZzIFWCscxq_yG86Q4AeeyxcxuZBB5GeJx1f-PA4zRhX93bYFfCc-6kHmiuv8k9hqLMPgkjFvJL5udFG0KJf5uHExCXYUA-Sy-SjtrMcGncwIKpiWVc9LsfFV9jw8PFwS5eGBFU0sD-N91Zf1zqjoUzLE8pw6UgC3Wl17kR6F5r9FOyZNLT3_lsA_8Z_DFIXHNxmktGXIfZfpQfcFLgBBD8fTijtKDD7Ac_aY3tqM8mY80cOcNH0PtHxHabIYp8SicCgNTRID5qn9JO6swh6-ygEAvbd54kS560XgIBwxXDrU850IeyIzzHHdjMnCqddEPOv4niRJCIlufUeLPIvDoV82JFs-Lteszzngt9QIqO0eBICjZ9NhveZy1CceA2Al_-GBBXc_IPZq-Ir8zJzgUxLizrMbbROgUkB4nh6Qx6FvDQF5JQXqi-MYyJXEHpnZGAuTp2TPd7_XVdkQAB99Nv_EtwNELSXWX8e02d6ny3QPytKnBm0ShmtXSrcHi-CDWQcNeBM595TJJcmi-wi50yY_m71R7Xqw2XbrEggFZAbD8osUZhslwHH3kP_3rvhXNNnfsyVJD59pZXShC5fFgmIsN14kHdeM7AzMpuMou9sXFoKCVvB8ucV44gQNLUcI_fuhBWQJL-BSyIT_4L7iVzT1_Y8RbAO6aUVFkTmi65p5MgRmAz7drNI08IDKI7DTNCuouEP8XZnNYdM3ERF7OcL3ghhIPzvoQOuQ-NyQ6Ggi9_ehOGk7lklmZb8NqPy-eisgeCk41aXoLfKq5Sa78gARv5Jd_1my2lz_MAwUWhH-3pUqVAsq5m_vrNHskOB9OcrZkDF6OLpdYlSQKIvdgGQJPXgzE9yi8jPIvd4gs9ACHbuWU-1KlO1q9gETPFE2wM6PK04SO8JB7I3r2bzIZCbS3IcKaiaBZFRhqTyDwJ1pFgJBAiDustMIzL3jH4H4ASm2jXvfV7XCfeYcETJ-MdLGjBx1HR7EafOG4NmXyEcP-cyAIFgNlnBIU4MIk-ONbjQoRQ0mzLP-LtSx9QOg1R88kKdX6GeqxH30Aw8xXj7404YlUhwl52POlen_ltNzPdTRrgZrAZprfHaUIrjnjF8lH2wrMdiXyxnJrNwipc0wPp64dP1etNJD-RE7An4p_9W-GVU_M-lTy6ze_J73XQXd9JQdSgy7akt1kTyF_ptZEidaBxHQs-Au9pT1OKHJJyKBn3zZe5XLUOUyCzhiM_rfpQNmGQ3hWNON4t-e-FYg58WxKFofuFleWqorl_69SSI7VCc68IP5DNOC4waq3AIngLJKw3i3-mnnFycGQRPywagEcT0AyWrHmPvCmtlqPMf-jjxcLolkZFKYDbDag0IVCUkSMeaP_zbUodYTqtQUNqi_Z8dduNhWxh88IlQY9tOnGlonJOtIy4bg4Z7jTTzG1bwlcCGLTH1alR6K7ZxnNC1qCB7ToMU6_avaJIrHKyqwmWLGc7bRRuAAERNyHeLDtzFfPCffTNSq_tqqy0ge2MKTKHwnuEBDf6k7iv2McQw6aDYD5pDtENC_9RaX_ykfopF2_Vu38FHTGxsYWhve26Efewsh6nnWkcLsn_t2P8PiuRhVJbhgenyrIqDOp2EtIV4MOeil7y7Ml9IAvfQ-BoesS-9Xu_pn_h8mJ1kl_c6pJ3gyI_pF25jC263mXQ7B0qwfci64Y2B8uT6Z04dnOxplNwTGtvsbyobkFqb6FyGcpn7SZojWYMEZKARgF-XwtT55MjLWfuSz-8eIyGME_d6-MU86nn9Sd7wnp_igZgQBRiU48KP4OfmR0QWeyAA5o7d1-2ur0mHCJhsRRDHA0pwgej0h3UfUtNHnue9gAPf4pxReJ6t_aFK3KLPgoHktLm0qJ-eq0zr0l_A8mfoiMru3QfhIn8tY4AcRA3ErxeO2Km4EL-Fd-KT84ITIVBr9xrIxdTqsS2toqDqS0KplJRp3EyX0keASzZPpCrznAiC6pl3NY5f5ecgbJzZ_J9L6tBZ4MBneadGv_fK48Gc5xfCmIm0BpGFyYZ0OtsW7cDMcZTc60orOJN6o2ASQ8xISnplm-1qa0UX_BC0RZTPa4YMTTTAA3V_Kss76n-18DtHEshRYOKZKZkadOLH8j2QUCWsIOfCWwBregMAdvtAQCp-yQPxXjORQ3xshBEka_fivMH8TJf5D7pfD357kYyP0z4wzXjmeRVVYtA6s8ZlNNyxmJRg"
     }
   }
 }

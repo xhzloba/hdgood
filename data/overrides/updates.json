@@ -1010,5 +1010,66 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "68d5bcbdc8c62006017914a8",
+    "timestamp": "2025-11-25T09:22:33.403Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68d5bcbdc8c62006017914a8",
+    "timestamp": "2025-11-25T09:22:44.820Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6924d565cf9d2a9df5d9277f",
+    "timestamp": "2025-11-25T09:26:07.358Z",
+    "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/4483445/43159550-3bce-4a03-b304-97dbfe8a9f01/600x900",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68d5bb609906b3f36b1b168f",
+    "timestamp": "2025-11-25T09:27:17.067Z",
+    "poster": "/movies/bitva-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f87e8914c04deae9aa7f",
+    "timestamp": "2025-11-25T09:31:43.507Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6907d463402995ec3f114882",
+    "timestamp": "2025-11-25T09:36:31.132Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]

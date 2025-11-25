@@ -230,10 +230,19 @@ export default function MovieSlider({
   const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({ ...overridesCacheRef }));
   const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
   const [failedSrcById, setFailedSrcById] = useState<Record<string, string>>({});
+  const [pendingOverrideIds, setPendingOverrideIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!idsString) return;
+    const idsArray = idsString.split(",").filter(Boolean);
     const controller = new AbortController();
+    setPendingOverrideIds((prev) => {
+      const next = new Set(prev);
+      for (const id of idsArray) {
+        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap)) next.add(id);
+      }
+      return next;
+    });
     (async () => {
       try {
         const res = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(idsString)}`, {
@@ -241,14 +250,32 @@ export default function MovieSlider({
           cache: "no-store",
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) return;
-        const data = (await res.json()) || {};
+        const ok = res.ok;
+        const data = ok ? (await res.json()) || {} : {};
         setOverridesMap((prev) => {
-          const next = { ...prev, ...data };
+          const next: Record<string, any> = { ...prev, ...data };
+          for (const id of idsArray) {
+            if (!(id in next)) next[id] = null;
+          }
           Object.assign(overridesCacheRef, next);
           return next;
         });
-      } catch {}
+      } catch {
+        setOverridesMap((prev) => {
+          const next: Record<string, any> = { ...prev };
+          for (const id of idsArray) {
+            if (!(id in next)) next[id] = null;
+          }
+          Object.assign(overridesCacheRef, next);
+          return next;
+        });
+      } finally {
+        setPendingOverrideIds((prev) => {
+          const next = new Set(prev);
+          for (const id of idsArray) next.delete(id);
+          return next;
+        });
+      }
     })();
     return () => controller.abort();
   }, [idsString]);
@@ -467,45 +494,67 @@ export default function MovieSlider({
                     }}
                   >
                   <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
-                    {movie.poster && failedSrcById[String(movie.id)] !== (movie.poster || "") ? (
-                      <img
-                          key={String(movie.id)}
-                          src={movie.poster || "/placeholder.svg"}
-                          alt={movie.title || "Постер"}
-                          decoding="async"
-                          loading={index < itemsPerView ? "eager" : "lazy"}
-                          fetchPriority={index < itemsPerView ? "high" : "low"}
-                          className={`w-full h-full object-cover transition-all ease-out poster-media ${
-                            loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
-                          }`}
-                          style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                          onLoad={() => {
-                            handleImageLoad(movie.id);
-                            const key = String(movie.id);
-                            setFailedSrcById((prev) => {
-                              const next = { ...prev };
-                              if (next[key]) delete next[key];
-                              return next;
-                            });
-                          }}
-                          onError={() => {
-                            const key = String(movie.id);
-                            const src = movie.poster || "";
-                            setFailedSrcById((prev) => ({ ...prev, [key]: src }));
-                          }}
-                        />
-                      ) : (
-                      <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
-                      )}
-                      {movie.poster && loadedImages.has(String(movie.id)) && (
-                        <div
-                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
-                          style={{
-                            background:
-                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                          }}
-                        />
-                      )}
+                    {(() => {
+                      const idStr = String(movie.id);
+                      const ovEntry = (overridesMap as any)[idStr];
+                      const known = ovEntry !== undefined;
+                      const posterSrc = known
+                        ? (ovEntry?.poster ?? movie.poster ?? null)
+                        : null;
+                      const waiting = !known;
+                      if (posterSrc && failedSrcById[String(movie.id)] !== (posterSrc || "")) {
+                        return (
+                          <img
+                            key={String(movie.id)}
+                            src={posterSrc || "/placeholder.svg"}
+                            alt={movie.title || "Постер"}
+                            decoding="async"
+                            loading={index < itemsPerView ? "eager" : "lazy"}
+                            fetchPriority={index < itemsPerView ? "high" : "low"}
+                            className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                              loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                            }`}
+                            style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
+                            onLoad={() => {
+                              handleImageLoad(movie.id);
+                              const key = String(movie.id);
+                              setFailedSrcById((prev) => {
+                                const next = { ...prev };
+                                if (next[key]) delete next[key];
+                                return next;
+                              });
+                            }}
+                            onError={() => {
+                              const key = String(movie.id);
+                              const src = posterSrc || "";
+                              setFailedSrcById((prev) => ({ ...prev, [key]: src }));
+                            }}
+                          />
+                        );
+                      }
+                      if (waiting) {
+                        return <Skeleton className="w-full h-full" />;
+                      }
+                      return <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>;
+                    })()}
+                      {(() => {
+                        const idStr = String(movie.id);
+                        const ovEntry = (overridesMap as any)[idStr];
+                        const known = ovEntry !== undefined;
+                        const posterSrc = known
+                          ? (ovEntry?.poster ?? movie.poster ?? null)
+                          : null;
+                        return posterSrc && loadedImages.has(String(movie.id)) ? (
+                          <div
+                            className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                            style={{
+                              background:
+                                "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                            }}
+                          />
+                        ) : null;
+                      })()}
+                      
                       {movie.rating && (
                         <div
                           className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[3] ${ratingBgColor(
