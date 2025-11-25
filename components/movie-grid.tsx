@@ -813,7 +813,8 @@ export function MovieGrid({
     setSelectedError(null);
     setSelectedDetails(null);
     const controller = new AbortController();
-    (async () => {
+    let cancelled = false;
+    const run = async (attempt: number) => {
       try {
         const res = await fetch(
           `https://api.vokino.pro/v2/view/${selectedMovie.id}`,
@@ -826,16 +827,38 @@ export function MovieGrid({
             cache: "no-store",
           }
         );
-        if (!res.ok) throw new Error(String(res.status));
+        if (!res.ok) {
+          const status = res.status;
+          if ((status === 429 || status === 503) && attempt < 2) {
+            setTimeout(() => run(attempt + 1), 300);
+            return;
+          }
+          throw new Error(String(status));
+        }
         const json = await res.json();
+        if (cancelled || controller.signal.aborted) return;
         setSelectedDetails(json?.details ?? json ?? null);
+        setSelectedLoading(false);
       } catch (e: any) {
+        if (cancelled || controller.signal.aborted) return;
+        const isAbort =
+          e?.name === "AbortError" ||
+          e?.code === "ABORT_ERR" ||
+          String(e?.message || "").toLowerCase().includes("abort");
+        if (isAbort) return;
+        if (attempt < 2) {
+          setTimeout(() => run(attempt + 1), 300);
+          return;
+        }
         setSelectedError("Ошибка загрузки");
-      } finally {
         setSelectedLoading(false);
       }
-    })();
-    return () => controller.abort();
+    };
+    run(0);
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [selectedMovie]);
 
   useEffect(() => {
