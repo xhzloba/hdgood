@@ -769,7 +769,7 @@ export function PosterBackground({
       // Если цвета готовы или posterUrl отсутствует, показываем полный фон
       const paletteReady = !!palette.corners || !!normalizedOverrides;
       const shouldShowBackground = !posterUrl || paletteReady;
-
+      
       if (shouldShowBackground) {
         const disableBG = isMobile && !!disableMobileBackdrop;
         if (disableBG) {
@@ -783,14 +783,14 @@ export function PosterBackground({
         baseStyle.backgroundRepeat = "no-repeat";
         // Добавляем backgroundAttachment: 'fixed' для десктопа (будет отключено на мобильных через CSS)
         baseStyle.backgroundAttachment = "fixed";
-
+        
         // Добавляем полупрозрачный оверлей поверх bg_poster
         const overlayGradients = [
           "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.22) 26%, transparent 60%)",
           "linear-gradient(135deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.18) 50%, rgba(0, 0, 0, 0.32) 100%)",
           "radial-gradient(ellipse 80% 60% at center, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.26) 60%, transparent 100%)",
         ];
-
+        
         if (palette.corners || normalizedOverrides) {
           const useTl =
             normalizedOverrides?.accentTl ??
@@ -808,14 +808,14 @@ export function PosterBackground({
           const [rtr, gtr, btr] = useTr || [0, 0, 0];
           const [rbr, gbr, bbr] = useBr || [0, 0, 0];
           const [rbl, gbl, bbl2] = useBl || [0, 0, 0];
-
+          
           // Увеличиваем яркость и насыщенность цветов для лучшей видимости
           const enhanceColor = (r: number, g: number, b: number) => {
             const [h, s, l] = rgbToHsl(r, g, b);
-
+            
             // Проверяем, является ли цвет серым (низкая насыщенность)
             const isGrayish = s < 0.15;
-
+            
             // Для серых цветов не увеличиваем насыщенность, чтобы избежать нежелательных оттенков
             const enhancedS = isGrayish ? s : Math.min(1, s + 0.3);
             // Для серых цветов увеличиваем только яркость
@@ -829,29 +829,28 @@ export function PosterBackground({
           const [erbr, egbr, ebbr] = enhanceColor(rbr, gbr, bbr);
           const [erbl, egbl, ebbl2] = enhanceColor(rbl, gbl, bbl2);
 
-          // 4 угла как в примере — circle farthest-side
-          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 1)`;
+          // 4 угла — TL и BL плотные
+          const accentTL = `rgba(${ertl}, ${egtl}, ${ebtl}, 0.82)`;
           const accentTR = `rgba(${ertr}, ${egtr}, ${ebtr}, 0.85)`;
           const accentBR = `rgba(${erbr}, ${egbr}, ${ebbr}, 0.85)`;
-          const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.85)`;
+          const accentBL = `rgba(${erbl}, ${egbl}, ${ebbl2}, 0.82)`;
           const ar = Math.round((ertl + ertr + erbr + erbl) / 4);
           const ag = Math.round((egtl + egtr + egbr + egbl) / 4);
           const ab = Math.round((ebtl + ebtr + ebbr + ebbl2) / 4);
           const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`;
           const accentBase = `${ar}, ${ag}, ${ab}`;
 
-          // 4 угла с circle farthest-side как в примере
-          // TL более плотный — держится до 50%, потом плавно в transparent
+          // 4 угла — ellipse чтобы не смешивались по вертикали
           overlayGradients.push(
-            `radial-gradient(circle farthest-side at top left, ${accentTL} 0%, ${accentTL} 35%, rgba(${ertl}, ${egtl}, ${ebtl}, 0.5) 55%, transparent 75%)`,
-            `radial-gradient(circle farthest-side at top right, ${accentTR}, transparent 70%)`,
-            `radial-gradient(circle farthest-side at bottom right, ${accentBR}, transparent 70%)`,
-            `radial-gradient(circle farthest-side at bottom left, ${accentBL}, transparent 70%)`
+            `radial-gradient(ellipse 88% 62% at 0% 0%, ${accentTL} 0%, ${accentTL} 50%, rgba(${ertl}, ${egtl}, ${ebtl}, 0.6) 70%, transparent 90%)`,
+            `radial-gradient(ellipse 100% 70% at 100% 0%, ${accentTR}, transparent 70%)`,
+            `radial-gradient(ellipse 100% 70% at 100% 100%, ${accentBR}, transparent 70%)`,
+            `radial-gradient(ellipse 100% 70% at 0% 100%, ${accentBL} 0%, ${accentBL} 50%, rgba(${erbl}, ${egbl}, ${ebbl2}, 0.6) 70%, transparent 90%)`
           );
           overlayGradients.push(
             "linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 45%, rgba(var(--app-bg-rgb, 24,24,27), 0.8) 85%, rgba(var(--app-bg-rgb, 24,24,27), 0.88) 100%)"
           );
-
+          
           // Если посчитали два доминирующих — добавим мягкий линейный градиент между ними
           const domPair:
             | [[number, number, number], [number, number, number]]
@@ -930,10 +929,10 @@ export function PosterBackground({
         // Пока цвета не готовы, показываем только темный фон
         baseStyle.backgroundColor = "rgba(0, 0, 0, 0.98)";
       }
-
+      
       return baseStyle;
     }
-
+    
     // Если нет bg_poster, используем старую логику
     if (!palette.corners && !normalizedOverrides) return baseStyle;
     const useTl2 =
@@ -952,22 +951,21 @@ export function PosterBackground({
     const [rtr, gtr, btr] = useTr2 || [0, 0, 0];
     const [rbr, gbr, bbr] = useBr2 || [0, 0, 0];
     const [rbl, gbl, bbl2] = useBl2 || [0, 0, 0];
-    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 1)`;
+    const accentTL = `rgba(${rtl}, ${gtl}, ${btl}, 0.82)`;
     const accentTR = `rgba(${rtr}, ${gtr}, ${btr}, 0.85)`;
     const accentBR = `rgba(${rbr}, ${gbr}, ${bbr}, 0.85)`;
-    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.85)`;
+    const accentBL = `rgba(${rbl}, ${gbl}, ${bbl2}, 0.82)`;
     const ar = Math.round((rtl + rtr + rbr + rbl) / 4);
     const ag = Math.round((gtl + gtr + gbr + gbl) / 4);
     const ab = Math.round((btl + btr + bbr + bbl2) / 4);
     const accentSoft = `rgba(${ar}, ${ag}, ${ab}, 0.25)`;
-    // Базовые слои — 4 угла с circle farthest-side
-    // TL более плотный — держится до 50%, потом плавно в transparent
+    // Базовые слои — 4 угла ellipse чтобы не смешивались по вертикали
     const layers = [
       "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.22) 26%, transparent 60%)",
-      `radial-gradient(circle farthest-side at top left, ${accentTL} 0%, ${accentTL} 35%, rgba(${rtl}, ${gtl}, ${btl}, 0.5) 55%, transparent 75%)`,
-      `radial-gradient(circle farthest-side at top right, ${accentTR}, transparent 70%)`,
-      `radial-gradient(circle farthest-side at bottom right, ${accentBR}, transparent 70%)`,
-      `radial-gradient(circle farthest-side at bottom left, ${accentBL}, transparent 70%)`,
+      `radial-gradient(ellipse 88% 62% at 0% 0%, ${accentTL} 0%, ${accentTL} 50%, rgba(${rtl}, ${gtl}, ${btl}, 0.6) 70%, transparent 90%)`,
+      `radial-gradient(ellipse 100% 70% at 100% 0%, ${accentTR}, transparent 70%)`,
+      `radial-gradient(ellipse 100% 70% at 100% 100%, ${accentBR}, transparent 70%)`,
+      `radial-gradient(ellipse 100% 70% at 0% 100%, ${accentBL} 0%, ${accentBL} 50%, rgba(${rbl}, ${gbl}, ${bbl2}, 0.6) 70%, transparent 90%)`,
       "linear-gradient(to bottom, rgba(var(--app-bg-rgb, 24,24,27), 0) 45%, rgba(var(--app-bg-rgb, 24,24,27), 0.8) 85%, rgba(var(--app-bg-rgb, 24,24,27), 0.88) 100%)",
     ];
 
@@ -1237,7 +1235,7 @@ export function PosterBackground({
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div
+    <div 
       ref={containerRef}
       className={
         (

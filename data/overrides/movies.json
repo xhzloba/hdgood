@@ -168,31 +168,36 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/2021785/w1500_55215314.png"
   },
   "691654e274e3057d2efdfb0f": {
+    "poster_colors": {
+      "dominant1": [
+        50,
+        93,
+        141
+      ],
+      "accentTl": [
+        56,
+        126,
+        171
+      ],
+      "accentBr": [
+        22,
+        47,
+        85
+      ],
+      "accentBl": [
+        14,
+        37,
+        83
+      ],
+      "accentTr": [
+        10,
+        10,
+        11
+      ]
+    },
     "poster_logo": "/movies/logo/obman-3-1-logo.webp",
     "bg_poster": {
       "backdrop": "/movies/obman-3-1.webp"
-    },
-    "poster_colors": {
-      "dominant1": [
-        72,
-        113,
-        157
-      ],
-      "accentTl": [
-        62,
-        102,
-        148
-      ],
-      "accentBr": [
-        6,
-        21,
-        44
-      ],
-      "accentBl": [
-        23,
-        47,
-        88
-      ]
     }
   },
   "689d0ae407cc76df0455560e": {
@@ -236,19 +241,24 @@
   "6593f8778914c04deae99c86": {
     "poster_colors": {
       "accentTl": [
-        225,
+        121,
         2,
-        1
+        4
       ],
       "accentBr": [
-        252,
-        22,
-        1
+        5,
+        6,
+        27
       ],
       "accentBl": [
-        4,
-        194,
-        198
+        29,
+        78,
+        216
+      ],
+      "accentTr": [
+        8,
+        170,
+        199
       ]
     }
   },
