@@ -970,5 +970,35 @@
       "poster_colors.accentBl",
       "poster_logo"
     ]
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-11-25T07:37:27.082Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-11-25T07:40:10.915Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "671ac3722cc7b71d56e70bbe",
+    "timestamp": "2025-11-25T07:47:02.325Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
   }
 ]

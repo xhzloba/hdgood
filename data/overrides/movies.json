@@ -302,7 +302,7 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/2572795/w1500_55490582.png"
   },
   "671ac3722cc7b71d56e70bbe": {
-    "poster_logo": "https://images.kinorium.com/movie/plogo/8397379/w1500_55567524.png"
+    "poster_logo": "/movies/logo/lihie.png"
   },
   "6593f8b68914c04deaea15df": {
     "poster_colors": {
@@ -453,6 +453,10 @@
     }
   },
   "67a6907c22cfaf1c053e2f08": {
+    "bg_poster": {
+      "backdrop": "/movies/lisa-backdrop.webp"
+    },
+    "poster_logo": "/movies/logo/lisa.png",
     "poster_colors": {
       "accentBr": [
         33,
@@ -474,7 +478,6 @@
         38,
         32
       ]
-    },
-    "poster_logo": "https://images.kinorium.com/movie/logo_light/10953442/original_55339792.png"
+    }
   }
 }
