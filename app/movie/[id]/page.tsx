@@ -847,13 +847,7 @@ export default function MoviePage({
                 </div>
               </div>
 
-              {/* Trailer (mobile only) */}
-              <div className="space-y-2 md:hidden">
-                <Skeleton className="h-6 w-32" />
-                <AspectRatio ratio={16 / 9}>
-                  <Skeleton className="w-full h-full rounded" />
-                </AspectRatio>
-              </div>
+              
 
               {/* Description */}
               <div className="space-y-2">
