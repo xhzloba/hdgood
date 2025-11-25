@@ -783,20 +783,10 @@ export default function MoviePage({
         {/* Background overlay */}
         <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
 
-        <header className="relative z-10 bg-transparent">
-          <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
-            >
-              <ArrowLeft size={16} />
-              <span>Назад</span>
-            </Link>
-          </div>
-        </header>
+        
 
         <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
-          <div className="flex items-center justify-center min-h-[calc(100dvh-64px)]">
+          <div className="flex items-center justify-center min-h-[100dvh] min-h-screen">
             <Loader size="lg" />
           </div>
         </div>
