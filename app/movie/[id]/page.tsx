@@ -1170,8 +1170,9 @@ export default function MoviePage({
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className="inline-flex w-full items-center justify-center px-5 py-3 text-white text-sm font-medium rounded-full transition-all duration-200 hover:opacity-95"
+                className="inline-flex w-full items-center justify-center text-white text-sm font-medium rounded-full transition-all duration-200 hover:opacity-95"
                 style={{
+                  padding: "14px 28px",
                   backgroundImage: "linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
                   boxShadow: "0 4px 12px rgba(var(--ui-accent-rgb), 0.18)",
                 }}

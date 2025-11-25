@@ -393,7 +393,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                       width: indicator.width,
                       height: indicator.height,
                       backgroundColor: "rgb(var(--ui-accent-rgb))",
-                      boxShadow: "0 18px 36px rgba(0,0,0,0.6), 0 0 0 2px rgba(var(--ui-accent-rgb),0.4)",
+                      boxShadow: "-2px 8px 7px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(var(--ui-accent-rgb), 0.4)",
                       willChange: "transform,width,height",
                     }}
                   />
