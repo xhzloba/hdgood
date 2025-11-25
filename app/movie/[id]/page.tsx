@@ -1160,14 +1160,9 @@ export default function MoviePage({
                 </div>
               )}
             </div>
-            <div
-              className="w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none border rounded-xl overflow-hidden"
-              style={{ borderColor: "rgba(var(--ui-accent-rgb), 0.30)" }}
-            >
-              <Button
+            <div className="w-[75%] max-w-[280px] mx-auto md:w-full md:max-w-none">
+              <button
                 id="watch-button"
-                variant="secondary"
-                size="lg"
                 onClick={() => {
                   const newShowPlayerSelector = !showPlayerSelector;
                   setShowPlayerSelector(newShowPlayerSelector);
@@ -1175,20 +1170,25 @@ export default function MoviePage({
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className="w-full h-12 text-white font-semibold tracking-wide rounded-xl transition-all duration-300 hover:brightness-110 active:brightness-95"
+                className="inline-flex w-full items-center justify-center px-5 py-3 text-white text-sm font-medium rounded-full transition-all duration-200 hover:opacity-95"
                 style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)), linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
+                  backgroundImage: "linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.92), rgba(var(--ui-accent-rgb), 0.78))",
+                  boxShadow: "0 4px 12px rgba(var(--ui-accent-rgb), 0.18)",
                 }}
                 aria-label={
                   showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"
                 }
               >
-                <Play className="size-5 opacity-90" />
-                <span>
-                  {showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}
-                </span>
-              </Button>
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden
+                >
+                  <path d="M8 5v10l8-5-8-5z" />
+                </svg>
+                <span>{showPlayerSelector ? "Скрыть источники" : "Смотреть онлайн"}</span>
+              </button>
             </div>
 
             {isDesktop ? (
