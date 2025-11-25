@@ -451,5 +451,30 @@
         194
       ]
     }
+  },
+  "67a6907c22cfaf1c053e2f08": {
+    "poster_colors": {
+      "accentBr": [
+        33,
+        37,
+        30
+      ],
+      "accentTl": [
+        31,
+        39,
+        31
+      ],
+      "accentTr": [
+        33,
+        38,
+        31
+      ],
+      "accentBl": [
+        36,
+        38,
+        32
+      ]
+    },
+    "poster_logo": "https://images.kinorium.com/movie/logo_light/10953442/original_55339792.png"
   }
 }
