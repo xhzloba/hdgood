@@ -1215,21 +1215,31 @@ export default function MoviePage({
             )}
 
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-zinc-100 text-center md:text-left">
-                <span>
-                  {movie.name}
-                  {titleYear ? ` (${titleYear})` : ""}
-                </span>
-                <Button
-                  onClick={handleShare}
-                  variant="ghost"
-                  size="icon-sm"
-                  className="hidden md:inline-flex align-middle ml-2 text-zinc-200 hover:text-white hover:bg-transparent focus-visible:ring-0"
-                  aria-label="Поделиться"
-                >
-                  <Share2 className="size-4" />
-                </Button>
-              </h1>
+              {!isDesktop && (movie as any)?.poster_logo ? (
+                <div className="md:hidden flex justify-center">
+                  <img
+                    src={(movie as any).poster_logo}
+                    alt={movie.name}
+                    className="h-10 max-h-10 w-auto object-contain"
+                  />
+                </div>
+              ) : (
+                <h1 className="text-3xl font-bold text-zinc-100 text-center md:text-left">
+                  <span>
+                    {movie.name}
+                    {titleYear ? ` (${titleYear})` : ""}
+                  </span>
+                  <Button
+                    onClick={handleShare}
+                    variant="ghost"
+                    size="icon-sm"
+                    className="hidden md:inline-flex align-middle ml-2 text-zinc-200 hover:text-white hover:bg-transparent focus-visible:ring-0"
+                    aria-label="Поделиться"
+                  >
+                    <Share2 className="size-4" />
+                  </Button>
+                </h1>
+              )}
               {movie.originalname && movie.originalname !== movie.name && (
                 <p className="text-sm text-zinc-500 text-center md:text-left">{movie.originalname}</p>
               )}
