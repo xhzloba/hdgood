@@ -1566,7 +1566,7 @@ export function MovieGrid({
                     <IconX size={16} />
                   </button>
                 </div>
-                <div className="hidden md:block mt-1 text-[12px] md:text-[13px] text-zinc-400 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                <div className="hidden md:block mt-1 h-[22px] overflow-hidden text-[12px] md:text-[13px] text-zinc-400 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                   {selectedLoading ? (
                     <div className="flex items-center gap-2 md:justify-start justify-center">
                       <Skeleton className="h-3 w-10" />
@@ -1618,7 +1618,7 @@ export function MovieGrid({
                     })()
                   )}
                 </div>
-                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 min-h-[66px] md:min-h-[84px] text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                <div className="mt-2 text-[12px] md:text-[13px] text-zinc-300/90 h-[72px] md:h-[96px] overflow-hidden text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                   {selectedLoading ? (
                     <div>
                       <Skeleton className="h-3 w-full md:w-[92%] mb-2" />
@@ -1921,7 +1921,7 @@ export function MovieGrid({
                       return null;
                     })()}
                   </div>
-                  <div className="hidden md:block mt-1 text-[12px] md:text-[13px] text-zinc-300 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                  <div className="hidden md:block mt-1 h-[22px] overflow-hidden text-[12px] md:text-[13px] text-zinc-300 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                     {selectedLoading ? (
                       <div className="flex items-center gap-2">
                         <Skeleton className="h-3 w-10" />
@@ -1975,7 +1975,7 @@ export function MovieGrid({
                   })()
                 )}
               </div>
-                      <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 min-h-[66px] md:min-h-[84px] text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                      <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 h-[72px] md:h-[96px] overflow-hidden text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                         {selectedLoading ? (
                           <div>
                             <Skeleton className="h-3 w-full md:w-[92%] mb-2" />
@@ -2011,7 +2011,7 @@ export function MovieGrid({
                         )}
                       </div>
                       <div
-                        className="mt-3 flex items-center gap-2 md:justify-start justify-center md:mx-0 mx-auto"
+                        className="mt-4 md:mt-3 flex items-center gap-2 md:justify-start justify-center md:mx-0 mx-auto"
                         style={
                           isDesktop
                             ? undefined
@@ -2023,47 +2023,38 @@ export function MovieGrid({
                               }
                         }
                       >
-                        {selectedLoading ? (
-                          <div className="hidden md:flex items-center gap-2 justify-start w-full">
-                            <Skeleton className="h-9 w-[140px] rounded-full" />
-                            <Skeleton className="h-9 w-[110px] rounded-full" />
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setInlineKpId(selectedKpId);
-                                setInlineIframeUrl(selectedIframeUrl);
-                                setInlinePlayerOpen(true);
-                                setPlayerVisible(true);
-                              }}
-                              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
-                            >
-                              Смотреть онлайн
-                            </button>
-                            <Link
-                              href={`/movie/${selectedMovie!.id}`}
-                              onClick={() => {
-                                if (resetOverridesOnNavigate) {
-                                  try {
-                                    onBackdropOverrideChange?.(null, null);
-                                  } catch {}
-                                  try {
-                                    onHeroInfoOverrideChange?.(null);
-                                  } catch {}
-                                }
-                              }}
-                              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
-                            >
-                              Подробнее
-                            </Link>
-                            {selectedError && (
-                              <span className="text-[12px] text-red-400">
-                                {selectedError}
-                              </span>
-                            )}
-                          </>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInlineKpId(selectedKpId);
+                            setInlineIframeUrl(selectedIframeUrl);
+                            setInlinePlayerOpen(true);
+                            setPlayerVisible(true);
+                          }}
+                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
+                        >
+                          Смотреть онлайн
+                        </button>
+                        <Link
+                          href={`/movie/${selectedMovie!.id}`}
+                          onClick={() => {
+                            if (resetOverridesOnNavigate) {
+                              try {
+                                onBackdropOverrideChange?.(null, null);
+                              } catch {}
+                              try {
+                                onHeroInfoOverrideChange?.(null);
+                              } catch {}
+                            }
+                          }}
+                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                        >
+                          Подробнее
+                        </Link>
+                        {selectedError && (
+                          <span className="text-[12px] text-red-400">
+                            {selectedError}
+                          </span>
                         )}
                       </div>
                     </>
