@@ -1510,7 +1510,7 @@ export function MovieGrid({
                         width:
                           tileWidth != null
                             ? Math.max(tileWidth, 280)
-                            : "calc((100% - 8px)/2)",
+                            : 280,
                       }
                 }
               >
@@ -2018,52 +2018,50 @@ export function MovieGrid({
                                 width:
                                   tileWidth != null
                                     ? Math.max(tileWidth, 280)
-                                    : "calc((100% - 8px)/2)",
+                                    : 280,
                               }
                         }
                       >
                         {selectedLoading ? (
-                          isDesktop ? (
-                            <div className="flex items-center gap-2 justify-start w-full">
-                              <Skeleton className="h-9 w-[140px] rounded-full" />
-                              <Skeleton className="h-9 w-[110px] rounded-full" />
-                            </div>
-                          ) : null
+                          <div className="hidden md:flex items-center gap-2 justify-start w-full">
+                            <Skeleton className="h-9 w-[140px] rounded-full" />
+                            <Skeleton className="h-9 w-[110px] rounded-full" />
+                          </div>
                         ) : (
                           <>
                             <button
                               type="button"
                               onClick={() => {
                                 setInlineKpId(selectedKpId);
-                            setInlineIframeUrl(selectedIframeUrl);
-                            setInlinePlayerOpen(true);
-                            setPlayerVisible(true);
-                          }}
-                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
-                        >
-                          Смотреть онлайн
-                        </button>
-                        <Link
-                          href={`/movie/${selectedMovie!.id}`}
-                          onClick={() => {
-                            if (resetOverridesOnNavigate) {
-                              try {
-                                onBackdropOverrideChange?.(null, null);
-                              } catch {}
-                              try {
-                                onHeroInfoOverrideChange?.(null);
-                              } catch {}
-                            }
-                          }}
-                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
-                        >
-                          Подробнее
-                        </Link>
-                        {selectedError && (
-                          <span className="text-[12px] text-red-400">
-                            {selectedError}
-                          </span>
-                        )}
+                                setInlineIframeUrl(selectedIframeUrl);
+                                setInlinePlayerOpen(true);
+                                setPlayerVisible(true);
+                              }}
+                              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
+                            >
+                              Смотреть онлайн
+                            </button>
+                            <Link
+                              href={`/movie/${selectedMovie!.id}`}
+                              onClick={() => {
+                                if (resetOverridesOnNavigate) {
+                                  try {
+                                    onBackdropOverrideChange?.(null, null);
+                                  } catch {}
+                                  try {
+                                    onHeroInfoOverrideChange?.(null);
+                                  } catch {}
+                                }
+                              }}
+                              className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                            >
+                              Подробнее
+                            </Link>
+                            {selectedError && (
+                              <span className="text-[12px] text-red-400">
+                                {selectedError}
+                              </span>
+                            )}
                           </>
                         )}
                       </div>
