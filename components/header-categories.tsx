@@ -472,55 +472,53 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
               </div>
             </div>
 
-            {/* Круглая кнопка справа — полноэкранный режим */}
+            {/* Контейнер иконок справа — стиль как у табов, без обводок и фона на кнопках */}
             <div className="hidden md:flex items-center ml-auto">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="Тема акцента"
-                    className="inline-flex items-center justify-center h-9 w-9 rounded-full border border-zinc-700/70 bg-zinc-900/80 text-zinc-300/90 hover:text-white hover:bg-zinc-800/90 shadow-md shadow-black/40 transition-colors mr-2"
-                  >
-                    <span
-                      style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-                      className="inline-block w-3.5 h-3.5 rounded-full"
-                    />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-2xl border-0 bg-zinc-900/60 p-2 shadow-xl backdrop-blur-md min-w-[12rem]">
-                  <DropdownMenuItem
-                    onClick={() => changeAccentTheme("blue")}
-                    className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
-                  >
-                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.blue})` }} />
-                    <span>Синий</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => changeAccentTheme("red")}
-                    className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
-                  >
-                    <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.red})` }} />
-                    <span>Алый</span>
-                  </DropdownMenuItem>
+              <div className="inline-flex items-center rounded-full bg-zinc-900/50 pl-1.5 pr-1.5 py-0.5">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Тема акцента"
+                      className="inline-flex items-center justify-center h-8 w-8 rounded-full text-zinc-300/90 hover:text-white transition-colors"
+                    >
+                      <span
+                        style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
+                        className="inline-block w-3.5 h-3.5 rounded-full"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="rounded-2xl border-0 bg-zinc-900/60 p-2 shadow-xl backdrop-blur-md min-w-[12rem]">
+                    <DropdownMenuItem
+                      onClick={() => changeAccentTheme("blue")}
+                      className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                    >
+                      <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.blue})` }} />
+                      <span>Синий</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => changeAccentTheme("red")}
+                      className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                    >
+                      <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.red})` }} />
+                      <span>Алый</span>
+                    </DropdownMenuItem>
                   
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <button
-                type="button"
-                aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
-                onClick={toggleFullscreen}
-                className={[
-                  "inline-flex items-center justify-center h-9 w-9 rounded-full border border-zinc-700/70 bg-zinc-900/80 text-zinc-300/90 hover:text-white hover:bg-zinc-800/90 shadow-md shadow-black/40 transition-colors",
-                  isFullscreen ? "ring-1" : "",
-                ].join(" ")}
-                style={isFullscreen ? { boxShadow: "0 0 0 1px rgba(var(--ui-accent-rgb), 0.5)", borderColor: `rgba(var(--ui-accent-rgb), 0.6)` } : undefined}
-              >
-                {isFullscreen ? (
-                  <IconMinimize className="w-4 h-4" size={16} stroke={1.7} />
-                ) : (
-                  <IconMaximize className="w-4 h-4" size={16} stroke={1.7} />
-                )}
-              </button>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <button
+                  type="button"
+                  aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
+                  onClick={toggleFullscreen}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-full text-zinc-300/90 hover:text-white transition-colors"
+                >
+                  {isFullscreen ? (
+                    <IconMinimize className="w-4 h-4" size={16} stroke={1.7} />
+                  ) : (
+                    <IconMaximize className="w-4 h-4" size={16} stroke={1.7} />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

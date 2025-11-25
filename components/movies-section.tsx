@@ -135,7 +135,7 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
                   className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
                     viewMode === "loadmore"
                       ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
-                      : "text-зinc-400 hover:text-zinc-200"
+                      : "text-zinc-400 hover:text-zinc-200"
                   }`}
                   style={viewMode === "loadmore" ? { backgroundColor: "rgba(var(--ui-accent-rgb),0.2)" } : undefined}
                   title="Режим загрузки"
