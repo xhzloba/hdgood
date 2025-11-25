@@ -797,8 +797,7 @@ export default function MoviePage({
 
         {/* Content */}
         <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
-          {isDesktop ? (
-          <div className="grid md:grid-cols-[300px_1fr] gap-8">
+          <div className="hidden md:grid md:grid-cols-[300px_1fr] gap-8">
             {/* Poster Skeleton */}
             <div className="space-y-4 md:sticky md:top-20 md:self-start">
               <div
@@ -885,11 +884,9 @@ export default function MoviePage({
               </div>
             </div>
           </div>
-          ) : (
-            <div className="flex items-center justify-center min-h-[calc(100dvh-64px)]">
-              <Loader size="lg" />
-            </div>
-          )}
+          <div className="flex items-center justify-center min-h-[calc(100dvh-64px)] md:hidden">
+            <Loader size="lg" />
+          </div>
         </div>
       </div>
     );
@@ -1956,25 +1953,45 @@ export default function MoviePage({
                           !!src &&
                           !invalids.includes(src.toLowerCase()) &&
                           isImageLike;
-                        return hasPoster ? (
-                          <img
-                            key={id}
-                            src={src}
-                            alt={title}
-                            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover hover:z-10 flex-shrink-0"
-                            onError={(e) => {
-                              const parent = e.currentTarget.parentElement;
-                              if (parent) {
-                                e.currentTarget.style.display = "none";
-                                const fallback = document.createElement("div");
-                                fallback.setAttribute("aria-label", "нет фото");
-                                fallback.className =
-                                  "w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none";
-                                fallback.textContent = "нет фото";
-                                parent.appendChild(fallback);
-                              }
-                            }}
-                          />
+                        const actorIdStr = String(actor?.id ?? "").trim();
+                        const canLink = !!actorIdStr;
+                        if (hasPoster) {
+                          const imgEl = (
+                            <img
+                              src={src}
+                              alt={title}
+                              className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover hover:z-10 flex-shrink-0 cursor-pointer"
+                              onError={(e) => {
+                                const parent = e.currentTarget.parentElement;
+                                if (parent) {
+                                  e.currentTarget.style.display = "none";
+                                  const fallback = document.createElement("div");
+                                  fallback.setAttribute("aria-label", "нет фото");
+                                  fallback.className =
+                                    "w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none";
+                                  fallback.textContent = "нет фото";
+                                  parent.appendChild(fallback);
+                                }
+                              }}
+                            />
+                          );
+                          return canLink ? (
+                            <Link href={`/actor/${actorIdStr}`} key={id}>
+                              {imgEl}
+                            </Link>
+                          ) : (
+                            imgEl
+                          );
+                        }
+                        return canLink ? (
+                          <Link href={`/actor/${actorIdStr}`} key={id}>
+                            <div
+                              className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
+                              aria-label="нет фото"
+                            >
+                              нет фото
+                            </div>
+                          </Link>
                         ) : (
                           <div
                             key={id}
