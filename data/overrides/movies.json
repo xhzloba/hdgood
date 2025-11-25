@@ -384,5 +384,11 @@
   },
   "6593f8678914c04deae97c9e": {
     "poster_logo": "https://images.kinorium.com/movie/logo_light/472809/original_54860499.png"
+  },
+  "6924d565cf9d2a9df5d9277f": {
+    "poster": "https://avatars.mds.yandex.net/get-kinopoisk-image/4483445/43159550-3bce-4a03-b304-97dbfe8a9f01/600x900",
+    "bg_poster": {
+      "backdrop": "https://images.kinorium.com/movie/poster/10034263/w1500_55532016.jpg"
+    }
   }
 }
