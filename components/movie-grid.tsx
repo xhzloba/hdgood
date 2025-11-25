@@ -1194,6 +1194,15 @@ export function MovieGrid({
   }, [showInlineInfo, selectedMovie, selectedDetails, overridesMap]);
 
   useEffect(() => {
+    if (!showInlineInfo && !inlinePlayerOpen) return;
+    try {
+      setShowEscHint(true);
+      const t = setTimeout(() => setShowEscHint(false), 4000);
+      return () => clearTimeout(t);
+    } catch {}
+  }, [showInlineInfo, inlinePlayerOpen]);
+
+  useEffect(() => {
     try {
       if (typeof window === "undefined") return;
       const onKey = (e: KeyboardEvent) => {
@@ -1508,12 +1517,22 @@ export function MovieGrid({
           }}
         >
           {showEscHint && (
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
-              <div className="px-3 py-1.5 text-xs rounded-md shadow-md bg-zinc-900/85 border border-zinc-800/70 text-zinc-100 animate-in fade-in-0 slide-in-from-top-2">
-                Для выхода нажмите ESC
+            <div
+              className={`absolute z-30 pointer-events-none ${
+                inlinePlayerOpen && isDesktop ? "top-2 right-[56px]" : "top-2 right-2"
+              }`}
+            >
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[12px] md:text-[13px] rounded-[10px] border border-[rgb(var(--ui-accent-rgb))] bg-[rgb(var(--ui-accent-rgb))] text-white shadow-[0_8px_20px_rgba(var(--ui-accent-rgb),0.45)]">
+                <span className="opacity-90">Клавиатура:</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">←</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">→</kbd>
+                <span className="opacity-80">·</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">ESC</kbd>
+                <span className="opacity-90">— закрыть</span>
               </div>
             </div>
           )}
+          
 
           <div className="space-y-4">
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
@@ -1775,7 +1794,23 @@ export function MovieGrid({
             }`}
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
-            <div className="relative p-3 md:p-4 smoke-flash">
+              <div className="relative p-3 md:p-4 smoke-flash">
+              {showEscHint && (
+                <div
+                  className={`absolute z-30 pointer-events-none ${
+                    inlinePlayerOpen && isDesktop ? "top-2 right-[56px]" : "top-2 right-2"
+                  }`}
+                >
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[12px] md:text-[13px] rounded-[10px] border border-[rgb(var(--ui-accent-rgb))] bg-[rgb(var(--ui-accent-rgb))] text-white shadow-[0_8px_20px_rgba(var(--ui-accent-rgb),0.45)]">
+                    <span className="opacity-90">Клавиатура:</span>
+                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">←</kbd>
+                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">→</kbd>
+                    <span className="opacity-80">·</span>
+                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">ESC</kbd>
+                    <span className="opacity-90">— закрыть</span>
+                  </div>
+                </div>
+              )}
               <button
                 type="button"
                 aria-label="Закрыть"
@@ -1907,9 +1942,9 @@ export function MovieGrid({
                       <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
                         Нет постера
                       </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
                 <div
                 className="min-w-0 flex-1 md:mx-0 mx-auto"
                 style={
@@ -2114,9 +2149,10 @@ export function MovieGrid({
                         {selectedError && (
                           <span className="text-[12px] text-red-400">
                             {selectedError}
-                          </span>
-                        )}
-                      </div>
+                      </span>
+                    )}
+                  </div>
+                  
                     </>
                   )}
                 </div>
@@ -2693,13 +2729,14 @@ export function MovieGrid({
                       Подробнее
                     </Link>
 
-                    {selectedError && (
-                      <span className="text-[12px] text-red-400">
-                        {selectedError}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                {selectedError && (
+                  <span className="text-[12px] text-red-400">
+                    {selectedError}
+                  </span>
+                )}
+              </div>
+              
+            </div>
               </div>
             </div>
           </div>
