@@ -40,6 +40,19 @@
   --sidebar-ring: oklch(0.708 0 0);
   --ui-accent-rgb: 37, 99, 235;
 }
+@keyframes footerBlobFloat1 {
+  0%, 100% { transform: translate3d(0,0,0) }
+  33% { transform: translate3d(6px,-3px,0) }
+  66% { transform: translate3d(-5px,3px,0) }
+}
+@keyframes footerBlobFloat2 {
+  0%, 100% { transform: translate3d(0,0,0) }
+  50% { transform: translate3d(-7px,-4px,0) }
+}
+@keyframes footerBlobFloat3 {
+  0%, 100% { transform: translate3d(0,0,0) }
+  40% { transform: translate3d(5px,2px,0) }
+}
 
 .dark {
   --background: oklch(0.145 0 0);
