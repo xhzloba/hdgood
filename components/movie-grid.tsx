@@ -1202,7 +1202,7 @@ export function MovieGrid({
           handleCloseInline();
           return;
         }
-        if (!showInlineInfo || inlinePlayerOpen) return;
+        if (!showInlineInfo) return;
         if (k !== "ArrowLeft" && k !== "ArrowRight") return;
         const t = e.target as any;
         const tn = String(t?.tagName || "").toLowerCase();
@@ -1387,12 +1387,16 @@ export function MovieGrid({
   };
 
   const handleCloseInline = () => {
+    if (inlinePlayerOpen) {
+      setInlineClosing(true);
+    }
     setPlayerVisible(false);
     setInfoVisible(false);
     setTimeout(() => {
-      setWatchOpen(false);
-      setInlinePlayerOpen(false);
-      setInlineClosing(false);
+      if (inlinePlayerOpen) {
+        setInlinePlayerOpen(false);
+        setInlineClosing(false);
+      }
       setSelectedMovie(null);
       setSelectedDetails(null);
       setSelectedError(null);
