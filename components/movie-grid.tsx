@@ -1193,6 +1193,29 @@ export function MovieGrid({
     } catch {}
   }, [showInlineInfo, selectedMovie, selectedDetails, overridesMap]);
 
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const onKey = (e: KeyboardEvent) => {
+        if (!showInlineInfo || inlinePlayerOpen) return;
+        const k = e.key;
+        if (k !== "ArrowLeft" && k !== "ArrowRight") return;
+        const t = e.target as any;
+        const tn = String(t?.tagName || "").toLowerCase();
+        const editable = !!t?.isContentEditable;
+        if (tn === "input" || tn === "textarea" || tn === "select" || editable) return;
+        e.preventDefault();
+        if (k === "ArrowLeft") {
+          handleInlinePrev();
+        } else {
+          handleInlineNext();
+        }
+      };
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    } catch {}
+  }, [showInlineInfo, inlinePlayerOpen, selectedMovie, page, subIndex]);
+
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
@@ -1383,6 +1406,11 @@ export function MovieGrid({
       }
       return;
     }
+    const atGlobalStart = page <= 1 && subIndex <= 0;
+    if (atGlobalStart) {
+      setInfoSwitching(false);
+      return;
+    }
     setPendingSelectDir("prev");
     handlePrevArrow();
   };
@@ -1411,9 +1439,15 @@ export function MovieGrid({
       }
       return;
     }
+    const atGlobalEnd = subIndex >= currChunkCount - 1 && (!nextPageEntry || nextPageItemsLen === 0);
+    if (atGlobalEnd) {
+      setInfoSwitching(false);
+      return;
+    }
     setPendingSelectDir("next");
     handleNextArrow();
   };
+
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   if (!isLoading && !isValidating && movies.length === 0) {
@@ -1770,7 +1804,7 @@ export function MovieGrid({
                       <button
                         type="button"
                         onClick={handleInlinePrev}
-                        disabled={disablePrev}
+                        disabled={disablePrev && !selectedLoading}
                         aria-label="Предыдущий фильм"
                         className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
@@ -1796,7 +1830,7 @@ export function MovieGrid({
                       <button
                         type="button"
                         onClick={handleInlineNext}
-                        disabled={disableNext}
+                        disabled={disableNext && !selectedLoading}
                         aria-label="Следующий фильм"
                         className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
