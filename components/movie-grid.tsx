@@ -1743,6 +1743,14 @@ export function MovieGrid({
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
                       }
+                      try {
+                        const ids = (display || []).map((m: any) => String(m.id));
+                        const index = ids.indexOf(String(selectedMovie.id));
+                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                        localStorage.setItem("__navContext", JSON.stringify(ctx));
+                        const href = `${location.pathname}${location.search}`;
+                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                      } catch {}
                     }}
                     className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                   >
@@ -2143,6 +2151,14 @@ export function MovieGrid({
                                 onHeroInfoOverrideChange?.(null);
                               } catch {}
                             }
+                            try {
+                              const ids = (display || []).map((m: any) => String(m.id));
+                              const index = ids.indexOf(String(selectedMovie!.id));
+                              const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                              localStorage.setItem("__navContext", JSON.stringify(ctx));
+                              const href = `${location.pathname}${location.search}`;
+                              localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                            } catch {}
                           }}
                           className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                         >
@@ -2765,6 +2781,12 @@ export function MovieGrid({
                         try {
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
+                        const ids = (display || []).map((m: any) => String(m.id));
+                        const index = ids.indexOf(String(selectedMovie.id));
+                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                        localStorage.setItem("__navContext", JSON.stringify(ctx));
+                        const href = `${location.pathname}${location.search}`;
+                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                       }}
                       className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
                     >
