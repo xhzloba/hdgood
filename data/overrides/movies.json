@@ -524,5 +524,41 @@
     "bg_poster": {
       "backdrop": "/series/method.webp"
     }
+  },
+  "6593f9238914c04deaeafe11": {
+    "poster_logo": "/movies/logo/14.webp",
+    "bg_poster": {
+      "backdrop": "/series/slovo.webp"
+    }
+  },
+  "69126073f5a672e8496fcd0e": {
+    "poster_logo": "/movies/logo/15.webp",
+    "bg_poster": {
+      "backdrop": "/series/neiro-vasya.webp"
+    }
+  },
+  "6593f8aa8914c04deae9fd74": {
+    "poster_logo": "/movies/logo/16.webp",
+    "bg_poster": {
+      "backdrop": "/series/igra-prestolov.webp"
+    }
+  },
+  "65942f939f578f48cbaeab5d": {
+    "poster_logo": "/movies/logo/17.webp"
+  },
+  "691654e4662c207340c25a1f": {
+    "poster_logo": "/movies/logo/18.webp",
+    "bg_poster": {
+      "backdrop": "/series/obnal.webp"
+    }
+  },
+  "6903dff69cfe849a33b1a113": {
+    "poster_logo": "/movies/logo/19.webp",
+    "bg_poster": {
+      "backdrop": "/series/konstantin.webp"
+    }
+  },
+  "65941c82b2a2940f15929b9c": {
+    "poster_logo": "/movies/logo/20.webp"
   }
 }

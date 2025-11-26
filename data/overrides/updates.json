@@ -1198,5 +1198,80 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f9238914c04deaeafe11",
+    "timestamp": "2025-11-26T10:48:30.310Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "69126073f5a672e8496fcd0e",
+    "timestamp": "2025-11-26T10:51:02.840Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f8aa8914c04deae9fd74",
+    "timestamp": "2025-11-26T10:54:25.299Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65942f939f578f48cbaeab5d",
+    "timestamp": "2025-11-26T10:57:12.121Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "691654e4662c207340c25a1f",
+    "timestamp": "2025-11-26T10:59:58.255Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6903dff69cfe849a33b1a113",
+    "timestamp": "2025-11-26T11:02:38.256Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65941c82b2a2940f15929b9c",
+    "timestamp": "2025-11-26T11:06:08.072Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
