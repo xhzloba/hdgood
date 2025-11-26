@@ -271,6 +271,28 @@ export function MovieGrid({
     } catch {}
   }, []);
 
+  function handleCloseInline() {
+    if (inlinePlayerOpen) {
+      setInlineClosing(true);
+    }
+    setPlayerVisible(false);
+    setInfoVisible(false);
+    setTimeout(() => {
+      if (inlinePlayerOpen) {
+        setInlinePlayerOpen(false);
+        setInlineClosing(false);
+      }
+      setSelectedMovie(null);
+      setSelectedDetails(null);
+      setSelectedError(null);
+      setGridHeight(null);
+      setTileWidth(null);
+      try {
+        onInlineInfoOpenChange?.(false);
+      } catch {}
+    }, 200);
+  }
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -1395,27 +1417,7 @@ export function MovieGrid({
     handleLoadMore();
   };
 
-  const handleCloseInline = () => {
-    if (inlinePlayerOpen) {
-      setInlineClosing(true);
-    }
-    setPlayerVisible(false);
-    setInfoVisible(false);
-    setTimeout(() => {
-      if (inlinePlayerOpen) {
-        setInlinePlayerOpen(false);
-        setInlineClosing(false);
-      }
-      setSelectedMovie(null);
-      setSelectedDetails(null);
-      setSelectedError(null);
-      setGridHeight(null);
-      setTileWidth(null);
-      try {
-        onInlineInfoOpenChange?.(false);
-      } catch {}
-    }, 200);
-  };
+  
 
   const handleInlinePrev = () => {
     if (!selectedMovie) return;
