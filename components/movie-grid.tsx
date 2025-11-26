@@ -1780,7 +1780,7 @@ export function MovieGrid({
                         } catch {}
                       }
                       try {
-                        const ids = (display || []).map((m: any) => String(m.id));
+                        const ids = (movies || []).map((m: any) => String(m.id));
                         const index = ids.indexOf(String(selectedMovie.id));
                         const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2188,7 +2188,7 @@ export function MovieGrid({
                               } catch {}
                             }
                             try {
-                              const ids = (display || []).map((m: any) => String(m.id));
+                              const ids = (movies || []).map((m: any) => String(m.id));
                               const index = ids.indexOf(String(selectedMovie!.id));
                               const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                               localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2275,7 +2275,7 @@ export function MovieGrid({
                         } catch {}
                       }
                       try {
-                        const ids = (display || []).map((m: any) => String(m.id));
+                        const ids = (movies || []).map((m: any) => String(m.id));
                         const index = ids.indexOf(String(movie.id));
                         const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2368,7 +2368,7 @@ export function MovieGrid({
                                 e.preventDefault();
                               }
                               try {
-                                const ids = (display || []).map((m: any) => String(m.id));
+                                const ids = (movies || []).map((m: any) => String(m.id));
                                 const index = ids.indexOf(String(movie.id));
                                 const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                                 localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2461,7 +2461,7 @@ export function MovieGrid({
                             className="block"
                             onClick={() => {
                               try {
-                                const ids = (display || []).map((m: any) => String(m.id));
+                                const ids = (movies || []).map((m: any) => String(m.id));
                                 const index = ids.indexOf(String(movie.id));
                                 const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                                 localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2480,7 +2480,7 @@ export function MovieGrid({
                           className="block"
                           onClick={() => {
                             try {
-                              const ids = (display || []).map((m: any) => String(m.id));
+                              const ids = (movies || []).map((m: any) => String(m.id));
                               const index = ids.indexOf(String(movie.id));
                               const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                               localStorage.setItem("__navContext", JSON.stringify(ctx));
@@ -2817,7 +2817,7 @@ export function MovieGrid({
                         try {
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
-                        const ids = (display || []).map((m: any) => String(m.id));
+                        const ids = (movies || []).map((m: any) => String(m.id));
                         const index = ids.indexOf(String(selectedMovie.id));
                         const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));

@@ -5,7 +5,6 @@ import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { LogoParticles } from "@/components/logo-particles"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import {
   IconClock,
@@ -364,19 +363,6 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
       ) : (
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
           <div className="relative flex items-center gap-3">
-            {/* Лого слева */}
-            <Link
-              href="/"
-              className="hidden md:inline-flex items-center gap-2 pr-3 border-r border-zinc-800/70 logo-hdgood"
-            >
-              <LogoParticles />
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-semibold tracking-wide text-white" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}>
-                HD
-              </span>
-              <span className="text-sm font-semibold tracking-tight text-zinc-100">
-                GOOD
-              </span>
-            </Link>
 
             {/* Центрированный контейнер табов */}
             <div className="absolute left-1/2 -translate-x-1/2">

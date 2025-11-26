@@ -179,7 +179,7 @@ function CarouselPrevious({
     <button
       data-slot="carousel-previous"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
           ? 'top-1/2 left-[-72px] -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -207,7 +207,7 @@ function CarouselNext({
     <button
       data-slot="carousel-next"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-[rgba(var(--ui-accent-rgb),1)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-20 h-20 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
           ? 'top-1/2 right-[-72px] -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
