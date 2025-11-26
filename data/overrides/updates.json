@@ -1176,5 +1176,27 @@
       "bg_poster.backdrop"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8ed8914c04deaea81f0",
+    "timestamp": "2025-11-26T10:26:07.089Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65942f9bf9adc4da8a10925c",
+    "timestamp": "2025-11-26T10:29:13.397Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]

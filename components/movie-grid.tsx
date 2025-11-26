@@ -768,12 +768,19 @@ export function MovieGrid({
           ov?.details?.released ??
           ov?.details?.release_year ??
           ov?.details?.releaseYear) as any) ?? m.year;
+      const patchedBgPoster = ov && (ov.backdrop || ov?.bg_poster?.backdrop)
+        ? {
+            backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
+            poster: ov?.bg_poster?.poster ?? undefined,
+          }
+        : m?.bg_poster || undefined;
       return {
         ...m,
         poster: patchedPoster,
         title: patchedTitle,
         year: patchedYear,
         intro_video: patchedIntroVideo,
+        ...(patchedBgPoster ? { bg_poster: patchedBgPoster } : {}),
       };
     });
   }, [display, overridesMap]);
@@ -795,12 +802,19 @@ export function MovieGrid({
           ov?.details?.released ??
           ov?.details?.release_year ??
           ov?.details?.releaseYear) as any) ?? m?.year;
+      const patchedBgPoster = ov && (ov.backdrop || ov?.bg_poster?.backdrop)
+        ? {
+            backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
+            poster: ov?.bg_poster?.poster ?? undefined,
+          }
+        : m?.bg_poster || undefined;
       return {
         ...(m || {}),
         poster: patchedPoster,
         title: patchedTitle,
         year: patchedYear,
         intro_video: patchedIntroVideo,
+        ...(patchedBgPoster ? { bg_poster: patchedBgPoster } : {}),
       };
     },
     [overridesMap]
@@ -889,10 +903,21 @@ export function MovieGrid({
       const id = selectedMovie ? String(selectedMovie.id) : null;
       const ov = id ? (overridesMap as any)[id] ?? null : null;
       const d: any = selectedDetails || {};
-      const bg =
-        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) ||
-        (d && (d.backdrop || d?.bg_poster?.backdrop)) ||
-        null;
+      const ovBackdrop = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
+      const localBackdrop =
+        (selectedMovie as any)?.bg_poster?.backdrop || (selectedMovie as any)?.backdrop || null;
+      const detailsId = String(
+        (d && (d.id ?? d?.details?.id)) ?? ""
+      );
+      const isDetailsForCurrent = id != null && detailsId !== "" && detailsId === id;
+      const apiBackdrop = isDetailsForCurrent
+        ? (d && (d.backdrop || d?.bg_poster?.backdrop)) || null
+        : null;
+      const bg = ovBackdrop != null
+        ? ovBackdrop
+        : localBackdrop != null
+        ? localBackdrop
+        : apiBackdrop;
       const poster =
         (ov && (ov.poster || ov?.bg_poster?.poster)) ||
         (d && (d.poster || d?.bg_poster?.poster)) ||
@@ -1187,10 +1212,21 @@ export function MovieGrid({
       const id = String(selectedMovie.id);
       const ov = (overridesMap as any)[id] ?? null;
       const d: any = selectedDetails || {};
-      const bg =
-        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) ||
-        (d && (d.backdrop || d?.bg_poster?.backdrop)) ||
-        null;
+      const ovBackdrop = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
+      const localBackdrop =
+        (selectedMovie as any)?.bg_poster?.backdrop || (selectedMovie as any)?.backdrop || null;
+      const detailsId = String(
+        (d && (d.id ?? d?.details?.id)) ?? ""
+      );
+      const isDetailsForCurrent = detailsId !== "" && detailsId === id;
+      const apiBackdrop = isDetailsForCurrent
+        ? (d && (d.backdrop || d?.bg_poster?.backdrop)) || null
+        : null;
+      const bg = ovBackdrop != null
+        ? ovBackdrop
+        : localBackdrop != null
+        ? localBackdrop
+        : apiBackdrop;
       const poster =
         (ov && (ov.poster || ov?.bg_poster?.poster)) ||
         (d && (d.poster || d?.bg_poster?.poster)) ||

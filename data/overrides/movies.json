@@ -512,5 +512,17 @@
       "backdrop": "/series/bar.webp"
     },
     "poster_logo": "/movies/logo/11.webp"
+  },
+  "6593f8ed8914c04deaea81f0": {
+    "poster_logo": "/movies/logo/12.webp",
+    "bg_poster": {
+      "backdrop": "/series/vampire-middle.webp"
+    }
+  },
+  "65942f9bf9adc4da8a10925c": {
+    "poster_logo": "/movies/logo/13.webp",
+    "bg_poster": {
+      "backdrop": "/series/method.webp"
+    }
   }
 }
