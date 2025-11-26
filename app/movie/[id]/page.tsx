@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 
 // Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
 const movieOverrideCache: Record<string, any> =
@@ -254,6 +255,8 @@ export default function MoviePage({
   const [posterError, setPosterError] = useState(false);
   const videoPosterRef = useRef<VideoPosterRef>(null);
   const [isVideoLooping, setIsVideoLooping] = useState(false);
+  const [navIds, setNavIds] = useState<string[]>([]);
+  const [navIndex, setNavIndex] = useState<number | null>(null);
 
   const normalizeTrailers = (val: any): any[] => {
     try {
@@ -288,6 +291,25 @@ export default function MoviePage({
       return false;
     }
   }, [rawTrailers]);
+
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("__navContext") : null;
+      if (!raw) {
+        setNavIds([]);
+        setNavIndex(null);
+        return;
+      }
+      const ctx = JSON.parse(raw || "{}");
+      const ids = Array.isArray(ctx?.ids) ? ctx.ids.map((s: any) => String(s)) : [];
+      setNavIds(ids);
+      const idx = ids.indexOf(String(id));
+      setNavIndex(idx >= 0 ? idx : null);
+    } catch {
+      setNavIds([]);
+      setNavIndex(null);
+    }
+  }, [id]);
 
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -1078,6 +1100,41 @@ export default function MoviePage({
           </Link>
         </div>
       </header>
+
+      {isDesktop && navIndex != null && navIds.length > 1 && (
+        <>
+          {navIndex > 0 && (
+            <Link
+              href={`/movie/${navIds[navIndex - 1]}`}
+              aria-label="Предыдущий фильм"
+              className="hidden md:flex items-center justify-center fixed left-6 top-1/2 -translate-y-1/2 z-[50] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200"
+              onClick={() => {
+                try {
+                  const ctx = { origin: "detail", ids: navIds, index: (navIndex as number) - 1, timestamp: Date.now() };
+                  localStorage.setItem("__navContext", JSON.stringify(ctx));
+                } catch {}
+              }}
+            >
+              <IconChevronLeft size={20} />
+            </Link>
+          )}
+          {navIndex < navIds.length - 1 && (
+            <Link
+              href={`/movie/${navIds[navIndex + 1]}`}
+              aria-label="Следующий фильм"
+              className="hidden md:flex items-center justify-center fixed right-6 top-1/2 -translate-y-1/2 z-[50] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200"
+              onClick={() => {
+                try {
+                  const ctx = { origin: "detail", ids: navIds, index: (navIndex as number) + 1, timestamp: Date.now() };
+                  localStorage.setItem("__navContext", JSON.stringify(ctx));
+                } catch {}
+              }}
+            >
+              <IconChevronRight size={20} />
+            </Link>
+          )}
+        </>
+      )}
 
       {/* Movie Details */}
       <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8">

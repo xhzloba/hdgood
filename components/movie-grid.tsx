@@ -2220,6 +2220,12 @@ export function MovieGrid({
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
                       }
+                      try {
+                        const ids = (display || []).map((m: any) => String(m.id));
+                        const index = ids.indexOf(String(movie.id));
+                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                        localStorage.setItem("__navContext", JSON.stringify(ctx));
+                      } catch {}
                       router.push(`/movie/${movie.id}`);
                       return;
                     }
@@ -2386,7 +2392,18 @@ export function MovieGrid({
                       }
                       if (waiting) {
                         return isLoadMoreMode ? (
-                          <a href={`/movie/${movie.id}`} className="block">
+                          <a
+                            href={`/movie/${movie.id}`}
+                            className="block"
+                            onClick={() => {
+                              try {
+                                const ids = (display || []).map((m: any) => String(m.id));
+                                const index = ids.indexOf(String(movie.id));
+                                const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                                localStorage.setItem("__navContext", JSON.stringify(ctx));
+                              } catch {}
+                            }}
+                          >
                             <Skeleton className="absolute inset-0 w-full h-full" />
                           </a>
                         ) : (
@@ -2394,7 +2411,18 @@ export function MovieGrid({
                         );
                       }
                       return isLoadMoreMode ? (
-                        <a href={`/movie/${movie.id}`} className="block">
+                        <a
+                          href={`/movie/${movie.id}`}
+                          className="block"
+                          onClick={() => {
+                            try {
+                              const ids = (display || []).map((m: any) => String(m.id));
+                              const index = ids.indexOf(String(movie.id));
+                              const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                              localStorage.setItem("__navContext", JSON.stringify(ctx));
+                            } catch {}
+                          }}
+                        >
                           <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
                         </a>
                       ) : (

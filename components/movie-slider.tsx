@@ -474,25 +474,32 @@ export default function MovieSlider({
                       posterEl.style.setProperty('--mx', '0');
                       posterEl.style.setProperty('--my', '0');
                     }}
-                    onClick={(e) => {
-                      const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
-                      if (api?.clickAllowed && !api.clickAllowed()) {
-                        e.preventDefault()
-                        return
-                      }
-                      
-                      // Сохраняем позицию постера для анимации перехода (только десктоп)
-                      const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
-                      if (posterEl && movie.poster) {
-                        const rect = posterEl.getBoundingClientRect()
-                        savePosterTransition({
-                          movieId: String(movie.id),
-                          posterUrl: movie.poster,
-                          rect: rect,
-                        })
-                      }
-                    }}
-                  >
+                  onClick={(e) => {
+                    const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
+                    if (api?.clickAllowed && !api.clickAllowed()) {
+                      e.preventDefault()
+                      return
+                    }
+                    
+                    // Сохраняем позицию постера для анимации перехода (только десктоп)
+                    const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
+                    if (posterEl && movie.poster) {
+                      const rect = posterEl.getBoundingClientRect()
+                      savePosterTransition({
+                        movieId: String(movie.id),
+                        posterUrl: movie.poster,
+                        rect: rect,
+                      })
+                    }
+
+                    try {
+                      const ids = (finalDisplay || []).map((m: any) => String(m.id))
+                      const index = ids.indexOf(String(movie.id))
+                      const ctx = { origin: "slider", ids, index, timestamp: Date.now() }
+                      localStorage.setItem("__navContext", JSON.stringify(ctx))
+                    } catch {}
+                  }}
+                >
                   <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
                     {(() => {
                       const idStr = String(movie.id);
