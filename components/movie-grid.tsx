@@ -1260,13 +1260,13 @@ export function MovieGrid({
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
               <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-              <div className="relative md:text-left text-center">
-                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 md:mx-0 mx-auto" />
-                <div className="flex items-center gap-2 md:justify-start justify-center">
-                  <Skeleton className="h-2 md:h-3 w-10 md:mx-0 mx-auto" />
-                  <Skeleton className="h-2 md:h-3 w-16 md:mx-0 mx-auto" />
+              <div className="relative text-left md:text-left">
+                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 mx-0 md:mx-0" />
+                <div className="flex items-center gap-2 justify-start md:justify-start">
+                  <Skeleton className="h-2 md:h-3 w-10 mx-0 md:mx-0" />
+                  <Skeleton className="h-2 md:h-3 w-16 mx-0 md:mx-0" />
                 </div>
               </div>
             </div>
@@ -1301,13 +1301,13 @@ export function MovieGrid({
             <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
               <Skeleton className="w-full h-full" />
             </div>
-            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
+            <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
               <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-              <div className="relative md:text-left text-center">
-                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 md:mx-0 mx-auto" />
-                <div className="flex items-center gap-2 md:justify-start justify-center">
-                  <Skeleton className="h-2 md:h-3 w-10 md:mx-0 mx-auto" />
-                  <Skeleton className="h-2 md:h-3 w-16 md:mx-0 mx-auto" />
+              <div className="relative text-left md:text-left">
+                <Skeleton className="h-3 md:h-4 w-3/4 mb-2 mx-0 md:mx-0" />
+                <div className="flex items-center gap-2 justify-start md:justify-start">
+                  <Skeleton className="h-2 md:h-3 w-10 mx-0 md:mx-0" />
+                  <Skeleton className="h-2 md:h-3 w-16 mx-0 md:mx-0" />
                 </div>
               </div>
             </div>
@@ -2441,10 +2441,10 @@ export function MovieGrid({
                     )}
                   </div>
                   {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
-                  <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden md:text-left text-center">
-                    <div className="relative z-[2] md:text-left text-center">
+                  <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
+                    <div className="relative z-[2] text-left md:text-left">
                       <h3
-                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100 md:text-left text-center"
+                        className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100 text-left md:text-left"
                         title={movie.title || "Без названия"}
                       >
                         {movie.title || "Без названия"}
@@ -2454,7 +2454,7 @@ export function MovieGrid({
                         const genre = getPrimaryGenreFromMovie(movie);
                         if (!year && !genre) return null;
                         return (
-                          <div className="flex items-center gap-2 md:justify-start justify-center text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                          <div className="flex items-center gap-2 justify-start md:justify-start text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                             {year && <span>{year}</span>}
                             {year && genre && (
                               <span className="text-zinc-500/60">•</span>
