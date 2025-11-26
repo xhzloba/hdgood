@@ -1081,5 +1081,100 @@
       "poster_colors.accentTl"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-11-26T10:06:52.920Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-11-26T10:07:30.105Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6912606bf5a672e8496fcc5e",
+    "timestamp": "2025-11-26T10:10:10.919Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "691b9ae96274cfb190907d81",
+    "timestamp": "2025-11-26T10:13:22.488Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "691b9ae96274cfb190907d81",
+    "timestamp": "2025-11-26T10:14:15.678Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "691b9ae96274cfb190907d81",
+    "timestamp": "2025-11-26T10:15:02.445Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "released"
+    ]
+  },
+  {
+    "id": "6593f9238914c04deaeafe0d",
+    "timestamp": "2025-11-26T10:16:39.671Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68dda4849906b3f36b6f0bf6",
+    "timestamp": "2025-11-26T10:19:22.437Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68dda4849906b3f36b6f0bf6",
+    "timestamp": "2025-11-26T10:19:53.884Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
   }
 ]
