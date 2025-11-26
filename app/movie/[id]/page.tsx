@@ -1889,7 +1889,18 @@ export default function MoviePage({
                             />
                           );
                           return canLink ? (
-                            <Link href={`/actor/${actorIdStr}`} key={id}>
+                            <Link
+                              href={`/actor/${actorIdStr}`}
+                              key={id}
+                              onClick={() => {
+                                try {
+                                  const raw = localStorage.getItem("__actorInfo");
+                                  const map = raw ? JSON.parse(raw) : {};
+                                  map[String(actorIdStr)] = { name: title, photo: src };
+                                  localStorage.setItem("__actorInfo", JSON.stringify(map));
+                                } catch {}
+                              }}
+                            >
                               {imgEl}
                             </Link>
                           ) : (
@@ -1897,7 +1908,18 @@ export default function MoviePage({
                           );
                         }
                         return canLink ? (
-                          <Link href={`/actor/${actorIdStr}`} key={id}>
+                          <Link
+                            href={`/actor/${actorIdStr}`}
+                            key={id}
+                            onClick={() => {
+                              try {
+                                const raw = localStorage.getItem("__actorInfo");
+                                const map = raw ? JSON.parse(raw) : {};
+                                map[String(actorIdStr)] = { name: title, photo: null };
+                                localStorage.setItem("__actorInfo", JSON.stringify(map));
+                              } catch {}
+                            }}
+                          >
                             <div
                               className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-zinc-700/50 text-zinc-300 flex items-center justify-center text-xs select-none"
                               aria-label="нет фото"
