@@ -524,7 +524,7 @@ export default function MobileBottomNav() {
         </DrawerContent>
       </Drawer>
       <Drawer open={isBellOpen} onOpenChange={(o) => setIsBellOpen(o)}>
-        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] h-[50vh]">
+        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[60vh] h-[60vh]">
           <DrawerHeader>
             <DrawerTitle>Премьеры</DrawerTitle>
           </DrawerHeader>
