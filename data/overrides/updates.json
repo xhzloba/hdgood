@@ -1358,5 +1358,31 @@
       "poster",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f9188914c04deaeae289",
+    "timestamp": "2025-11-26T12:36:27.849Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "6593f9188914c04deaeae289",
+    "timestamp": "2025-11-26T12:38:03.823Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
   }
 ]

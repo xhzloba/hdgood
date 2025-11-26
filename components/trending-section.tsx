@@ -1,7 +1,6 @@
 "use client"
 
 import MovieSlider from "./movie-slider"
-import FranchiseSlider from "./franchise-slider"
 import { APP_SETTINGS } from "@/lib/settings"
 
 interface TrendingItem {
@@ -69,12 +68,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                   compactOnMobile
                 />
               )}
-              {/* Баннер франшизы сразу после слайдера "В тренде" */}
-              {section.title === "В тренде" && (
-                <div className="mt-12 md:mt-12">
-                  <FranchiseSlider />
-                </div>
-              )}
+              
             </div>
           ))}
           {/* Отдельный блок: Топ 250 фильмов — после списка секций */}

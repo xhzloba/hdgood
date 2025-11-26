@@ -594,5 +594,29 @@
     "bg_poster": {
       "backdrop": "/movies/drakula-backdrop.jpg"
     }
+  },
+  "6593f9188914c04deaeae289": {
+    "poster_colors": {
+      "accentTr": [
+        0,
+        176,
+        228
+      ],
+      "accentBr": [
+        255,
+        153,
+        192
+      ],
+      "accentBl": [
+        253,
+        170,
+        202
+      ],
+      "accentTl": [
+        53,
+        209,
+        243
+      ]
+    }
   }
 }
