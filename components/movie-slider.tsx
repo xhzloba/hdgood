@@ -497,6 +497,8 @@ export default function MovieSlider({
                       const index = ids.indexOf(String(movie.id))
                       const ctx = { origin: "slider", ids, index, timestamp: Date.now() }
                       localStorage.setItem("__navContext", JSON.stringify(ctx))
+                      const href = `${location.pathname}${location.search}`
+                      localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }))
                     } catch {}
                   }}
                 >

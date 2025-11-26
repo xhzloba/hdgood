@@ -2225,6 +2225,8 @@ export function MovieGrid({
                         const index = ids.indexOf(String(movie.id));
                         const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));
+                        const href = `${location.pathname}${location.search}`;
+                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                       } catch {}
                       router.push(`/movie/${movie.id}`);
                       return;
@@ -2301,20 +2303,28 @@ export function MovieGrid({
                       if (hasVideo) {
                         if (waiting) {
                           return isLoadMoreMode ? (
-                            <a
-                              href={`/movie/${movie.id}`}
-                              className="block absolute inset-0"
-                              onClick={(e) => {
-                                if (
-                                  e.button === 0 &&
-                                  !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
-                                ) {
-                                  e.preventDefault();
-                                }
-                              }}
-                            >
-                              <Skeleton className="absolute inset-0 w-full h-full" />
-                            </a>
+                          <a
+                            href={`/movie/${movie.id}`}
+                            className="block absolute inset-0"
+                            onClick={(e) => {
+                              if (
+                                e.button === 0 &&
+                                !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                              ) {
+                                e.preventDefault();
+                              }
+                              try {
+                                const ids = (display || []).map((m: any) => String(m.id));
+                                const index = ids.indexOf(String(movie.id));
+                                const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                                localStorage.setItem("__navContext", JSON.stringify(ctx));
+                                const href = `${location.pathname}${location.search}`;
+                                localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                              } catch {}
+                            }}
+                          >
+                            <Skeleton className="absolute inset-0 w-full h-full" />
+                          </a>
                           ) : (
                             <Skeleton className="absolute inset-0 w-full h-full" />
                           );
@@ -2420,6 +2430,8 @@ export function MovieGrid({
                               const index = ids.indexOf(String(movie.id));
                               const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
                               localStorage.setItem("__navContext", JSON.stringify(ctx));
+                              const href = `${location.pathname}${location.search}`;
+                              localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                             } catch {}
                           }}
                         >

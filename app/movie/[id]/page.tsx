@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader } from "@/components/loader";
@@ -257,6 +258,8 @@ export default function MoviePage({
   const [isVideoLooping, setIsVideoLooping] = useState(false);
   const [navIds, setNavIds] = useState<string[]>([]);
   const [navIndex, setNavIndex] = useState<number | null>(null);
+  const [returnHref, setReturnHref] = useState<string | null>(null);
+  const router = useRouter();
 
   const normalizeTrailers = (val: any): any[] => {
     try {
@@ -308,6 +311,17 @@ export default function MoviePage({
     } catch {
       setNavIds([]);
       setNavIndex(null);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("__returnTo") : null;
+      const obj = raw ? JSON.parse(raw) : null;
+      const href = obj?.href ? String(obj.href) : null;
+      setReturnHref(href);
+    } catch {
+      setReturnHref(null);
     }
   }, [id]);
 
@@ -1092,8 +1106,23 @@ export default function MoviePage({
       <header className="relative z-10 bg-transparent">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center">
           <Link
-            href="/"
+            href={returnHref ?? "/"}
             className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors"
+            onClick={(e) => {
+              try {
+                const sameOriginRef = typeof document !== "undefined" && document.referrer && document.referrer.startsWith(location.origin);
+                if (sameOriginRef) {
+                  e.preventDefault();
+                  router.back();
+                  return;
+                }
+                if (returnHref) {
+                  e.preventDefault();
+                  router.push(returnHref);
+                  return;
+                }
+              } catch {}
+            }}
           >
             <ArrowLeft size={16} />
             <span>Назад</span>
