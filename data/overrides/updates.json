@@ -1273,5 +1273,90 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "68ba0bf25bf0f36dcf5db2db",
+    "timestamp": "2025-11-26T11:15:09.116Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68e981e299eeea9f9441de37",
+    "timestamp": "2025-11-26T11:20:01.699Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690fbd64c45a0a91ca9a3184",
+    "timestamp": "2025-11-26T11:22:27.845Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65940578e264662a2fc85d72",
+    "timestamp": "2025-11-26T11:25:00.745Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65940578e264662a2fc85d72",
+    "timestamp": "2025-11-26T11:26:31.930Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "65942f979f578f48cbaeac28",
+    "timestamp": "2025-11-26T11:30:13.017Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "67ae79b350c294b7c879133d",
+    "timestamp": "2025-11-26T11:32:53.097Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "688d38e275a6b2ea17a46a36",
+    "timestamp": "2025-11-26T11:38:47.870Z",
+    "poster": "/movies/drakula-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]

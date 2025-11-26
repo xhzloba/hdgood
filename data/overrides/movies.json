@@ -560,5 +560,39 @@
   },
   "65941c82b2a2940f15929b9c": {
     "poster_logo": "/movies/logo/20.webp"
+  },
+  "68ba0bf25bf0f36dcf5db2db": {
+    "poster_logo": "/movies/logo/21.webp",
+    "bg_poster": {
+      "backdrop": "/series/slezam.webp"
+    }
+  },
+  "68e981e299eeea9f9441de37": {
+    "poster_logo": "/movies/logo/22.webp",
+    "bg_poster": {
+      "backdrop": "/movies/grabitel.webp"
+    }
+  },
+  "690fbd64c45a0a91ca9a3184": {
+    "poster_logo": "/movies/logo/23.webp",
+    "bg_poster": {
+      "backdrop": "/movies/breaking.webp"
+    }
+  },
+  "65940578e264662a2fc85d72": {
+    "poster_logo": "/movies/logo/24.png"
+  },
+  "65942f979f578f48cbaeac28": {
+    "poster_logo": "/movies/logo/25.png"
+  },
+  "67ae79b350c294b7c879133d": {
+    "poster_logo": "/movies/logo/26.webp"
+  },
+  "688d38e275a6b2ea17a46a36": {
+    "poster_logo": "/movies/logo/27.png",
+    "poster": "/movies/drakula-poster.jpg",
+    "bg_poster": {
+      "backdrop": "/movies/drakula-backdrop.jpg"
+    }
   }
 }
