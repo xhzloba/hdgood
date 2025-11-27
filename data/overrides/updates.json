@@ -1447,5 +1447,17 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "68e981e4704f07b21352c67c",
+    "timestamp": "2025-11-27T07:38:58.800Z",
+    "poster": "/movies/last-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]

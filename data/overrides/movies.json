@@ -636,5 +636,12 @@
   },
   "685dc2e324e1881167175c69": {
     "poster_logo": "/movies/logo/29.webp"
+  },
+  "68e981e4704f07b21352c67c": {
+    "poster_logo": "/movies/logo/30.webp",
+    "poster": "/movies/last-poster.webp",
+    "bg_poster": {
+      "backdrop": "/series/last.webp"
+    }
   }
 }
