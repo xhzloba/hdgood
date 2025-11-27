@@ -582,7 +582,7 @@ export default function MovieSlider({
                     <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
                       <div className="relative z-[2]">
                         <h3
-                          className="text-[11px] md:text-[12px] font-medium truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                          className="text-[13px] md:text-[14px] font-bold truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
                           title={movie.title || "Без названия"}
                         >
                           {movie.title || "Без названия"}
