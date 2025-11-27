@@ -181,7 +181,7 @@ export default function ActorPage() {
                     </button>
                   </div>
                 </div>
-                {isDesktop && !watchOpen && (
+                {!watchOpen && (
                   <div className="hidden md:flex items-center gap-2 ml-auto">
                     <div className={`${viewMode === "pagination" && inlineInfoOpen ? "opacity-0 pointer-events-none" : "opacity-100"} flex items-center gap-2`}>
                       <button
@@ -261,7 +261,7 @@ export default function ActorPage() {
                 onInlineInfoOpenChange={setInlineInfoOpen}
                 onBackdropOverrideChange={handleBackdropOverrideChange}
                 onHeroInfoOverrideChange={handleHeroInfoOverrideChange}
-                viewMode={isDesktop ? viewMode : undefined}
+                viewMode={viewMode}
                 resetOverridesOnNavigate
               />
             </div>

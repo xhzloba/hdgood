@@ -1290,7 +1290,8 @@ export function MovieGrid({
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
-    const skeletonCount = isArrowDesktopMode ? effectiveCols : perPage;
+    const preferFive = !hideLoadMore && isArrowCandidate && (viewMode === "pagination");
+    const skeletonCount = preferFive ? 5 : perPage;
     const gridClass =
       "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
@@ -1321,11 +1322,11 @@ export function MovieGrid({
   }
 
   if (
-    isArrowDesktopMode &&
+    ((viewMode === "pagination" && isArrowCandidate && !hideLoadMore) || isArrowDesktopMode) &&
     (isLoading || isValidating) &&
     !pagesData.some((p) => p.page === page)
   ) {
-    const skeletonCount = effectiveCols;
+    const skeletonCount = 5;
     const gridClass =
       "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (

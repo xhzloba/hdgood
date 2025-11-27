@@ -100,7 +100,7 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
                 {ch.title}
               </button>
             ))}
-            {isDesktop && !watchOpen && (
+            {!watchOpen && (
               <div className={`hidden md:flex items-center gap-2 ml-auto transition-opacity duration-200 ${(viewMode === "pagination" && (inlineInfoOpen || watchOpen)) ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
                 <button
                   onClick={() => setViewMode("pagination")}
@@ -157,7 +157,7 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
             onBackdropOverrideChange={onBackdropOverrideChange}
             onHeroInfoOverrideChange={onHeroInfoOverrideChange}
             resetOverridesOnNavigate
-            viewMode={isDesktop ? viewMode : undefined}
+            viewMode={viewMode}
             onInlineInfoOpenChange={setInlineInfoOpen}
           />
         </div>

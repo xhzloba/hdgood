@@ -183,7 +183,7 @@ export default function HomeClient({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("https://api.vokino.pro/v2/list?sort=popular", {
+        const res = await fetch("https://api.vokino.pro/v2/list?sort=watching", {
           headers: { Accept: "application/json" },
           cache: "no-store",
         });
