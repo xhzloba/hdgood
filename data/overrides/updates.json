@@ -1404,5 +1404,38 @@
       "released"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6927786768c93e617eb20f75",
+    "timestamp": "2025-11-27T07:15:19.081Z",
+    "poster": "/movies/rozdestvo-ograblenie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6927786768c93e617eb20f75",
+    "timestamp": "2025-11-27T07:16:07.110Z",
+    "poster": "/movies/rozdestvo-ograblenie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "released"
+    ]
+  },
+  {
+    "id": "6927786768c93e617eb20f75",
+    "timestamp": "2025-11-27T07:17:24.410Z",
+    "poster": "/movies/rozdestvo-ograblenie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "about",
+      "franchise.slogan"
+    ]
   }
 ]

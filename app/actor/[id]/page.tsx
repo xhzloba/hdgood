@@ -144,13 +144,13 @@ export default function ActorPage() {
         <div className="mb-4 hidden md:block">
           <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[12vh] h-[96px]">
+        <div className="relative z-30 hidden md:flex justify-center mt-[12vh] h-[72px]">
           {overrideHeroLogoSrc && overrideHeroLogoId ? (
             <Link href={`/movie/${overrideHeroLogoId}`} className="block">
-              <img src={overrideHeroLogoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
+              <img src={overrideHeroLogoSrc} alt="Логотип" className="h-[72px] w-auto max-w-[80vw] object-contain" />
             </Link>
           ) : (
-            <div className="h-[96px] flex items-center justify-center px-4">
+            <div className="h-[72px] flex items-center justify-center px-4">
               <span className="text-2xl md:text-4xl font-semibold text-zinc-100 truncate max-w-[80vw]">
                 {overrideHeroTitle ?? name}
               </span>

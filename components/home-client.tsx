@@ -539,17 +539,17 @@ export default function HomeClient({
             onActiveIndexChange={handleActiveIndexChange}
           />
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
+        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[72px]">
           {effLogoSrc && effLogoId ? (
             <Link href={`/movie/${effLogoId}`} className="block">
               <img
                 src={effLogoSrc}
                 alt="Логотип"
-                className="h-[96px] w-auto max-w-[80vw]"
+                className="h-[72px] w-auto max-w-[80vw] object-contain"
               />
             </Link>
           ) : hasOverrideBg && overrideHeroTitle ? (
-            <div className="h-[96px] flex items-center justify-center px-4">
+            <div className="h-[72px] flex items-center justify-center px-4">
               <span className="text-2xl md:text-4xl font-semibold text-zinc-100 truncate max-w-[80vw]">
                 {overrideHeroTitle}
               </span>

@@ -618,5 +618,20 @@
         243
       ]
     }
+  },
+  "6927786768c93e617eb20f75": {
+    "about": [
+      "Два неудачника решаются на ограбление элитного лондонского универмага в канун Рождества. Но не окажется ли украдено нечто большее",
+      "чем деньги?"
+    ],
+    "franchise": {
+      "slogan": "Tis the season to give. And take"
+    },
+    "released": 2025,
+    "poster_logo": "/movies/logo/28.webp",
+    "bg_poster": {
+      "backdrop": "/movies/rozdestvo-ograblenie.webp"
+    },
+    "poster": "/movies/rozdestvo-ograblenie-poster.webp"
   }
 }
