@@ -1437,5 +1437,15 @@
       "about",
       "franchise.slogan"
     ]
+  },
+  {
+    "id": "685dc2e324e1881167175c69",
+    "timestamp": "2025-11-27T07:31:18.429Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
