@@ -681,8 +681,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
           <div className="relative flex items-center gap-3">
 
-            {/* Центрированный контейнер табов */}
-            <div className="absolute left-1/2 -translate-x-1/2">
+            {/* Контейнер табов */}
+            <div className="relative">
               {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
               <div
                 ref={containerRef}
