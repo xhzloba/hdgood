@@ -87,8 +87,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
 
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false })
-  const EXTRA_Y = 24
-  const EXTRA_X = 6
+  const EXTRA_Y = 10
+  const EXTRA_X = 3
   const animIdRef = useRef<number | null>(null)
   const baselineRef = useRef<{ top: number; height: number }>({ top: 0, height: 0 })
   const initializedRef = useRef(false)
