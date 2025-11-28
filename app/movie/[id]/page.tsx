@@ -1395,7 +1395,7 @@ export default function MoviePage({
                       </span>
                     ) : (
                       <span
-                        className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(
+                        className={`px-2 py-[3px] rounded-full text-white font-bold ${ratingBgColor(
                           movie.rating_kp
                         )}`}
                       >
@@ -1446,7 +1446,7 @@ export default function MoviePage({
                       </span>
                     ) : (
                       <span
-                        className={`px-2 py-[3px] rounded-sm text-white font-medium ${ratingBgColor(
+                        className={`px-2 py-[3px] rounded-full text-white font-bold ${ratingBgColor(
                           movie.rating_imdb
                         )}`}
                       >
