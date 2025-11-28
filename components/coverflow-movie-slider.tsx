@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -306,20 +307,61 @@ export default function CoverflowMovieSlider({
           </div>
         </div>
       ) : isLoading && display.length === 0 ? (
-        // Skeleton loader
-        <div className="relative z-10 flex overflow-hidden gap-2">
-           {Array.from({ length: 5 }).map((_, i) => (
-             <div key={i} className="flex-shrink-0 w-[160px] md:w-[220px]">
-                <div className="aspect-[2/3] bg-zinc-950 rounded-[10px] mb-2">
-                   <Skeleton className="w-full h-full rounded-[10px]" />
-                </div>
-                <Skeleton className="h-4 w-3/4 mb-1" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-3 w-8" />
-                  <Skeleton className="h-3 w-12" />
-                </div>
-             </div>
-           ))}
+        // Skeleton loader - mimicking Coverflow layout (7 visible items)
+        <div className="relative z-10 flex items-center justify-center overflow-hidden py-8 w-full">
+           {/* Left fake items */}
+           {/* 3rd Left (furthest) */}
+           <div className="hidden lg:block absolute left-[calc(50%-480px)] scale-[0.75] opacity-20 z-0 w-[160px] md:w-[220px] -rotate-y-25 origin-right translate-x-[-50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
+           {/* 2nd Left */}
+           <div className="hidden md:block absolute left-[calc(50%-330px)] scale-[0.8] opacity-40 z-0 w-[160px] md:w-[220px] -rotate-y-25 origin-right translate-x-[-50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
+           {/* 1st Left (closest) */}
+           <div className="absolute left-[calc(50%-115px)] md:left-[calc(50%-165px)] scale-[0.85] opacity-60 z-10 w-[160px] md:w-[220px] -rotate-y-25 origin-right translate-x-[-50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
+
+           {/* Center active item */}
+           <div className="relative z-20 scale-100 w-[160px] md:w-[220px] shadow-xl">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px] mb-2">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+              <div className="mt-3 space-y-2 px-1">
+                 <Skeleton className="h-4 w-3/4 mx-auto" />
+                 <div className="flex justify-center gap-2">
+                    <Skeleton className="h-3 w-8" />
+                    <Skeleton className="h-3 w-12" />
+                 </div>
+              </div>
+           </div>
+
+           {/* Right fake items */}
+           {/* 1st Right (closest) */}
+           <div className="absolute right-[calc(50%-115px)] md:right-[calc(50%-165px)] scale-[0.85] opacity-60 z-10 w-[160px] md:w-[220px] rotate-y-25 origin-left translate-x-[50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
+           {/* 2nd Right */}
+           <div className="hidden md:block absolute right-[calc(50%-330px)] scale-[0.8] opacity-40 z-0 w-[160px] md:w-[220px] rotate-y-25 origin-left translate-x-[50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
+           {/* 3rd Right (furthest) */}
+           <div className="hidden lg:block absolute right-[calc(50%-480px)] scale-[0.75] opacity-20 z-0 w-[160px] md:w-[220px] rotate-y-25 origin-left translate-x-[50%]">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
+                 <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+           </div>
         </div>
       ) : (
         <div className="relative">
@@ -336,10 +378,10 @@ export default function CoverflowMovieSlider({
               modifier: 1,
               slideShadows: true,
             }}
-            pagination={{ clickable: true, dynamicBullets: true }}
+            pagination={false}
             loop={loop}
             autoplay={autoplay ? { delay: autoplayIntervalMs, disableOnInteraction: false, pauseOnMouseEnter: hoverPause } : false}
-            modules={[EffectCoverflow, Pagination, Autoplay]}
+            modules={[EffectCoverflow, Autoplay]}
             className="w-full py-8"
             initialSlide={initialIndex}
           >
@@ -517,15 +559,18 @@ export default function CoverflowMovieSlider({
 
                       {movie.rating && (
                         <div
-                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[12] ${ratingBgColor(
-                            movie.rating
-                          )}`}
+                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[20] transition-opacity duration-300 ${
+                            isActive ? "opacity-100" : "opacity-0"
+                          } ${ratingBgColor(movie.rating)}`}
                         >
                           {formatRatingLabel(movie.rating)}
                         </div>
                       )}
                       {movie.quality && (
-                        <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                        <div className={`absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[20] transition-opacity duration-300 ${
+                            isActive ? "opacity-100 group-hover:opacity-100" : "opacity-0"
+                          }`}
+                        >
                           {String(movie.quality)}
                         </div>
                       )}
