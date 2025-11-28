@@ -393,7 +393,7 @@ export default function CoverflowMovieSlider({
               >
                 {({ isActive }) => (
                   <div
-                    className={`group block bg-transparent hover:bg-transparent outline-none transition-all duration-300 overflow-hidden rounded-sm relative cursor-pointer ${
+                    className={`group block bg-transparent hover:bg-transparent outline-none transition-all duration-300 overflow-hidden rounded-[10px] relative cursor-pointer ${
                       isActive ? "" : "brightness-[0.35] hover:brightness-[0.6]"
                     }`}
                     onClick={(e) => {
@@ -453,7 +453,7 @@ export default function CoverflowMovieSlider({
                       posterEl.style.setProperty('--my', '0');
                     }}
                   >
-                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu">
                     {(() => {
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
@@ -469,7 +469,7 @@ export default function CoverflowMovieSlider({
                             alt={movie.title || "Постер"}
                             decoding="async"
                             loading={index < 5 ? "eager" : "lazy"}
-                            className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                            className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
                               loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                             }`}
                             style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}

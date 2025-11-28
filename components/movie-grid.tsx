@@ -1302,7 +1302,7 @@ export function MovieGrid({
             key={i}
             className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu">
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
@@ -1337,7 +1337,7 @@ export function MovieGrid({
             key={i}
             className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
           >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
+            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu">
               <Skeleton className="w-full h-full" />
             </div>
             <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
@@ -2327,7 +2327,7 @@ export function MovieGrid({
                     }
                   }}
                 >
-                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu">
                     {(() => {
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
@@ -2380,7 +2380,7 @@ export function MovieGrid({
                             <VideoPoster
                               src={movie.intro_video}
                               poster={posterSrc || undefined}
-                              className="absolute inset-0 w-full h-full"
+                              className="absolute inset-0 w-full h-full rounded-[10px]"
                               onPosterLoad={() => handleImageLoad(movie.id)}
                             />
                           </a>
@@ -2388,14 +2388,14 @@ export function MovieGrid({
                           <VideoPoster
                             src={movie.intro_video}
                             poster={posterSrc || undefined}
-                            className="absolute inset-0 w-full h-full"
+                            className="absolute inset-0 w-full h-full rounded-[10px]"
                             onPosterLoad={() => handleImageLoad(movie.id)}
                           />
                         );
                       }
                       if (posterSrc && !errorImages.has(String(movie.id))) {
                         const eager = (virtualizationEnabled && rowHeight ? vVirtStart + index : index) < effectiveCols;
-                        const cls = `absolute inset-0 w-full h-full object-cover transition-all ease-out poster-media ${
+                        const cls = `absolute inset-0 w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
                           loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                         }`;
                         const style = { transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" } as const;

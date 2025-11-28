@@ -503,7 +503,7 @@ export default function MovieSlider({
                     } catch {}
                   }}
                 >
-                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card">
+                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu">
                     {(() => {
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
@@ -521,7 +521,7 @@ export default function MovieSlider({
                             decoding="async"
                             loading={index < itemsPerView ? "eager" : "lazy"}
                             fetchPriority={index < itemsPerView ? "high" : "low"}
-                            className={`w-full h-full object-cover transition-all ease-out poster-media ${
+                            className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
                               loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                             }`}
                             style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}

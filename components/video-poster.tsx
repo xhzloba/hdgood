@@ -101,7 +101,7 @@ export const VideoPoster = forwardRef<VideoPosterRef, VideoPosterProps>(
     return (
       <div
         className={cn(
-          "relative w-full h-full overflow-hidden bg-zinc-900",
+          "relative w-full h-full overflow-hidden bg-zinc-900 isolate transform-gpu",
           className
         )}
       >
