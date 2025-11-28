@@ -179,9 +179,9 @@ function CarouselPrevious({
     <button
       data-slot="carousel-previous"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-1/2 md:top-[calc(50%-28px)] md:left-[-40px] lg:left-[-48px] xl:left-[-56px] -translate-y-1/2'
+          ? 'top-1/2 md:top-[calc(50%-28px)] md:left-[-32px] lg:left-[-40px] xl:left-[-48px] -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -189,7 +189,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'currentColor' }} className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12">
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'currentColor' }} className="w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12">
         <path d="M15 6l-6 6l6 6"></path>
       </svg>
       <span className="sr-only">Previous slide</span>
@@ -207,9 +207,9 @@ function CarouselNext({
     <button
       data-slot="carousel-next"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-11 h-11 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-transparent hover:bg-transparent text-white hover:text-[rgba(var(--ui-accent-rgb),1)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-1/2 md:top-[calc(50%-28px)] md:right-[-40px] lg:right-[-48px] xl:right-[-56px] -translate-y-1/2'
+          ? 'top-1/2 md:top-[calc(50%-28px)] md:right-[-32px] lg:right-[-40px] xl:right-[-48px] -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -217,7 +217,7 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'currentColor' }} className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12">
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'currentColor' }} className="w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12">
         <path d="M9 6l6 6l-6 6"></path>
       </svg>
       <span className="sr-only">Next slide</span>

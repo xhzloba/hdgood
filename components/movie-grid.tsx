@@ -2199,10 +2199,10 @@ export function MovieGrid({
               <button
                 onClick={handlePrevArrow}
                 disabled={page <= 1 && subIndex <= 0}
-                className="hidden md:flex items-center justify-center absolute left-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hidden md:flex items-center justify-center absolute md:left-[-32px] lg:left-[-38px] xl:left-[-44px] top-1/2 -translate-y-1/2 z-[20] md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Предыдущая страница"
               >
-                <IconChevronLeft size={20} />
+                <IconChevronLeft className="w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-7 xl:h-7" />
               </button>
             )}
             <div
@@ -2557,10 +2557,10 @@ export function MovieGrid({
                   (nextPageItemsLen === 0 ||
                     (nextPageItemsLen == null && lastPageEmpty))
                 }
-                className="hidden md:flex items-center justify-center absolute right-[-40px] top-1/2 -translate-y-1/2 z-[20] w-11 h-11 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hidden md:flex items-center justify-center absolute md:right-[-32px] lg:right-[-38px] xl:right-[-44px] top-1/2 -translate-y-1/2 z-[20] md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Следующая страница"
               >
-                <IconChevronRight size={20} />
+                <IconChevronRight className="w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-7 xl:h-7" />
               </button>
             )}
           </>
