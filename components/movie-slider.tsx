@@ -608,7 +608,7 @@ export default function MovieSlider({
                       
                       {movie.rating && (
                         <div
-                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[12] ${ratingBgColor(
+                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
                             movie.rating
                           )}`}
                         >

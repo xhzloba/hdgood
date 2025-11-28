@@ -1627,10 +1627,10 @@ export function MovieGrid({
                     if (rating) {
                       return (
                         <span
-                          className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
-                            rating
-                          )}`}
-                        >
+                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
+                              rating
+                            )}`}
+                          >
                           {formatRatingLabel(rating)}
                         </span>
                       );
@@ -2029,7 +2029,7 @@ export function MovieGrid({
                       if (rating) {
                         return (
                           <span
-                            className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
                               rating
                             )}`}
                           >
@@ -2038,7 +2038,7 @@ export function MovieGrid({
                         );
                       }
                       if (selectedLoading) {
-                        return <Skeleton className="h-[18px] w-10 rounded-sm" />;
+                        return <Skeleton className="h-[18px] w-10 rounded-full" />;
                       }
                       return null;
                     })()}
@@ -2542,7 +2542,7 @@ export function MovieGrid({
                     })()}
                     {movie.rating && (
                       <div
-                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[11px] md:text-[12px] text-white font-medium z-[12] ${ratingBgColor(
+                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
                           movie.rating
                         )}`}
                       >
@@ -2751,10 +2751,10 @@ export function MovieGrid({
                         selectedMovie.rating;
                       return rating ? (
                         <span
-                          className={`px-2 py-[3px] rounded-sm text-[11px] md:text-[12px] text-white ${ratingBgColor(
-                            rating
-                          )}`}
-                        >
+                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
+                              rating
+                            )}`}
+                          >
                           {formatRatingLabel(rating)}
                         </span>
                       ) : null;
