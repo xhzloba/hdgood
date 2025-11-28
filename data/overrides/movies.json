@@ -648,5 +648,11 @@
     "bg_poster": {
       "backdrop": "/movies/zveropolis-backdrop.webp"
     }
+  },
+  "6593f9128914c04deaead3b1": {
+    "poster_logo": "/movies/logo/31.webp"
+  },
+  "6593f85e8914c04deae96a57": {
+    "poster_logo": "/movies/logo/32.webp"
   }
 }

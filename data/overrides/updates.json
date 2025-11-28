@@ -1469,5 +1469,25 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f9128914c04deaead3b1",
+    "timestamp": "2025-11-28T17:42:21.792Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f85e8914c04deae96a57",
+    "timestamp": "2025-11-28T17:55:13.789Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

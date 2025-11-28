@@ -163,13 +163,13 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 transition-opacity group-hover:opacity-90" />
 
-                  {/* Logo (Centered, raised higher and shifted left) */}
+                  {/* Logo (Centered, shifted down from center) */}
                   {logo && (
-                    <div className="absolute inset-0 flex items-center justify-center p-8 z-10 pb-24 pr-36">
+                    <div className="absolute inset-0 flex items-center justify-center p-8 z-10 pt-12">
                       <img
                         src={logo}
                         alt={movie.title}
-                        className="w-full max-h-[60%] object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] filter transition-transform duration-300 group-hover:scale-105"
+                        className="w-full max-h-[50%] object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] filter transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
                   )}
@@ -177,28 +177,14 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col justify-end p-4 z-20">
                     <div className="flex items-end gap-2">
-                      {/* Big Number */}
-                      <span
-                        className="text-5xl font-bold leading-none text-white/90 drop-shadow-md"
-                        style={{
-                          fontFamily: "var(--font-sans), sans-serif",
-                          textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
-                        }}
-                      >
-                        {index + 1}
-                      </span>
-
                       {/* Info */}
-                      <div className="pb-1 min-w-0 flex-1">
-                        {/* Title */}
-                        <h3 className="truncate text-lg font-bold text-white drop-shadow-sm leading-tight mb-0.5">
-                          {movie.title}
-                        </h3>
-
-                        {/* Genre */}
-                        <p className="truncate text-sm font-medium text-zinc-300/90 drop-shadow-sm">
-                          {movie.genre?.split(",")[0] || "Сериал"}
-                        </p>
+                      <div className={`pb-1 min-w-0 flex-1 ${logo ? 'text-center mb-2' : ''}`}>
+                        {/* Genre (Only shown if logo exists) */}
+                        {logo && (
+                          <p className="truncate text-sm font-medium text-zinc-300/90 drop-shadow-sm">
+                            {movie.genre?.split(",")[0] || "Сериал"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
