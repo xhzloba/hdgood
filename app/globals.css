@@ -1268,6 +1268,7 @@ html[data-toploader="silent"] #nprogress .peg {
     transition: opacity 200ms ease;
     pointer-events: none;
     filter: saturate(1.35) brightness(1.15);
+    z-index: 1;
   }
 
   .group:hover .poster-card::after,
@@ -1280,11 +1281,11 @@ html[data-toploader="silent"] #nprogress .peg {
     position: absolute;
     inset: 0;
     border-radius: 10px;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-      0 10px 22px rgba(0, 0, 0, 0.35);
+    border: 3px solid rgba(255, 255, 255, 0.95);
     opacity: 0;
     transition: opacity 200ms ease;
     pointer-events: none;
+    z-index: 2;
   }
 
   .group:hover .poster-card::before,
@@ -1300,11 +1301,6 @@ html[data-toploader="silent"] #nprogress .peg {
 
   .group:hover .poster-card .poster-media,
   .group:focus-visible .poster-card .poster-media {
-    transform: perspective(800px)
-      rotateX(calc(var(--my, 0) * 4deg))
-      rotateY(calc(var(--mx, 0) * -4deg))
-      translateX(calc(var(--mx, 0) * 12px))
-      translateY(calc(var(--my, 0) * 12px))
-      scale(1.06);
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateX(0px) translateY(0px) scale(1);
   }
 }
