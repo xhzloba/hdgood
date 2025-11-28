@@ -643,5 +643,10 @@
     "bg_poster": {
       "backdrop": "/series/last.webp"
     }
+  },
+  "6928c9e2888ecf1943e5a97c": {
+    "bg_poster": {
+      "backdrop": "/movies/zveropolis-backdrop.webp"
+    }
   }
 }

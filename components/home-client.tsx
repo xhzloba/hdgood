@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { HeaderCategories } from "./header-categories";
 import { TrendingSection } from "./trending-section";
+import { NetflixSlider } from "./netflix-slider";
 import { UhdSection } from "./uhd-section";
 import { MoviesSection } from "./movies-section";
 import { SerialsSection } from "./serials-section";
@@ -669,7 +670,15 @@ export default function HomeClient({
             ) : isSerialsMode ? (
               <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
             ) : (
-              <TrendingSection activeBackdropId={currentId ?? undefined} />
+              <>
+                <div className="px-5">
+                   <NetflixSlider 
+                     url="https://api.vokino.pro/v2/compilations/content/65a6b9dabce57d552a34b40d" 
+                     title="Сериалы Netflix" 
+                   />
+                </div>
+                <TrendingSection activeBackdropId={currentId ?? undefined} />
+              </>
             )}
           </div>
         </section>
