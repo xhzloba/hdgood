@@ -143,8 +143,8 @@ export function TrailerPlayer({ trailers, mode }: { trailers?: Trailer[] | Trail
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="w-12 h-12 !left-[-32px] [&>svg]:w-8 [&>svg]:h-8" />
-          <CarouselNext className="w-12 h-12 !right-[-32px] [&>svg]:w-8 [&>svg]:h-8" />
+          <CarouselPrevious className="w-9 h-9 top-1/2 md:top-1/2 -translate-y-1/2 left-[-24px] md:translate-x-0 text-white bg-transparent border-none shadow-none hover:bg-transparent hover:text-[rgba(var(--ui-accent-rgb),1)] [&>svg]:w-5 [&>svg]:h-5" />
+          <CarouselNext className="w-9 h-9 top-1/2 md:top-1/2 -translate-y-1/2 right-[-24px] md:translate-x-0 text-white bg-transparent border-none shadow-none hover:bg-transparent hover:text-[rgba(var(--ui-accent-rgb),1)] [&>svg]:w-5 [&>svg]:h-5" />
         </Carousel>
       </div>
     )
