@@ -1,6 +1,7 @@
 "use client"
 
 import MovieSlider from "./movie-slider"
+import CoverflowMovieSlider from "./coverflow-movie-slider"
 import { APP_SETTINGS } from "@/lib/settings"
 
 interface TrendingItem {
@@ -49,14 +50,14 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
           {TRENDING_SECTIONS.map((section) => (
             <div key={section.title} className="space-y-3">
               {section.title === "В тренде" ? (
-                <MovieSlider
+                <CoverflowMovieSlider
                   url={section.playlist_url}
                   title={section.title}
                   autoplay={APP_SETTINGS.slider.trending.syncWithBackdrop ? APP_SETTINGS.slider.trending.autoplay : false}
                   autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
                   hoverPause={APP_SETTINGS.slider.trending.hoverPause}
                   perPageOverride={APP_SETTINGS.slider.trending.perPage}
-                  loop={APP_SETTINGS.slider.trending.loop}
+                  loop={true}
                   activeItemId={APP_SETTINGS.slider.trending.syncWithBackdrop ? activeBackdropId ?? undefined : undefined}
                   compactOnMobile
                 />
