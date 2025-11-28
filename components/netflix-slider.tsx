@@ -13,6 +13,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
+import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 
 type NetflixSliderProps = {
   url: string;
@@ -29,6 +30,8 @@ function extractNetflixMovies(data: any): any[] {
   if (data?.channels) {
     return data.channels.map((item: any) => {
       const d = item.details || item;
+      const override = getSeriesOverride(d.id) || getMovieOverride(d.id);
+      
       return {
         id: d.id,
         title: d.name || d.title,
@@ -37,6 +40,7 @@ function extractNetflixMovies(data: any): any[] {
         rating: d.rating_kp || d.rating,
         genre: d.genre,
         year: d.released || d.year,
+        logo: override?.poster_logo,
       };
     });
   }
@@ -48,8 +52,34 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [overrides, setOverrides] = useState<Record<string, any>>({});
 
   const movies = useMemo(() => extractNetflixMovies(data), [data]);
+
+  // Fetch overrides for movies
+  useEffect(() => {
+    if (movies.length === 0) return;
+    
+    const ids = movies.map((m) => m.id).filter(Boolean);
+    if (ids.length === 0) return;
+
+    // Check which IDs we don't have overrides for yet
+    const missingIds = ids.filter(id => !overrides[id]);
+    if (missingIds.length === 0) return;
+
+    const fetchOverrides = async () => {
+      try {
+        const res = await fetch(`/api/overrides/movies?ids=${missingIds.join(",")}`);
+        if (!res.ok) return;
+        const newOverrides = await res.json();
+        setOverrides((prev) => ({ ...prev, ...newOverrides }));
+      } catch (e) {
+        console.error("Failed to fetch overrides for NetflixSlider", e);
+      }
+    };
+
+    fetchOverrides();
+  }, [movies, overrides]);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -104,7 +134,11 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
           className="w-full"
         >
           <CarouselContent className="-ml-4 px-1">
-            {movies.map((movie, index) => (
+            {movies.map((movie, index) => {
+               const override = overrides[movie.id];
+               const logo = override?.poster_logo || movie.logo;
+               
+               return (
               <CarouselItem
                 key={movie.id}
                 className="pl-4 basis-[85%] sm:basis-[60%] md:basis-1/2 lg:basis-1/3"
@@ -129,8 +163,19 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 transition-opacity group-hover:opacity-90" />
 
+                  {/* Logo (Centered, raised higher and shifted left) */}
+                  {logo && (
+                    <div className="absolute inset-0 flex items-center justify-center p-8 z-10 pb-24 pr-36">
+                      <img
+                        src={logo}
+                        alt={movie.title}
+                        className="w-full max-h-[60%] object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] filter transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+
                   {/* Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-4">
+                  <div className="absolute inset-0 flex flex-col justify-end p-4 z-20">
                     <div className="flex items-end gap-2">
                       {/* Big Number */}
                       <span
@@ -145,11 +190,11 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
 
                       {/* Info */}
                       <div className="pb-1 min-w-0 flex-1">
-                         {/* Title */}
+                        {/* Title */}
                         <h3 className="truncate text-lg font-bold text-white drop-shadow-sm leading-tight mb-0.5">
                           {movie.title}
                         </h3>
-                        
+
                         {/* Genre */}
                         <p className="truncate text-sm font-medium text-zinc-300/90 drop-shadow-sm">
                           {movie.genre?.split(",")[0] || "Сериал"}
@@ -170,7 +215,8 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
                   )}
                 </Link>
               </CarouselItem>
-            ))}
+            );
+            })}
           </CarouselContent>
           <CarouselPrevious className="hidden md:flex left-2 top-1/2 -translate-y-1/2 md:top-1/2" />
           <CarouselNext className="hidden md:flex right-2 top-1/2 -translate-y-1/2 md:top-1/2" />
