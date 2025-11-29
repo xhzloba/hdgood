@@ -64,7 +64,7 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
     if (ids.length === 0) return;
 
     // Check which IDs we don't have overrides for yet
-    const missingIds = ids.filter(id => !overrides[id]);
+    const missingIds = ids.filter(id => overrides[id] === undefined);
     if (missingIds.length === 0) return;
 
     const fetchOverrides = async () => {
@@ -72,7 +72,16 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
         const res = await fetch(`/api/overrides/movies?ids=${missingIds.join(",")}`);
         if (!res.ok) return;
         const newOverrides = await res.json();
-        setOverrides((prev) => ({ ...prev, ...newOverrides }));
+        setOverrides((prev) => {
+          const next = { ...prev, ...newOverrides };
+          // Mark missing IDs as null so we don't fetch them again
+          missingIds.forEach(id => {
+            if (!(id in next)) {
+              next[id] = null;
+            }
+          });
+          return next;
+        });
       } catch (e) {
         console.error("Failed to fetch overrides for NetflixSlider", e);
       }
