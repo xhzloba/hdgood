@@ -1127,7 +1127,24 @@ export default function MoviePage({
                   })()}
                 </span>
                <span>{formatDuration()}</span>
-               <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">HD</span>
+               {(() => {
+                 const tagsRaw = (movie as any).tags;
+                 const tagsList = Array.isArray(tagsRaw)
+                   ? tagsRaw
+                   : String(tagsRaw || "").split(",");
+                 const firstTag = tagsList.map((s: any) => String(s).trim()).filter(Boolean)[0];
+                 
+                 const franchiseQuality = franchiseData && (franchiseData as any).quality;
+                 const quality = firstTag || franchiseQuality;
+
+                 if (!quality) return null;
+
+                 return (
+                   <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                     {quality}
+                   </span>
+                 );
+               })()}
             </div>
 
             <p className="text-zinc-200 text-sm md:text-lg line-clamp-3 md:line-clamp-4 drop-shadow-md max-w-2xl font-light leading-relaxed">
