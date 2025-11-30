@@ -1120,8 +1120,8 @@ export default function MoviePage({
 
       {/* Hero Background */}
       <div className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end md:block">
-         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
-         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
+         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent z-10" />
+         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
          
         {isTrailerPlaying && currentTrailerUrl ? (
            <>
@@ -1175,8 +1175,8 @@ export default function MoviePage({
          )}
          
          {/* Desktop Content Gradient Overlay - Feathered (Растушевка) */}
-         <div className="absolute inset-0 w-full md:w-[75%] bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent z-20 pointer-events-none" />
-         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/80 to-transparent z-20 pointer-events-none" />
+         <div className="absolute inset-0 w-full md:w-[75%] bg-gradient-to-r from-zinc-950/60 via-zinc-950/30 to-transparent z-20 pointer-events-none" />
+         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/50 to-transparent z-20 pointer-events-none" />
 
          {/* Hero Content Overlay */}
          <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto">
