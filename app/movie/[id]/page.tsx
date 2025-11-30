@@ -1267,6 +1267,8 @@ export default function MoviePage({
            <img 
              src={backdropUrl} 
              alt={movie.name} 
+             loading="eager"
+             fetchPriority="high"
              onLoad={() => setIsBackdropLoaded(true)}
              className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-1000 ease-out ${
                isBackdropLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-xl scale-110"
@@ -1300,6 +1302,9 @@ export default function MoviePage({
               <img 
                 src={(movie as any).poster_logo} 
                 alt={movie.name} 
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2"
               />
             ) : (
