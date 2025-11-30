@@ -1179,7 +1179,7 @@ export default function MoviePage({
          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/80 to-transparent z-20 pointer-events-none" />
 
          {/* Hero Content Overlay */}
-         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-24 pb-8 md:pt-32 md:pb-12">
+         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto">
             {/* TS Quality Warning */}
             {showTsWarning && (
               <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-md flex items-center gap-3 w-fit max-w-xl animate-in fade-in slide-in-from-bottom-2">
