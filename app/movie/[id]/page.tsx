@@ -1163,26 +1163,26 @@ export default function MoviePage({
             <TabsList className="flex items-center gap-6 overflow-x-auto scrollbar-hide border-b border-white/10 bg-transparent p-0 mb-8 w-full justify-start h-auto">
               <TabsTrigger 
                 value="overview" 
-                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
                 Обзор
               </TabsTrigger>
               <TabsTrigger 
                 value="watch" 
-                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
                 Смотреть онлайн
               </TabsTrigger>
               <TabsTrigger 
                 value="trailers" 
-                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
                 Трейлеры
               </TabsTrigger>
               {franchise?.seasons && Array.isArray(franchise.seasons) && franchise.seasons.length > 0 && (
                 <TabsTrigger 
                   value="episodes" 
-                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
                 >
                   Эпизоды
                 </TabsTrigger>
@@ -1190,7 +1190,7 @@ export default function MoviePage({
               {Array.isArray(seqList) && seqList.length > 0 && (
                 <TabsTrigger 
                   value="sequels" 
-                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
                 >
                   Сиквелы и приквелы
                 </TabsTrigger>
@@ -1198,7 +1198,7 @@ export default function MoviePage({
               {Array.isArray(similarList) && similarList.length > 0 && (
                 <TabsTrigger 
                   value="similar" 
-                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
                 >
                   Похожие
                 </TabsTrigger>
