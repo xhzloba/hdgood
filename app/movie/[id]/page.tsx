@@ -183,6 +183,14 @@ export default function MoviePage({
   const [showTsWarning, setShowTsWarning] = useState(false);
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Вычисляем информацию о качестве и TS
   const qualityInfo = useMemo(() => {
@@ -1115,38 +1123,42 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          
-         {isTrailerPlaying && currentTrailerUrl ? (
+        {isTrailerPlaying && currentTrailerUrl ? (
            <>
              {/* Desktop Background Player */}
-             <div className="hidden md:block absolute inset-0 w-full h-full z-0 pointer-events-none">
-                <iframe
-                  src={currentTrailerUrl}
-                  className="w-full h-full object-cover scale-125"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-             </div>
-
-             {/* Mobile Modal Player */}
-             <div className="md:hidden fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
-                <button
-                  onClick={() => setIsTrailerPlaying(false)}
-                  className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
-                >
-                  <X size={24} />
-                </button>
-                <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+             {!isMobile && (
+               <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
                   <iframe
                     src={currentTrailerUrl}
-                    className="w-full h-full"
+                    className="w-full h-full object-cover scale-125"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                </div>
-                <p className="mt-4 text-zinc-400 text-sm font-medium">
-                   Трейлер
-                </p>
-             </div>
+               </div>
+             )}
+
+             {/* Mobile Modal Player */}
+             {isMobile && (
+               <div className="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
+                  <button
+                    onClick={() => setIsTrailerPlaying(false)}
+                    className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
+                  >
+                    <X size={24} />
+                  </button>
+                  <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                    <iframe
+                      src={currentTrailerUrl}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="mt-4 text-zinc-400 text-sm font-medium">
+                     Трейлер
+                  </p>
+               </div>
+             )}
            </>
          ) : backdropUrl ? (
            <img 
