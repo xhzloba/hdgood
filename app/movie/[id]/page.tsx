@@ -1393,6 +1393,24 @@ export default function MoviePage({
                           <span className="text-zinc-500">Режиссер</span>
                           <span className="text-zinc-200">{Array.isArray(movie.director) ? movie.director.join(", ") : movie.director || "—"}</span>
                        </div>
+                       {franchise?.screenwriter && Array.isArray(franchise.screenwriter) && franchise.screenwriter.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Сценаристы</span>
+                            <span className="text-zinc-200">{franchise.screenwriter.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.operator && Array.isArray(franchise.operator) && franchise.operator.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Оператор</span>
+                            <span className="text-zinc-200">{franchise.operator.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.design && Array.isArray(franchise.design) && franchise.design.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Художники</span>
+                            <span className="text-zinc-200">{franchise.design.join(", ")}</span>
+                         </div>
+                       )}
                        <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Жанры</span>
                           <span className="text-zinc-200">{Array.isArray(movie.genre) ? movie.genre.join(", ") : movie.genre || "—"}</span>
@@ -1446,24 +1464,6 @@ export default function MoviePage({
                             <span className="text-zinc-200">
                               {formatCurrency(franchise.fees_rus)}
                             </span>
-                         </div>
-                       )}
-                       {franchise?.operator && Array.isArray(franchise.operator) && franchise.operator.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Оператор</span>
-                            <span className="text-zinc-200">{franchise.operator.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.screenwriter && Array.isArray(franchise.screenwriter) && franchise.screenwriter.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Сценаристы</span>
-                            <span className="text-zinc-200">{franchise.screenwriter.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.design && Array.isArray(franchise.design) && franchise.design.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Художники</span>
-                            <span className="text-zinc-200">{franchise.design.join(", ")}</span>
                          </div>
                        )}
                        {franchise?.voiceActing && Array.isArray(franchise.voiceActing) && franchise.voiceActing.length > 0 && (
