@@ -1212,6 +1212,12 @@ export default function MoviePage({
                      </div>
                   </div>
 
+                  {/* Cast List (Moved from sidebar) */}
+                  <div>
+                    <h3 className="text-2xl font-semibold text-white mb-4">В ролях</h3>
+                    <CastList casts={movie.casts || data.casts || []} />
+                  </div>
+
                   {franchise?.trivia && (
                     <div className="space-y-4">
                       <h3 className="text-xl font-semibold text-white">Знаете ли вы?</h3>
@@ -1221,11 +1227,6 @@ export default function MoviePage({
                 </div>
 
                 <div className="space-y-8 text-sm text-zinc-400">
-                  <div>
-                    <span className="block text-zinc-500 mb-2 uppercase text-xs font-bold tracking-wider">В ролях</span>
-                    <CastList casts={movie.casts || []} />
-                  </div>
-                  
                   <div>
                     <span className="block text-zinc-500 mb-2 uppercase text-xs font-bold tracking-wider">О фильме</span>
                     <div className="space-y-2">
