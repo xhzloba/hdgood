@@ -1328,9 +1328,10 @@ export default function MoviePage({
             <TabsContent value="sequels" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {seqList.map((item: any) => {
-                     const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
-                     const posterSrc = item.poster || item.cover || item.poster_url;
-                     const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
+                     const data = item.details || item;
+                     const linkId = data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident;
+                     const posterSrc = data.poster || data.cover || data.poster_url;
+                     const titleText = data.title || data.name || data.original_title || data.en_name || "Без названия";
                      
                      if (!linkId) return null;
 
@@ -1365,9 +1366,10 @@ export default function MoviePage({
                {Array.isArray(similarList) && similarList.length > 0 ? (
                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {similarList.map((item: any) => {
-                       const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
-                       const posterSrc = item.poster || item.cover || item.poster_url;
-                       const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
+                       const data = item.details || item;
+                       const linkId = data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident;
+                       const posterSrc = data.poster || data.cover || data.poster_url;
+                       const titleText = data.title || data.name || data.original_title || data.en_name || "Без названия";
                        
                        if (!linkId) return null;
 
