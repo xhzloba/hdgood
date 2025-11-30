@@ -1519,7 +1519,7 @@ export function MovieGrid({
       {isArrowDesktopMode && watchOpen ? null : null}
       {isArrowDesktopMode && watchOpen && selectedMovie ? (
         <div
-          className={`relative z-20 p-4 md:p-5 bg-zinc-900/80 border border-zinc-800/60 rounded-sm transition-all duration-300 ${
+          className={`relative z-20 p-4 md:p-5 bg-zinc-900/80 border border-zinc-800/60 rounded-sm transition-all duration-300 overflow-hidden ${
             playerVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 -translate-y-2"
@@ -1821,7 +1821,7 @@ export function MovieGrid({
             }`}
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
-              <div className="relative p-3 md:p-4 smoke-flash">
+              <div className="relative p-3 md:p-4 smoke-flash overflow-hidden">
               {showEscHint && (
                 <div
                   className={`absolute z-30 pointer-events-none ${
@@ -1872,7 +1872,7 @@ export function MovieGrid({
                     }, 200);
                   }
                 }}
-                className={`absolute ${inlinePlayerOpen && isDesktop ? "right-[-32px] top-2" : "right-2 top-2"} z-20 inline-flex items-center justify-center w-8 h-8 text-white opacity-85 hover:opacity-100 transition-opacity duration-200`}
+                className={`absolute right-2 top-2 z-20 inline-flex items-center justify-center w-8 h-8 text-white opacity-85 hover:opacity-100 transition-opacity duration-200`}
               >
                 <IconX size={18} />
               </button>
@@ -1894,9 +1894,9 @@ export function MovieGrid({
                         onClick={handleInlinePrev}
                         disabled={disablePrev && !selectedLoading}
                         aria-label="Предыдущий фильм"
-                        className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-white opacity-80 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-16 h-16 text-white opacity-70 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        <IconChevronLeft size={72} />
+                        <IconChevronLeft size={48} />
                       </button>
                     );
                   })()}
@@ -1920,9 +1920,9 @@ export function MovieGrid({
                         onClick={handleInlineNext}
                         disabled={disableNext && !selectedLoading}
                         aria-label="Следующий фильм"
-                        className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-white opacity-80 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-16 h-16 text-white opacity-70 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        <IconChevronRight size={72} />
+                        <IconChevronRight size={48} />
                       </button>
                     );
                   })()}
@@ -2639,7 +2639,7 @@ export function MovieGrid({
                 : "opacity-0 translate-y-2"
             }`}
           >
-            <div className="relative p-3 md:p-4 smoke-flash">
+            <div className="relative p-3 md:p-4 smoke-flash overflow-hidden">
               {isDesktop && (
                 <>
                   {(() => {
@@ -2658,9 +2658,9 @@ export function MovieGrid({
                         onClick={handleInlinePrev}
                         disabled={disablePrev}
                         aria-label="Предыдущий фильм"
-                        className="absolute left-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-white opacity-80 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-16 h-16 text-white opacity-70 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        <IconChevronLeft size={72} />
+                        <IconChevronLeft size={48} />
                       </button>
                     );
                   })()}
@@ -2684,9 +2684,9 @@ export function MovieGrid({
                         onClick={handleInlineNext}
                         disabled={disableNext}
                         aria-label="Следующий фильм"
-                        className="absolute right-[-72px] top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-20 h-20 text-white opacity-80 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center w-16 h-16 text-white opacity-70 hover:text-[rgba(var(--ui-accent-rgb),1)] hover:opacity-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       >
-                        <IconChevronRight size={72} />
+                        <IconChevronRight size={48} />
                       </button>
                     );
                   })()}

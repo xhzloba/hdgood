@@ -56,7 +56,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
 
   return (
     <section className="relative z-10 w-full">
-      <div className="w-full">
+      <div className="w-full p-2 md:p-5">
         <div className="space-y-8">
           {sections.map((section) => (
             <div key={section.title} className="space-y-4">
