@@ -180,7 +180,47 @@ export default function MoviePage({
   const [navIds, setNavIds] = useState<string[]>([]);
   const [navIndex, setNavIndex] = useState<number | null>(null);
   const [returnHref, setReturnHref] = useState<string | null>(null);
+  const [showTsWarning, setShowTsWarning] = useState(false);
   const router = useRouter();
+
+  // Вычисляем информацию о качестве и TS
+  const qualityInfo = useMemo(() => {
+    if (!data?.details && !overrideData) return { quality: null, isTS: false };
+    
+    const m = overrideData ?? data?.details;
+    if (!m) return { quality: null, isTS: false };
+    
+    // Мерджим franchise данные
+    let fData = franchiseData;
+    if (overrideData?.franchise && fData) {
+      // Простая логика мерджа для примера, аналогичная той, что ниже в рендере
+      // Но для useMemo достаточно просто взять наличие franchiseData
+    }
+
+    const tagsRaw = (m as any).tags;
+    const tagsList = Array.isArray(tagsRaw)
+      ? tagsRaw
+      : String(tagsRaw || "").split(",");
+    const firstTag = tagsList.map((s: any) => String(s).trim()).filter(Boolean)[0];
+    
+    const franchiseQuality = fData && (fData as any).quality;
+    const quality = firstTag || franchiseQuality;
+    
+    // Check if quality is TS (Telesync) or CAM
+    const isTS = quality && ["ts", "cam", "camrip", "telesync"].includes(String(quality).toLowerCase());
+    
+    return { quality, isTS };
+  }, [data, franchiseData, overrideData]);
+
+  useEffect(() => {
+    if (qualityInfo.isTS) {
+      setShowTsWarning(true);
+      const timer = setTimeout(() => {
+        setShowTsWarning(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [qualityInfo.isTS]);
 
   const normalizeTrailers = (val: any): any[] => {
     try {
@@ -1075,6 +1115,16 @@ export default function MoviePage({
 
          {/* Hero Content Overlay */}
          <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-12">
+            {/* TS Quality Warning */}
+            {showTsWarning && (
+              <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-md flex items-center gap-3 w-fit max-w-xl animate-in fade-in slide-in-from-bottom-2">
+                 <Info className="w-5 h-5 flex-shrink-0 text-yellow-400" />
+                 <p className="text-sm font-medium leading-relaxed">
+                   Не расстраивайтесь, скоро выйдет в хорошем качестве
+                 </p>
+              </div>
+            )}
+
             {(movie as any).poster_logo ? (
               <img 
                 src={(movie as any).poster_logo} 
@@ -1127,24 +1177,11 @@ export default function MoviePage({
                   })()}
                 </span>
                <span>{formatDuration()}</span>
-               {(() => {
-                 const tagsRaw = (movie as any).tags;
-                 const tagsList = Array.isArray(tagsRaw)
-                   ? tagsRaw
-                   : String(tagsRaw || "").split(",");
-                 const firstTag = tagsList.map((s: any) => String(s).trim()).filter(Boolean)[0];
-                 
-                 const franchiseQuality = franchiseData && (franchiseData as any).quality;
-                 const quality = firstTag || franchiseQuality;
-
-                 if (!quality) return null;
-
-                 return (
-                   <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
-                     {quality}
-                   </span>
-                 );
-               })()}
+               {qualityInfo.quality && (
+                 <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                   {qualityInfo.quality}
+                 </span>
+               )}
             </div>
 
             <p className="text-zinc-200 text-sm md:text-lg line-clamp-3 md:line-clamp-4 drop-shadow-md max-w-2xl font-light leading-relaxed">
