@@ -297,7 +297,8 @@ export default function MoviePage({
       // mute=0 для звука (но автовоспроизведение на мобильных может быть заблокировано)
       // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
-      src += `${separator}autoplay=1&mute=0&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`;
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      src += `${separator}autoplay=1&mute=0&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
     }
     return src;
   }, [hasTrailers, rawTrailers]);
@@ -1204,7 +1205,7 @@ export default function MoviePage({
                   <iframe
                     src={currentTrailerUrl}
                     className="w-full h-full object-cover scale-125"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                   />
                </div>
