@@ -920,6 +920,14 @@
   .overflow-anchor-none {
     overflow-anchor: none;
   }
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Перенос табов только на очень узких экранах */

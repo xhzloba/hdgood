@@ -2015,88 +2015,137 @@ export function MovieGrid({
                     </div>
                   ) : (
                     <>
-                      <div className="flex items-center gap-2">
+                      <div className="space-y-1">
                         <h3
-                          className="text-sm md:text-base font-semibold text-zinc-100 truncate"
+                          className="text-base md:text-lg font-bold text-zinc-100"
                           title={selectedMovie!.title || "Без названия"}
                         >
                           {selectedMovie!.title || "Без названия"}
                         </h3>
-                        {(() => {
-                      const rating =
-                        (selectedDetails as any)?.rating_kp ??
-                        (selectedDetails as any)?.rating ??
-                        selectedMovie!.rating;
-                      if (rating) {
-                        return (
-                          <span
-                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
-                              rating
-                            )}`}
-                          >
-                            {formatRatingLabel(rating)}
-                          </span>
-                        );
-                      }
-                      if (selectedLoading) {
-                        return <Skeleton className="h-[18px] w-10 rounded-full" />;
-                      }
-                      return null;
-                    })()}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {(() => {
+                            const rating =
+                              (selectedDetails as any)?.rating_kp ??
+                              (selectedDetails as any)?.rating ??
+                              selectedMovie!.rating;
+                            if (rating) {
+                              const numRating = parseFloat(String(rating));
+                              const matchPercent = Math.round(numRating * 10);
+                              
+                              // Определяем цвет на основе рейтинга
+                              const getMatchColor = (r: number) => {
+                                if (r >= 8) return { text: 'text-green-400', border: 'border-green-400/80', ring: 'ring-green-400/20' };
+                                if (r >= 7) return { text: 'text-yellow-400', border: 'border-yellow-400/80', ring: 'ring-yellow-400/20' };
+                                if (r >= 6) return { text: 'text-orange-400', border: 'border-orange-400/80', ring: 'ring-orange-400/20' };
+                                return { text: 'text-red-400', border: 'border-red-400/80', ring: 'ring-red-400/20' };
+                              };
+                              
+                              const colors = getMatchColor(numRating);
+                              
+                              return (
+                                <>
+                                  <span className={`text-[14px] md:text-[15px] font-bold ${colors.text}`}>
+                                    {matchPercent}% Match
+                                  </span>
+                                  <span className="text-[14px] md:text-[15px] text-zinc-300 font-medium">
+                                    {(() => {
+                                      const d: any = selectedDetails || {};
+                                      const ov =
+                                        (overridesMap as any)[String(selectedMovie!.id)] ??
+                                        null;
+                                      const year =
+                                        ov?.year ??
+                                        ov?.released ??
+                                        d.year ??
+                                        d.released ??
+                                        selectedMovie!.year;
+                                      return year ? String(year) : null;
+                                    })()}
+                                  </span>
+                                  {(() => {
+                                    const d: any = selectedDetails || {};
+                                    const ageRating = d.age_rating ?? d.ageRating ?? d.rating_mpaa ?? d.mpaa;
+                                    if (!ageRating) return null;
+                                    return (
+                                      <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-[12px] md:text-[13px] font-semibold text-zinc-300 border border-zinc-600/60 bg-zinc-800/40">
+                                        {String(ageRating)}
+                                      </span>
+                                    );
+                                  })()}
+                                  <span className="text-[14px] md:text-[15px] text-zinc-300 font-medium">
+                                    {(() => {
+                                      const d: any = selectedDetails || {};
+                                      const duration = d.duration ?? d.time ?? d.runtime;
+                                      if (!duration) return null;
+                                      const durationStr = String(duration);
+                                      let mins = 0;
+                                      
+                                      if (durationStr.includes(':')) {
+                                        // Если формат уже HH:MM, конвертируем в минуты
+                                        const parts = durationStr.split(':').map(p => parseInt(p));
+                                        if (parts.length >= 2) {
+                                          mins = parts[0] * 60 + parts[1];
+                                        }
+                                      } else {
+                                        mins = parseInt(durationStr);
+                                      }
+                                      
+                                      if (isNaN(mins) || mins <= 0) return null;
+                                      
+                                      // Если меньше или равно 60 минут, показываем только минуты
+                                      if (mins <= 60) {
+                                        return `${mins}мин`;
+                                      }
+                                      
+                                      // Если больше 60, показываем часы и минуты
+                                      const h = Math.floor(mins / 60);
+                                      const m = mins % 60;
+                                      return m > 0 ? `${h}ч ${m}мин` : `${h}ч`;
+                                    })()}
+                                  </span>
+                                </>
+                              );
+                            }
+                            if (selectedLoading) {
+                              return <Skeleton className="h-[18px] w-10 rounded-full" />;
+                            }
+                            return null;
+                          })()}
+                        </div>
                   </div>
-                  <div className="hidden md:block mt-1 h-[22px] overflow-hidden text-[12px] md:text-[13px] text-zinc-300 md:text-left text-center md:max-w-none max-w-[280px] md:mx-0 mx-auto">
+                  <div className="hidden md:block mt-2">
                     {selectedLoading ? (
                       <div className="flex items-center gap-2">
-                        <Skeleton className="h-3 w-10" />
-                        <Skeleton className="h-3 w-14" />
+                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-3 w-20" />
                         <Skeleton className="h-3 w-20" />
                       </div>
                     ) : (
                       (() => {
                         const d: any = selectedDetails || {};
-                        const ov =
-                          (overridesMap as any)[String(selectedMovie!.id)] ??
-                          null;
-                        const year =
-                          ov?.year ??
-                          ov?.released ??
-                          ov?.release_year ??
-                          ov?.releaseYear ??
-                          ov?.details?.year ??
-                          ov?.details?.released ??
-                          ov?.details?.release_year ??
-                          ov?.details?.releaseYear ??
-                          d.year ??
-                          d.released ??
-                          d.release_year ??
-                          d.releaseYear ??
-                          selectedMovie!.year;
-                        const countryRaw =
-                          d.country ?? selectedMovie!.country;
-                        const quality = d.quality ?? selectedMovie!.quality;
-                        const parts: string[] = [];
-                        if (year) parts.push(String(year));
-                        if (quality) parts.push(String(quality));
-                        if (countryRaw) {
-                          const arr = Array.isArray(countryRaw)
-                            ? countryRaw
-                            : String(countryRaw)
-                                .split(",")
-                                .map((s) => s.trim())
-                                .filter(Boolean);
-                          if (arr.length > 0) parts.push(arr.join(" "));
-                        }
-                        return parts.length > 0 ? (
-                      <div className="flex items-center gap-2 md:justify-start justify-center">
-                        {parts.map((p, i) => (
-                          <span key={i} className="truncate">
-                            {p}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null;
-                  })()
-                )}
+                        const genreRaw = d.genre ?? selectedMovie!.genre;
+                        const genres = Array.isArray(genreRaw)
+                          ? genreRaw.slice(0, 3)
+                          : typeof genreRaw === "string"
+                          ? genreRaw.split(/[,/|]/).map(g => g.trim()).filter(Boolean).slice(0, 3)
+                          : [];
+                        
+                        if (genres.length === 0) return null;
+                        
+                        return (
+                          <div className="flex flex-wrap items-center gap-2">
+                            {genres.map((genre, i) => (
+                              <span
+                                key={i}
+                                className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-zinc-800/60 text-zinc-300 border border-zinc-700/40"
+                              >
+                                {genre}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      })()
+                    )}
               </div>
                       <div className="mt-2 text-[12px] md:text-[13px] text-zinc-200 h-[72px] md:h-[96px] overflow-hidden text-left md:max-w-none max-w-[280px] md:mx-0 mx-auto">
                         {selectedLoading ? (
