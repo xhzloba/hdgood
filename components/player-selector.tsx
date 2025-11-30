@@ -61,8 +61,37 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
 
   const hasFixedStyle = !!videoContainerStyle && (videoContainerStyle.height != null || videoContainerStyle.width != null);
   return (
-    <div className={`space-y-3 ${className}`}>
-      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-lg overflow-hidden ${videoContainerClassName || "bg-black"}`} style={videoContainerStyle}>
+    <div className={`space-y-4 ${className}`}>
+      {/* Player Controls - Top */}
+      <div className="flex items-center gap-2 p-1 bg-zinc-900/50 rounded-lg w-fit border border-white/5 mb-4 overflow-x-auto scrollbar-hide max-w-full">
+        {[1, 2, 3].map((playerId) => {
+          const isActive = selectedPlayer === playerId;
+          const disabled =
+            (playerId === 1 && !player1Available) ||
+            (playerId === 2 && !player2Available) ||
+            (playerId === 3 && !player3Available);
+            
+          return (
+            <button
+              key={playerId}
+              onClick={() => handlePlayerSelect(playerId)}
+              disabled={disabled}
+              className={`
+                px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap
+                ${isActive 
+                  ? "bg-white text-black shadow-sm" 
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                }
+                ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+              `}
+            >
+              Плеер {playerId}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-xl overflow-hidden ${videoContainerClassName || "bg-black"} shadow-2xl ring-1 ring-white/10 z-0`} style={videoContainerStyle}>
         {selectedUrl ? (
           <iframe
             src={selectedUrl}
@@ -70,47 +99,13 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             title="Movie Player"
+            style={{ zIndex: 1 }}
           />
-        ) : null}
-        {selectedUrl && (
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-12 md:h-16 z-10"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0))",
-            }}
-          />
+        ) : (
+           <div className="w-full h-full flex items-center justify-center text-zinc-500">
+              <span className="text-sm">Плеер недоступен</span>
+           </div>
         )}
-      </div>
-      <div className="flex flex-wrap gap-2 justify-end">
-        {[1, 2, 3].map((playerId) => {
-          const isActive = selectedPlayer === playerId;
-          const disabled =
-            (playerId === 1 && !player1Available) ||
-            (playerId === 2 && !player2Available) ||
-            (playerId === 3 && !player3Available);
-          return (
-            <Button
-              key={playerId}
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePlayerSelect(playerId)}
-              className="inline-flex items-center gap-2 h-9 px-5 rounded-full text-[12px] font-medium text-white border border-transparent shadow-xs ring-1 ring-white/10 hover:shadow-md hover:opacity-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={
-                isActive
-                  ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
-                  : {
-                      backgroundImage:
-                        "linear-gradient(90deg, rgba(var(--ui-accent-rgb), 0.32), rgba(var(--ui-accent-rgb), 0.48))",
-                    }
-              }
-              disabled={disabled}
-              aria-current={isActive}
-            >
-              Плеер {playerId}
-            </Button>
-          );
-        })}
       </div>
     </div>
   );

@@ -159,7 +159,7 @@ export default function MoviePage({
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string>("");
   const [kpId, setKpId] = useState<string>("");
-  const [showPlayerSelector, setShowPlayerSelector] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const [selectedPlayer, setSelectedPlayer] = useState<number>(1);
   const tabsRef = useRef<HTMLDivElement>(null);
   const currentIdRef = useRef<string>(""); // Ref для отслеживания текущего id
@@ -1124,9 +1124,9 @@ export default function MoviePage({
             <div className="flex items-center gap-3 mt-4">
                <button 
                  onClick={() => {
-                    setShowPlayerSelector(true);
+                    setActiveTab("watch");
                     setTimeout(() => {
-                      document.getElementById('player-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                  }}
                  className="bg-white text-black px-8 py-3 rounded-[4px] font-bold flex items-center gap-2.5 hover:bg-white/90 transition active:scale-95"
@@ -1156,11 +1156,9 @@ export default function MoviePage({
       {/* Tabs Section */}
       <div ref={tabsRef} className="relative z-30 bg-zinc-950 px-4 md:px-12 pb-20 min-h-screen">
           <Tabs 
-            defaultValue="overview" 
+            value={activeTab}
+            onValueChange={setActiveTab}
             className="w-full"
-            onValueChange={() => {
-               tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }}
           >
             <TabsList className="flex items-center gap-6 overflow-x-auto scrollbar-hide border-b border-white/10 bg-transparent p-0 mb-8 w-full justify-start h-auto">
               <TabsTrigger 
@@ -1170,10 +1168,16 @@ export default function MoviePage({
                 Обзор
               </TabsTrigger>
               <TabsTrigger 
+                value="watch" 
+                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+              >
+                Смотреть онлайн
+              </TabsTrigger>
+              <TabsTrigger 
                 value="trailers" 
                 className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
-                Трейлеры и другое
+                Трейлеры
               </TabsTrigger>
               {franchise?.seasons && Array.isArray(franchise.seasons) && franchise.seasons.length > 0 && (
                 <TabsTrigger 
@@ -1262,20 +1266,24 @@ export default function MoviePage({
               </div>
             </TabsContent>
 
+            {/* Watch Tab */}
+            <TabsContent value="watch" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
+               <div className="space-y-8">
+                  <div className="w-full bg-zinc-950 rounded-xl overflow-hidden shadow-2xl p-4 md:p-6">
+                      <PlayerSelector
+                        onPlayerSelect={(playerId: number) =>
+                          setSelectedPlayer(playerId)
+                        }
+                        iframeUrl={franchise?.iframe_url || movie.iframe_url}
+                        kpId={kpId}
+                      />
+                  </div>
+               </div>
+            </TabsContent>
+
             {/* Trailers Tab */}
             <TabsContent value="trailers" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               <div id="player-section" className="space-y-8">
-                  {showPlayerSelector && (
-                    <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
-                        <PlayerSelector
-                          onPlayerSelect={(playerId: number) =>
-                            setSelectedPlayer(playerId)
-                          }
-                          iframeUrl={franchise?.iframe_url || movie.iframe_url}
-                          kpId={kpId}
-                        />
-                    </div>
-                  )}
+               <div className="space-y-8">
                   <div>
                      <h3 className="text-xl font-semibold text-white mb-4">Трейлеры и тизеры</h3>
                      <TrailerPlayer trailers={rawTrailers} mode="carousel" />
