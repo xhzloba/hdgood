@@ -1087,7 +1087,7 @@ export default function MoviePage({
               </h1>
             )}
             
-            <div className="flex items-center gap-3 text-sm md:text-base text-zinc-200 font-medium drop-shadow-md">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm md:text-base text-zinc-200 font-medium drop-shadow-md">
                {(() => {
                  const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
                  const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
@@ -1115,8 +1115,8 @@ export default function MoviePage({
                  const list = Array.isArray(movie.country) 
                    ? movie.country 
                    : String(movie.country || "").split(",");
-                 const topTwo = list.map((s: any) => String(s).trim()).filter(Boolean).slice(0, 2);
-                 return topTwo.length > 0 ? <span>{topTwo.join(", ")}</span> : null;
+                 const topOne = list.map((s: any) => String(s).trim()).filter(Boolean).slice(0, 1);
+                 return topOne.length > 0 ? <span>{topOne[0]}</span> : null;
                })()}
                <span>{titleYear}</span>
                 <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
@@ -1134,7 +1134,7 @@ export default function MoviePage({
                {movie.description || movie.about || "Нет описания"}
             </p>
 
-            <div className="flex items-center gap-3 mt-4">
+            <div className="flex flex-wrap items-center gap-3 mt-4">
                <button 
                  onClick={() => {
                     setActiveTab("watch");
@@ -1142,26 +1142,28 @@ export default function MoviePage({
                       tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                  }}
-                 className="bg-white text-black px-8 py-3 rounded-[4px] font-bold flex items-center gap-2.5 hover:bg-white/90 transition active:scale-95"
+                 className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
                >
-                 <Play size={24} fill="currentColor" className="ml-1" /> 
-                 <span className="text-lg">Смотреть</span>
+                 <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" /> 
+                 <span className="text-base md:text-lg">Смотреть</span>
                </button>
                <button 
                  onClick={() => {
                    tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
                  }}
-                 className="bg-zinc-500/40 text-white px-6 py-3 rounded-[4px] font-bold flex items-center gap-2.5 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95"
+                 className="bg-zinc-500/40 text-white px-4 py-3 md:px-6 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95 flex-1 md:flex-none min-w-[140px]"
                >
-                 <Info size={24} /> 
-                 <span className="text-lg">Подробнее</span>
+                 <Info size={20} className="md:w-6 md:h-6" /> 
+                 <span className="text-base md:text-lg">Подробнее</span>
                </button>
-               <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
-                  <Plus size={20} />
-               </button>
-               <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Оценить">
-                  <ThumbsUp size={20} />
-               </button>
+               <div className="flex gap-3 w-full md:w-auto justify-center md:justify-start">
+                 <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
+                    <Plus size={20} />
+                 </button>
+                 <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Оценить">
+                    <ThumbsUp size={20} />
+                 </button>
+               </div>
             </div>
          </div>
       </div>
