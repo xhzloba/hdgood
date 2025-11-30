@@ -184,6 +184,7 @@ export default function MoviePage({
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  const [isBackdropLoaded, setIsBackdropLoaded] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -592,6 +593,7 @@ export default function MoviePage({
     const loadData = async () => {
       console.log(`🔄 Загрузка фильма ${id} - loading=true`);
       setLoading(true);
+      setIsBackdropLoaded(false);
       setError(null);
       setErrorDetails("");
       // Сбрасываем franchise данные при загрузке нового фильма
@@ -1164,7 +1166,10 @@ export default function MoviePage({
            <img 
              src={backdropUrl} 
              alt={movie.name} 
-             className="absolute inset-0 w-full h-full object-cover object-top"
+             onLoad={() => setIsBackdropLoaded(true)}
+             className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-1000 ease-out ${
+               isBackdropLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-xl scale-110"
+             }`}
            />
          ) : (
            <img 
