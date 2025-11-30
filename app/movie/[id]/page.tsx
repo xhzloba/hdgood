@@ -1179,7 +1179,7 @@ export default function MoviePage({
          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/50 to-transparent z-20 pointer-events-none" />
 
          {/* Hero Content Overlay */}
-         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto">
+         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto md:animate-in md:fade-in md:slide-in-from-left-10 md:duration-1000 md:ease-out">
             {/* TS Quality Warning */}
             {showTsWarning && (
               <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-md flex items-center gap-3 w-fit max-w-xl animate-in fade-in slide-in-from-bottom-2">
@@ -1242,11 +1242,57 @@ export default function MoviePage({
                   })()}
                 </span>
                <span>{formatDuration()}</span>
-               {qualityInfo.quality && (
-                 <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
-                   {qualityInfo.quality}
-                 </span>
-               )}
+               {/* Fix content jump by showing movie quality immediately if available */}
+               {(() => {
+                 // Логика получения качества:
+                 // 1. Сначала проверяем tags (так как пользователь просил приоритет)
+                 // 2. Затем проверяем франшизу (qualityInfo.quality)
+                 // 3. Если ничего нет - не рендерим
+                 
+                 // Пробуем найти качество в тегах
+                 const tags = (movie as any).tags;
+                 let tagQuality = null;
+                 if (Array.isArray(tags)) {
+                   tagQuality = tags.find((t: any) => 
+                     ['4K', 'HD', '1080p', '720p', 'CAMRip', 'TS'].some(q => 
+                       String(t).toUpperCase().includes(q)
+                     )
+                   );
+                 }
+                 
+                 // Определяем финальное значение
+                 const finalQuality = 
+                   tagQuality || 
+                   (typeof qualityInfo !== 'undefined' && qualityInfo?.quality) || 
+                   (movie as any).quality;
+
+                 // Если это мобилка, всегда рендерим контейнер (скелетон или значение), чтобы не прыгало
+                 // Если десктоп - рендерим только если есть значение
+                 
+                 if (isMobile) {
+                    if (finalQuality) {
+                       return (
+                         <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                           {finalQuality}
+                         </span>
+                       );
+                    } else {
+                       // Скелетон/пустышка для мобилки, чтобы зарезервировать место и избежать скачка
+                       return (
+                         <span className="border border-transparent px-1.5 py-0.5 rounded text-xs bg-transparent w-[24px] inline-block select-none" aria-hidden="true">
+                           &nbsp;
+                         </span>
+                       );
+                    }
+                 }
+                 
+                 // Для десктопа возвращаем только если есть значение
+                 return finalQuality ? (
+                   <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                     {finalQuality}
+                   </span>
+                 ) : null;
+               })()}
             </div>
 
             <p className="text-zinc-200 text-sm md:text-lg line-clamp-3 md:line-clamp-4 drop-shadow-md max-w-2xl font-light leading-relaxed">
