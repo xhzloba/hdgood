@@ -1079,7 +1079,7 @@ export default function MoviePage({
               <img 
                 src={(movie as any).poster_logo} 
                 alt={movie.name} 
-                className="h-24 md:h-32 w-auto object-contain self-start mb-2"
+                className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2"
               />
             ) : (
               <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg leading-tight">
