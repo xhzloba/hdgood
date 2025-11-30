@@ -691,5 +691,12 @@
     "bg_poster": {
       "backdrop": "/movies/aldan-backdrop.jpg"
     }
+  },
+  "68cf23e124be021e936077bc": {
+    "poster_logo": "/movies/logo/38.webp",
+    "poster": "/movies/bus.webp",
+    "bg_poster": {
+      "backdrop": "/movies/bus-backdrop.webp"
+    }
   }
 }

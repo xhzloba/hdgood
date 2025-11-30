@@ -1624,5 +1624,17 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-11-30T21:43:09.148Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]
