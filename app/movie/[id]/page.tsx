@@ -316,7 +316,7 @@ export default function MoviePage({
       // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
       // Важно: enablejsapi=1 нужен для управления через postMessage
-      src += `${separator}autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
+      src += `${separator}autoplay=1&mute=1&controls=0&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
     }
     return src;
   }, [hasTrailers, rawTrailers, origin]);
@@ -1229,12 +1229,12 @@ export default function MoviePage({
            <>
              {/* Desktop Background Player */}
              {!isMobile && (
-               <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+               <div className="absolute inset-0 w-full h-full z-[1] bg-black animate-in fade-in duration-700">
                   <iframe
                     ref={playerRef}
                     src={currentTrailerUrl}
-                    className="w-full h-full object-cover scale-125"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    className="w-full h-full object-cover scale-125 pointer-events-none" 
+                    allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                </div>
