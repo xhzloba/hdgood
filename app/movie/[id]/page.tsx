@@ -1264,7 +1264,7 @@ export default function MoviePage({
                           className="w-8 h-8 rounded-md object-cover"
                         />
                         <span className={`text-xl font-bold ${ratingColor(movie.rating_kp)}`}>
-                           {movie.rating_kp ? Number(movie.rating_kp).toFixed(1) : "—"}
+                           {movie.rating_kp && movie.rating_kp !== "0.0" && movie.rating_kp !== 0 ? Number(movie.rating_kp).toFixed(1) : "—"}
                         </span>
                      </div>
 
@@ -1278,7 +1278,7 @@ export default function MoviePage({
                           className="w-8 h-8 object-contain"
                         />
                         <span className={`text-xl font-bold ${ratingColor(movie.rating_imdb)}`}>
-                           {movie.rating_imdb ? Number(movie.rating_imdb).toFixed(1) : "—"}
+                           {movie.rating_imdb && movie.rating_imdb !== "0.0" && movie.rating_imdb !== 0 ? Number(movie.rating_imdb).toFixed(1) : "—"}
                         </span>
                      </div>
                   </div>
