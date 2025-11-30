@@ -672,5 +672,24 @@
     },
     "poster_logo": "/movies/logo/33.webp",
     "poster": "/movies/dostat-nozi.webp"
+  },
+  "690531609cfe849a33c00370": {
+    "poster_logo": "/movies/logo/36.png",
+    "poster": "/movies/bugo-poster.webp",
+    "trailers": [
+      {
+        "id": "NwH-op1Y3V0",
+        "name": "Бугония — Русский трейлер (Дубляж, 2025) Эмма Стоун"
+      }
+    ],
+    "bg_poster": {
+      "backdrop": "/movies/bugo.webp"
+    }
+  },
+  "692b6ce00fcc5defacb6111d": {
+    "poster_logo": "/movies/logo/37.png",
+    "bg_poster": {
+      "backdrop": "/movies/aldan-backdrop.jpg"
+    }
   }
 }

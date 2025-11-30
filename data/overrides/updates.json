@@ -1582,5 +1582,47 @@
       "bg_poster.backdrop"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "690531609cfe849a33c00370",
+    "timestamp": "2025-11-30T20:56:35.276Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690531609cfe849a33c00370",
+    "timestamp": "2025-11-30T20:59:56.306Z",
+    "poster": "/movies/bugo-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster"
+    ]
+  },
+  {
+    "id": "690531609cfe849a33c00370",
+    "timestamp": "2025-11-30T21:03:31.121Z",
+    "poster": "/movies/bugo-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
+  },
+  {
+    "id": "692b6ce00fcc5defacb6111d",
+    "timestamp": "2025-11-30T21:08:31.203Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]
