@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
-import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconX, IconPlayerPlayFilled, IconInfoCircle } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -1769,8 +1769,9 @@ export function MovieGrid({
                         localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                       } catch {}
                     }}
-                    className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                    className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                   >
+                    <IconInfoCircle size={20} />
                     Подробнее
                   </Link>
                 </div>
@@ -2153,9 +2154,10 @@ export function MovieGrid({
                             setInlinePlayerOpen(true);
                             setPlayerVisible(true);
                           }}
-                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),1)] to-[rgba(var(--ui-accent-rgb),0.85)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.25)] shadow-xs hover:shadow-md hover:opacity-95 transition-all duration-200"
+                          className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-black bg-white hover:bg-white/90 transition-all duration-200"
                         >
-                          Смотреть онлайн
+                          <IconPlayerPlayFilled size={20} />
+                          Смотреть
                         </button>
                         <Link
                           href={`/movie/${selectedMovie!.id}`}
@@ -2177,8 +2179,9 @@ export function MovieGrid({
                               localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                             } catch {}
                           }}
-                          className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                          className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                         >
+                          <IconInfoCircle size={20} />
                           Подробнее
                         </Link>
                         {selectedError && (
@@ -2844,9 +2847,10 @@ export function MovieGrid({
                       type="button"
                       disabled
                       aria-disabled
-                      className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium text-white/70 border border-transparent bg-gradient-to-r from-[rgba(var(--ui-accent-rgb),0.6)] to-[rgba(var(--ui-accent-rgb),0.5)] ring-1 ring-[rgba(var(--ui-accent-rgb),0.15)] shadow-xs cursor-not-allowed"
+                      className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-black/50 bg-white/50 cursor-not-allowed"
                     >
-                      Смотреть онлайн
+                      <IconPlayerPlayFilled size={20} />
+                      Смотреть
                     </button>
                     <Link
                       href={`/movie/${selectedMovie.id}`}
@@ -2864,8 +2868,9 @@ export function MovieGrid({
                         const href = `${location.pathname}${location.search}`;
                         localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                       }}
-                      className="inline-flex items-center gap-2 h-9 px-4 rounded-full text-[12px] font-medium border border-zinc-700/60 bg-zinc-900/40 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 hover:bg-zinc-800/60 shadow-xs transition-all duration-200"
+                      className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                     >
+                      <IconInfoCircle size={20} />
                       Подробнее
                     </Link>
 
