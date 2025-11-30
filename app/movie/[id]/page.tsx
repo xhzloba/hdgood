@@ -829,21 +829,33 @@ export default function MoviePage({
     }
   }
 
-  const seqList = Array.isArray((movie as any).sequelsAndPrequels)
-    ? (movie as any).sequelsAndPrequels
-    : Array.isArray((data as any).sequelsAndPrequels)
-    ? (data as any).sequelsAndPrequels
-    : [];
+  // Helper to find list in multiple sources with multiple keys
+  const findList = (keys: string[], ...sources: any[]) => {
+    for (const source of sources) {
+      if (!source || typeof source !== 'object') continue;
+      for (const key of keys) {
+        const val = (source as any)[key];
+        if (Array.isArray(val) && val.length > 0) return val;
+      }
+    }
+    return [];
+  };
 
-  const similarList = Array.isArray((movie as any).similar_movies)
-    ? (movie as any).similar_movies
-    : Array.isArray((data as any).similar_movies)
-    ? (data as any).similar_movies
-    : Array.isArray((movie as any).recommendations)
-    ? (movie as any).recommendations
-    : Array.isArray((data as any).recommendations)
-    ? (data as any).recommendations
-    : [];
+  const seqList = findList(
+    ["sequelsAndPrequels", "sequels_and_prequels", "sequels", "prequels", "related"],
+    movie,
+    data,
+    franchise,
+    override
+  );
+
+  const similarList = findList(
+    ["similar_movies", "similar", "recommendations", "similars"],
+    movie,
+    data,
+    franchise,
+    override
+  );
 
   const detailsTitle = (() => {
     const typeRaw = (movie as any).type ?? (data as any).type ?? "";
