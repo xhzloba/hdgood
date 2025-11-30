@@ -1531,5 +1531,15 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-11-30T15:51:19.760Z",
+    "poster": "/movies/izmnogix-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
   }
 ]

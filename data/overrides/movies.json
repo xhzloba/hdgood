@@ -139,6 +139,12 @@
   "690e6be89cfe849a3323b2de": {
     "poster_logo": "/movies/logo/odna-iz-mnogix-logo.webp",
     "poster": "/movies/izmnogix-poster.jpg",
+    "trailers": [
+      {
+        "id": "Eg3_aNekfBU",
+        "name": "Одна из многих"
+      }
+    ],
     "bg_poster": {
       "backdrop": "/movies/izmnogix.webp"
     }
