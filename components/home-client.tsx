@@ -530,7 +530,7 @@ export default function HomeClient({
     >
       <main className="w-full min-h-screen pb-16 relative z-10">
         <div className="mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8">
-          <div className="mb-8 hidden md:block">
+          <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
             <HeaderCategories
               variant="horizontal"
               className="!bg-transparent !border-transparent relative z-40"
@@ -539,13 +539,13 @@ export default function HomeClient({
               onActiveIndexChange={handleActiveIndexChange}
             />
           </div>
-          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[15vh] min-h-[200px] space-y-6">
+          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[5vh] min-h-[200px] space-y-6">
             {effLogoSrc && effLogoId ? (
               <Link href={`/movie/${effLogoId}`} className="block transition-transform hover:scale-105 duration-300">
                 <img
                   src={effLogoSrc}
                   alt="Логотип"
-                  className="h-[120px] md:h-[160px] w-auto max-w-[80vw] object-contain drop-shadow-2xl"
+                  className="h-[80px] md:h-[100px] w-auto max-w-[80vw] object-contain drop-shadow-2xl"
                 />
               </Link>
             ) : hasOverrideBg && overrideHeroTitle ? (
@@ -659,7 +659,7 @@ export default function HomeClient({
           </div>
         </div>
 
-        <section className="w-full mt-[5vh] md:mt-[10vh]">
+        <section className="w-full mt-[2vh] md:mt-[3vh]">
           <div className={`relative z-20 w-full`}>
             {isUhdMode ? (
               <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
@@ -674,7 +674,9 @@ export default function HomeClient({
                 <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
               </div>
             ) : (
-              <TrendingSection activeBackdropId={currentId ?? undefined} />
+              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                <TrendingSection activeBackdropId={currentId ?? undefined} />
+              </div>
             )}
           </div>
         </section>
