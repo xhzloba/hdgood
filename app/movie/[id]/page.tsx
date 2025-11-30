@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
@@ -181,6 +181,7 @@ export default function MoviePage({
   const [navIndex, setNavIndex] = useState<number | null>(null);
   const [returnHref, setReturnHref] = useState<string | null>(null);
   const [showTsWarning, setShowTsWarning] = useState(false);
+  const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
   const router = useRouter();
 
   // Вычисляем информацию о качестве и TS
@@ -255,6 +256,22 @@ export default function MoviePage({
       return false;
     }
   }, [rawTrailers]);
+
+  const currentTrailerUrl = useMemo(() => {
+    if (!hasTrailers) return null;
+    const trailer = (rawTrailers || []).find((t: any) => {
+      const src = getEmbedSrcFromTrailer(t);
+      return !!src && src.includes("youtube.com/embed");
+    });
+    if (!trailer) return null;
+    let src = getEmbedSrcFromTrailer(trailer);
+    if (src) {
+      // Добавляем параметры для автовоспроизведения и управления
+      const separator = src.includes("?") ? "&" : "?";
+      src += `${separator}autoplay=1&mute=0&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`;
+    }
+    return src;
+  }, [hasTrailers, rawTrailers]);
 
   useEffect(() => {
     try {
@@ -1095,7 +1112,17 @@ export default function MoviePage({
       <div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-end md:block">
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
-         {backdropUrl ? (
+         
+         {isTrailerPlaying && currentTrailerUrl ? (
+           <div className="absolute top-0 left-0 w-full h-[55vh] md:inset-0 md:h-full z-0 pointer-events-none">
+             <iframe
+               src={currentTrailerUrl}
+               className="w-full h-full object-cover md:scale-125"
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+               allowFullScreen
+             />
+           </div>
+         ) : backdropUrl ? (
            <img 
              src={backdropUrl} 
              alt={movie.name} 
@@ -1114,7 +1141,7 @@ export default function MoviePage({
          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/80 to-transparent z-20 pointer-events-none" />
 
          {/* Hero Content Overlay */}
-         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-12">
+         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-24 md:pb-12">
             {/* TS Quality Warning */}
             {showTsWarning && (
               <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-md flex items-center gap-3 w-fit max-w-xl animate-in fade-in slide-in-from-bottom-2">
@@ -1214,9 +1241,15 @@ export default function MoviePage({
                  <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
                     <Plus size={20} />
                  </button>
-                 <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Оценить">
-                    <ThumbsUp size={20} />
-                 </button>
+                 {hasTrailers && (
+                    <button 
+                      onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
+                      className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${isTrailerPlaying ? 'border-white text-white bg-white/20' : 'border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10'}`}
+                      title={isTrailerPlaying ? "Остановить трейлер" : "Смотреть трейлер"}
+                    >
+                       {isTrailerPlaying ? <X size={20} /> : <Film size={20} />}
+                    </button>
+                 )}
                </div>
             </div>
          </div>
