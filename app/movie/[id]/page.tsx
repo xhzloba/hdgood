@@ -3,12 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Loader } from "@/components/loader";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Play, Share2, Info, Plus, ThumbsUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
@@ -139,52 +136,15 @@ const fetchFranchise = async (
   return null;
 };
 
-// Функция для форматирования дат
-const formatDate = (dateString: string | null | undefined): string => {
-  if (!dateString) return "";
-
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString; // Если дата невалидна, возвращаем как есть
-
-    return date.toLocaleDateString("ru-RU", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch (error) {
-    return dateString; // В случае ошибки возвращаем оригинальную строку
-  }
-};
-
-import { ActorCard } from "@/components/actor-card";
 import { CastList } from "@/components/cast-list";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   TrailerPlayer,
   getEmbedSrcFromTrailer,
 } from "@/components/trailer-player";
-import { ratingColor, ratingBgColor, formatRatingLabel } from "@/lib/utils";
-import { PosterBackground } from "@/components/poster-background";
+import { ratingColor } from "@/lib/utils";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
-import { VideoPoster, VideoPosterRef } from "@/components/video-poster";
-function getPrimaryGenreFromItem(item: any): string | null {
-  const raw = item?.genre ?? item?.tags;
-  if (!raw) return null;
-  if (Array.isArray(raw)) {
-    const first = raw.find((v) => v != null && String(v).trim().length > 0);
-    return first != null ? String(first).trim() : null;
-  }
-  if (typeof raw === "string") {
-    const parts = raw
-      .split(/[,/|]/)
-      .map((p) => p.trim())
-      .filter(Boolean);
-    return parts[0] || null;
-  }
-  return null;
-}
+import { VideoPosterRef } from "@/components/video-poster";
 
 export default function MoviePage({
   params,
@@ -200,6 +160,7 @@ export default function MoviePage({
   const [kpId, setKpId] = useState<string>("");
   const [showPlayerSelector, setShowPlayerSelector] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<number>(1);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const currentIdRef = useRef<string>(""); // Ref для отслеживания текущего id
   const [openSeasons, setOpenSeasons] = useState<Set<number>>(new Set([1])); // По умолчанию открыт только первый сезон
   const [playingEpisode, setPlayingEpisode] = useState<{
@@ -1055,8 +1016,33 @@ export default function MoviePage({
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative">
+      <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
+          <Link
+            href={returnHref ?? "/"}
+            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-black/40 pointer-events-auto"
+            onClick={(e) => {
+              try {
+                const sameOriginRef = typeof document !== "undefined" && document.referrer && document.referrer.startsWith(location.origin);
+                if (sameOriginRef) {
+                  e.preventDefault();
+                  router.back();
+                  return;
+                }
+                if (returnHref) {
+                  e.preventDefault();
+                  router.push(returnHref);
+                  return;
+                }
+              } catch {}
+            }}
+          >
+            <ArrowLeft size={20} />
+            <span className="font-medium">Назад</span>
+          </Link>
+        </header>
+
       {/* Hero Background */}
-      <div className="absolute inset-0 h-[85vh] w-full overflow-hidden">
+      <div className="relative h-[85vh] w-full overflow-hidden">
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          {(movie as any).backdrop || (movie as any).bg_poster?.backdrop ? (
@@ -1112,7 +1098,12 @@ export default function MoviePage({
                  <Play size={24} fill="currentColor" className="ml-1" /> 
                  <span className="text-lg">Смотреть</span>
                </button>
-               <button className="bg-zinc-500/40 text-white px-6 py-3 rounded-[4px] font-bold flex items-center gap-2.5 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95">
+               <button 
+                 onClick={() => {
+                   tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
+                 }}
+                 className="bg-zinc-500/40 text-white px-6 py-3 rounded-[4px] font-bold flex items-center gap-2.5 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95"
+               >
                  <Info size={24} /> 
                  <span className="text-lg">Подробнее</span>
                </button>
@@ -1126,37 +1117,15 @@ export default function MoviePage({
          </div>
       </div>
       
-      <div className="relative z-20 pb-20 -mt-6">
-        <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
-          <Link
-            href={returnHref ?? "/"}
-            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-black/40"
-            onClick={(e) => {
-              try {
-                const sameOriginRef = typeof document !== "undefined" && document.referrer && document.referrer.startsWith(location.origin);
-                if (sameOriginRef) {
-                  e.preventDefault();
-                  router.back();
-                  return;
-                }
-                if (returnHref) {
-                  e.preventDefault();
-                  router.push(returnHref);
-                  return;
-                }
-              } catch {}
+      {/* Tabs Section */}
+      <div ref={tabsRef} className="relative z-30 bg-zinc-950 px-4 md:px-12 pb-20 min-h-screen">
+          <Tabs 
+            defaultValue="overview" 
+            className="w-full"
+            onValueChange={() => {
+               tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            <ArrowLeft size={20} />
-            <span className="font-medium">Назад</span>
-          </Link>
-        </header>
-
-
-
-      {/* Tabs Section */}
-       <div className="px-4 md:px-12 pb-20 relative z-20 mt-8">
-          <Tabs defaultValue="overview" className="w-full">
             <TabsList className="flex items-center gap-6 overflow-x-auto scrollbar-hide border-b border-white/10 bg-transparent p-0 mb-8 w-full justify-start h-auto">
               <TabsTrigger 
                 value="overview" 
@@ -1327,22 +1296,36 @@ export default function MoviePage({
             <TabsContent value="similar" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
                {Array.isArray(seqList) && seqList.length > 0 ? (
                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {seqList.map((item: any) => (
+                    {seqList.map((item: any) => {
+                       const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
+                       const posterSrc = item.poster || item.cover || item.poster_url;
+                       const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
+                       
+                       if (!linkId) return null;
+
+                       return (
                        <Link 
-                         key={item.id || item.movieId} 
-                         href={`/movie/${item.id || item.movieId}`}
+                         key={linkId} 
+                         href={`/movie/${linkId}`}
                          className="group block relative aspect-[2/3] bg-zinc-900 rounded overflow-hidden"
                        >
-                          <img 
-                            src={item.poster || item.cover} 
-                            alt={item.title || item.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
+                          {posterSrc ? (
+                            <img 
+                              src={posterSrc} 
+                              alt={titleText}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                          ) : (
+                             <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600 text-xs text-center p-2">
+                                Нет постера
+                             </div>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                             <span className="text-sm font-medium text-white line-clamp-2">{item.title || item.name}</span>
+                             <span className="text-sm font-medium text-white line-clamp-2">{titleText}</span>
                           </div>
                        </Link>
-                    ))}
+                    );
+                    })}
                  </div>
                ) : (
                  <div className="text-center text-zinc-500 py-12">Похожих фильмов пока нет</div>
@@ -1350,8 +1333,6 @@ export default function MoviePage({
             </TabsContent>
           </Tabs>
        </div>
-       
-      </div>
     </div>
   );
 }
