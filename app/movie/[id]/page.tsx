@@ -267,8 +267,10 @@ export default function MoviePage({
     let src = getEmbedSrcFromTrailer(trailer);
     if (src) {
       // Добавляем параметры для автовоспроизведения и управления
+      // mute=0 для звука (но автовоспроизведение на мобильных может быть заблокировано)
+      // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
-      src += `${separator}autoplay=1&mute=0&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`;
+      src += `${separator}autoplay=1&mute=0&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1`;
     }
     return src;
   }, [hasTrailers, rawTrailers]);
@@ -1114,14 +1116,38 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          
          {isTrailerPlaying && currentTrailerUrl ? (
-           <div className="absolute top-0 left-0 w-full h-[35vh] md:inset-0 md:h-full z-0 pointer-events-none">
-             <iframe
-               src={currentTrailerUrl}
-               className="w-full h-full object-cover md:scale-125"
-               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-               allowFullScreen
-             />
-           </div>
+           <>
+             {/* Desktop Background Player */}
+             <div className="hidden md:block absolute inset-0 w-full h-full z-0 pointer-events-none">
+                <iframe
+                  src={currentTrailerUrl}
+                  className="w-full h-full object-cover scale-125"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+             </div>
+
+             {/* Mobile Modal Player */}
+             <div className="md:hidden fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
+                <button
+                  onClick={() => setIsTrailerPlaying(false)}
+                  className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
+                >
+                  <X size={24} />
+                </button>
+                <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                  <iframe
+                    src={currentTrailerUrl}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <p className="mt-4 text-zinc-400 text-sm font-medium">
+                   Трейлер
+                </p>
+             </div>
+           </>
          ) : backdropUrl ? (
            <img 
              src={backdropUrl} 
