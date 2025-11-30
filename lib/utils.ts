@@ -30,3 +30,28 @@ export function formatRatingLabel(r?: number | string) {
   if (val == null || Number.isNaN(val)) return ''
   return typeof r === 'string' ? r : String(val)
 }
+
+export function formatCurrency(val: any) {
+  if (val == null) return null;
+  const s = String(val).trim();
+  if (!s) return null;
+  
+  // Try to find the total after "=" if present
+  let clean = s;
+  if (s.includes('=')) {
+    clean = s.split('=').pop() || "";
+  }
+  
+  // Remove non-digits
+  const digits = clean.replace(/\D/g, '');
+  if (!digits) return s; // Return original if no digits found
+  
+  const num = parseInt(digits, 10);
+  if (isNaN(num)) return s;
+  
+  return new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD', 
+    maximumFractionDigits: 0 
+  }).format(num);
+}

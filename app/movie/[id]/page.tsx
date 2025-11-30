@@ -78,7 +78,7 @@ const fetcher = async (
 const fetchFranchise = async (
   kpId: number,
   retries: number = 2
-): Promise<any | null> => {
+): Promise<FranchiseData | null> => {
   // Используем наш Next.js API route для избежания CORS проблем
   const url = `/api/franchise?kinopoisk_id=${kpId}`;
 
@@ -142,7 +142,8 @@ import {
   TrailerPlayer,
   getEmbedSrcFromTrailer,
 } from "@/components/trailer-player";
-import { ratingColor } from "@/lib/utils";
+import { ratingColor, formatCurrency } from "@/lib/utils";
+import { FranchiseData } from "@/types/franchise";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 import { VideoPosterRef } from "@/components/video-poster";
@@ -154,7 +155,7 @@ export default function MoviePage({
 }) {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<any>(null);
-  const [franchiseData, setFranchiseData] = useState<any>(null);
+  const [franchiseData, setFranchiseData] = useState<FranchiseData | null>(null);
   const [errorDetails, setErrorDetails] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string>("");
@@ -1026,30 +1027,6 @@ export default function MoviePage({
     return formatDate(raw);
   };
 
-  const formatCurrency = (val: any) => {
-    if (val == null) return null;
-    const s = String(val).trim();
-    if (!s) return null;
-    
-    // Try to find the total after "=" if present
-    let clean = s;
-    if (s.includes('=')) {
-      clean = s.split('=').pop() || "";
-    }
-    
-    // Remove non-digits
-    const digits = clean.replace(/\D/g, '');
-    if (!digits) return s; // Return original if no digits found
-    
-    const num = parseInt(digits, 10);
-    if (isNaN(num)) return s;
-    
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD', 
-      maximumFractionDigits: 0 
-    }).format(num);
-  };
 
   // Подсчет среднего рейтинга (HDBOX) по КП и IMDb
   const getValidRating = (r: any): number | null => {
