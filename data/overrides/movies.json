@@ -704,5 +704,11 @@
     "bg_poster": {
       "backdrop": "/movies/master.webp"
     }
+  },
+  "67f6ede3b37a179a98ec983e": {
+    "poster_logo": "/movies/logo/40.webp",
+    "bg_poster": {
+      "backdrop": "/movies/edem.webp"
+    }
   }
 }

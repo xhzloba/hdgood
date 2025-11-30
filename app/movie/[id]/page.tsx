@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film, Maximize, Minimize } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
@@ -185,7 +185,24 @@ export default function MoviePage({
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [isBackdropLoaded, setIsBackdropLoaded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [failedActorImages, setFailedActorImages] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(console.error);
+    } else {
+      document.exitFullscreen().catch(console.error);
+    }
+  };
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -1140,6 +1157,14 @@ export default function MoviePage({
             <ArrowLeft size={20} />
             <span className="font-medium">Назад</span>
           </Link>
+
+          <button
+            onClick={toggleFullscreen}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto"
+            title={isFullscreen ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+          >
+            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+          </button>
         </header>
 
       {/* Hero Background */}
@@ -1416,6 +1441,14 @@ export default function MoviePage({
                         href={`/actor/${actor.id}`} 
                         className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
                         title={actor.name || actor.title}
+                        onClick={() => {
+                          try {
+                            const raw = localStorage.getItem("__actorInfo")
+                            const map = raw ? JSON.parse(raw) : {}
+                            map[String(actor.id)] = { name: actor.name || actor.title, photo: getActorPhoto(actor) }
+                            localStorage.setItem("__actorInfo", JSON.stringify(map))
+                          } catch {}
+                        }}
                     >
                         <img 
                           src={getActorPhoto(actor)!} 

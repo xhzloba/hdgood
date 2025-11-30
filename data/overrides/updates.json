@@ -1647,5 +1647,38 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "67f6ede3b37a179a98ec983e",
+    "timestamp": "2025-11-30T22:26:35.554Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster"
+    ]
+  },
+  {
+    "id": "67f6ede3b37a179a98ec983e",
+    "timestamp": "2025-11-30T22:27:29.728Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "67f6ede3b37a179a98ec983e",
+    "timestamp": "2025-11-30T22:27:56.903Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]
