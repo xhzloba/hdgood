@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
@@ -186,7 +186,14 @@ export default function MoviePage({
   const [isMobile, setIsMobile] = useState(false);
   const [isBackdropLoaded, setIsBackdropLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [failedActorImages, setFailedActorImages] = useState<Set<string>>(new Set());
+  const playerRef = useRef<any>(null);
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    setOrigin(typeof window !== "undefined" ? window.location.origin : "");
+  }, []);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -201,6 +208,17 @@ export default function MoviePage({
       document.documentElement.requestFullscreen().catch(console.error);
     } else {
       document.exitFullscreen().catch(console.error);
+    }
+  };
+
+  const toggleMute = () => {
+    if (playerRef.current) {
+      const action = isMuted ? "unMute" : "mute";
+      playerRef.current.contentWindow?.postMessage(
+        JSON.stringify({ event: "command", func: action, args: [] }),
+        "*"
+      );
+      setIsMuted(!isMuted);
     }
   };
 
@@ -297,11 +315,11 @@ export default function MoviePage({
       // mute=1 для автовоспроизведения (браузеры блокируют звук без взаимодействия)
       // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      // Важно: enablejsapi=1 нужен для управления через postMessage
       src += `${separator}autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
     }
     return src;
-  }, [hasTrailers, rawTrailers]);
+  }, [hasTrailers, rawTrailers, origin]);
 
   useEffect(() => {
     try {
@@ -1166,6 +1184,16 @@ export default function MoviePage({
           >
             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
           </button>
+
+          {isTrailerPlaying && !isMobile && (
+            <button
+              onClick={toggleMute}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto ml-2"
+              title={isMuted ? "Включить звук" : "Выключить звук"}
+            >
+              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
+          )}
         </header>
 
       {/* Hero Background */}
@@ -1203,6 +1231,7 @@ export default function MoviePage({
              {!isMobile && (
                <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
                   <iframe
+                    ref={playerRef}
                     src={currentTrailerUrl}
                     className="w-full h-full object-cover scale-125"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
