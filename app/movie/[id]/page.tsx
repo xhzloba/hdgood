@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import SimpleMovieSlider from "@/components/simple-movie-slider";
 
 // Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
 const movieOverrideCache: Record<string, any> =
@@ -1326,77 +1327,43 @@ export default function MoviePage({
 
             {/* Sequels Tab */}
             <TabsContent value="sequels" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {seqList.map((item: any) => {
-                     const data = item.details || item;
-                     const linkId = data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident;
-                     const posterSrc = data.poster || data.cover || data.poster_url;
-                     const titleText = data.title || data.name || data.original_title || data.en_name || "Без названия";
-                     
-                     if (!linkId) return null;
-
-                     return (
-                     <Link 
-                       key={linkId} 
-                       href={`/movie/${linkId}`}
-                       className="group block relative aspect-2/3 bg-zinc-900 rounded overflow-hidden"
-                     >
-                        {posterSrc ? (
-                          <img 
-                            src={posterSrc} 
-                            alt={titleText}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                        ) : (
-                           <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600 text-xs text-center p-2">
-                              Нет постера
-                           </div>
-                        )}
-                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                           <span className="text-sm font-medium text-white line-clamp-2">{titleText}</span>
-                        </div>
-                     </Link>
-                  );
-                  })}
-               </div>
+               <SimpleMovieSlider 
+                 movies={seqList.map((item: any) => {
+                   const data = item.details || item;
+                   return {
+                     id: data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident,
+                     title: data.title || data.name || data.original_title || data.en_name || "Без названия",
+                     poster: data.poster || data.cover || data.poster_url,
+                     rating: data.rating || data.rating_kp,
+                     year: data.year || data.released,
+                     genre: data.genre,
+                     quality: data.quality,
+                     country: data.country,
+                   };
+                 }).filter((m: any) => m.id)} 
+                 compactOnMobile 
+               />
             </TabsContent>
 
             {/* Similar Tab */}
             <TabsContent value="similar" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
                {Array.isArray(similarList) && similarList.length > 0 ? (
-                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {similarList.map((item: any) => {
-                       const data = item.details || item;
-                       const linkId = data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident;
-                       const posterSrc = data.poster || data.cover || data.poster_url;
-                       const titleText = data.title || data.name || data.original_title || data.en_name || "Без названия";
-                       
-                       if (!linkId) return null;
-
-                       return (
-                       <Link 
-                         key={linkId} 
-                         href={`/movie/${linkId}`}
-                         className="group block relative aspect-2/3 bg-zinc-900 rounded overflow-hidden"
-                       >
-                          {posterSrc ? (
-                            <img 
-                              src={posterSrc} 
-                              alt={titleText}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                          ) : (
-                             <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600 text-xs text-center p-2">
-                                Нет постера
-                             </div>
-                          )}
-                          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                             <span className="text-sm font-medium text-white line-clamp-2">{titleText}</span>
-                          </div>
-                       </Link>
-                    );
-                    })}
-                 </div>
+                 <SimpleMovieSlider 
+                   movies={similarList.map((item: any) => {
+                     const data = item.details || item;
+                     return {
+                       id: data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident,
+                       title: data.title || data.name || data.original_title || data.en_name || "Без названия",
+                       poster: data.poster || data.cover || data.poster_url,
+                       rating: data.rating || data.rating_kp,
+                       year: data.year || data.released,
+                       genre: data.genre,
+                       quality: data.quality,
+                       country: data.country,
+                     };
+                   }).filter((m: any) => m.id)} 
+                   compactOnMobile 
+                 />
                ) : (
                  <div className="text-center text-zinc-500 py-12">Похожих фильмов пока нет</div>
                )}
