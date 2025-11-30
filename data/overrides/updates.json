@@ -1489,5 +1489,27 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "6655026bba8fb8ecf93ad138",
+    "timestamp": "2025-11-30T11:00:45.557Z",
+    "poster": "/movies/dostat-nozi.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster",
+      "poster"
+    ]
+  },
+  {
+    "id": "6655026bba8fb8ecf93ad138",
+    "timestamp": "2025-11-30T11:03:18.559Z",
+    "poster": "/movies/dostat-nozi.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]

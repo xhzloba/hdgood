@@ -654,5 +654,12 @@
   },
   "6593f85e8914c04deae96a57": {
     "poster_logo": "/movies/logo/32.webp"
+  },
+  "6655026bba8fb8ecf93ad138": {
+    "bg_poster": {
+      "backdrop": "/movies/dostat-nozi-backdrop.webp"
+    },
+    "poster_logo": "/movies/logo/33.webp",
+    "poster": "/movies/dostat-nozi.webp"
   }
 }
