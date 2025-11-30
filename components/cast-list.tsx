@@ -30,10 +30,13 @@ export function CastList({ casts }: CastListProps) {
   if (normalized.length === 0) return null
 
   return (
-    <div className="flex flex-wrap items-center pl-6 py-2">
-      {normalized.map((actor: any, index: number) => (
-        <CastItem key={actor?.id ?? index} actor={actor} photo={getPhoto(actor)!} />
-      ))}
+    <div>
+      <h3 className="text-2xl font-semibold text-white mb-4">В ролях</h3>
+      <div className="flex flex-wrap items-center pl-6 py-2">
+        {normalized.map((actor: any, index: number) => (
+          <CastItem key={actor?.id ?? index} actor={actor} photo={getPhoto(actor)!} />
+        ))}
+      </div>
     </div>
   )
 }

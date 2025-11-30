@@ -18,25 +18,21 @@ export function TriviaSection({ trivia, maxLength = 400 }: TriviaSectionProps) {
 
   if (!needsTruncation) {
     return (
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-white">Факты</h2>
-        <p className="text-sm text-white leading-relaxed">{trivia}</p>
+      <div>
+        <p className="text-zinc-300 text-base md:text-lg leading-relaxed">{trivia}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <h2 className="text-lg font-semibold text-white">Факты</h2>
-      <div className="space-y-2">
-        <p className="text-sm text-white leading-relaxed">{displayText}</p>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors"
-        >
-          {isExpanded ? "Свернуть" : "Показать еще"}
-        </button>
-      </div>
+      <p className="text-zinc-300 text-base md:text-lg leading-relaxed">{displayText}</p>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-sm font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+      >
+        {isExpanded ? "Свернуть" : "Показать еще"}
+      </button>
     </div>
   );
 }

@@ -1213,14 +1213,11 @@ export default function MoviePage({
                   </div>
 
                   {/* Cast List (Moved from sidebar) */}
-                  <div>
-                    <h3 className="text-2xl font-semibold text-white mb-4">В ролях</h3>
-                    <CastList casts={movie.casts || data.casts || []} />
-                  </div>
+                  <CastList casts={movie.casts || data.casts || []} />
 
-                  {franchise?.trivia && (
+                  {franchise?.trivia && typeof franchise.trivia === 'string' && franchise.trivia.trim().length > 0 && (
                     <div className="space-y-4">
-                      <h3 className="text-xl font-semibold text-white">Знаете ли вы?</h3>
+                      <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
                       <TriviaSection trivia={franchise.trivia} />
                     </div>
                   )}
