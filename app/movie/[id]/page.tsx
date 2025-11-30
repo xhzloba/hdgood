@@ -1026,6 +1026,31 @@ export default function MoviePage({
     return formatDate(raw);
   };
 
+  const formatCurrency = (val: any) => {
+    if (val == null) return null;
+    const s = String(val).trim();
+    if (!s) return null;
+    
+    // Try to find the total after "=" if present
+    let clean = s;
+    if (s.includes('=')) {
+      clean = s.split('=').pop() || "";
+    }
+    
+    // Remove non-digits
+    const digits = clean.replace(/\D/g, '');
+    if (!digits) return s; // Return original if no digits found
+    
+    const num = parseInt(digits, 10);
+    if (isNaN(num)) return s;
+    
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD', 
+      maximumFractionDigits: 0 
+    }).format(num);
+  };
+
   // Подсчет среднего рейтинга (HDBOX) по КП и IMDb
   const getValidRating = (r: any): number | null => {
     if (r == null) return null;
@@ -1362,7 +1387,7 @@ export default function MoviePage({
 
                 <div className="space-y-8 text-base md:text-lg text-zinc-400">
                   <div>
-                    <span className="block text-zinc-500 mb-3 uppercase text-sm font-bold tracking-wider">О фильме</span>
+                    <span className="block text-zinc-500 mb-3 uppercase text-sm font-bold tracking-wider">{detailsTitle}</span>
                     <div className="space-y-3">
                        <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Режиссер</span>
@@ -1380,6 +1405,73 @@ export default function MoviePage({
                           <span className="text-zinc-500">Премьера</span>
                           <span className="text-zinc-200">{formatReleaseDate()}</span>
                        </div>
+                       {/* Дополнительная информация из Franchise API */}
+                       {franchise?.slogan && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Слоган</span>
+                            <span className="text-zinc-200">«{franchise.slogan}»</span>
+                         </div>
+                       )}
+                       {franchise?.premier_rus && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Премьера в РФ</span>
+                            <span className="text-zinc-200">{formatDate(franchise.premier_rus)}</span>
+                         </div>
+                       )}
+                       {franchise?.rate_mpaa && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Рейтинг MPAA</span>
+                            <span className="text-zinc-200">{franchise.rate_mpaa}</span>
+                         </div>
+                       )}
+                       {franchise?.budget && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Бюджет</span>
+                            <span className="text-zinc-200">
+                              {formatCurrency(franchise.budget)}
+                            </span>
+                         </div>
+                       )}
+                       {franchise?.fees_world && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Сборы в мире</span>
+                            <span className="text-zinc-200">
+                              {formatCurrency(franchise.fees_world)}
+                            </span>
+                         </div>
+                       )}
+                       {franchise?.fees_rus && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Сборы в РФ</span>
+                            <span className="text-zinc-200">
+                              {formatCurrency(franchise.fees_rus)}
+                            </span>
+                         </div>
+                       )}
+                       {franchise?.operator && Array.isArray(franchise.operator) && franchise.operator.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Оператор</span>
+                            <span className="text-zinc-200">{franchise.operator.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.screenwriter && Array.isArray(franchise.screenwriter) && franchise.screenwriter.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Сценаристы</span>
+                            <span className="text-zinc-200">{franchise.screenwriter.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.design && Array.isArray(franchise.design) && franchise.design.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Художники</span>
+                            <span className="text-zinc-200">{franchise.design.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.voiceActing && Array.isArray(franchise.voiceActing) && franchise.voiceActing.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Озвучка</span>
+                            <span className="text-zinc-200">{franchise.voiceActing.join(", ")}</span>
+                         </div>
+                       )}
                     </div>
                   </div>
                 </div>
