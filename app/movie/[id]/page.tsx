@@ -1495,38 +1495,66 @@ export default function MoviePage({
                            
                            {openSeasons.has(season.season) && season.episodes && (
                              <div className="p-4 pt-0 border-t border-white/5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {season.episodes.map((episode: FranchiseEpisode) => (
+                                {season.episodes.map((episode: FranchiseEpisode) => {
+                                   const isAvailable = !!(episode.iframe_url || season.iframe_url) && 
+                                     (!episode.availability || new Date(episode.availability) <= new Date());
+                                   
+                                   return (
                                    <button 
                                      key={episode.episode}
+                                     disabled={!isAvailable}
                                      onClick={() => {
+                                        if (!isAvailable) return;
                                         if(episode.iframe_url) {
                                             playEpisode(season.season, episode.iframe_url, `S${season.season} E${episode.episode}`);
                                         } else if (season.iframe_url) {
                                             playEpisode(season.season, season.iframe_url, `S${season.season} E${episode.episode}`);
                                         }
                                      }}
-                                     className="flex items-start gap-3 p-3 rounded hover:bg-white/10 transition text-left group relative overflow-hidden"
+                                     className={`flex items-start gap-3 p-3 rounded transition text-left group relative overflow-hidden ${
+                                       isAvailable 
+                                         ? 'hover:bg-white/10' 
+                                         : 'opacity-50 cursor-not-allowed bg-white/5'
+                                     }`}
                                    >
-                                      <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-white/5 rounded text-sm font-medium text-zinc-400 group-hover:bg-primary group-hover:text-white transition-colors">
+                                      <div className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded text-sm font-medium transition-colors ${
+                                        isAvailable 
+                                          ? 'bg-white/5 text-zinc-400 group-hover:bg-primary group-hover:text-white' 
+                                          : 'bg-white/5 text-zinc-600'
+                                      }`}>
                                          {episode.episode}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                         <span className="block text-sm font-medium text-zinc-300 group-hover:text-white transition-colors truncate">
+                                         <span className={`block text-sm font-medium transition-colors truncate ${
+                                           isAvailable 
+                                             ? 'text-zinc-300 group-hover:text-white' 
+                                             : 'text-zinc-500'
+                                         }`}>
                                             {episode.name || `Эпизод ${episode.episode}`}
                                          </span>
                                          <span className="text-xs text-zinc-500 flex items-center gap-2 mt-1">
-                                            {episode.release_ru ? formatDate(episode.release_ru) : ''}
-                                            {episode.voiceActing && episode.voiceActing.length > 0 && (
-                                                <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-zinc-400">{episode.voiceActing.length} озв.</span>
+                                            {!isAvailable && episode.availability ? (
+                                               <span className="text-yellow-500/80">
+                                                 Ожидается {formatDate(episode.availability)}
+                                               </span>
+                                            ) : (
+                                               <>
+                                                 {episode.release_ru ? formatDate(episode.release_ru) : ''}
+                                                 {episode.voiceActing && episode.voiceActing.length > 0 && (
+                                                     <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-zinc-400">{episode.voiceActing.length} озв.</span>
+                                                 )}
+                                               </>
                                             )}
                                          </span>
                                       </div>
-                                      {/* Play icon on hover */}
-                                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <Play size={24} className="text-white fill-white" />
-                                      </div>
+                                      {/* Play icon on hover (only if available) */}
+                                      {isAvailable && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Play size={24} className="text-white fill-white" />
+                                        </div>
+                                      )}
                                    </button>
-                                ))}
+                                )})}
                              </div>
                            )}
                         </div>
