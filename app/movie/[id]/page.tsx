@@ -1097,7 +1097,29 @@ export default function MoviePage({
             )}
             
             <div className="flex items-center gap-3 text-sm md:text-base text-zinc-200 font-medium drop-shadow-md">
-               <span className="text-green-400 font-bold">98% совпадение</span>
+               {(() => {
+                 const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
+                 const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
+                 const hasKp = !isNaN(kp) && kp > 0;
+                 const hasImdb = !isNaN(imdb) && imdb > 0;
+
+                 let rating: number | null = null;
+
+                 if (hasKp && hasImdb) {
+                   rating = (kp + imdb) / 2;
+                 } else if (hasKp) {
+                   rating = kp;
+                 } else if (hasImdb) {
+                   rating = imdb;
+                 }
+
+                 if (!rating) return null;
+
+                 // Convert 0-10 scale to percentage (e.g. 8.5 -> 85%)
+                 const percent = Math.round(rating * 10);
+                 const colorClass = rating >= 7 ? "text-green-400" : rating >= 5 ? "text-yellow-400" : "text-red-400";
+                 return <span className={`${colorClass} font-bold`}>{percent}% совпадение</span>;
+               })()}
                {(() => {
                  const list = Array.isArray(movie.country) 
                    ? movie.country 
@@ -1217,15 +1239,54 @@ export default function MoviePage({
                   </div>
                   
                   {/* Ratings Block */}
-                  <div className="flex items-center gap-6 p-4 bg-zinc-900/50 rounded-lg border border-white/5">
-                     <div className="flex flex-col">
-                        <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">IMDb</span>
-                        <span className={`text-2xl font-bold ${ratingColor(movie.rating_imdb)}`}>{movie.rating_imdb || "—"}</span>
+                  <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-lg border border-white/5 w-fit flex-wrap">
+                     {/* Средний рейтинг */}
+                     <div className="flex flex-col items-center px-2">
+                        <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Рейтинг</span>
+                        {(() => {
+                          const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
+                          const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
+                          const hasKp = !isNaN(kp) && kp > 0;
+                          const hasImdb = !isNaN(imdb) && imdb > 0;
+
+                          let rating: number | null = null;
+                          if (hasKp && hasImdb) rating = (kp + imdb) / 2;
+                          else if (hasKp) rating = kp;
+                          else if (hasImdb) rating = imdb;
+
+                          if (!rating) return <span className="text-2xl font-bold text-zinc-500">—</span>;
+
+                          const colorClass = rating >= 7 ? "text-green-500" : rating >= 5 ? "text-yellow-500" : "text-red-500";
+                          return <span className={`text-2xl font-bold ${colorClass}`}>{rating.toFixed(1)}</span>;
+                        })()}
                      </div>
+                     
                      <div className="w-px h-8 bg-white/10" />
-                     <div className="flex flex-col">
-                        <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Кинопоиск</span>
-                        <span className={`text-2xl font-bold ${ratingColor(movie.rating_kp)}`}>{movie.rating_kp || "—"}</span>
+
+                     {/* Кинопоиск */}
+                     <div className="flex items-center gap-3 px-2">
+                        <img 
+                          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7c46WVoj-3Dc9bezLc6iabLcvs813ggQ76A&s" 
+                          alt="Кинопоиск" 
+                          className="w-8 h-8 rounded-md object-cover"
+                        />
+                        <span className={`text-xl font-bold ${ratingColor(movie.rating_kp)}`}>
+                           {movie.rating_kp ? Number(movie.rating_kp).toFixed(1) : "—"}
+                        </span>
+                     </div>
+
+                     <div className="w-px h-8 bg-white/10" />
+
+                     {/* IMDb */}
+                     <div className="flex items-center gap-3 px-2">
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" 
+                          alt="IMDb" 
+                          className="w-8 h-8 object-contain"
+                        />
+                        <span className={`text-xl font-bold ${ratingColor(movie.rating_imdb)}`}>
+                           {movie.rating_imdb ? Number(movie.rating_imdb).toFixed(1) : "—"}
+                        </span>
                      </div>
                   </div>
 
