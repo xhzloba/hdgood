@@ -1065,7 +1065,7 @@ export default function MoviePage({
   const backdropUrl = (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative overflow-x-hidden">
       <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
           <Link
             href={returnHref ?? "/"}
@@ -1092,7 +1092,7 @@ export default function MoviePage({
         </header>
 
       {/* Hero Background */}
-      <div className="relative min-h-[100dvh] md:h-[85vh] w-full overflow-hidden flex flex-col justify-end md:block">
+      <div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-end md:block">
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          {backdropUrl ? (
@@ -1110,8 +1110,8 @@ export default function MoviePage({
          )}
          
          {/* Desktop Content Gradient Overlay - Feathered (Растушевка) */}
-         <div className="hidden md:block absolute inset-0 w-[75%] bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent z-20 pointer-events-none" />
-         <div className="hidden md:block absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/80 to-transparent z-20 pointer-events-none" />
+         <div className="absolute inset-0 w-full md:w-[75%] bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent z-20 pointer-events-none" />
+         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/80 to-transparent z-20 pointer-events-none" />
 
          {/* Hero Content Overlay */}
          <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-12">
