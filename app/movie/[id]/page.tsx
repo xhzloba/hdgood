@@ -1114,7 +1114,7 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          
          {isTrailerPlaying && currentTrailerUrl ? (
-           <div className="absolute top-0 left-0 w-full h-[55vh] md:inset-0 md:h-full z-0 pointer-events-none">
+           <div className="absolute top-0 left-0 w-full h-[35vh] md:inset-0 md:h-full z-0 pointer-events-none">
              <iframe
                src={currentTrailerUrl}
                className="w-full h-full object-cover md:scale-125"
