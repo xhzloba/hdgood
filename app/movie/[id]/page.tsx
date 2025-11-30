@@ -1098,8 +1098,21 @@ export default function MoviePage({
             
             <div className="flex items-center gap-3 text-sm md:text-base text-zinc-200 font-medium drop-shadow-md">
                <span className="text-green-400 font-bold">98% совпадение</span>
+               {(() => {
+                 const list = Array.isArray(movie.country) 
+                   ? movie.country 
+                   : String(movie.country || "").split(",");
+                 const topTwo = list.map((s: any) => String(s).trim()).filter(Boolean).slice(0, 2);
+                 return topTwo.length > 0 ? <span>{topTwo.join(", ")}</span> : null;
+               })()}
                <span>{titleYear}</span>
-               <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">{movie.age_limit || "16+"}</span>
+                <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                  {(() => {
+                    const val = movie.age ?? movie.age_limit;
+                    const num = val !== null && val !== undefined ? String(val).replace(/\D/g, '') : null;
+                    return num ? `${num}+` : "18+";
+                  })()}
+                </span>
                <span>{formatDuration()}</span>
                <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">HD</span>
             </div>
@@ -1223,23 +1236,23 @@ export default function MoviePage({
                   )}
                 </div>
 
-                <div className="space-y-8 text-sm text-zinc-400">
+                <div className="space-y-8 text-base md:text-lg text-zinc-400">
                   <div>
-                    <span className="block text-zinc-500 mb-2 uppercase text-xs font-bold tracking-wider">О фильме</span>
-                    <div className="space-y-2">
-                       <div className="grid grid-cols-[100px_1fr] gap-2">
+                    <span className="block text-zinc-500 mb-3 uppercase text-sm font-bold tracking-wider">О фильме</span>
+                    <div className="space-y-3">
+                       <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Режиссер</span>
                           <span className="text-zinc-200">{Array.isArray(movie.director) ? movie.director.join(", ") : movie.director || "—"}</span>
                        </div>
-                       <div className="grid grid-cols-[100px_1fr] gap-2">
+                       <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Жанры</span>
                           <span className="text-zinc-200">{Array.isArray(movie.genre) ? movie.genre.join(", ") : movie.genre || "—"}</span>
                        </div>
-                       <div className="grid grid-cols-[100px_1fr] gap-2">
+                       <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Страна</span>
                           <span className="text-zinc-200">{Array.isArray(movie.country) ? movie.country.join(", ") : movie.country || "—"}</span>
                        </div>
-                       <div className="grid grid-cols-[100px_1fr] gap-2">
+                       <div className="grid grid-cols-[140px_1fr] gap-2">
                           <span className="text-zinc-500">Премьера</span>
                           <span className="text-zinc-200">{formatReleaseDate()}</span>
                        </div>
