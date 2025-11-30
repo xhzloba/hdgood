@@ -698,5 +698,11 @@
     "bg_poster": {
       "backdrop": "/movies/bus-backdrop.webp"
     }
+  },
+  "67e5d873a8ca8b0fac6bf14b": {
+    "poster_logo": "/movies/logo/39.webp",
+    "bg_poster": {
+      "backdrop": "/movies/master.webp"
+    }
   }
 }

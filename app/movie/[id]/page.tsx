@@ -185,6 +185,7 @@ export default function MoviePage({
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [isBackdropLoaded, setIsBackdropLoaded] = useState(false);
+  const [failedActorImages, setFailedActorImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -883,6 +884,27 @@ export default function MoviePage({
     }
   }
 
+  // Helper for actor photos
+  const getActorPhoto = (actor: any): string | null => {
+    if (!actor || typeof actor !== 'object') return null;
+    const posterCandidate = actor?.poster ?? actor?.photo ?? actor?.image ?? actor?.avatar ?? actor?.picture ?? actor?.pic ?? actor?.poster_url ?? actor?.cover ?? actor?.icon;
+    const src = String(posterCandidate ?? '').replace(/[`'"]/g, '').trim();
+    const invalids = ['null', 'undefined', '—', 'none', 'n/a', 'no-image'];
+    const isImageLike = src.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) || src.startsWith('/') || src.startsWith('http');
+    return (!!src && !invalids.includes(src.toLowerCase()) && isImageLike) ? src : null;
+  };
+
+  const topActors = (() => {
+      const list = (movie as any).casts || (data as any).casts || [];
+      if (!Array.isArray(list)) return [];
+      return list
+        .filter((a: any) => {
+           const key = String(a.id || a.name || "");
+           return (a.name || a.title) && getActorPhoto(a) && !failedActorImages.has(key);
+        })
+        .slice(0, 8);
+  })();
+
   // Helper to find list in multiple sources with multiple keys
   const findList = (keys: string[], ...sources: any[]) => {
     for (const source of sources) {
@@ -1366,6 +1388,54 @@ export default function MoviePage({
                </div>
             </div>
          </div>
+
+         {/* Desktop Actors Overlay (Bottom Right) */}
+         {topActors.length > 0 && (
+            <div className="hidden md:flex absolute bottom-12 right-12 z-20 flex-col items-end gap-2 animate-in fade-in slide-in-from-right-10 duration-1000 delay-200">
+              <style jsx global>{`
+                @keyframes blur-fade-in {
+                  0% {
+                    opacity: 0;
+                    filter: blur(10px);
+                    transform: scale(0.8);
+                  }
+                  100% {
+                    opacity: 1;
+                    filter: blur(0);
+                    transform: scale(1);
+                  }
+                }
+                .animate-blur-fade-in {
+                   animation: blur-fade-in 0.8s ease-out both;
+                 }
+               `}</style>
+               <div className="flex items-center gap-2 pl-0">
+                   {topActors.map((actor: any, i: number) => (
+                    <Link 
+                        key={i} 
+                        href={`/actor/${actor.id}`} 
+                        className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
+                        title={actor.name || actor.title}
+                    >
+                        <img 
+                          src={getActorPhoto(actor)!} 
+                          alt={actor.name || actor.title} 
+                          className="w-16 h-16 rounded-full object-cover shadow-lg animate-blur-fade-in"
+                          style={{ animationDelay: `${i * 100 + 500}ms` }}
+                          onError={() => {
+                             const key = String(actor.id || actor.name || "");
+                             setFailedActorImages(prev => {
+                               const next = new Set(prev);
+                               next.add(key);
+                               return next;
+                             });
+                          }}
+                        />
+                    </Link>
+                  ))}
+              </div>
+            </div>
+         )}
       </div>
       
       {/* Tabs Section */}
