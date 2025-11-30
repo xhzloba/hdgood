@@ -835,6 +835,16 @@ export default function MoviePage({
     ? (data as any).sequelsAndPrequels
     : [];
 
+  const similarList = Array.isArray((movie as any).similar_movies)
+    ? (movie as any).similar_movies
+    : Array.isArray((data as any).similar_movies)
+    ? (data as any).similar_movies
+    : Array.isArray((movie as any).recommendations)
+    ? (movie as any).recommendations
+    : Array.isArray((data as any).recommendations)
+    ? (data as any).recommendations
+    : [];
+
   const detailsTitle = (() => {
     const typeRaw = (movie as any).type ?? (data as any).type ?? "";
     const t = String(typeRaw).toLowerCase();
@@ -1155,12 +1165,14 @@ export default function MoviePage({
                   Сиквелы и приквелы
                 </TabsTrigger>
               )}
-              <TabsTrigger 
-                value="similar" 
-                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
-              >
-                Похожие
-              </TabsTrigger>
+              {Array.isArray(similarList) && similarList.length > 0 && (
+                <TabsTrigger 
+                  value="similar" 
+                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                >
+                  Похожие
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* Overview Tab */}
@@ -1338,9 +1350,9 @@ export default function MoviePage({
 
             {/* Similar Tab */}
             <TabsContent value="similar" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               {(movie as any).similar_movies && Array.isArray((movie as any).similar_movies) && (movie as any).similar_movies.length > 0 ? (
+               {Array.isArray(similarList) && similarList.length > 0 ? (
                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {(movie as any).similar_movies.map((item: any) => {
+                    {similarList.map((item: any) => {
                        const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
                        const posterSrc = item.poster || item.cover || item.poster_url;
                        const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
