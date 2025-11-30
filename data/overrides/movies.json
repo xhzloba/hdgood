@@ -310,7 +310,11 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/2572795/w1500_55490582.png"
   },
   "671ac3722cc7b71d56e70bbe": {
-    "poster_logo": "/movies/logo/lihie.png"
+    "poster_logo": "/movies/logo/35.webp",
+    "poster": "/movies/lihie-poster.png",
+    "bg_poster": {
+      "backdrop": "/series/lihie.jpeg"
+    }
   },
   "6593f8b68914c04deaea15df": {
     "poster_logo": "/movies/logo/7.webp",
