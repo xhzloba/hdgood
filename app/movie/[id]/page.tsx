@@ -173,11 +173,6 @@ export default function MoviePage({
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
-  const [isDesktop, setIsDesktop] = useState(
-    typeof window !== "undefined"
-      ? window.matchMedia("(min-width: 768px)").matches
-      : true
-  );
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
   const videoPosterRef = useRef<VideoPosterRef>(null);
@@ -482,18 +477,6 @@ export default function MoviePage({
     loadParams();
   }, [params]);
 
-  useEffect(() => {
-    try {
-      const mq =
-        typeof window !== "undefined"
-          ? window.matchMedia("(min-width: 768px)")
-          : null;
-      const update = () => setIsDesktop(!!mq?.matches);
-      update();
-      mq?.addEventListener("change", update);
-      return () => mq?.removeEventListener("change", update);
-    } catch {}
-  }, []);
 
   // Загружаем динамический override из JSON API
   useEffect(() => {
@@ -1067,25 +1050,25 @@ export default function MoviePage({
         </header>
 
       {/* Hero Background */}
-      <div className="relative h-[85vh] w-full overflow-hidden">
+      <div className="relative min-h-[60vh] md:h-[85vh] w-full overflow-hidden flex flex-col justify-end md:block">
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          {(movie as any).backdrop || (movie as any).bg_poster?.backdrop ? (
            <img 
              src={(movie as any).backdrop || (movie as any).bg_poster?.backdrop} 
              alt={movie.name} 
-             className="w-full h-full object-cover object-top"
+             className="absolute inset-0 w-full h-full object-contain object-top bg-zinc-950 md:object-cover md:object-top"
            />
          ) : (
            <img 
              src={movie.poster} 
              alt={movie.name} 
-             className="w-full h-full object-cover object-top opacity-40 blur-xl scale-110"
+             className="absolute inset-0 w-full h-full object-cover object-top opacity-40 blur-xl scale-110"
            />
          )}
          
          {/* Hero Content Overlay */}
-         <div className="absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent pt-32 pb-12">
+         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent pt-32 pb-12">
             {(movie as any).poster_logo ? (
               <img 
                 src={(movie as any).poster_logo} 
