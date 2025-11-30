@@ -1119,7 +1119,7 @@ export default function MoviePage({
         </header>
 
       {/* Hero Background */}
-      <div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-end md:block">
+      <div className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end md:block">
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
          
