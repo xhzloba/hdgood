@@ -1147,6 +1147,14 @@ export default function MoviePage({
                   Эпизоды
                 </TabsTrigger>
               )}
+              {Array.isArray(seqList) && seqList.length > 0 && (
+                <TabsTrigger 
+                  value="sequels" 
+                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                >
+                  Сиквелы и приквелы
+                </TabsTrigger>
+              )}
               <TabsTrigger 
                 value="similar" 
                 className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-red-600 data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
@@ -1292,11 +1300,47 @@ export default function MoviePage({
               </TabsContent>
             )}
 
+            {/* Sequels Tab */}
+            <TabsContent value="sequels" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
+               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {seqList.map((item: any) => {
+                     const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
+                     const posterSrc = item.poster || item.cover || item.poster_url;
+                     const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
+                     
+                     if (!linkId) return null;
+
+                     return (
+                     <Link 
+                       key={linkId} 
+                       href={`/movie/${linkId}`}
+                       className="group block relative aspect-2/3 bg-zinc-900 rounded overflow-hidden"
+                     >
+                        {posterSrc ? (
+                          <img 
+                            src={posterSrc} 
+                            alt={titleText}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                           <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-600 text-xs text-center p-2">
+                              Нет постера
+                           </div>
+                        )}
+                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                           <span className="text-sm font-medium text-white line-clamp-2">{titleText}</span>
+                        </div>
+                     </Link>
+                  );
+                  })}
+               </div>
+            </TabsContent>
+
             {/* Similar Tab */}
             <TabsContent value="similar" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               {Array.isArray(seqList) && seqList.length > 0 ? (
+               {(movie as any).similar_movies && Array.isArray((movie as any).similar_movies) && (movie as any).similar_movies.length > 0 ? (
                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {seqList.map((item: any) => {
+                    {(movie as any).similar_movies.map((item: any) => {
                        const linkId = item.id || item.movieId || item.kp_id || item.kinopoisk_id;
                        const posterSrc = item.poster || item.cover || item.poster_url;
                        const titleText = item.title || item.name || item.original_title || item.en_name || "Без названия";
@@ -1307,7 +1351,7 @@ export default function MoviePage({
                        <Link 
                          key={linkId} 
                          href={`/movie/${linkId}`}
-                         className="group block relative aspect-[2/3] bg-zinc-900 rounded overflow-hidden"
+                         className="group block relative aspect-2/3 bg-zinc-900 rounded overflow-hidden"
                        >
                           {posterSrc ? (
                             <img 
@@ -1320,7 +1364,7 @@ export default function MoviePage({
                                 Нет постера
                              </div>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                              <span className="text-sm font-medium text-white line-clamp-2">{titleText}</span>
                           </div>
                        </Link>
