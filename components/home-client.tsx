@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { HeaderCategories } from "./header-categories";
 import { TrendingSection } from "./trending-section";
-import { NetflixSlider } from "./netflix-slider";
 import { UhdSection } from "./uhd-section";
 import { MoviesSection } from "./movies-section";
 import { SerialsSection } from "./serials-section";
@@ -524,41 +523,40 @@ export default function HomeClient({
       posterUrl={overridePoster ?? currentPoster}
       bgPosterUrl={overrideBg ?? currentBg}
       // colorOverrides={currentColors}
-      disableMobileBackdrop
       simpleDarkCorners
       softBottomFade={!hasOverrideBg}
       strongUpperCorners={hasOverrideBg}
       className="min-h-[100dvh] min-h-screen"
     >
-      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-6">
-        <div className="mb-4 hidden md:block">
-          <HeaderCategories
-            variant="horizontal"
-            className="!bg-transparent !border-transparent relative z-40"
-            onSelect={handleSelect}
-            activeIndex={activeIndex}
-            onActiveIndexChange={handleActiveIndexChange}
-          />
-        </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[72px]">
-          {effLogoSrc && effLogoId ? (
-            <Link href={`/movie/${effLogoId}`} className="block">
-              <img
-                src={effLogoSrc}
-                alt="Логотип"
-                className="h-[72px] w-auto max-w-[80vw] object-contain"
-              />
-            </Link>
-          ) : hasOverrideBg && overrideHeroTitle ? (
-            <div className="h-[72px] flex items-center justify-center px-4">
-              <span className="text-2xl md:text-4xl font-semibold text-zinc-100 truncate max-w-[80vw]">
-                {overrideHeroTitle}
-              </span>
-            </div>
-          ) : null}
-        </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-1">
-          <div className="text-base md:text-lg font-semibold text-zinc-100 px-4 text-center h-6 md:h-7 leading-none w-full flex items-center justify-center">
+      <main className="w-full min-h-screen pb-16 relative z-10">
+        <div className="mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8">
+          <div className="mb-8 hidden md:block">
+            <HeaderCategories
+              variant="horizontal"
+              className="!bg-transparent !border-transparent relative z-40"
+              onSelect={handleSelect}
+              activeIndex={activeIndex}
+              onActiveIndexChange={handleActiveIndexChange}
+            />
+          </div>
+          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[15vh] min-h-[200px] space-y-6">
+            {effLogoSrc && effLogoId ? (
+              <Link href={`/movie/${effLogoId}`} className="block transition-transform hover:scale-105 duration-300">
+                <img
+                  src={effLogoSrc}
+                  alt="Логотип"
+                  className="h-[120px] md:h-[160px] w-auto max-w-[80vw] object-contain drop-shadow-2xl"
+                />
+              </Link>
+            ) : hasOverrideBg && overrideHeroTitle ? (
+              <div className="flex items-center justify-center px-4">
+                <span className="text-3xl md:text-5xl font-bold text-zinc-100 truncate max-w-[80vw] drop-shadow-xl tracking-tight">
+                  {overrideHeroTitle}
+                </span>
+              </div>
+            ) : null}
+            
+            <div className="text-base md:text-xl font-medium text-zinc-200/90 px-4 text-center leading-relaxed flex items-center justify-center drop-shadow-md">
             {hasOverrideBg && effMeta ? (
               (() => {
                 const yearVal =
@@ -571,9 +569,10 @@ export default function HomeClient({
                   effMeta.duration,
                 ].filter((v) => v && String(v).trim().length > 0) as string[];
                 return (
-                  <span className="inline-block max-w-[80vw] truncate whitespace-nowrap">
+                  <span className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-[80vw]">
                     {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) && (
-                      <>
+                      <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                        {effMeta.ratingKP != null && (
                         <span className="inline-flex items-center gap-2 align-middle">
                           <img
                             src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
@@ -583,10 +582,10 @@ export default function HomeClient({
                           <span
                             className={
                               effMeta.ratingKP != null && effMeta.ratingKP > 8.5
-                                ? "font-semibold bg-clip-text text-transparent"
+                                ? "font-bold text-lg bg-clip-text text-transparent"
                                 : `${ratingColor(
                                     effMeta.ratingKP ?? undefined
-                                  )} font-semibold`
+                                  )} font-bold text-lg`
                             }
                             style={
                               effMeta.ratingKP != null && effMeta.ratingKP > 8.5
@@ -605,8 +604,9 @@ export default function HomeClient({
                               : "—"}
                           </span>
                         </span>
+                        )}
                         {effMeta.ratingIMDb != null && (
-                          <span className="inline-flex items-center gap-2 align-middle ml-3">
+                          <span className="inline-flex items-center gap-2 align-middle">
                             <img
                               src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
                               alt="IMDb"
@@ -615,10 +615,10 @@ export default function HomeClient({
                             <span
                               className={
                                 effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
-                                  ? "font-semibold bg-clip-text text-transparent"
+                                  ? "font-bold text-lg bg-clip-text text-transparent"
                                   : `${ratingColor(
                                       effMeta.ratingIMDb ?? undefined
-                                    )} font-semibold`
+                                    )} font-bold text-lg`
                               }
                               style={
                                 effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
@@ -636,49 +636,45 @@ export default function HomeClient({
                             </span>
                           </span>
                         )}
-                      </>
+                      </div>
                     )}
-                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) &&
-                      (yearVal || restArr.length > 0) && (
-                        <span className="text-zinc-400/60"> / </span>
-                      )}
+                    
+                    <div className="flex items-center gap-3 text-zinc-300 font-medium">
                     {yearVal && (
-                      <span className="inline-flex items-center rounded-full text-white px-3 py-[3px] mr-2" style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}>
+                      <span className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-white border border-white/10">
                         <span className="truncate">{yearVal}</span>
                       </span>
                     )}
-                    {yearVal && restArr.length > 0 && (
-                      <span className="text-zinc-400/60"> / </span>
-                    )}
                     {restArr.length > 0 && (
-                      <span className="truncate max-w-[60vw]">
-                        {restArr.join(" / ")}
+                      <span className="truncate max-w-[60vw] drop-shadow-sm">
+                        {restArr.join(" • ")}
                       </span>
                     )}
+                    </div>
                   </span>
                 );
               })()
             ) : null}
+            </div>
           </div>
         </div>
-        <section>
-          <div className={`relative z-20 ${sectionMarginClass}`}>
+
+        <section className="w-full mt-[5vh] md:mt-[10vh]">
+          <div className={`relative z-20 w-full`}>
             {isUhdMode ? (
-              <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              </div>
             ) : isMoviesMode ? (
-              <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              </div>
             ) : isSerialsMode ? (
-              <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              </div>
             ) : (
-              <>
-                <div className="px-5">
-                   <NetflixSlider 
-                     url="https://api.vokino.pro/v2/compilations/content/65a6b9dabce57d552a34b40d" 
-                     title="Сериалы Netflix" 
-                   />
-                </div>
-                <TrendingSection activeBackdropId={currentId ?? undefined} />
-              </>
+              <TrendingSection activeBackdropId={currentId ?? undefined} />
             )}
           </div>
         </section>

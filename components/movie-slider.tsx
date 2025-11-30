@@ -374,20 +374,21 @@ export default function MovieSlider({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4 px-2 md:px-12">
       {(title || viewAllHref) && (
-        <div className="flex items-center justify-between relative z-20">
+        <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
           {title ? (
-            <h2 className="text-lg md:text-xl font-semibold text-zinc-200 relative z-20">{title}</h2>
+            <h2 className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</h2>
           ) : (
             <div />
           )}
           {viewAllHref && (
             <Link
               href={viewAllHref}
-              className="text-[12px] md:text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors relative z-20"
+              className="text-xs md:text-sm font-medium text-zinc-400 hover:text-white transition-colors relative z-20 flex items-center gap-1"
             >
               {viewAllLabel}
+              <span className="text-[10px]">›</span>
             </Link>
           )}
         </div>

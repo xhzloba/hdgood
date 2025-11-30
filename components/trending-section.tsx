@@ -3,13 +3,21 @@
 import MovieSlider from "./movie-slider"
 import CoverflowMovieSlider from "./coverflow-movie-slider"
 import { APP_SETTINGS } from "@/lib/settings"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface TrendingItem {
   title: string
   playlist_url: string
 }
 
-const TRENDING_SECTIONS: TrendingItem[] = [
+const DESKTOP_SECTIONS: TrendingItem[] = [
+  {
+    title: "Сейчас смотрят",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=watching",
+  },
+]
+
+const MOBILE_SECTIONS: TrendingItem[] = [
   {
     title: "В тренде",
     playlist_url: "https://api.vokino.pro/v2/list?sort=popular",
@@ -43,13 +51,16 @@ type TrendingSectionProps = {
 }
 
 export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
+  const isMobile = useIsMobile()
+  const sections = isMobile ? MOBILE_SECTIONS : DESKTOP_SECTIONS
+
   return (
-    <section className="relative z-10">
-      <div className="p-5 rounded-sm">
-        <div className="space-y-6">
-          {TRENDING_SECTIONS.map((section) => (
-            <div key={section.title} className="space-y-3">
-              {section.title === "В тренде" ? (
+    <section className="relative z-10 w-full">
+      <div className="w-full">
+        <div className="space-y-8">
+          {sections.map((section) => (
+            <div key={section.title} className="space-y-4">
+              {isMobile && section.title === "В тренде" ? (
                 <CoverflowMovieSlider
                   url={section.playlist_url}
                   title={section.title}
@@ -69,18 +80,19 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                   compactOnMobile
                 />
               )}
-              
             </div>
           ))}
-          {/* Отдельный блок: Топ 250 фильмов — после списка секций */}
-          <div className="space-y-3">
-            <MovieSlider
-              url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
-              title="Топ 250 фильмов"
-              viewAllHref="/top250"
-              compactOnMobile
-            />
-          </div>
+          {/* Отдельный блок: Топ 250 фильмов — только для мобильных */}
+          {isMobile && (
+            <div className="space-y-4">
+              <MovieSlider
+                url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+                title="Топ 250 фильмов"
+                viewAllHref="/top250"
+                compactOnMobile
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>
