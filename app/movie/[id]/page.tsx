@@ -1125,6 +1125,30 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
          
+         {/* Navigation Arrows */}
+         {navIds.length > 0 && navIndex !== null && (
+            <>
+              {navIndex > 0 && (
+                <Link
+                  href={`/movie/${navIds[navIndex - 1]}`}
+                  className="fixed left-4 top-[40%] -translate-y-1/2 z-50 p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+                  title="Предыдущий"
+                >
+                  <IconChevronLeft size={32} stroke={1.5} />
+                </Link>
+              )}
+              {navIndex < navIds.length - 1 && (
+                <Link
+                  href={`/movie/${navIds[navIndex + 1]}`}
+                  className="fixed right-4 top-[40%] -translate-y-1/2 z-50 p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+                  title="Следующий"
+                >
+                  <IconChevronRight size={32} stroke={1.5} />
+                </Link>
+              )}
+            </>
+         )}
+         
         {isTrailerPlaying && currentTrailerUrl ? (
            <>
              {/* Desktop Background Player */}
