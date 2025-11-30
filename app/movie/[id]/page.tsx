@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import SimpleMovieSlider from "@/components/simple-movie-slider";
+import { FranchiseData, FranchiseSeason, FranchiseEpisode } from "@/types/franchise";
 
 // Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
 const movieOverrideCache: Record<string, any> =
@@ -143,7 +144,6 @@ import {
   getEmbedSrcFromTrailer,
 } from "@/components/trailer-player";
 import { ratingColor, formatCurrency } from "@/lib/utils";
-import { FranchiseData } from "@/types/franchise";
 import { TriviaSection } from "@/components/trivia-section";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 import { VideoPosterRef } from "@/components/video-poster";
@@ -1057,7 +1057,7 @@ export default function MoviePage({
            <img 
              src={(movie as any).backdrop || (movie as any).bg_poster?.backdrop} 
              alt={movie.name} 
-             className="absolute inset-0 w-full h-full object-contain object-top bg-zinc-950 md:object-cover md:object-top"
+             className="absolute inset-0 w-full h-full object-cover object-top md:object-cover md:object-top"
            />
          ) : (
            <img 
@@ -1467,44 +1467,63 @@ export default function MoviePage({
             {franchise?.seasons && (
               <TabsContent value="episodes" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
                  <div className="space-y-4">
-                    {franchise.seasons.map((season: any) => (
+                    {franchise.seasons.map((season: FranchiseSeason) => (
                         <div key={season.season} className="bg-zinc-900/30 border border-white/5 rounded-lg overflow-hidden">
                            <button 
                              onClick={() => toggleSeason(season.season)}
-                             className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left"
+                             className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left group"
                            >
                              <div className="flex items-center gap-4">
-                               <div className="bg-zinc-800 w-12 h-12 flex items-center justify-center rounded text-xl font-bold text-zinc-400">
-                                 {season.season}
-                               </div>
-                               <div>
-                                 <h4 className="font-semibold text-zinc-200">Сезон {season.season}</h4>
-                                 <span className="text-xs text-zinc-500">{season.episodes?.length || 0} эпизодов</span>
-                               </div>
+                                {season.poster ? (
+                                    <img src={season.poster} alt={`Сезон ${season.season}`} className="w-10 h-14 object-cover rounded shadow-sm hidden sm:block" />
+                                ) : (
+                                   <div className="bg-zinc-800 w-12 h-12 flex items-center justify-center rounded text-xl font-bold text-zinc-400">
+                                     {season.season}
+                                   </div>
+                                )}
+                                <div>
+                                   <span className="text-lg font-bold text-white group-hover:text-primary transition-colors">Сезон {season.season}</span>
+                                   {season.episodes && (
+                                     <span className="block text-sm text-zinc-500">{season.episodes.length} эпизодов</span>
+                                   )}
+                                </div>
                              </div>
-                             <ChevronDown size={20} className={`text-zinc-500 transition-transform ${openSeasons.has(season.season) ? 'rotate-180' : ''}`} />
+                             <ChevronDown 
+                               className={`w-5 h-5 text-zinc-500 transition-transform duration-300 ${openSeasons.has(season.season) ? 'rotate-180' : ''}`} 
+                             />
                            </button>
                            
-                           {openSeasons.has(season.season) && (
+                           {openSeasons.has(season.season) && season.episodes && (
                              <div className="p-4 pt-0 border-t border-white/5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {season.episodes?.map((episode: any) => (
+                                {season.episodes.map((episode: FranchiseEpisode) => (
                                    <button 
                                      key={episode.episode}
                                      onClick={() => {
-                                        if(episode.iframe_url) playEpisode(season.season, episode.iframe_url, `S${season.season} E${episode.episode}`);
+                                        if(episode.iframe_url) {
+                                            playEpisode(season.season, episode.iframe_url, `S${season.season} E${episode.episode}`);
+                                        } else if (season.iframe_url) {
+                                            playEpisode(season.season, season.iframe_url, `S${season.season} E${episode.episode}`);
+                                        }
                                      }}
-                                     className="flex items-start gap-3 p-3 rounded hover:bg-white/10 transition text-left group"
+                                     className="flex items-start gap-3 p-3 rounded hover:bg-white/10 transition text-left group relative overflow-hidden"
                                    >
-                                      <div className="mt-1 relative min-w-[24px]">
-                                         <Play size={16} className="text-zinc-500 group-hover:text-white transition-colors" />
+                                      <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-white/5 rounded text-sm font-medium text-zinc-400 group-hover:bg-primary group-hover:text-white transition-colors">
+                                         {episode.episode}
                                       </div>
-                                      <div>
-                                         <span className="block text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">
-                                            {episode.episode}. {episode.name || `Эпизод ${episode.episode}`}
+                                      <div className="min-w-0 flex-1">
+                                         <span className="block text-sm font-medium text-zinc-300 group-hover:text-white transition-colors truncate">
+                                            {episode.name || `Эпизод ${episode.episode}`}
                                          </span>
-                                         <span className="text-xs text-zinc-500">
+                                         <span className="text-xs text-zinc-500 flex items-center gap-2 mt-1">
                                             {episode.release_ru ? formatDate(episode.release_ru) : ''}
+                                            {episode.voiceActing && episode.voiceActing.length > 0 && (
+                                                <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-zinc-400">{episode.voiceActing.length} озв.</span>
+                                            )}
                                          </span>
+                                      </div>
+                                      {/* Play icon on hover */}
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <Play size={24} className="text-white fill-white" />
                                       </div>
                                    </button>
                                 ))}
@@ -1561,6 +1580,31 @@ export default function MoviePage({
             </TabsContent>
           </Tabs>
        </div>
+
+      {/* Episode Player Overlay */}
+      {playingEpisode && (
+        <div className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="relative w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+              <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-start pointer-events-none">
+                  <div className="pointer-events-auto">
+                      <h3 className="text-white font-bold text-lg drop-shadow-md">{playingEpisode.title}</h3>
+                  </div>
+                  <button 
+                    onClick={() => closeEpisode(playingEpisode.seasonNumber)}
+                    className="pointer-events-auto bg-black/50 hover:bg-red-500/80 text-white p-2 rounded-full transition backdrop-blur-md"
+                  >
+                     <X size={24} />
+                  </button>
+              </div>
+              <iframe 
+                src={playingEpisode.url} 
+                className="w-full h-full bg-black" 
+                allowFullScreen 
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+              />
+           </div>
+        </div>
+      )}
     </div>
   );
 }
