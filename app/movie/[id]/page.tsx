@@ -294,11 +294,11 @@ export default function MoviePage({
     let src = getEmbedSrcFromTrailer(trailer);
     if (src) {
       // Добавляем параметры для автовоспроизведения и управления
-      // mute=0 для звука (но автовоспроизведение на мобильных может быть заблокировано)
+      // mute=1 для автовоспроизведения (браузеры блокируют звук без взаимодействия)
       // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
       const origin = typeof window !== "undefined" ? window.location.origin : "";
-      src += `${separator}autoplay=1&mute=0&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
+      src += `${separator}autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
     }
     return src;
   }, [hasTrailers, rawTrailers]);
