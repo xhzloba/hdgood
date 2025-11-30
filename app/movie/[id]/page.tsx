@@ -1293,12 +1293,71 @@ export default function MoviePage({
                   {/* Cast List (Moved from sidebar) */}
                   <CastList casts={movie.casts || data.casts || []} />
 
-                  {franchise?.trivia && typeof franchise.trivia === 'string' && franchise.trivia.trim().length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
-                      <TriviaSection trivia={franchise.trivia} />
-                    </div>
-                  )}
+                  {/* Trivia / Facts Section */}
+                  {(() => {
+                    const franchiseTrivia = franchise?.trivia || franchise?.facts;
+                    const movieFacts = movie?.facts;
+
+                    if (franchiseTrivia) {
+                      if (typeof franchiseTrivia === 'string' && franchiseTrivia.trim().length > 0) {
+                        return (
+                          <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                            <TriviaSection trivia={franchiseTrivia} />
+                          </div>
+                        );
+                      }
+                      if (Array.isArray(franchiseTrivia) && franchiseTrivia.length > 0) {
+                         return (
+                          <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                            <div className="space-y-4">
+                              {franchiseTrivia.map((fact: any, i: number) => {
+                                 const text = typeof fact === 'object' ? fact.value : fact;
+                                 const isSpoiler = typeof fact === 'object' && fact.spoiler;
+                                 if (!text) return null;
+                                 return (
+                                   <div key={i} className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${isSpoiler ? 'opacity-75' : ''}`}>
+                                      {isSpoiler && <span className="text-red-400 text-xs font-bold uppercase mb-1 block">Спойлер</span>}
+                                      <div 
+                                        className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline" 
+                                        dangerouslySetInnerHTML={{ __html: text }} 
+                                      />
+                                   </div>
+                                 );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      }
+                    }
+
+                    if (Array.isArray(movieFacts) && movieFacts.length > 0) {
+                       return (
+                        <div className="space-y-4">
+                          <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                          <div className="space-y-4">
+                            {movieFacts.map((fact: any, i: number) => {
+                               const text = typeof fact === 'object' ? fact.value : fact;
+                               const isSpoiler = typeof fact === 'object' && fact.spoiler;
+                               if (!text) return null;
+                               return (
+                                 <div key={i} className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${isSpoiler ? 'opacity-75' : ''}`}>
+                                    {isSpoiler && <span className="text-red-400 text-xs font-bold uppercase mb-1 block">Спойлер</span>}
+                                    <div 
+                                      className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline" 
+                                      dangerouslySetInnerHTML={{ __html: text }} 
+                                    />
+                                 </div>
+                               );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })()}
                 </div>
 
                 <div className="space-y-8 text-base md:text-lg text-zinc-400">
