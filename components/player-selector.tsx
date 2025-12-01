@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PlayerSelectorProps {
   onPlayerSelect?: (playerId: number) => void;
@@ -63,32 +70,34 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Player Controls - Top */}
-      <div className="flex items-center gap-2 p-1 bg-zinc-900/50 rounded-lg w-fit border border-white/5 mb-4 overflow-x-auto scrollbar-hide max-w-full">
-        {[1, 2, 3].map((playerId) => {
-          const isActive = selectedPlayer === playerId;
-          const disabled =
-            (playerId === 1 && !player1Available) ||
-            (playerId === 2 && !player2Available) ||
-            (playerId === 3 && !player3Available);
-            
-          return (
-            <button
-              key={playerId}
-              onClick={() => handlePlayerSelect(playerId)}
-              disabled={disabled}
-              className={`
-                px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap
-                ${isActive 
-                  ? "bg-white text-black shadow-sm" 
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
-                }
-                ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-              `}
-            >
-              Плеер {playerId}
-            </button>
-          );
-        })}
+      <div className="mb-4">
+        <Select
+          value={selectedPlayer ? String(selectedPlayer) : undefined}
+          onValueChange={(val) => handlePlayerSelect(Number(val))}
+        >
+          <SelectTrigger className="w-[180px] bg-zinc-900/50 border-white/10 text-zinc-200">
+            <SelectValue placeholder="Выберите плеер" />
+          </SelectTrigger>
+          <SelectContent>
+            {[1, 2, 3].map((playerId) => {
+              const disabled =
+                (playerId === 1 && !player1Available) ||
+                (playerId === 2 && !player2Available) ||
+                (playerId === 3 && !player3Available);
+
+              return (
+                <SelectItem
+                  key={playerId}
+                  value={String(playerId)}
+                  disabled={disabled}
+                  className="cursor-pointer"
+                >
+                  Плеер {playerId}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-xl overflow-hidden ${videoContainerClassName || "bg-black"} shadow-2xl ring-1 ring-white/10 z-0`} style={videoContainerStyle}>
