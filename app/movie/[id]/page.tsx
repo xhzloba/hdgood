@@ -1724,63 +1724,82 @@ export default function MoviePage({
             <TabsContent value="overview" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
               <div className="grid md:grid-cols-[2fr_1fr] gap-8 md:gap-16">
                 <div className="space-y-8">
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold text-white">Сюжет</h3>
-                    <p className="text-zinc-300 text-base md:text-lg leading-relaxed">
-                      {movie.description || movie.about || "Описание отсутствует."}
-                    </p>
-                  </div>
-                  
-                  {/* Ratings Block */}
-                  <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-lg border border-white/5 w-fit flex-wrap">
-                     {/* Средний рейтинг */}
-                     <div className="flex flex-col items-center px-2">
-                        <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Рейтинг</span>
-                        {(() => {
-                          const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
-                          const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
-                          const hasKp = !isNaN(kp) && kp > 0;
-                          const hasImdb = !isNaN(imdb) && imdb > 0;
+                  {/* Poster + Plot + Ratings Container */}
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                    {/* Poster (Left) - Desktop Only */}
+                    {(movie.poster || (movie as any).poster_url) && (
+                      <div className="hidden md:block flex-shrink-0 w-[240px]">
+                         <div className="sticky top-24 rounded-lg overflow-hidden shadow-2xl border border-white/10">
+                            <img 
+                              src={movie.poster || (movie as any).poster_url} 
+                              alt={movie.name || "Постер"} 
+                              className="w-full h-auto object-cover aspect-[2/3]"
+                            />
+                         </div>
+                      </div>
+                    )}
 
-                          let rating: number | null = null;
-                          if (hasKp && hasImdb) rating = (kp + imdb) / 2;
-                          else if (hasKp) rating = kp;
-                          else if (hasImdb) rating = imdb;
+                    {/* Content (Right) */}
+                    <div className="flex-1 space-y-8 min-w-0">
+                      <div className="space-y-4">
+                        <h3 className="text-2xl font-semibold text-white">Сюжет</h3>
+                        <p className="text-zinc-300 text-base md:text-lg leading-relaxed">
+                          {movie.description || movie.about || "Описание отсутствует."}
+                        </p>
+                      </div>
+                      
+                      {/* Ratings Block */}
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-lg border border-white/5 w-fit flex-wrap">
+                         {/* Средний рейтинг */}
+                         <div className="flex flex-col items-center px-2">
+                            <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Рейтинг</span>
+                            {(() => {
+                              const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
+                              const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
+                              const hasKp = !isNaN(kp) && kp > 0;
+                              const hasImdb = !isNaN(imdb) && imdb > 0;
 
-                          if (!rating) return <span className="text-2xl font-bold text-zinc-500">—</span>;
+                              let rating: number | null = null;
+                              if (hasKp && hasImdb) rating = (kp + imdb) / 2;
+                              else if (hasKp) rating = kp;
+                              else if (hasImdb) rating = imdb;
 
-                          const colorClass = rating >= 7 ? "text-green-500" : rating >= 5 ? "text-yellow-500" : "text-red-500";
-                          return <span className={`text-2xl font-bold ${colorClass}`}>{rating.toFixed(1)}</span>;
-                        })()}
-                     </div>
-                     
-                     <div className="w-px h-8 bg-white/10" />
+                              if (!rating) return <span className="text-2xl font-bold text-zinc-500">—</span>;
 
-                     {/* Кинопоиск */}
-                     <div className="flex items-center gap-3 px-2">
-                        <img 
-                          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7c46WVoj-3Dc9bezLc6iabLcvs813ggQ76A&s" 
-                          alt="Кинопоиск" 
-                          className="w-8 h-8 rounded-md object-cover"
-                        />
-                        <span className={`text-xl font-bold ${ratingColor(movie.rating_kp)}`}>
-                           {movie.rating_kp && movie.rating_kp !== "0.0" && movie.rating_kp !== 0 ? Number(movie.rating_kp).toFixed(1) : "—"}
-                        </span>
-                     </div>
+                              const colorClass = rating >= 7 ? "text-green-500" : rating >= 5 ? "text-yellow-500" : "text-red-500";
+                              return <span className={`text-2xl font-bold ${colorClass}`}>{rating.toFixed(1)}</span>;
+                            })()}
+                         </div>
+                         
+                         <div className="w-px h-8 bg-white/10" />
 
-                     <div className="w-px h-8 bg-white/10" />
+                         {/* Кинопоиск */}
+                         <div className="flex items-center gap-3 px-2">
+                            <img 
+                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7c46WVoj-3Dc9bezLc6iabLcvs813ggQ76A&s" 
+                              alt="Кинопоиск" 
+                              className="w-8 h-8 rounded-md object-cover"
+                            />
+                            <span className={`text-xl font-bold ${ratingColor(movie.rating_kp)}`}>
+                               {movie.rating_kp && movie.rating_kp !== "0.0" && movie.rating_kp !== 0 ? Number(movie.rating_kp).toFixed(1) : "—"}
+                            </span>
+                         </div>
 
-                     {/* IMDb */}
-                     <div className="flex items-center gap-3 px-2">
-                        <img 
-                          src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" 
-                          alt="IMDb" 
-                          className="w-8 h-8 object-contain"
-                        />
-                        <span className={`text-xl font-bold ${ratingColor(movie.rating_imdb)}`}>
-                           {movie.rating_imdb && movie.rating_imdb !== "0.0" && movie.rating_imdb !== 0 ? Number(movie.rating_imdb).toFixed(1) : "—"}
-                        </span>
-                     </div>
+                         <div className="w-px h-8 bg-white/10" />
+
+                         {/* IMDb */}
+                         <div className="flex items-center gap-3 px-2">
+                            <img 
+                              src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" 
+                              alt="IMDb" 
+                              className="w-8 h-8 object-contain"
+                            />
+                            <span className={`text-xl font-bold ${ratingColor(movie.rating_imdb)}`}>
+                               {movie.rating_imdb && movie.rating_imdb !== "0.0" && movie.rating_imdb !== 0 ? Number(movie.rating_imdb).toFixed(1) : "—"}
+                            </span>
+                         </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Cast List (Moved from sidebar) */}
