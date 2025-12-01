@@ -80,7 +80,7 @@ export function UhdSection({ onBackdropOverrideChange, onHeroInfoOverrideChange 
 
   return (
     <section>
-      <div className="p-2 md:p-5 rounded-sm">
+      <div className="p-2 md:px-5 md:py-0 rounded-sm">
         <div
           className={`sticky top-0 z-20 -mx-2 md:-mx-5 md:-mt-5 px-2 md:px-5 pt-0 md:pt-5 pb-3 rounded-t-sm transition-all duration-300 ${watchOpen ? "opacity-0 pointer-events-none -translate-y-2" : "opacity-100 translate-y-0"}`}
         >
