@@ -522,6 +522,7 @@ export default function HomeClient({
     <PosterBackground
       posterUrl={overridePoster ?? currentPoster}
       bgPosterUrl={overrideBg ?? currentBg}
+      disableMobileBackdrop
       // colorOverrides={currentColors}
       simpleDarkCorners
       softBottomFade={!hasOverrideBg}

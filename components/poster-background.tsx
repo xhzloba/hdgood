@@ -1247,25 +1247,19 @@ export function PosterBackground({
         ...style,
         backgroundImage:
           isMobile && !!disableMobileBackdrop
-            ? simpleDarkCorners
-              ? lastCompImg || "none"
-              : "none"
+            ? "none"
             : simpleDarkCorners
             ? lastCompImg || style.backgroundImage
             : style.backgroundImage,
         backgroundSize:
           isMobile && !!disableMobileBackdrop
-            ? simpleDarkCorners
-              ? lastCompSize || undefined
-              : undefined
+            ? undefined
             : simpleDarkCorners
             ? lastCompSize || (style as any).backgroundSize
             : (style as any).backgroundSize,
         backgroundPosition:
           isMobile && !!disableMobileBackdrop
-            ? simpleDarkCorners
-              ? lastCompPos || undefined
-              : undefined
+            ? undefined
             : simpleDarkCorners
             ? lastCompPos || (style as any).backgroundPosition
             : (style as any).backgroundPosition,
