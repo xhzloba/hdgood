@@ -289,12 +289,14 @@ export function MovieGrid({
   }, []);
 
   function handleCloseInline() {
+    setShowEscHint(false);
     if (inlinePlayerOpen) {
       setInlineClosing(true);
     }
     setPlayerVisible(false);
     setInfoVisible(false);
     setTimeout(() => {
+      setWatchOpen(false);
       if (inlinePlayerOpen) {
         setInlinePlayerOpen(false);
         setInlineClosing(false);
@@ -413,6 +415,15 @@ export function MovieGrid({
       };
     } catch {}
   }, []);
+
+  useEffect(() => {
+    if (showEscHint && isLargeDesktop) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [showEscHint, isLargeDesktop]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
   const { data, error, isLoading, isValidating } = useSWR<string>(
@@ -1403,14 +1414,7 @@ export function MovieGrid({
     );
   }
 
-  useEffect(() => {
-    if (showEscHint && isLargeDesktop) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-  }, [showEscHint, isLargeDesktop]);
+
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   // (handled below just before rendering the grid)
