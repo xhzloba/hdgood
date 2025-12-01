@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
 import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
@@ -1633,35 +1634,40 @@ export default function MoviePage({
                `}</style>
                <div className="flex items-center gap-2 pl-0">
                    {topActors.map((actor: any, i: number) => (
-                    <Link 
-                        key={i} 
-                        href={`/actor/${actor.id}`} 
-                        className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
-                        title={actor.name || actor.title}
-                        onClick={() => {
-                          try {
-                            const raw = localStorage.getItem("__actorInfo")
-                            const map = raw ? JSON.parse(raw) : {}
-                            map[String(actor.id)] = { name: actor.name || actor.title, photo: getActorPhoto(actor) }
-                            localStorage.setItem("__actorInfo", JSON.stringify(map))
-                          } catch {}
-                        }}
-                    >
-                        <img 
-                          src={getActorPhoto(actor)!} 
-                          alt={actor.name || actor.title} 
-                          className="w-16 h-16 rounded-full object-cover shadow-lg animate-blur-fade-in"
-                          style={{ animationDelay: `${i * 100 + 500}ms` }}
-                          onError={() => {
-                             const key = String(actor.id || actor.name || "");
-                             setFailedActorImages(prev => {
-                               const next = new Set(prev);
-                               next.add(key);
-                               return next;
-                             });
-                          }}
-                        />
-                    </Link>
+                    <Tooltip key={i}>
+                      <TooltipTrigger asChild>
+                        <Link 
+                            href={`/actor/${actor.id}`} 
+                            className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
+                            onClick={() => {
+                              try {
+                                const raw = localStorage.getItem("__actorInfo")
+                                const map = raw ? JSON.parse(raw) : {}
+                                map[String(actor.id)] = { name: actor.name || actor.title, photo: getActorPhoto(actor) }
+                                localStorage.setItem("__actorInfo", JSON.stringify(map))
+                              } catch {}
+                            }}
+                        >
+                            <img 
+                              src={getActorPhoto(actor)!} 
+                              alt={actor.name || actor.title} 
+                              className="w-16 h-16 rounded-full object-cover shadow-lg animate-blur-fade-in"
+                              style={{ animationDelay: `${i * 100 + 500}ms` }}
+                              onError={() => {
+                                 const key = String(actor.id || actor.name || "");
+                                 setFailedActorImages(prev => {
+                                   const next = new Set(prev);
+                                   next.add(key);
+                                   return next;
+                                 });
+                              }}
+                            />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="font-bold bg-white text-black border-0 shadow-xl">
+                        <p>{actor.name || actor.title}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   ))}
               </div>
             </div>
