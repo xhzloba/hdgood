@@ -233,8 +233,8 @@ export function CountryFlag({
 
   return (
     <span
-      className={`fi fi-${code} inline-block align-middle ${className || ""}`}
-      style={{ width: w, height: h }}
+      className={`fi fi-${code} inline-block align-middle rounded-[2px] shadow-[0_1px_2px_rgba(0,0,0,0.2)] ring-[0.5px] ring-white/20 ${className || ""}`}
+      style={{ width: w, height: h, backgroundSize: 'cover' }}
       aria-label={title || code.toUpperCase()}
       title={title || code.toUpperCase()}
     />

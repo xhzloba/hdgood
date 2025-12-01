@@ -1700,5 +1700,35 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8fd8914c04deaeaa237",
+    "timestamp": "2025-12-01T10:58:59.483Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f8fd8914c04deaeaa237",
+    "timestamp": "2025-12-01T11:01:03.545Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65c008e13b34c2845ba29fba",
+    "timestamp": "2025-12-01T11:08:55.079Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

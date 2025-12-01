@@ -713,5 +713,14 @@
   },
   "672aa374e1a607c56947ea0f": {
     "poster_logo": "/movies/logo/41.webp"
+  },
+  "6593f8fd8914c04deaeaa237": {
+    "bg_poster": {
+      "backdrop": "/series/mar.webp"
+    },
+    "poster_logo": "/movies/logo/42.webp"
+  },
+  "65c008e13b34c2845ba29fba": {
+    "poster_logo": "/movies/logo/43.webp"
   }
 }

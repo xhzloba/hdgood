@@ -596,7 +596,7 @@ export default function MovieSlider({
                           <div className="absolute inset-x-0 bottom-1 md:bottom-2 flex items-center justify-center px-3">
                             <div className="px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] text-white flex items-center justify-center gap-2 flex-wrap text-center">
                               {hasCountry && (
-                                <CountryFlag country={movie.country} size="md" className="shadow-sm" />
+                                <CountryFlag country={movie.country} size="md" />
                               )}
                               {genres.length > 0 && (
                                 <span className="opacity-90">{genres.join(" • ")}</span>
