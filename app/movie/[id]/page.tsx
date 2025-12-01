@@ -409,24 +409,35 @@ export default function MoviePage({
     }
   }, [rawTrailers]);
 
-  const currentTrailerUrl = useMemo(() => {
+  const trailerData = useMemo(() => {
     if (!hasTrailers) return null;
-    const trailer = (rawTrailers || []).find((t: any) => {
+    return (rawTrailers || []).find((t: any) => {
       const src = getEmbedSrcFromTrailer(t);
       return !!src && src.includes("youtube.com/embed");
     });
-    if (!trailer) return null;
-    let src = getEmbedSrcFromTrailer(trailer);
+  }, [hasTrailers, rawTrailers]);
+
+  const desktopTrailerUrl = useMemo(() => {
+    if (!trailerData) return null;
+    let src = getEmbedSrcFromTrailer(trailerData);
     if (src) {
-      // Добавляем параметры для автовоспроизведения и управления
-      // mute=1 для автовоспроизведения (браузеры блокируют звук без взаимодействия)
-      // playsinline=1 для корректной работы на iOS
       const separator = src.includes("?") ? "&" : "?";
-      // Важно: enablejsapi=1 нужен для управления через postMessage
+      // Desktop: muted, no controls, autoplay
       src += `${separator}autoplay=1&mute=1&controls=0&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
     }
     return src;
-  }, [hasTrailers, rawTrailers, origin]);
+  }, [trailerData, origin]);
+
+  const mobileTrailerUrl = useMemo(() => {
+    if (!trailerData) return null;
+    let src = getEmbedSrcFromTrailer(trailerData);
+    if (src) {
+      const separator = src.includes("?") ? "&" : "?";
+      // Mobile: with controls, NO autoplay, playsinline
+      src += `${separator}autoplay=0&mute=0&controls=1&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
+    }
+    return src;
+  }, [trailerData, origin]);
 
   useEffect(() => {
     try {
@@ -1369,10 +1380,10 @@ export default function MoviePage({
             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
           </button>
 
-          {isTrailerPlaying && !isMobile && (
+          {isTrailerPlaying && (
             <button
               onClick={toggleMute}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto ml-2"
+              className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto ml-2"
               title={isMuted ? "Включить звук" : "Выключить звук"}
             >
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -1386,14 +1397,14 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
          
          
-        {isTrailerPlaying && currentTrailerUrl ? (
+        {isTrailerPlaying && trailerData ? (
            <>
              {/* Desktop Background Player */}
              {!isMobile && (
-               <div className="absolute inset-0 w-full h-full z-[1] bg-black animate-in fade-in duration-700">
+               <div className="hidden md:block absolute inset-0 w-full h-full z-[1] bg-black animate-in fade-in duration-700">
                   <iframe
                     ref={playerRef}
-                    src={currentTrailerUrl}
+                    src={desktopTrailerUrl || ""}
                     className="w-full h-full object-cover scale-125 pointer-events-none" 
                     allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -1401,30 +1412,33 @@ export default function MoviePage({
                </div>
              )}
 
-             {/* Mobile Modal Player */}
-             {isMobile && (
-               <div className="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
-                  <button
-                    onClick={() => setIsTrailerPlaying(false)}
-                    className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
-                  >
-                    <X size={24} />
-                  </button>
-                  <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                    <iframe
-                      src={currentTrailerUrl}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                  <p className="mt-4 text-zinc-400 text-sm font-medium">
-                     Трейлер
-                  </p>
-               </div>
-             )}
-           </>
-         ) : backdropUrl ? (
+             {/* Mobile Modal Player - Absolute in Hero */}
+              {isMobile && (
+                <div className="md:hidden absolute inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
+                   <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTrailerPlaying(false);
+                    }}
+                     className="absolute top-20 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
+                   >
+                     <X size={24} />
+                   </button>
+                   <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                     <iframe
+                       src={mobileTrailerUrl || ""}
+                       className="w-full h-full"
+                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                       allowFullScreen
+                     />
+                   </div>
+                   <p className="mt-4 text-zinc-400 text-sm font-medium">
+                      Трейлер
+                   </p>
+                </div>
+              )}
+            </>
+          ) : backdropUrl ? (
            <img 
              src={backdropUrl} 
              alt={movie.name} 
@@ -1601,7 +1615,11 @@ export default function MoviePage({
                 </button>
                 {hasTrailers && (
                    <button 
-                     onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
+                     onClick={(e) => {
+                     e.stopPropagation();
+                     e.preventDefault();
+                     setIsTrailerPlaying(!isTrailerPlaying);
+                   }}
                      className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${isTrailerPlaying ? 'border-white text-white bg-white/20' : 'border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10'}`}
                      title={isTrailerPlaying ? "Остановить трейлер" : "Смотреть трейлер"}
                    >
@@ -2155,6 +2173,7 @@ export default function MoviePage({
             </TabsContent>
           </Tabs>
        </div>
+    </div>
 
       {/* Episode Player Overlay */}
       {playingEpisode && (
@@ -2180,7 +2199,7 @@ export default function MoviePage({
            </div>
         </div>
       )}
-    </div>
+      {/* Mobile Trailer Modal Player moved back to hero */}
     </>
   );
 }
