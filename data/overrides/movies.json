@@ -710,5 +710,8 @@
     "bg_poster": {
       "backdrop": "/movies/edem.webp"
     }
+  },
+  "672aa374e1a607c56947ea0f": {
+    "poster_logo": "/movies/logo/41.webp"
   }
 }

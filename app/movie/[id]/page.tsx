@@ -522,12 +522,33 @@ export default function MoviePage({
     if (!navIds.length || navIndex === null) return;
 
     const prefetch = async (targetId: string) => {
-      if (movieDataCache[targetId]) return; // Already cached
-      try {
-        await fetchMovieFullData(targetId);
-        console.log(`🚀 Prefetched data for ${targetId}`);
-      } catch (e) {
-        // ignore errors during prefetch
+      // 1. Prefetch Movie Data (Main API)
+      if (!movieDataCache[targetId]) {
+        fetchMovieFullData(targetId)
+          .then(() => console.log(`🚀 Prefetched movie data for ${targetId}`))
+          .catch(() => {});
+      }
+
+      // 2. Prefetch Override Data (Local API)
+      // Проверяем наличие в кеше (учитываем, что там может быть null, поэтому проверяем на undefined)
+      if (movieOverrideCache[targetId] === undefined) {
+         fetch(`/api/overrides/movies/${targetId}`, { cache: "no-store" })
+           .then(async (res) => {
+             if (res.ok) return res.json();
+             return null;
+           })
+           .then((data) => {
+             // Сохраняем в кеш (даже если null, чтобы знать, что оверрайда нет)
+             movieOverrideCache[targetId] = data || null;
+             try {
+               (globalThis as any).__movieOverridesCache[targetId] = data || null;
+             } catch {}
+             console.log(`🚀 Prefetched override for ${targetId}:`, data ? "Found" : "None");
+           })
+           .catch(() => {
+             // При ошибке тоже можно закешировать null, чтобы не долбить API
+             movieOverrideCache[targetId] = null;
+           });
       }
     };
 
@@ -789,12 +810,14 @@ export default function MoviePage({
     if (!id) return;
     let cancelled = false;
     
-    setIsOverrideLoading(true);
+    const cached = movieOverrideCache[id];
+    const hasCache = cached !== undefined;
 
-    // Мгновенно подставляем override из кеша, если уже загружали его для этого id
-    if (!cancelled && movieOverrideCache[id] !== undefined) {
-      setOverrideData(movieOverrideCache[id]);
+    if (hasCache) {
+      setOverrideData(cached);
       setIsOverrideLoading(false);
+    } else {
+      setIsOverrideLoading(true);
     }
 
     (async () => {
@@ -805,18 +828,25 @@ export default function MoviePage({
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) || null;
         if (!cancelled) {
-          setOverrideData(data);
-          movieOverrideCache[id] = data;
-          try {
-            const ref: any = globalThis as any;
-            const cache = (ref.__movieOverridesCache ||= {});
-            cache[id] = data;
-          } catch {}
+          // Если данные пришли такие же, как в кеше — не обновляем стейт (оптимизация рендера)
+          if (JSON.stringify(data) !== JSON.stringify(movieOverrideCache[id])) {
+             setOverrideData(data);
+             movieOverrideCache[id] = data;
+             try {
+               const ref: any = globalThis as any;
+               const cache = (ref.__movieOverridesCache ||= {});
+               cache[id] = data;
+             } catch {}
+          }
         }
       } catch {
         if (!cancelled) {
           // Если в кеше уже было значение — оставляем его, иначе фиксируем отсутствие override
-          setOverrideData((prev: any) => (prev === null ? null : prev));
+          // Если кеша не было и произошла ошибка - считаем что override нет
+          if (!hasCache) {
+             setOverrideData(null);
+             movieOverrideCache[id] = null; // Кешируем отсутствие
+          }
         }
       } finally {
         if (!cancelled) setIsOverrideLoading(false);

@@ -1680,5 +1680,25 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "672aa374e1a607c56947ea0f",
+    "timestamp": "2025-12-01T08:45:04.694Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "672aa374e1a607c56947ea0f",
+    "timestamp": "2025-12-01T08:45:21.876Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
   }
 ]
