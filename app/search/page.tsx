@@ -209,15 +209,19 @@ export default function SearchPage() {
           <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
             <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
           </div>
-        </div>
-        <div className="mx-auto max-w-7xl px-0 md:px-6 relative">
-          <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
+          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[2vh] min-h-[200px] space-y-6">
             {logoSrc && logoId ? (
-              <Link href={`/movie/${logoId}`} className="block">
-                <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
+              <Link href={`/movie/${logoId}`} className="block transition-transform hover:scale-105 duration-300">
+                <img
+                  src={logoSrc}
+                  alt="Логотип"
+                  className="h-[80px] md:h-[100px] w-auto max-w-[80vw] object-contain drop-shadow-2xl"
+                />
               </Link>
             ) : null}
           </div>
+        </div>
+        <div className="mx-auto max-w-7xl px-0 md:px-6 relative">
           <section className="relative">
             <div className="relative z-20">
               <div className="p-5">
