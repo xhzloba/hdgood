@@ -4,6 +4,7 @@ import { Loader } from "./loader";
 import Link from "next/link";
 import NProgress from "nprogress";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
 import { IconChevronLeft, IconChevronRight, IconX, IconPlayerPlayFilled, IconInfoCircle } from "@tabler/icons-react";
@@ -196,6 +197,7 @@ export function MovieGrid({
   const [inlineKpId, setInlineKpId] = useState<string | null>(null);
   const [inlineIframeUrl, setInlineIframeUrl] = useState<string | null>(null);
   const [showEscHint, setShowEscHint] = useState<boolean>(false);
+  const [isLargeDesktop, setIsLargeDesktop] = useState<boolean>(false);
   const [playerVisible, setPlayerVisible] = useState<boolean>(false);
   const gridWrapRef = useRef<HTMLDivElement | null>(null);
   const [gridHeight, setGridHeight] = useState<number | null>(null);
@@ -267,6 +269,19 @@ export function MovieGrid({
           ? window.matchMedia("(min-width: 768px)")
           : null;
       const update = () => setIsDesktop(!!mq?.matches);
+      update();
+      mq?.addEventListener("change", update);
+      return () => mq?.removeEventListener("change", update);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      const mq =
+        typeof window !== "undefined"
+          ? window.matchMedia("(min-width: 1280px)")
+          : null;
+      const update = () => setIsLargeDesktop(!!mq?.matches);
       update();
       mq?.addEventListener("change", update);
       return () => mq?.removeEventListener("change", update);
@@ -1064,11 +1079,23 @@ export function MovieGrid({
 
   useEffect(() => {
     if (watchOpen && isDesktop) {
-      setShowEscHint(true);
-      const t = setTimeout(() => setShowEscHint(false), 3000);
-      return () => clearTimeout(t);
+      const showTimer = setTimeout(() => {
+        setShowEscHint(true);
+        if (!isLargeDesktop) {
+          const hideTimer = setTimeout(() => setShowEscHint(false), 3000);
+          // Не нужно сохранять hideTimer, так как он сработает сам, 
+          // а при размонтировании/изменении мы сбросим всё через cleanup ниже.
+          // Но чтобы не было утечки, если компонент размонтируется во время hideTimer,
+          // можно сохранить его в ref, но проще просто сбросить состояние.
+        }
+      }, isLargeDesktop ? 2000 : 0);
+
+      return () => {
+        clearTimeout(showTimer);
+        setShowEscHint(false);
+      };
     }
-  }, [watchOpen, isDesktop]);
+  }, [watchOpen, isDesktop, isLargeDesktop]);
 
   const selectedKpId = useMemo(() => {
     const d: any = selectedDetails || {};
@@ -1256,11 +1283,19 @@ export function MovieGrid({
   useEffect(() => {
     if (!showInlineInfo && !inlinePlayerOpen) return;
     try {
-      setShowEscHint(true);
-      const t = setTimeout(() => setShowEscHint(false), 6000);
-      return () => clearTimeout(t);
+      const showTimer = setTimeout(() => {
+        setShowEscHint(true);
+        if (!isLargeDesktop) {
+          setTimeout(() => setShowEscHint(false), 6000);
+        }
+      }, isLargeDesktop ? 2000 : 0);
+
+      return () => {
+        clearTimeout(showTimer);
+        setShowEscHint(false);
+      };
     } catch {}
-  }, [showInlineInfo, inlinePlayerOpen]);
+  }, [showInlineInfo, inlinePlayerOpen, isLargeDesktop]);
 
   useEffect(() => {
     try {
@@ -1367,6 +1402,15 @@ export function MovieGrid({
       </div>
     );
   }
+
+  useEffect(() => {
+    if (showEscHint && isLargeDesktop) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [showEscHint, isLargeDesktop]);
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   // (handled below just before rendering the grid)
@@ -1536,22 +1580,7 @@ export function MovieGrid({
             maskSize: "100% 100%",
           }}
         >
-          {showEscHint && (
-            <div
-              className={`absolute z-30 pointer-events-none ${
-                inlinePlayerOpen && isDesktop ? "top-2 right-[56px]" : "top-2 right-2"
-              }`}
-            >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[12px] md:text-[13px] rounded-[10px] border border-[rgb(var(--ui-accent-rgb))] bg-[rgb(var(--ui-accent-rgb))] text-white shadow-[0_8px_20px_rgba(var(--ui-accent-rgb),0.45)]">
-                <span className="opacity-90">Клавиатура:</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">←</kbd>
-                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">→</kbd>
-                <span className="opacity-80">·</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">ESC</kbd>
-                <span className="opacity-90">— закрыть</span>
-              </div>
-            </div>
-          )}
+
           
 
           <div className="space-y-4">
@@ -1837,22 +1866,7 @@ export function MovieGrid({
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
               <div className="relative p-3 md:p-4 smoke-flash overflow-hidden">
-              {showEscHint && (
-                <div
-                  className={`absolute z-30 pointer-events-none ${
-                    inlinePlayerOpen && isDesktop ? "top-2 right-[56px]" : "top-2 right-2"
-                  }`}
-                >
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 text-[12px] md:text-[13px] rounded-[10px] border border-[rgb(var(--ui-accent-rgb))] bg-[rgb(var(--ui-accent-rgb))] text-white shadow-[0_8px_20px_rgba(var(--ui-accent-rgb),0.45)]">
-                    <span className="opacity-90">Клавиатура:</span>
-                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">←</kbd>
-                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">→</kbd>
-                    <span className="opacity-80">·</span>
-                    <kbd className="px-1.5 py-0.5 rounded bg-black/60 border border-zinc-700/60 font-medium text-white">ESC</kbd>
-                    <span className="opacity-90">— закрыть</span>
-                  </div>
-                </div>
-              )}
+
               <button
                 type="button"
                 aria-label="Закрыть"
@@ -3015,6 +3029,55 @@ export function MovieGrid({
             </button>
           )}
         </div>
+      )}
+
+      {showEscHint && isLargeDesktop && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300 animate-in fade-in duration-300 cursor-default"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Не закрываем по клику на фон, только по кнопке
+          }}
+        >
+          <div 
+            className="relative bg-zinc-900/90 border border-zinc-700/50 rounded-xl p-8 max-w-2xl text-center shadow-2xl transform scale-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowEscHint(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+            >
+              <IconX size={24} />
+            </button>
+            <div className="flex flex-col items-center gap-6">
+              <div className="text-2xl font-bold text-white">Навигация</div>
+              <div className="flex items-center gap-4 text-lg text-zinc-300">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex gap-2">
+                    <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">←</kbd>
+                    <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">→</kbd>
+                  </div>
+                  <span className="text-sm opacity-70">Переключение</span>
+                </div>
+                <div className="h-12 w-px bg-zinc-700 mx-4"></div>
+                <div className="flex flex-col items-center gap-2">
+                  <kbd className="px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl">ESC</kbd>
+                  <span className="text-sm opacity-70">Закрыть</span>
+                </div>
+              </div>
+              <p className="text-zinc-400 max-w-md">
+                Используйте стрелки на клавиатуре для быстрого переключения между фильмами, а ESC для закрытия окна.
+              </p>
+              <button 
+                onClick={() => setShowEscHint(false)}
+                className="mt-4 px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors"
+              >
+                Понятно
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
