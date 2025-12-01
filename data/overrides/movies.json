@@ -317,6 +317,13 @@
     }
   },
   "6593f8b68914c04deaea15df": {
+    "franchise": {
+      "shooting_photos": [
+        "https://images.kinorium.com/movie/shot/1545339/w1500_55519239.jpg",
+        "https://images.kinorium.com/movie/shot/1545339/w1500_55519254.jpg",
+        "https://images.kinorium.com/movie/shot/1545339/w1500_55519342.jpg"
+      ]
+    },
     "poster_logo": "/movies/logo/7.webp",
     "poster_colors": {
       "accentTl": [

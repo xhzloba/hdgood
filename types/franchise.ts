@@ -40,5 +40,8 @@ export interface FranchiseData {
   iframe_url?: string;
   seasons?: FranchiseSeason[];
   parts?: any[]; // Adding parts as user mentioned it
+  shooting_photos?: string[];
+  trivia?: any[] | string;
+  facts?: any[] | string;
   [key: string]: any; // Allow other properties for flexibility
 }

@@ -248,6 +248,7 @@ import {
 } from "@/components/trailer-player";
 import { ratingColor, formatCurrency } from "@/lib/utils";
 import { TriviaSection } from "@/components/trivia-section";
+import { ShootingPhotosSlider } from "@/components/shooting-photos-slider";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 import { VideoPosterRef } from "@/components/video-poster";
 
@@ -1842,6 +1843,13 @@ export default function MoviePage({
 
                   {/* Cast List (Moved from sidebar) */}
                   <CastList casts={movie.casts || data.casts || []} />
+
+                  {/* Shooting Photos Slider */}
+                  {franchise?.shooting_photos && Array.isArray(franchise.shooting_photos) && franchise.shooting_photos.length > 0 && (
+                    <div className="mb-8">
+                      <ShootingPhotosSlider photos={franchise.shooting_photos} />
+                    </div>
+                  )}
 
                   {/* Trivia / Facts Section */}
                   {(() => {

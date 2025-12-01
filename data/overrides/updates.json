@@ -1750,5 +1750,35 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-01T23:09:12.876Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "franchise.shooting_photos"
+    ]
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-01T23:10:19.611Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "franchise.shooting_photos"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-01T23:13:24.040Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "franchise.shooting_photos"
+    ],
+    "addedPaths": []
   }
 ]

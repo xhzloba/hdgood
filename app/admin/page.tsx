@@ -225,6 +225,7 @@ export default function AdminOverridesPage() {
       "seasons",
       "actors_dubl",
       "trivia",
+      "shooting_photos",
     ],
     []
   );
