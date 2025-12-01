@@ -1760,14 +1760,26 @@ export function MovieGrid({
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
                       }
-                      try {
-                        const ids = (movies || []).map((m: any) => String(m.id));
-                        const index = ids.indexOf(String(selectedMovie.id));
-                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
-                        localStorage.setItem("__navContext", JSON.stringify(ctx));
-                        const href = `${location.pathname}${location.search}`;
-                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
-                      } catch {}
+                        try {
+                          const allLoadedMovies = pagesData
+                            .sort((a, b) => a.page - b.page)
+                            .flatMap(p => extractMoviesFromData(p.data));
+                          const ids = allLoadedMovies.map((m: any) => String(m.id));
+                          const index = ids.indexOf(String(selectedMovie.id));
+                          // Pass current page and total pages/url info if needed
+                          const ctx = { 
+                            origin: "grid", 
+                            ids, 
+                            index, 
+                            timestamp: Date.now(),
+                            listUrl: url,
+                            currentPage: page,
+                            totalLoaded: allLoadedMovies.length
+                          };
+                          localStorage.setItem("__navContext", JSON.stringify(ctx));
+                          const href = `${location.pathname}${location.search}`;
+                          localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                        } catch {}
                     }}
                     className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                   >
@@ -2201,14 +2213,25 @@ export function MovieGrid({
                                 onHeroInfoOverrideChange?.(null);
                               } catch {}
                             }
-                            try {
-                              const ids = (movies || []).map((m: any) => String(m.id));
-                              const index = ids.indexOf(String(selectedMovie!.id));
-                              const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
-                              localStorage.setItem("__navContext", JSON.stringify(ctx));
-                              const href = `${location.pathname}${location.search}`;
-                              localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
-                            } catch {}
+                          try {
+                            const allLoadedMovies = pagesData
+                              .sort((a, b) => a.page - b.page)
+                              .flatMap(p => extractMoviesFromData(p.data));
+                            const ids = allLoadedMovies.map((m: any) => String(m.id));
+                            const index = ids.indexOf(String(selectedMovie!.id));
+                            const ctx = { 
+                              origin: "grid", 
+                              ids, 
+                              index, 
+                              timestamp: Date.now(),
+                              listUrl: url,
+                              currentPage: page,
+                              totalLoaded: allLoadedMovies.length
+                            };
+                            localStorage.setItem("__navContext", JSON.stringify(ctx));
+                            const href = `${location.pathname}${location.search}`;
+                            localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                          } catch {}
                           }}
                           className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                         >
@@ -2290,9 +2313,20 @@ export function MovieGrid({
                         } catch {}
                       }
                       try {
-                        const ids = (movies || []).map((m: any) => String(m.id));
+                        const allLoadedMovies = pagesData
+                          .sort((a, b) => a.page - b.page)
+                          .flatMap(p => extractMoviesFromData(p.data));
+                        const ids = allLoadedMovies.map((m: any) => String(m.id));
                         const index = ids.indexOf(String(movie.id));
-                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                        const ctx = { 
+                          origin: "grid", 
+                          ids, 
+                          index, 
+                          timestamp: Date.now(),
+                          listUrl: url,
+                          currentPage: page,
+                          totalLoaded: allLoadedMovies.length
+                        };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));
                         const href = `${location.pathname}${location.search}`;
                         localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
@@ -2383,9 +2417,20 @@ export function MovieGrid({
                                 e.preventDefault();
                               }
                               try {
-                                const ids = (movies || []).map((m: any) => String(m.id));
+                                const allLoadedMovies = pagesData
+                                  .sort((a, b) => a.page - b.page)
+                                  .flatMap(p => extractMoviesFromData(p.data));
+                                const ids = allLoadedMovies.map((m: any) => String(m.id));
                                 const index = ids.indexOf(String(movie.id));
-                                const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                                const ctx = { 
+                                  origin: "grid", 
+                                  ids, 
+                                  index, 
+                                  timestamp: Date.now(),
+                                  listUrl: url,
+                                  currentPage: page,
+                                  totalLoaded: allLoadedMovies.length
+                                };
                                 localStorage.setItem("__navContext", JSON.stringify(ctx));
                                 const href = `${location.pathname}${location.search}`;
                                 localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
@@ -2476,11 +2521,22 @@ export function MovieGrid({
                             className="block"
                             onClick={() => {
                               try {
-                                const ids = (movies || []).map((m: any) => String(m.id));
-                                const index = ids.indexOf(String(movie.id));
-                                const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
-                                localStorage.setItem("__navContext", JSON.stringify(ctx));
-                              } catch {}
+                              const allLoadedMovies = pagesData
+                                .sort((a, b) => a.page - b.page)
+                                .flatMap(p => extractMoviesFromData(p.data));
+                              const ids = allLoadedMovies.map((m: any) => String(m.id));
+                              const index = ids.indexOf(String(movie.id));
+                              const ctx = { 
+                                origin: "grid", 
+                                ids, 
+                                index, 
+                                timestamp: Date.now(),
+                                listUrl: url,
+                                currentPage: page,
+                                totalLoaded: allLoadedMovies.length
+                              };
+                              localStorage.setItem("__navContext", JSON.stringify(ctx));
+                            } catch {}
                             }}
                           >
                             <Skeleton className="absolute inset-0 w-full h-full" />
@@ -2495,9 +2551,20 @@ export function MovieGrid({
                           className="block"
                           onClick={() => {
                             try {
-                              const ids = (movies || []).map((m: any) => String(m.id));
+                              const allLoadedMovies = pagesData
+                                .sort((a, b) => a.page - b.page)
+                                .flatMap(p => extractMoviesFromData(p.data));
+                              const ids = allLoadedMovies.map((m: any) => String(m.id));
                               const index = ids.indexOf(String(movie.id));
-                              const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                              const ctx = { 
+                                origin: "grid", 
+                                ids, 
+                                index, 
+                                timestamp: Date.now(),
+                                listUrl: url,
+                                currentPage: page,
+                                totalLoaded: allLoadedMovies.length
+                              };
                               localStorage.setItem("__navContext", JSON.stringify(ctx));
                               const href = `${location.pathname}${location.search}`;
                               localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
@@ -2892,9 +2959,20 @@ export function MovieGrid({
                         try {
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
-                        const ids = (movies || []).map((m: any) => String(m.id));
+                        const allLoadedMovies = pagesData
+                          .sort((a, b) => a.page - b.page)
+                          .flatMap(p => extractMoviesFromData(p.data));
+                        const ids = allLoadedMovies.map((m: any) => String(m.id));
                         const index = ids.indexOf(String(selectedMovie.id));
-                        const ctx = { origin: "grid", ids, index, timestamp: Date.now() };
+                        const ctx = { 
+                          origin: "grid", 
+                          ids, 
+                          index, 
+                          timestamp: Date.now(),
+                          listUrl: url,
+                          currentPage: page,
+                          totalLoaded: allLoadedMovies.length
+                        };
                         localStorage.setItem("__navContext", JSON.stringify(ctx));
                         const href = `${location.pathname}${location.search}`;
                         localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));

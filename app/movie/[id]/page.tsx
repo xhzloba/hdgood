@@ -75,6 +75,68 @@ const fetcher = async (
   throw lastError || new Error("Failed to fetch");
 };
 
+// Cache for movie data to enable instant transitions
+const movieDataCache: Record<string, any> =
+  (globalThis as any).__movieDataCache ||
+  ((globalThis as any).__movieDataCache = {});
+
+const fetchMovieFullData = async (id: string) => {
+  // Return cached data if available
+  if (movieDataCache[id]) {
+    return movieDataCache[id];
+  }
+
+  const viewStart = Date.now();
+  const viewPromise = fetcher(
+    `https://api.vokino.pro/v2/view/${id}`,
+    5000,
+    2
+  ).catch((e) => {
+    console.error(
+      `❌ View API error: ${Date.now() - viewStart}ms -`,
+      e instanceof Error ? e.message : String(e)
+    );
+    throw e;
+  });
+
+  const timelineStart = Date.now();
+  const timelinePromise = fetcher(
+    `https://api.vokino.tv/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+    3000,
+    2
+  ).catch((e) => {
+    console.warn(
+      `⚠️ Timeline API error: ${Date.now() - timelineStart}ms -`,
+      e instanceof Error ? e.message : String(e)
+    );
+    return null;
+  });
+
+  const [movieData, timelineData] = await Promise.all([
+    viewPromise,
+    timelinePromise,
+  ]);
+
+  if (!movieData || typeof movieData !== "object") {
+    throw new Error("Invalid data format received from API");
+  }
+
+  const kpId =
+    timelineData?.kp_id ||
+    timelineData?.data?.kp_id ||
+    movieData?.kp_id ||
+    movieData?.details?.kp_id ||
+    movieData?.details?.kinopoisk_id;
+
+  const result = { movieData, timelineData, kpId };
+
+  // Cache the result
+  movieDataCache[id] = result;
+
+  return result;
+};
+
+
 // Функция для franchise API с retry логикой для надежности
 const fetchFranchise = async (
   kpId: number,
@@ -138,6 +200,46 @@ const fetchFranchise = async (
   return null;
 };
 
+function extractMoviesFromData(data: any): any[] {
+  let movies: any[] = [];
+  if (data?.type === "list" && data?.channels) {
+    movies = data.channels.map((item: any) => ({
+      id: item.details?.id || item.id,
+      title: item.details?.name || item.title,
+      poster: item.details?.poster || item.poster,
+      year: item.details?.released || item.year,
+      rating: item.details?.rating_kp || item.rating,
+      country: item.details?.country || item.country,
+      quality: item.details?.quality || item.quality,
+      genre: item.details?.genre || item.genre,
+      tags: item.details?.tags || item.tags,
+    }));
+  } else if (data?.type === "category" && data?.channels) {
+    movies = data.channels.map((item: any, index: number) => ({
+      id: item.playlist_url || index,
+      title: item.title,
+      poster: null,
+      year: null,
+    }));
+  } else if (data?.channels) {
+    movies = data.channels;
+  } else if (Array.isArray(data)) {
+    movies = data;
+  }
+  return movies;
+}
+
+function makePageUrl(base: string, page: number) {
+  try {
+    const u = new URL(base);
+    u.searchParams.set("page", String(page));
+    return u.toString();
+  } catch {
+    const hasQuery = base.includes("?");
+    return `${base}${hasQuery ? "&" : "?"}page=${page}`;
+  }
+}
+
 import { CastList } from "@/components/cast-list";
 import {
   TrailerPlayer,
@@ -190,6 +292,9 @@ export default function MoviePage({
   const [failedActorImages, setFailedActorImages] = useState<Set<string>>(new Set());
   const playerRef = useRef<any>(null);
   const [origin, setOrigin] = useState("");
+  const [listUrl, setListUrl] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     setOrigin(typeof window !== "undefined" ? window.location.origin : "");
@@ -334,11 +439,106 @@ export default function MoviePage({
       setNavIds(ids);
       const idx = ids.indexOf(String(id));
       setNavIndex(idx >= 0 ? idx : null);
+
+      if (ctx?.listUrl) setListUrl(ctx.listUrl);
+      if (ctx?.currentPage) setCurrentPage(Number(ctx.currentPage) || 1);
     } catch {
       setNavIds([]);
       setNavIndex(null);
     }
   }, [id]);
+
+  // Dynamic fetching of next page when reaching the end
+  useEffect(() => {
+    if (!navIds.length || navIndex === null || !listUrl || isLoadingMore) return;
+    
+    // If we are near the end (e.g., within 5 items)
+    if (navIndex >= navIds.length - 5) {
+      setIsLoadingMore(true);
+      const nextPage = currentPage + 1;
+      const nextUrl = makePageUrl(listUrl, nextPage);
+      
+      console.log(`Fetching next page: ${nextPage}`);
+      
+      fetcher(nextUrl)
+        .then(data => {
+          const newMovies = extractMoviesFromData(data);
+          const newIds = newMovies.map((m: any) => String(m.id));
+          
+          if (newIds.length > 0) {
+             // Filter out duplicates just in case
+             const uniqueNewIds = newIds.filter((nid: string) => !navIds.includes(nid));
+             
+             if (uniqueNewIds.length > 0) {
+               const updatedIds = [...navIds, ...uniqueNewIds];
+               setNavIds(updatedIds);
+               setCurrentPage(nextPage);
+               
+               // Update localStorage so if user refreshes or comes back, they have the new list
+               try {
+                  const raw = localStorage.getItem("__navContext");
+                  if (raw) {
+                    const ctx = JSON.parse(raw);
+                    ctx.ids = updatedIds;
+                    ctx.currentPage = nextPage;
+                    ctx.totalLoaded = updatedIds.length;
+                    localStorage.setItem("__navContext", JSON.stringify(ctx));
+                  }
+               } catch (e) {
+                 console.error("Failed to update nav context", e);
+               }
+             } else {
+               // Even if no *new* unique IDs (e.g. overlap), we should advance the page
+               // so we don't get stuck fetching the same page forever.
+               console.warn(`Page ${nextPage} returned data but no new unique IDs.`);
+               setCurrentPage(nextPage);
+               
+                // Update currentPage in localStorage too
+               try {
+                  const raw = localStorage.getItem("__navContext");
+                  if (raw) {
+                    const ctx = JSON.parse(raw);
+                    ctx.currentPage = nextPage;
+                    localStorage.setItem("__navContext", JSON.stringify(ctx));
+                  }
+               } catch (e) {}
+             }
+           } else {
+             console.log(`Page ${nextPage} returned no movies.`);
+           }
+        })
+        .catch(err => {
+          console.error("Failed to load more movies", err);
+        })
+        .finally(() => {
+          setIsLoadingMore(false);
+        });
+    }
+  }, [navIndex, navIds, listUrl, currentPage, isLoadingMore]);
+
+  // Prefetch adjacent movies for smoother transition
+  useEffect(() => {
+    if (!navIds.length || navIndex === null) return;
+
+    const prefetch = async (targetId: string) => {
+      if (movieDataCache[targetId]) return; // Already cached
+      try {
+        await fetchMovieFullData(targetId);
+        console.log(`🚀 Prefetched data for ${targetId}`);
+      } catch (e) {
+        // ignore errors during prefetch
+      }
+    };
+
+    // Prefetch next
+    if (navIndex < navIds.length - 1) {
+      prefetch(navIds[navIndex + 1]);
+    }
+    // Prefetch prev
+    if (navIndex > 0) {
+      prefetch(navIds[navIndex - 1]);
+    }
+  }, [navIds, navIndex]);
 
   useEffect(() => {
     try {
@@ -628,90 +828,49 @@ export default function MoviePage({
     currentIdRef.current = id; // Сохраняем текущий id
 
     const loadData = async () => {
-      console.log(`🔄 Загрузка фильма ${id} - loading=true`);
-      setLoading(true);
-      setIsBackdropLoaded(false);
+      console.log(`🔄 Загрузка фильма ${id}`);
+      
+      // Reset UI states for new movie
+      setActiveTab("overview");
+      setOpenSeasons(new Set([1]));
+      setPlayingEpisode(null);
+      setIsTrailerPlaying(false);
+
+      
+      // Check cache first for instant transition
+      const cached = movieDataCache[id];
+      if (cached) {
+        console.log(`⚡ Использован кеш для ${id}`);
+        setData(cached.movieData);
+        setLoading(false);
+        // Reset backdrop to trigger animation
+        setIsBackdropLoaded(false);
+      } else {
+        setLoading(true);
+        setIsBackdropLoaded(false);
+      }
+
       setError(null);
       setErrorDetails("");
       // Сбрасываем franchise данные при загрузке нового фильма
       setFranchiseData(null);
 
       try {
-        const startTime = Date.now();
-
-        // Запускаем view и timeline параллельно
-        console.log("📡 View API запущен...");
-        const viewStart = Date.now();
-        const viewPromise = fetcher(
-          `https://api.vokino.pro/v2/view/${id}`,
-          5000,
-          2
-        )
-          .then((data) => {
-            console.log(`✅ View API: ${Date.now() - viewStart}мс`);
-            return data;
-          })
-          .catch((e) => {
-            console.error(
-              `❌ View API ошибка: ${Date.now() - viewStart}мс -`,
-              e.message
-            );
-            throw e;
-          });
-
-        console.log("📡 Timeline API запущен...");
-        const timelineStart = Date.now();
-        const timelinePromise = fetcher(
-          `https://api.vokino.tv/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
-          3000,
-          2
-        )
-          .then((data) => {
-            console.log(`✅ Timeline API: ${Date.now() - timelineStart}мс`);
-            return data;
-          })
-          .catch((e) => {
-            console.warn(
-              `⚠️ Timeline API ошибка: ${Date.now() - timelineStart}мс -`,
-              e.message
-            );
-            return null;
-          });
-
-        // Ждем view и timeline
-        const [movieData, timelineData] = await Promise.all([
-          viewPromise,
-          timelinePromise,
-        ]);
+        let result = cached;
+        
+        if (!result) {
+           result = await fetchMovieFullData(id);
+        }
 
         if (isCancelled) return;
 
-        if (!movieData || typeof movieData !== "object") {
-          throw new Error("Invalid data format received from API");
+        // Если данные не из кеша, обновляем стейт
+        if (!cached) {
+          setData(result.movieData);
+          setLoading(false);
         }
-
-        // Получаем kp_id для franchise
-        const kpId =
-          timelineData?.kp_id ||
-          timelineData?.data?.kp_id ||
-          movieData?.kp_id ||
-          movieData?.details?.kp_id ||
-          movieData?.details?.kinopoisk_id;
-
-        // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Не ждем franchise - показываем страницу сразу!
-        // Franchise загрузится асинхронно и обновится когда готов (как в hdbox)
-        if (isCancelled) return;
-
-        const totalTime = Date.now() - startTime;
-        if (totalTime > 2000) {
-          console.warn(
-            `⚠️ Медленная загрузка: ${(totalTime / 1000).toFixed(1)}с`
-          );
-        }
-
-        // Показываем страницу сразу с основными данными
-        setData(movieData);
-        setLoading(false); // Скрываем loader сразу! (не ждем franchise)
+        
+        const { kpId } = result;
 
         // Загружаем franchise асинхронно (не блокируем отображение страницы)
         if (kpId) {
@@ -727,39 +886,20 @@ export default function MoviePage({
 
               // Проверяем что мы все еще на той же странице (id не изменился)
               if (currentIdRef.current !== currentIdForFranchise) {
-                console.log(
-                  `⏭️ Franchise пропущен - id изменился (${currentIdRef.current} !== ${currentIdForFranchise})`
-                );
                 return;
               }
 
-              console.log(
-                `✅ Franchise API (попытка ${attemptNumber}): ${
-                  Date.now() - franchiseStart
-                }мс`
-              );
-
               if (data) {
                 setFranchiseData(data);
-                console.log(
-                  `✅ Franchise данные установлены для id: ${currentIdForFranchise}`
-                );
               } else {
                 // Если данные не получены и это первая попытка - пробуем еще раз через 2 секунды
                 if (attemptNumber === 1) {
-                  console.log(
-                    `⏳ Franchise не загрузился, повторная попытка через 2 сек...`
-                  );
                   setTimeout(() => {
                     // Проверяем что мы все еще на той же странице перед повторной попыткой
                     if (currentIdRef.current === currentIdForFranchise) {
                       loadFranchise(2);
                     }
                   }, 2000);
-                } else {
-                  console.warn(
-                    `⚠️ Franchise API не удалось загрузить после ${attemptNumber} попыток для kp_id: ${kpId}`
-                  );
                 }
               }
             } catch (e) {
@@ -770,21 +910,11 @@ export default function MoviePage({
 
               // Если это первая попытка - пробуем еще раз через 2 секунды
               if (attemptNumber === 1) {
-                console.log(
-                  `⏳ Franchise ошибка (попытка ${attemptNumber}), повтор через 2 сек...`
-                );
                 setTimeout(() => {
                   if (currentIdRef.current === currentIdForFranchise) {
                     loadFranchise(2);
                   }
                 }, 2000);
-              } else {
-                console.warn(
-                  `⚠️ Franchise API ошибка после ${attemptNumber} попыток: ${
-                    Date.now() - franchiseStart
-                  }мс -`,
-                  e
-                );
               }
             }
           };
@@ -792,16 +922,8 @@ export default function MoviePage({
           // Запускаем первую попытку
           loadFranchise(1);
         } else {
-          console.warn(
-            `⚠️ kp_id не найден - franchise не будет загружен. Timeline: ${
-              timelineData?.kp_id || "нет"
-            }, Movie: ${movieData?.details?.kinopoisk_id || "нет"}`
-          );
+          console.warn(`⚠️ kp_id не найден - franchise не будет загружен.`);
         }
-
-        console.log(
-          `✅ Загрузка фильма ${id} завершена - loading=false (cancelled: ${isCancelled})`
-        );
       } catch (e) {
         if (!isCancelled) {
           setError(e);
@@ -1152,7 +1274,32 @@ export default function MoviePage({
   const backdropUrl = (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative overflow-x-hidden">
+    <>
+    {/* Navigation Arrows - Outside animated container to keep position stable */}
+    {navIds.length > 0 && navIndex !== null && (
+      <>
+        {navIndex > 0 && (
+          <Link
+            href={`/movie/${navIds[navIndex - 1]}`}
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+            title="Предыдущий"
+          >
+            <IconChevronLeft size={32} stroke={1.5} />
+          </Link>
+        )}
+        {navIndex < navIds.length - 1 && (
+          <Link
+            href={`/movie/${navIds[navIndex + 1]}`}
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+            title="Следующий"
+          >
+            <IconChevronRight size={32} stroke={1.5} />
+          </Link>
+        )}
+      </>
+    )}
+
+    <div key={id} className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative overflow-x-hidden animate-in fade-in duration-700">
       <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
           <Link
             href={returnHref ?? "/"}
@@ -1201,29 +1348,6 @@ export default function MoviePage({
          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent z-10" />
          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
          
-         {/* Navigation Arrows */}
-         {navIds.length > 0 && navIndex !== null && (
-            <>
-              {navIndex > 0 && (
-                <Link
-                  href={`/movie/${navIds[navIndex - 1]}`}
-                  className="fixed left-4 top-[40%] -translate-y-1/2 z-50 p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
-                  title="Предыдущий"
-                >
-                  <IconChevronLeft size={32} stroke={1.5} />
-                </Link>
-              )}
-              {navIndex < navIds.length - 1 && (
-                <Link
-                  href={`/movie/${navIds[navIndex + 1]}`}
-                  className="fixed right-4 top-[40%] -translate-y-1/2 z-50 p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
-                  title="Следующий"
-                >
-                  <IconChevronRight size={32} stroke={1.5} />
-                </Link>
-              )}
-            </>
-         )}
          
         {isTrailerPlaying && currentTrailerUrl ? (
            <>
@@ -1980,5 +2104,6 @@ export default function MoviePage({
         </div>
       )}
     </div>
+    </>
   );
 }
