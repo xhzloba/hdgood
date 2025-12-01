@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Film, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PlayerSelector } from "@/components/player-selector";
@@ -1595,20 +1595,34 @@ export default function MoviePage({
                  <Info size={20} className="md:w-6 md:h-6" /> 
                  <span className="text-base md:text-lg">Подробнее</span>
                </button>
-               <div className="flex gap-3 w-full md:w-auto justify-center md:justify-start">
-                 <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
-                    <Plus size={20} />
-                 </button>
-                 {hasTrailers && (
-                    <button 
-                      onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
-                      className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${isTrailerPlaying ? 'border-white text-white bg-white/20' : 'border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10'}`}
-                      title={isTrailerPlaying ? "Остановить трейлер" : "Смотреть трейлер"}
-                    >
-                       {isTrailerPlaying ? <X size={20} /> : <Film size={20} />}
-                    </button>
-                 )}
-               </div>
+               <div className="flex gap-3 w-full md:w-auto justify-start">
+                <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
+                   <Plus size={20} />
+                </button>
+                <button 
+                  onClick={handleShare}
+                  className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" 
+                  title="Поделиться"
+                >
+                   <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M25.5 5.745L30.885 11.115L33 9L24 0L15 9L17.115 11.115L22.5 5.745V27H25.5V5.745Z" fill="currentColor"></path>
+                     <path d="M5 17V40C5 40.7956 5.31607 41.5587 5.87868 42.1213C6.44129 42.6839 7.20435 43 8 43H40C40.7956 43 41.5587 42.6839 42.1213 42.1213C42.6839 41.5587 43 40.7957 43 40V17C43 16.2043 42.6839 15.4413 42.1213 14.8787C41.5587 14.3161 40.7957 14 40 14H35.5V17H40V40H8L8 17H12.5V14L8 14C7.20435 14 6.44129 14.3161 5.87868 14.8787C5.31607 15.4413 5 16.2043 5 17Z" fill="currentColor"></path>
+                   </svg>
+                </button>
+                {hasTrailers && (
+                   <button 
+                     onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
+                     className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${isTrailerPlaying ? 'border-white text-white bg-white/20' : 'border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10'}`}
+                     title={isTrailerPlaying ? "Остановить трейлер" : "Смотреть трейлер"}
+                   >
+                      {isTrailerPlaying ? <X size={20} /> : (
+                        <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                           <path clipRule="evenodd" d="M42 24C42 31.2328 38.3435 37.6115 32.7782 41.3886C33.1935 41.2738 33.602 41.1447 34 41C45.1693 36.9384 47 32 47 32L48 35C48 35 44.3832 40.459 34.5 43.5C28 45.5 21 45 21 45C9.40202 45 0 35.598 0 24C0 12.402 9.40202 3 21 3C32.598 3 42 12.402 42 24ZM21 19C24.3137 19 27 16.3137 27 13C27 9.68629 24.3137 7 21 7C17.6863 7 15 9.68629 15 13C15 16.3137 17.6863 19 21 19ZM10 30C13.3137 30 16 27.3137 16 24C16 20.6863 13.3137 18 10 18C6.68629 18 4 20.6863 4 24C4 27.3137 6.68629 30 10 30ZM38 24C38 27.3137 35.3137 30 32 30C28.6863 30 26 27.3137 26 24C26 20.6863 28.6863 18 32 18C35.3137 18 38 20.6863 38 24ZM21 26C22.1046 26 23 25.1046 23 24C23 22.8954 22.1046 22 21 22C19.8954 22 19 22.8954 19 24C19 25.1046 19.8954 26 21 26ZM27 35C27 38.3137 24.3137 41 21 41C17.6863 41 15 38.3137 15 35C15 31.6863 17.6863 29 21 29C24.3137 29 27 31.6863 27 35Z" fill="currentColor" fillRule="evenodd"></path>
+                        </svg>
+                     )}
+                   </button>
+                )}
+              </div>
             </div>
          </div>
 
