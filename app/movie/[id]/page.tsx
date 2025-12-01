@@ -1599,16 +1599,6 @@ export default function MoviePage({
                 <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
                    <Plus size={20} />
                 </button>
-                <button 
-                  onClick={handleShare}
-                  className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" 
-                  title="Поделиться"
-                >
-                   <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M25.5 5.745L30.885 11.115L33 9L24 0L15 9L17.115 11.115L22.5 5.745V27H25.5V5.745Z" fill="currentColor"></path>
-                     <path d="M5 17V40C5 40.7956 5.31607 41.5587 5.87868 42.1213C6.44129 42.6839 7.20435 43 8 43H40C40.7956 43 41.5587 42.6839 42.1213 42.1213C42.6839 41.5587 43 40.7957 43 40V17C43 16.2043 42.6839 15.4413 42.1213 14.8787C41.5587 14.3161 40.7957 14 40 14H35.5V17H40V40H8L8 17H12.5V14L8 14C7.20435 14 6.44129 14.3161 5.87868 14.8787C5.31607 15.4413 5 16.2043 5 17Z" fill="currentColor"></path>
-                   </svg>
-                </button>
                 {hasTrailers && (
                    <button 
                      onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
@@ -1622,6 +1612,16 @@ export default function MoviePage({
                      )}
                    </button>
                 )}
+                <button 
+                  onClick={handleShare}
+                  className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" 
+                  title="Поделиться"
+                >
+                   <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M25.5 5.745L30.885 11.115L33 9L24 0L15 9L17.115 11.115L22.5 5.745V27H25.5V5.745Z" fill="currentColor"></path>
+                     <path d="M5 17V40C5 40.7956 5.31607 41.5587 5.87868 42.1213C6.44129 42.6839 7.20435 43 8 43H40C40.7956 43 41.5587 42.6839 42.1213 42.1213C42.6839 41.5587 43 40.7957 43 40V17C43 16.2043 42.6839 15.4413 42.1213 14.8787C41.5587 14.3161 40.7957 14 40 14H35.5V17H40V40H8L8 17H12.5V14L8 14C7.20435 14 6.44129 14.3161 5.87868 14.8787C5.31607 15.4413 5 16.2043 5 17Z" fill="currentColor"></path>
+                   </svg>
+                </button>
               </div>
             </div>
          </div>
