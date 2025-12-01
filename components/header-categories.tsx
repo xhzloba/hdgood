@@ -68,9 +68,49 @@ function CategoryIcon({ name, className = "" }: { name: string; className?: stri
   }
 }
 
+type HeaderTabProps = {
+  href: string
+  isActive: boolean
+  icon: React.ElementType
+  label: string
+  onClick: (href: string, e: any) => void
+}
+
+function HeaderTab({ href, isActive, icon: Icon, label, onClick }: HeaderTabProps) {
+  return (
+    <Link
+      href={href}
+      aria-current={isActive ? "page" : undefined}
+      onClick={(e) => onClick(href, e)}
+      className={[
+        "relative z-10 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-[6px] text-base transition-colors",
+        isActive 
+          ? "text-black duration-300 delay-100" 
+          : "text-zinc-300/90 hover:text-white duration-200",
+      ].join(" ")}
+    >
+      <Icon className="w-5 h-5 shrink-0" size={20} stroke={1.7} />
+      <span className="grid place-items-center">
+        <span className="font-bold opacity-0 col-start-1 row-start-1 pointer-events-none select-none">
+          {label}
+        </span>
+        <span className={`col-start-1 row-start-1 ${isActive ? "font-bold" : "font-medium"}`}>
+          {label}
+        </span>
+      </span>
+    </Link>
+  )
+}
+
 export function HeaderCategories({ variant = "horizontal", className, onSelect, activeIndex: activeIndexProp, onActiveIndexChange }: HeaderCategoriesProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const [optimisticPath, setOptimisticPath] = useState(pathname)
+
+  useEffect(() => {
+    setOptimisticPath(pathname)
+  }, [pathname])
+
   // Универсальная инициализация активной вкладки по route категории
   const indexFromRoute = CATEGORIES.findIndex((c) => c.route && pathname.startsWith(c.route))
   const [stateActiveIndex, setStateActiveIndex] = useState<number | null>(() => {
@@ -79,11 +119,11 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     return null
   })
   const activeIndex = activeIndexProp ?? stateActiveIndex
-  const isHomeActive = pathname === "/" && activeIndex === null
-  const isSearchActive = pathname.startsWith("/search")
-  const isMoviesTabActive = pathname.startsWith("/movies")
-  const isSerialsTabActive = pathname.startsWith("/serials")
-  const isUhdTabActive = pathname.startsWith("/uhd") || pathname.startsWith("/4k")
+  const isHomeActive = optimisticPath === "/" && activeIndex === null
+  const isSearchActive = optimisticPath.startsWith("/search")
+  const isMoviesTabActive = optimisticPath.startsWith("/movies")
+  const isSerialsTabActive = optimisticPath.startsWith("/serials")
+  const isUhdTabActive = optimisticPath.startsWith("/uhd") || optimisticPath.startsWith("/4k")
 
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false })
@@ -124,6 +164,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
 
   const onTabClick = (href: string, e: any) => {
     e.preventDefault()
+    setOptimisticPath(href)
     const c = containerRef.current
     if (!c) {
       NProgress.set(0.2)
@@ -679,115 +720,89 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         </div>
       ) : (
         <div className={`bg-transparent ${className ?? ""}`.trim()}>
-          <div className="relative flex items-center gap-3">
-
-            {/* Контейнер табов */}
-            <div className="relative">
-              {/* Пилюльный таб в стиле Apple TV: Главная / Фильмы / Сериалы / 4K UHD / Поиск */}
+          <div className="relative flex items-center justify-center gap-3">
+            {/* Единый контейнер для табов и инструментов */}
+            <div className="inline-flex items-center gap-3 p-1 bg-zinc-900/50 rounded-[12px] backdrop-blur-sm border border-white/5 shadow-lg shadow-black/20">
+              
+              {/* Группа табов навигации */}
               <div
                 ref={containerRef}
-                className="inline-flex items-center rounded-full bg-zinc-900/50 pl-1.5 pr-1.5 py-0.5 relative"
+                className="inline-flex items-center gap-2 rounded-[8px] pl-1.5 pr-1.5 py-1 relative"
               >
                 {indicator.visible && (
                   <div
-                    className="absolute left-0 top-0 z-0 rounded-full pointer-events-none"
+                    className="absolute left-0 top-0 z-0 rounded-[6px] pointer-events-none"
                     style={{
                       transform: `translate3d(${indicator.left}px, ${indicator.top}px, 0)`,
                       width: indicator.width,
                       height: indicator.height,
-                      backgroundColor: "rgb(var(--ui-accent-rgb))",
-                      boxShadow: "-2px 8px 7px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(var(--ui-accent-rgb), 0.4)",
+                      backgroundColor: "#ffffff",
+                      boxShadow: "-2px 8px 7px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.1)",
                       willChange: "transform,width,height",
                     }}
                   />
                 )}
                 {/* Главная */}
-                <Link
+                <HeaderTab
                   href="/"
-                  aria-current={isHomeActive ? "page" : undefined}
-                  onClick={(e) => {
-                    onTabClick("/", e)
-                  }}
-                  className={[
-                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                    isHomeActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                  ].join(" ")}
-                >
-                  <IconHome className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                  <span>Главная</span>
-                </Link>
+                  isActive={isHomeActive}
+                  icon={IconHome}
+                  label="Главная"
+                  onClick={onTabClick}
+                />
 
                 {/* Фильмы */}
-                <Link
+                <HeaderTab
                   href="/movies"
-                  aria-current={isMoviesTabActive ? "page" : undefined}
-                  onClick={(e) => onTabClick("/movies", e)}
-                  className={[
-                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                    isMoviesTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                  ].join(" ")}
-                >
-                  <IconMovie className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                  <span>Фильмы</span>
-                </Link>
+                  isActive={isMoviesTabActive}
+                  icon={IconMovie}
+                  label="Фильмы"
+                  onClick={onTabClick}
+                />
 
                 {/* Сериалы */}
-                <Link
+                <HeaderTab
                   href="/serials"
-                  aria-current={isSerialsTabActive ? "page" : undefined}
-                  onClick={(e) => onTabClick("/serials", e)}
-                  className={[
-                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                    isSerialsTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                  ].join(" ")}
-                >
-                  <IconDeviceTv className="w-4 h-4 shrink-0" size={16} stroke={1.6} />
-                  <span>Сериалы</span>
-                </Link>
+                  isActive={isSerialsTabActive}
+                  icon={IconDeviceTv}
+                  label="Сериалы"
+                  onClick={onTabClick}
+                />
 
                 {/* 4K UHD */}
-                <Link
+                <HeaderTab
                   href="/uhd"
-                  aria-current={isUhdTabActive ? "page" : undefined}
-                  onClick={(e) => onTabClick("/uhd", e)}
-                  className={[
-                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                    isUhdTabActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                  ].join(" ")}
-                >
-                  <IconBadge4k className="w-5 h-5 shrink-0" size={18} stroke={1.7} />
-                  <span>4K UHD</span>
-                </Link>
+                  isActive={isUhdTabActive}
+                  icon={IconBadge4k}
+                  label="4K UHD"
+                  onClick={onTabClick}
+                />
 
                 {/* Поиск как последний таб */}
-                <Link
+                <HeaderTab
                   href="/search"
-                  aria-current={isSearchActive ? "page" : undefined}
-                  onClick={(e) => onTabClick("/search", e)}
-                  className={[
-                    "relative z-10 inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200",
-                    isSearchActive ? "text-white" : "text-zinc-300/90 hover:text-white",
-                  ].join(" ")}
-                >
-                  <IconSearch className="w-4 h-4 shrink-0" size={16} stroke={1.7} />
-                  <span>Поиск</span>
-                </Link>
+                  isActive={isSearchActive}
+                  icon={IconSearch}
+                  label="Поиск"
+                  onClick={onTabClick}
+                />
               </div>
-            </div>
 
-            {/* Контейнер иконок справа — стиль как у табов, без обводок и фона на кнопках */}
-            <div className="hidden md:flex items-center ml-auto">
-              <div className="inline-flex items-center rounded-full bg-zinc-900/50 pl-1.5 pr-1.5 py-0.5">
+              {/* Разделитель */}
+              <div className="w-px h-8 bg-zinc-800/50 mx-1" />
+
+              {/* Инструменты (Колокольчик, Тема, Фулскрин) */}
+              <div className="flex items-center gap-1 pr-2">
                 <Popover open={bellOpen} onOpenChange={setBellOpen}>
                   <PopoverTrigger asChild>
                     <button
                       type="button"
                       aria-label="Премьеры"
-                      className="relative inline-flex items-center justify-center h-8 w-8 rounded-full text-zinc-300/90 hover:text-white transition-colors"
+                      className="relative inline-flex items-center justify-center h-10 w-10 rounded-[8px] text-zinc-300/90 hover:text-white hover:bg-white/10 transition-all"
                     >
-                      <IconBell className="w-4 h-4" size={16} stroke={1.7} />
+                      <IconBell className="w-5 h-5" size={20} stroke={1.7} />
                       {hasPremiereUpdates && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-zinc-900" />
+                        <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-zinc-900" />
                       )}
                     </button>
                   </PopoverTrigger>
@@ -918,7 +933,7 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                     <button
                       type="button"
                       aria-label="Тема акцента"
-                      className="inline-flex items-center justify-center h-8 w-8 rounded-full text-zinc-300/90 hover:text-white transition-colors"
+                      className="inline-flex items-center justify-center h-10 w-10 rounded-[8px] text-zinc-300/90 hover:text-white hover:bg-white/10 transition-all"
                     >
                       <span
                         style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
@@ -948,12 +963,12 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                   type="button"
                   aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
                   onClick={toggleFullscreen}
-                  className="inline-flex items-center justify-center h-8 w-8 rounded-full text-zinc-300/90 hover:text-white transition-colors"
+                  className="inline-flex items-center justify-center h-10 w-10 rounded-[8px] text-zinc-300/90 hover:text-white hover:bg-white/10 transition-all"
                 >
                   {isFullscreen ? (
-                    <IconMinimize className="w-4 h-4" size={16} stroke={1.7} />
+                    <IconMinimize className="w-5 h-5" size={20} stroke={1.7} />
                   ) : (
-                    <IconMaximize className="w-4 h-4" size={16} stroke={1.7} />
+                    <IconMaximize className="w-5 h-5" size={20} stroke={1.7} />
                   )}
                 </button>
               </div>
