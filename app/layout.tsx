@@ -7,7 +7,6 @@ import { ShortcutNavigator } from "@/components/shortcut-navigator";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Toaster } from "@/components/ui/toaster";
 import { CursorPopcorn } from "@/components/cursor-popcorn";
-import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -82,7 +81,6 @@ export default function RootLayout({
         {/* Глобальный хоткей: Space+K для открытия /admin */}
         <ShortcutNavigator />
         {children}
-        <Footer />
         <MobileBottomNav />
         <Toaster />
         <Analytics />
