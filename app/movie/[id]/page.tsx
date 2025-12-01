@@ -274,6 +274,7 @@ export default function MoviePage({
   } | null>(null); // Для inline iframe
   const [detailsOpen, setDetailsOpen] = useState(true); // Десктоп: сворачиваем «О фильме/О сериале», «В ролях», «Актёры дубляжа»
   const [overrideData, setOverrideData] = useState<any>(null);
+  const [isOverrideLoading, setIsOverrideLoading] = useState(false);
   const [shareFiles, setShareFiles] = useState<File[] | undefined>(undefined);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [posterError, setPosterError] = useState(false);
@@ -787,10 +788,13 @@ export default function MoviePage({
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
+    
+    setIsOverrideLoading(true);
 
     // Мгновенно подставляем override из кеша, если уже загружали его для этого id
     if (!cancelled && movieOverrideCache[id] !== undefined) {
       setOverrideData(movieOverrideCache[id]);
+      setIsOverrideLoading(false);
     }
 
     (async () => {
@@ -814,6 +818,8 @@ export default function MoviePage({
           // Если в кеше уже было значение — оставляем его, иначе фиксируем отсутствие override
           setOverrideData((prev: any) => (prev === null ? null : prev));
         }
+      } finally {
+        if (!cancelled) setIsOverrideLoading(false);
       }
     })();
     return () => {
@@ -1431,6 +1437,8 @@ export default function MoviePage({
                 decoding="sync"
                 className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2"
               />
+            ) : isOverrideLoading ? (
+              <div className="h-12 md:h-16 w-64" /> 
             ) : (
               <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg leading-tight">
                  {movie.name}
