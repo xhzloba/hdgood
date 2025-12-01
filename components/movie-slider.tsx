@@ -1,6 +1,7 @@
 "use client";
 import useSWR from "swr";
 import Link from "next/link";
+import NProgress from "nprogress";
 import { useEffect, useMemo, useState } from "react";
 import { useRef, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -483,6 +484,8 @@ export default function MovieSlider({
                       return
                     }
                     
+                    NProgress.start();
+
                     // Сохраняем позицию постера для анимации перехода (только десктоп)
                     const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
                     if (posterEl && movie.poster) {

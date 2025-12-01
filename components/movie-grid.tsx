@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import { Loader } from "./loader";
 import Link from "next/link";
+import NProgress from "nprogress";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
@@ -1752,6 +1753,7 @@ export function MovieGrid({
                   <Link
                     href={`/movie/${selectedMovie.id}`}
                     onClick={() => {
+                      NProgress.start();
                       if (resetOverridesOnNavigate) {
                         try {
                           onBackdropOverrideChange?.(null, null);
@@ -2205,6 +2207,7 @@ export function MovieGrid({
                         <Link
                           href={`/movie/${selectedMovie!.id}`}
                           onClick={() => {
+                            NProgress.start();
                             if (resetOverridesOnNavigate) {
                               try {
                                 onBackdropOverrideChange?.(null, null);
@@ -2331,6 +2334,7 @@ export function MovieGrid({
                         const href = `${location.pathname}${location.search}`;
                         localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                       } catch {}
+                      NProgress.start();
                       router.push(`/movie/${movie.id}`);
                       return;
                     }
@@ -2953,6 +2957,7 @@ export function MovieGrid({
                     <Link
                       href={`/movie/${selectedMovie.id}`}
                       onClick={() => {
+                        NProgress.start();
                         try {
                           onBackdropOverrideChange?.(null, null);
                         } catch {}

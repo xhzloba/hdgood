@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import NProgress from "nprogress";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -421,6 +422,7 @@ export default function CoverflowMovieSlider({
                                localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
                            } catch {}
                            
+                           NProgress.start();
                            router.push(`/movie/${movie.id}`);
                        } else {
                            // Slide to this item
