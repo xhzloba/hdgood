@@ -316,11 +316,25 @@ export default function CoverflowMovieSlider({
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
               </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
+              </div>
            </div>
            {/* 2nd Left */}
            <div className="hidden md:block absolute left-[calc(50%-330px)] scale-[0.8] opacity-40 z-0 w-[160px] md:w-[220px] -rotate-y-25 origin-right translate-x-[-50%]">
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
               </div>
            </div>
            {/* 1st Left (closest) */}
@@ -328,18 +342,25 @@ export default function CoverflowMovieSlider({
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
               </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
+              </div>
            </div>
 
            {/* Center active item */}
            <div className="relative z-20 scale-100 w-[160px] md:w-[220px] shadow-xl">
-              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px] mb-2">
+              <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
               </div>
-              <div className="mt-3 space-y-2 px-1">
-                 <Skeleton className="h-4 w-3/4 mx-auto" />
-                 <div className="flex justify-center gap-2">
-                    <Skeleton className="h-3 w-8" />
-                    <Skeleton className="h-3 w-12" />
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
                  </div>
               </div>
            </div>
@@ -350,17 +371,38 @@ export default function CoverflowMovieSlider({
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
               </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
+              </div>
            </div>
            {/* 2nd Right */}
            <div className="hidden md:block absolute right-[calc(50%-330px)] scale-[0.8] opacity-40 z-0 w-[160px] md:w-[220px] rotate-y-25 origin-left translate-x-[50%]">
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
               </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
+              </div>
            </div>
            {/* 3rd Right (furthest) */}
            <div className="hidden lg:block absolute right-[calc(50%-480px)] scale-[0.75] opacity-20 z-0 w-[160px] md:w-[220px] rotate-y-25 origin-left translate-x-[50%]">
               <div className="aspect-[2/3] bg-zinc-950 rounded-[10px]">
                  <Skeleton className="w-full h-full rounded-[10px]" />
+              </div>
+              <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden bg-transparent">
+                 <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                 <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                    <Skeleton className="h-3 md:h-4 w-8" />
+                    <Skeleton className="h-3 md:h-4 w-12" />
+                 </div>
               </div>
            </div>
         </div>
