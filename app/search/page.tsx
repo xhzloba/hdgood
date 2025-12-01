@@ -204,33 +204,37 @@ export default function SearchPage() {
 
   return (
     <PosterBackground disableMobileBackdrop simpleDarkCorners softBottomFade persistComposite={false} bgPosterUrl={bgUrl ?? undefined} className="min-h-[100dvh] min-h-screen">
-      <main className="mx-auto max-w-7xl px-0 md:px-6 pt-0 md:pt-6 pb-16 md:pb-10 relative">
-        <div className="mb-4 hidden md:block">
-          <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
+      <main className="w-full min-h-screen pb-16 relative z-10">
+        <div className="mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8">
+          <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
+            <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
+          </div>
         </div>
-        <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
-          {logoSrc && logoId ? (
-            <Link href={`/movie/${logoId}`} className="block">
-              <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
-            </Link>
-          ) : null}
-        </div>
-        <section className="relative">
-          <div className="relative z-20">
-            <div className="p-5">
-              <div className="mt-3 md:mt-4">
-                <Suspense fallback={null}>
-                  <SearchForm />
-                </Suspense>
-              </div>
-              <div className="mt-4">
-                <Suspense fallback={null}>
-                  <SearchResults />
-                </Suspense>
+        <div className="mx-auto max-w-7xl px-0 md:px-6 relative">
+          <div className="relative z-30 hidden md:flex justify-center mt-[13vh] h-[96px]">
+            {logoSrc && logoId ? (
+              <Link href={`/movie/${logoId}`} className="block">
+                <img src={logoSrc} alt="Логотип" className="h-[96px] w-auto max-w-[80vw]" />
+              </Link>
+            ) : null}
+          </div>
+          <section className="relative">
+            <div className="relative z-20">
+              <div className="p-5">
+                <div className="mt-3 md:mt-4">
+                  <Suspense fallback={null}>
+                    <SearchForm />
+                  </Suspense>
+                </div>
+                <div className="mt-4">
+                  <Suspense fallback={null}>
+                    <SearchResults />
+                  </Suspense>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
     </PosterBackground>
   )
