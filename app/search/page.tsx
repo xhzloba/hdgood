@@ -219,6 +219,10 @@ export default function SearchPage() {
                 />
               </Link>
             ) : null}
+            
+            {/* Placeholder to match Home page layout spacing */}
+            <div className="text-base md:text-xl font-medium text-zinc-200/90 px-4 text-center leading-relaxed flex items-center justify-center drop-shadow-md">
+            </div>
           </div>
         </div>
         <div className="mx-auto max-w-7xl px-0 md:px-6 relative">
