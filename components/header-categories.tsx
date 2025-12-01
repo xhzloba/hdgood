@@ -5,7 +5,6 @@ import { CATEGORIES } from "@/lib/categories"
 import type { Category } from "@/lib/categories"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import {
   IconClock,
@@ -125,7 +124,7 @@ function HeaderTab({ href, isActive, icon: Icon, label, onClick }: HeaderTabProp
       ].join(" ")}
     >
       <Icon className="w-5 h-5 shrink-0" size={20} stroke={1.7} />
-      <span className="grid place-items-center">
+      <span className="grid place-items-center md:max-[939px]:hidden">
         <span className="font-bold opacity-0 col-start-1 row-start-1 pointer-events-none select-none">
           {label}
         </span>
@@ -346,37 +345,6 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
         if (d.exitFullscreen) await d.exitFullscreen()
         else if (d.webkitExitFullscreen) d.webkitExitFullscreen()
         setIsFullscreen(false)
-      }
-    } catch {}
-  }
-
-  const [accentTheme, setAccentTheme] = useState<"blue" | "red">("blue")
-  const applyAccentTheme = (t: "blue" | "red") => {
-    const v = t === "red" ? "244, 63, 94" : "29, 78, 216"
-    try {
-      if (typeof document !== "undefined") {
-        document.documentElement.style.setProperty("--ui-accent-rgb", v)
-      }
-    } catch {}
-  }
-  const themeColors: Record<string, string> = { blue: "29, 78, 216", red: "244, 63, 94" }
-  useEffect(() => {
-    try {
-      const ls = typeof window !== "undefined" ? window.localStorage : null
-      const t = ls?.getItem("ui:accentTheme") as any
-      const valid = (t === "red" || t === "blue") ? (t as any) : "blue"
-      setAccentTheme(valid)
-      applyAccentTheme(valid)
-    } catch {}
-  }, [])
-  const changeAccentTheme = (t: "blue" | "red") => {
-    setAccentTheme(t)
-    applyAccentTheme(t)
-    try {
-      const ls = typeof window !== "undefined" ? window.localStorage : null
-      ls?.setItem("ui:accentTheme", t)
-      if (typeof document !== "undefined") {
-        document.cookie = `ui:accentTheme=${t}; path=/; max-age=${60 * 60 * 24 * 365}`
       }
     } catch {}
   }
@@ -963,37 +931,6 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
                       </Tabs>
                   </PopoverContent>
                 </Popover>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label="Тема акцента"
-                      className="inline-flex items-center justify-center h-10 w-10 rounded-[8px] text-zinc-300/90 hover:text-white hover:bg-white/10 transition-all"
-                    >
-                      <span
-                        style={{ backgroundColor: "rgb(var(--ui-accent-rgb))" }}
-                        className="inline-block w-3.5 h-3.5 rounded-full"
-                      />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-2xl border-0 bg-zinc-900/60 p-2 shadow-xl backdrop-blur-md min-w-[12rem]">
-                    <DropdownMenuItem
-                      onClick={() => changeAccentTheme("blue")}
-                      className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
-                    >
-                      <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.blue})` }} />
-                      <span>Синий</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => changeAccentTheme("red")}
-                      className="rounded-full px-3 py-2 flex items-center gap-3 hover:bg-white/5 transition-colors"
-                    >
-                      <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: `rgb(${themeColors.red})` }} />
-                      <span>Алый</span>
-                    </DropdownMenuItem>
-                  
-                  </DropdownMenuContent>
-                </DropdownMenu>
                 <button
                   type="button"
                   aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
