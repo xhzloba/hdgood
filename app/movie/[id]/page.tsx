@@ -1924,10 +1924,22 @@ export default function MoviePage({
                             <span className="text-zinc-200">{franchise.screenwriter.join(", ")}</span>
                          </div>
                        )}
+                       {franchise?.producer && Array.isArray(franchise.producer) && franchise.producer.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Продюсеры</span>
+                            <span className="text-zinc-200">{franchise.producer.join(", ")}</span>
+                         </div>
+                       )}
                        {franchise?.operator && Array.isArray(franchise.operator) && franchise.operator.length > 0 && (
                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Оператор</span>
                             <span className="text-zinc-200">{franchise.operator.join(", ")}</span>
+                         </div>
+                       )}
+                       {franchise?.editor && Array.isArray(franchise.editor) && franchise.editor.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Монтаж</span>
+                            <span className="text-zinc-200">{franchise.editor.join(", ")}</span>
                          </div>
                        )}
                        {franchise?.design && Array.isArray(franchise.design) && franchise.design.length > 0 && (
@@ -1989,6 +2001,12 @@ export default function MoviePage({
                             <span className="text-zinc-200">
                               {formatCurrency(franchise.fees_rus)}
                             </span>
+                         </div>
+                       )}
+                       {franchise?.actors_dubl && Array.isArray(franchise.actors_dubl) && franchise.actors_dubl.length > 0 && (
+                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">Актёры дубляжа</span>
+                            <span className="text-zinc-200">{franchise.actors_dubl.join(", ")}</span>
                          </div>
                        )}
                        {franchise?.voiceActing && Array.isArray(franchise.voiceActing) && franchise.voiceActing.length > 0 && (

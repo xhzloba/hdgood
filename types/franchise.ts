@@ -33,6 +33,9 @@ export interface FranchiseData {
   screenwriter?: string[];
   operator?: string[];
   design?: string[];
+  actors_dubl?: string[];
+  editor?: string[];
+  producer?: string[];
   voiceActing?: string[];
   iframe_url?: string;
   seasons?: FranchiseSeason[];

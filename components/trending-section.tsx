@@ -66,7 +66,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
 
   return (
     <section className="relative z-10 w-full">
-      <div className="w-full p-2 md:p-5">
+      <div className="w-full p-2 md:px-5 md:py-0">
         
         {/* Mobile Layout (visible on mobile only) */}
         <div className="block md:hidden space-y-8">
