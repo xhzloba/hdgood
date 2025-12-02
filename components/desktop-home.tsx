@@ -138,13 +138,13 @@ export function DesktopHome() {
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-20 max-w-3xl animate-in slide-in-from-left-10 duration-700 fade-in mt-auto px-16">
+            <div className="mb-32 max-w-3xl animate-in slide-in-from-left-10 duration-700 fade-in mt-auto px-16">
                 {activeMovie.logo ? (
                   <div className="mb-6">
                     <img 
                       src={activeMovie.logo} 
                       alt={activeMovie.title} 
-                      className="max-w-[300px] max-h-[150px] object-contain drop-shadow-2xl"
+                      className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl"
                     />
                   </div>
                 ) : (
@@ -160,9 +160,10 @@ export function DesktopHome() {
                          </span>
                     )}
                     <span className="text-zinc-300 text-sm">{activeMovie.year}</span>
-                    <span className="text-zinc-300 text-sm">{activeMovie.genre}</span>
+                    <span className="text-zinc-300 text-sm">
+                        {activeMovie.genre?.split(',').slice(0, 2).join(',')}
+                    </span>
                     {activeMovie.country && <span className="text-zinc-300 text-sm">{activeMovie.country}</span>}
-                     {activeMovie.duration && <span className="border border-zinc-600 px-1.5 py-0.5 rounded text-xs text-zinc-400">{activeMovie.duration}</span>}
                 </div>
                 
                 <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
@@ -183,10 +184,10 @@ export function DesktopHome() {
                 </div>
             </div>
         ) : (
-            <div className="mb-20 max-w-3xl mt-auto px-16">
+            <div className="mb-32 max-w-3xl mt-auto px-16">
                 {/* Logo/Title Skeleton */}
                 <div className="mb-6">
-                    <div className="h-[100px] w-[300px] bg-white/5 rounded-lg animate-pulse" />
+                    <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
                 </div>
                 
                 {/* Meta Row Skeleton */}
@@ -239,6 +240,7 @@ export function DesktopHome() {
                         onMovieHover={handleMovieHover}
                         compactOnMobile={false}
                         perPageOverride={15}
+                        hideIndicators
                     />
                 ) : (
                      <div className="w-full mb-8 px-4 md:px-12">

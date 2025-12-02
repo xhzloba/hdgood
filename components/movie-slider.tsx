@@ -36,6 +36,7 @@ type MovieSliderProps = {
   // Сортировка по году: по убыванию (desc) или возрастанию (asc)
   sortByYear?: "asc" | "desc";
   onMovieHover?: (movie: any) => void;
+  hideIndicators?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -132,6 +133,7 @@ export default function MovieSlider({
   fetchAllPages = false,
   sortByYear,
   onMovieHover,
+  hideIndicators = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
@@ -684,19 +686,21 @@ export default function MovieSlider({
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
-          <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-            {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`К слайду ${i + 1}`}
-                aria-current={selectedIndex === i}
-                onClick={() => carouselApi?.scrollTo?.(i)}
-                className={`${selectedIndex === i ? "w-6" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
-                style={selectedIndex === i ? { backgroundColor: "rgb(var(--ui-accent-rgb))" } : undefined}
-              />
-            ))}
-          </div>
+          {!hideIndicators && (
+            <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+              {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`К слайду ${i + 1}`}
+                  aria-current={selectedIndex === i}
+                  onClick={() => carouselApi?.scrollTo?.(i)}
+                  className={`${selectedIndex === i ? "w-6" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
+                  style={selectedIndex === i ? { backgroundColor: "rgb(var(--ui-accent-rgb))" } : undefined}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
