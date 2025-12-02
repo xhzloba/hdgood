@@ -1869,7 +1869,7 @@ export function MovieGrid({
             }`}
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
-              <div className="relative p-3 md:p-4 smoke-flash overflow-hidden">
+              <div className="relative p-3 md:py-4 md:px-0 smoke-flash overflow-hidden">
 
               <button
                 type="button"
@@ -1964,7 +1964,7 @@ export function MovieGrid({
               <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-stretch">
                 <div className="hidden md:block">
                   <div
-                    className="rounded-[10px] overflow-hidden bg-zinc-900 aspect-[2/3] relative"
+                    className="rounded-[10px] overflow-hidden bg-zinc-950 aspect-[2/3] relative group poster-card isolate transform-gpu"
                     style={
                       tileWidth != null
                         ? { width: Math.max(tileWidth, 280) }
@@ -2002,9 +2002,23 @@ export function MovieGrid({
                       <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
                         Нет постера
                       </div>
-                      )}
-                    </div>
+                    )}
+                    {selectedMovie!.rating && (
+                      <div
+                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
+                          selectedMovie!.rating
+                        )}`}
+                      >
+                        {formatRatingLabel(selectedMovie!.rating)}
+                      </div>
+                    )}
+                    {selectedMovie!.quality && (
+                      <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 transition-opacity">
+                        {String(selectedMovie!.quality)}
+                      </div>
+                    )}
                   </div>
+                </div>
                 <div
                 className="min-w-0 flex-1 md:mx-0 mx-auto"
                 style={
