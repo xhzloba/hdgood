@@ -361,8 +361,7 @@ function BackdropImage({ src }: { src: string }) {
            <img 
               key={prev}
               src={prev}
-              className="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700"
-              style={{ opacity: isLoading ? 1 : 0 }}
+              className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 blur-xl scale-105 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
               alt=""
            />
         )}
@@ -373,7 +372,7 @@ function BackdropImage({ src }: { src: string }) {
             ref={imgRef}
             key={current}
             src={current}
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+            className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${isLoading ? 'opacity-0 blur-xl scale-105' : 'opacity-100 blur-0 scale-100'}`}
             onLoad={handleLoad}
             alt=""
           />
