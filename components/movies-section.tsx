@@ -106,7 +106,7 @@ export function MoviesSection({ onBackdropOverrideChange, onHeroInfoOverrideChan
                 key={idx}
                 data-active={active === idx ? "true" : "false"}
                 onClick={() => preserveScroll(() => setActive(idx))}
-                className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-medium transition-all duration-200 ${
+                className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full md:rounded-md text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
                   active === idx
                     ? "text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                     : "text-zinc-300/90 hover:text-white"

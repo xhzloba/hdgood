@@ -114,7 +114,7 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
                 <button
                   key={idx}
                   onClick={() => setActiveTab(idx)}
-                  className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
+                  className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full md:rounded-md text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
                     activeTab === idx
                       ? "text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[5px] scale-[1.12]"
                       : "text-zinc-300/90 hover:text-white"
