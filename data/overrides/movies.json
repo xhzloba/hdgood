@@ -772,5 +772,8 @@
     "bg_poster": {
       "backdrop": "/movies/sny.jpg"
     }
+  },
+  "6593f8708914c04deae98ebb": {
+    "poster_logo": "/movies/logo/50.webp"
   }
 }

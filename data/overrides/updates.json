@@ -1878,5 +1878,15 @@
     "title": null,
     "changedPaths": [],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8708914c04deae98ebb",
+    "timestamp": "2025-12-02T12:02:34.488Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

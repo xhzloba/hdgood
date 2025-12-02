@@ -546,7 +546,7 @@ export default function HomeClient({
                 <img
                   src={effLogoSrc}
                   alt="Логотип"
-                  className="h-[80px] md:h-[100px] w-auto max-w-[80vw] object-contain drop-shadow-2xl"
+                  className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain drop-shadow-2xl"
                 />
               </Link>
             ) : hasOverrideBg && overrideHeroTitle ? (
