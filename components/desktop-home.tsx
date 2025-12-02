@@ -8,6 +8,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 const TRENDING_URL = "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -17,7 +18,15 @@ const fetcher = async (url: string) => {
 
 export function DesktopHome() {
   const [activeMovie, setActiveMovie] = useState<any>(null)
-  const { data } = useSWR(TRENDING_URL, fetcher)
+  const [activeTab, setActiveTab] = useState<"trending" | "watching">("trending")
+  
+  const currentUrl = activeTab === "trending" ? TRENDING_URL : WATCHING_URL
+  const { data } = useSWR(currentUrl, fetcher)
+
+  // When tab changes, we might want to reset activeMovie so the hero updates to the new list's first item
+  useEffect(() => {
+    setActiveMovie(null)
+  }, [activeTab])
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
@@ -209,8 +218,24 @@ export function DesktopHome() {
             <div className="w-full">
                 {activeMovie ? (
                     <MovieSlider 
-                        url={TRENDING_URL}
-                        title="В тренде"
+                        url={currentUrl}
+                        title={
+                            <div className="flex items-center gap-6">
+                                <button 
+                                    onClick={() => setActiveTab("trending")}
+                                    className={`transition-all duration-300 ${activeTab === "trending" ? "text-white scale-105 font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "text-zinc-500 hover:text-zinc-300 font-medium"}`}
+                                >
+                                    В тренде
+                                </button>
+                                <div className="w-px h-5 bg-zinc-800" />
+                                <button 
+                                    onClick={() => setActiveTab("watching")}
+                                    className={`transition-all duration-300 ${activeTab === "watching" ? "text-white scale-105 font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "text-zinc-500 hover:text-zinc-300 font-medium"}`}
+                                >
+                                    Сейчас смотрят
+                                </button>
+                            </div>
+                        }
                         onMovieHover={handleMovieHover}
                         compactOnMobile={false}
                         perPageOverride={15}

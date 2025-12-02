@@ -20,7 +20,7 @@ import {
 
 type MovieSliderProps = {
   url: string;
-  title?: string;
+  title?: React.ReactNode;
   viewAllHref?: string;
   viewAllLabel?: string;
   autoplay?: boolean;
@@ -385,7 +385,7 @@ export default function MovieSlider({
       {(title || viewAllHref) && (
         <div className="flex items-center justify-between relative z-20 mb-2 px-3 md:px-12">
           {title ? (
-            <h2 className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</h2>
+            <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</div>
           ) : (
             <div />
           )}
