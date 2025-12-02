@@ -794,5 +794,26 @@
         "name": "Везунчики"
       }
     ]
+  },
+  "68ead36399eeea9f945029e8": {
+    "bg_poster": {
+      "backdrop": "/movies/ya.webp"
+    },
+    "poster_logo": "/movies/logo/53.webp"
+  },
+  "691a49676274cfb1908226c9": {
+    "poster_logo": "/movies/logo/54.webp",
+    "bg_poster": {
+      "backdrop": "/movies/yaga.webp"
+    }
+  },
+  "6593f8328914c04deae90b55": {
+    "poster_logo": "/movies/logo/55.webp"
+  },
+  "69126066f5a672e8496fcc12": {
+    "poster_logo": "/movies/logo/56.webp",
+    "bg_poster": {
+      "backdrop": "/movies/golos.jpg"
+    }
   }
 }
