@@ -815,5 +815,11 @@
     "bg_poster": {
       "backdrop": "/movies/golos.jpg"
     }
+  },
+  "6647d37c23ddf5cbf06772c1": {
+    "poster_logo": "/movies/logo/57.webp",
+    "bg_poster": {
+      "backdrop": "/movies/tele-2.webp"
+    }
   }
 }
