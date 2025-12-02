@@ -27,37 +27,56 @@ export function DesktopHome() {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isFetchingOverride, setIsFetchingOverride] = useState(false)
   const lastUrlRef = useRef<string | null>(null)
+  const lastInputTimeRef = useRef(0)
   
   const activeSlide = SLIDES[slideIndex]
   const { data } = useSWR(activeSlide.url, fetcher)
 
   // Scroll Jacking Logic
   useEffect(() => {
-    let lastScrollTime = 0;
     const COOLDOWN = 1000; // ms between switches
 
-    const handleWheel = (e: WheelEvent) => {
+    const handleInput = (direction: 'next' | 'prev') => {
         const now = Date.now();
-        if (now - lastScrollTime < COOLDOWN) return;
+        if (now - lastInputTimeRef.current < COOLDOWN) return;
 
-        // Down scroll -> Next Slide
-        if (e.deltaY > 0) {
+        if (direction === 'next') {
             if (slideIndex < SLIDES.length - 1) {
-                lastScrollTime = now;
+                lastInputTimeRef.current = now;
                 setSlideIndex(prev => prev + 1);
             }
-        } 
-        // Up scroll -> Prev Slide
-        else if (e.deltaY < 0) {
-            if (slideIndex > 0) {
-                lastScrollTime = now;
+        } else {
+             if (slideIndex > 0) {
+                lastInputTimeRef.current = now;
                 setSlideIndex(prev => prev - 1);
             }
         }
     };
 
+    const handleWheel = (e: WheelEvent) => {
+        // Down scroll -> Next Slide
+        if (e.deltaY > 0) handleInput('next');
+        // Up scroll -> Prev Slide
+        else if (e.deltaY < 0) handleInput('prev');
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            handleInput('next');
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            handleInput('prev');
+        }
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+        window.removeEventListener("wheel", handleWheel);
+        window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [slideIndex]);
 
   // Fetch override for the initial movie or when activeMovie changes
