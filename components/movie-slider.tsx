@@ -653,7 +653,7 @@ export default function MovieSlider({
                           })();
                           if (!year && !quality && tagsArr.length === 0) return null;
                           return (
-                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                            <div className="flex items-center gap-2 text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                               {year && <span>{year}</span>}
                               {year && (quality || tagsArr.length > 0) && (
                                 <span className="text-zinc-500/60">•</span>
