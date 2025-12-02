@@ -14,6 +14,8 @@ import { APP_SETTINGS } from "@/lib/settings";
 import { getCountryLabel } from "@/lib/country-flags";
 import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DesktopHome } from "@/components/desktop-home";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type HomeClientProps = {
   initialSelectedTitle?: string;
@@ -24,6 +26,10 @@ export default function HomeClient({
   initialSelectedTitle,
   initialOverridesMap,
 }: HomeClientProps) {
+  const isMobile = useIsMobile();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { setIsMounted(true); }, []);
+
   try {
     if (initialOverridesMap && Object.keys(initialOverridesMap).length > 0) {
       const ref: any = globalThis as any;
@@ -518,6 +524,13 @@ export default function HomeClient({
   const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
   const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
   const effMeta = hasOverrideBg ? overrideHeroMeta : meta;
+  
+  const isMainPage = !selected;
+
+  if (isMounted && !isMobile && !initialSelectedTitle) {
+    return <DesktopHome />;
+  }
+
   return (
     <PosterBackground
       posterUrl={overridePoster ?? currentPoster}
@@ -529,17 +542,72 @@ export default function HomeClient({
       strongUpperCorners={hasOverrideBg}
       className="min-h-[100dvh] min-h-screen"
     >
+      {/* Desktop Skeleton for Main Page (Prevent Flash of Mobile Layout) */}
+      {isMainPage && (
+        <div className="hidden md:block fixed inset-0 z-50 bg-zinc-950">
+           {/* Sidebar Skeleton */}
+           <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 glass-panel border-r border-white/5 bg-black/20 backdrop-blur-sm">
+              <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
+              <nav className="flex flex-col gap-8 flex-1 justify-center">
+                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
+                  <div className="p-3 rounded-xl text-white bg-white/10"><div className="w-6 h-6 bg-white/20 rounded animate-pulse" /></div>
+                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
+                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
+                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
+              </nav>
+           </aside>
+           
+           {/* Content Skeleton */}
+           <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-y-auto scrollbar-hide">
+             <div className="min-h-full w-full flex flex-col justify-end">
+                <div className="mb-20 max-w-3xl mt-auto px-16">
+                    <div className="mb-6"><div className="h-[100px] w-[300px] bg-white/5 rounded-lg animate-pulse" /></div>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-6 w-12 bg-white/5 rounded animate-pulse" />
+                        <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
+                        <div className="h-4 w-24 bg-white/5 rounded animate-pulse" />
+                    </div>
+                    <div className="mb-8 space-y-2 max-w-2xl">
+                        <div className="h-5 w-full bg-white/5 rounded animate-pulse" />
+                        <div className="h-5 w-[90%] bg-white/5 rounded animate-pulse" />
+                        <div className="h-5 w-[80%] bg-white/5 rounded animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="h-[52px] w-[160px] bg-white/5 rounded-xl animate-pulse" />
+                        <div className="h-[52px] w-[140px] bg-white/5 rounded-xl animate-pulse" />
+                        <div className="h-[52px] w-[52px] bg-white/5 rounded-xl animate-pulse" />
+                    </div>
+                </div>
+                
+                {/* Trending Slider Skeleton */}
+                <div className="w-full mb-8 px-4 md:px-12">
+                    <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
+                    <div className="flex gap-2 overflow-hidden">
+                        {[...Array(9)].map((_, i) => (
+                            <div key={i} className="w-[12.5%] aspect-[2/3] bg-white/5 rounded-xl shrink-0 animate-pulse" />
+                        ))}
+                    </div>
+                </div>
+             </div>
+           </main>
+        </div>
+      )}
+
+      {/* Mobile/Responsive Layout (Hidden on Desktop Main Page) */}
+      <div className={isMainPage ? "md:hidden" : ""}>
       <main className="w-full min-h-screen pb-16 relative z-10">
         <div className="mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8">
-          <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
-            <HeaderCategories
-              variant="horizontal"
-              className="!bg-transparent !border-transparent relative z-40"
-              onSelect={handleSelect}
-              activeIndex={activeIndex}
-              onActiveIndexChange={handleActiveIndexChange}
-            />
-          </div>
+          {selected && (
+            <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
+              <HeaderCategories
+                variant="horizontal"
+                className="!bg-transparent !border-transparent relative z-40"
+                onSelect={handleSelect}
+                activeIndex={activeIndex}
+                onActiveIndexChange={handleActiveIndexChange}
+              />
+            </div>
+          )}
           <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[8vh] min-h-[200px] space-y-6">
             {effLogoSrc && effLogoId ? (
               <Link href={`/movie/${effLogoId}`} className="block transition-transform hover:scale-105 duration-300">
@@ -683,6 +751,7 @@ export default function HomeClient({
         </section>
         
       </main>
+      </div>
     </PosterBackground>
   );
 }

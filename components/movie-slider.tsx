@@ -35,6 +35,7 @@ type MovieSliderProps = {
   fetchAllPages?: boolean;
   // Сортировка по году: по убыванию (desc) или возрастанию (asc)
   sortByYear?: "asc" | "desc";
+  onMovieHover?: (movie: any) => void;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -83,12 +84,14 @@ function extractMoviesFromData(data: any): any[] {
       id: item.details?.id || item.id,
       title: item.details?.name || item.title,
       poster: item.details?.poster || item.poster,
+      backdrop: item.details?.bg_poster?.backdrop || item.details?.wide_poster || item.details?.backdrop || item.backdrop,
       year: item.details?.released || item.year,
       rating: item.details?.rating_kp || item.rating,
       country: item.details?.country || item.country,
       quality: item.details?.quality || item.quality,
       genre: item.details?.genre || item.genre,
       tags: item.details?.tags || item.tags,
+      description: item.details?.about || item.about,
     }));
   } else if (Array.isArray(data)) {
     movies = data;
@@ -128,6 +131,7 @@ export default function MovieSlider({
   compactOnMobile,
   fetchAllPages = false,
   sortByYear,
+  onMovieHover,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
@@ -289,7 +293,9 @@ export default function MovieSlider({
       // Если в override задано название, используем его:
       // поддерживаем как `name`, так и `title` на случай разных источников
       const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
-      return { ...m, poster: patchedPoster, title: patchedTitle };
+      const patchedLogo = ov && ov.poster_logo ? ov.poster_logo : m.logo;
+      const patchedBackdrop = ov && ov.bg_poster && ov.bg_poster.backdrop ? ov.bg_poster.backdrop : m.backdrop;
+      return { ...m, poster: patchedPoster, title: patchedTitle, logo: patchedLogo, backdrop: patchedBackdrop };
     });
   }, [display, overridesMap]);
   useEffect(() => {
@@ -375,9 +381,9 @@ export default function MovieSlider({
   };
 
   return (
-    <div className="space-y-4 px-2 md:px-12">
+    <div className="space-y-4">
       {(title || viewAllHref) && (
-        <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
+        <div className="flex items-center justify-between relative z-20 mb-2 px-3 md:px-12">
           {title ? (
             <h2 className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</h2>
           ) : (
@@ -402,7 +408,7 @@ export default function MovieSlider({
         </div>
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
-        <div className="relative z-10">
+        <div className="relative z-10 px-2 md:px-12">
           <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2">
               {Array.from({ length: perPage }).map((_, i) => (
@@ -410,7 +416,7 @@ export default function MovieSlider({
                   key={i}
                   className={`pl-2 ${
                     compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/5 lg:basis-1/5 xl:basis-1/5`}
+                  } md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]`}
                 >
                   <div className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm">
                     <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
@@ -445,7 +451,7 @@ export default function MovieSlider({
           </div>
         </div>
       ) : (
-        <div className="relative" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
+        <div className="relative px-2 md:px-12" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
           <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
               {finalDisplay.map((movie: any, index: number) => (
@@ -453,12 +459,13 @@ export default function MovieSlider({
                   key={movie.id || index}
                   className={`pl-2 ${
                     compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/5 lg:basis-1/5 xl:basis-1/5`}
+                  } md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]`}
                 >
                   <Link
                     href={`/movie/${movie.id}`}
                     className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
                     onMouseMove={(e) => {
+                      onMovieHover?.(movie);
                       const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
                       if (!posterEl) return;
                       const rect = posterEl.getBoundingClientRect();
