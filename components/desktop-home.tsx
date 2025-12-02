@@ -173,7 +173,7 @@ export function DesktopHome() {
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-32 max-w-3xl animate-in slide-in-from-left-10 duration-700 fade-in mt-auto px-16">
+            <div className="mb-48 max-w-3xl animate-in slide-in-from-left-10 duration-700 fade-in mt-auto px-16">
                 {activeMovie.logo ? (
                   <div className="mb-6">
                     <img 
@@ -219,7 +219,7 @@ export function DesktopHome() {
                 </div>
             </div>
         ) : (
-            <div className="mb-32 max-w-3xl mt-auto px-16">
+            <div className="mb-48 max-w-3xl mt-auto px-16">
                 {/* Logo/Title Skeleton */}
                 <div className="mb-6">
                     <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
