@@ -573,9 +573,8 @@ export default function HomeClient({
                         <div className="h-5 w-[80%] bg-white/5 rounded animate-pulse" />
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="h-[52px] w-[160px] bg-white/5 rounded-xl animate-pulse" />
-                        <div className="h-[52px] w-[140px] bg-white/5 rounded-xl animate-pulse" />
-                        <div className="h-[52px] w-[52px] bg-white/5 rounded-xl animate-pulse" />
+                        <div className="h-[52px] w-[160px] bg-white/5 rounded-[4px] animate-pulse" />
+                        <div className="h-[52px] w-[52px] bg-white/5 rounded-full animate-pulse" />
                     </div>
                 </div>
                 

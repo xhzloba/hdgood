@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Search, Home, ShoppingBag, Tv, Bookmark, User } from "lucide-react"
+import { Search, Home, ShoppingBag, Tv, Bookmark, User, Play, Plus } from "lucide-react"
 import MovieSlider from "@/components/movie-slider"
 import useSWR from "swr"
 import Image from "next/image"
@@ -163,16 +163,13 @@ export function DesktopHome() {
                 <div className="flex items-center gap-4">
                     <Link 
                         href={`/movie/${activeMovie.id}`}
-                        className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3.5 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg shadow-orange-900/20"
+                        className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
                     >
-                        <Tv size={20} />
-                        Смотреть
+                        <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" />
+                        <span className="text-base md:text-lg">Смотреть</span>
                     </Link>
-                     <button className="bg-white/10 hover:bg-white/20 text-white px-6 py-3.5 rounded-xl font-medium transition-all hover:scale-105 backdrop-blur-md border border-white/10">
-                        Трейлер
-                    </button>
-                     <button className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-700 hover:bg-zinc-800 transition-colors">
-                        <Bookmark size={20} />
+                     <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
+                        <Plus size={20} />
                     </button>
                 </div>
             </div>
@@ -201,9 +198,8 @@ export function DesktopHome() {
                 
                 {/* Buttons Skeleton */}
                 <div className="flex items-center gap-4">
-                    <div className="h-[52px] w-[160px] bg-white/5 rounded-xl animate-pulse" />
-                    <div className="h-[52px] w-[140px] bg-white/5 rounded-xl animate-pulse" />
-                    <div className="h-[52px] w-[52px] bg-white/5 rounded-xl animate-pulse" />
+                    <div className="h-[52px] w-[160px] bg-white/5 rounded-[4px] animate-pulse" />
+                    <div className="h-[52px] w-[52px] bg-white/5 rounded-full animate-pulse" />
                 </div>
             </div>
         )}
