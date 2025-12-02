@@ -209,7 +209,7 @@ export default function SearchPage() {
           <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
             <HeaderCategories variant="horizontal" className="!bg-transparent !border-transparent relative z-40" />
           </div>
-          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[2vh] min-h-[200px] space-y-6">
+          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[8vh] min-h-[200px] space-y-6">
             {logoSrc && logoId ? (
               <Link href={`/movie/${logoId}`} className="block transition-transform hover:scale-105 duration-300">
                 <img

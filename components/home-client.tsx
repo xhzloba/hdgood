@@ -540,7 +540,7 @@ export default function HomeClient({
               onActiveIndexChange={handleActiveIndexChange}
             />
           </div>
-          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[2vh] min-h-[200px] space-y-6">
+          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[8vh] min-h-[200px] space-y-6">
             {effLogoSrc && effLogoId ? (
               <Link href={`/movie/${effLogoId}`} className="block transition-transform hover:scale-105 duration-300">
                 <img

@@ -1481,7 +1481,7 @@ export default function MoviePage({
                 loading="eager"
                 fetchPriority="high"
                 decoding="sync"
-                className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2"
+                className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2 mt-8"
               />
             ) : isOverrideLoading ? (
               <div className="h-12 md:h-16 w-64" /> 
