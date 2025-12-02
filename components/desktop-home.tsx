@@ -275,6 +275,33 @@ export function DesktopHome() {
             </div>
         </div>
         </div>
+        {/* Vertical Slider Indicators */}
+        <div className="absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12">
+            <div className="pointer-events-auto flex flex-col gap-8 items-end">
+                {SLIDES.map((slide, i) => (
+                    <button
+                        key={slide.id}
+                        onClick={() => setSlideIndex(i)}
+                        className="group flex items-center gap-5 focus:outline-none"
+                    >
+                        <span className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
+                            slideIndex === i 
+                                ? "text-xl text-white drop-shadow-lg scale-105" 
+                                : "text-sm text-zinc-600 group-hover:text-zinc-300"
+                        }`}>
+                            {slide.title}
+                        </span>
+                        
+                        <div className={`transition-all duration-500 rounded-full ${
+                            slideIndex === i 
+                                ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]" 
+                                : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
+                        }`} />
+                    </button>
+                ))}
+            </div>
+        </div>
+
       </main>
     </div>
   )
@@ -332,6 +359,10 @@ function BackdropImage({ src }: { src: string }) {
         {/* Gradient Masks for smooth blend */}
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-zinc-950 to-transparent" />
+        {/* Top Gradient for Text Visibility */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-zinc-950/80 to-transparent" />
+        {/* Right Gradient for Indicators */}
+        <div className="absolute top-0 right-0 bottom-0 w-96 bg-gradient-to-l from-zinc-950 via-zinc-950/60 to-transparent" />
       </div>
     );
 }
