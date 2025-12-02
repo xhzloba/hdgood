@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Search, Home, ShoppingBag, Tv, Bookmark, User, Play, Plus } from "lucide-react"
 import MovieSlider from "@/components/movie-slider"
 import useSWR from "swr"
@@ -16,17 +16,52 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
+const SLIDES = [
+    { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
+    { id: "trending", title: "В тренде", url: TRENDING_URL },
+]
+
 export function DesktopHome() {
   const [activeMovie, setActiveMovie] = useState<any>(null)
-  const [activeTab, setActiveTab] = useState<"trending" | "watching">("trending")
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   
-  const currentUrl = activeTab === "trending" ? TRENDING_URL : WATCHING_URL
-  const { data } = useSWR(currentUrl, fetcher)
+  const activeSlide = SLIDES[slideIndex]
+  const { data } = useSWR(activeSlide.url, fetcher)
 
-  // When tab changes, we might want to reset activeMovie so the hero updates to the new list's first item
+  // When slide changes, reset activeMovie
   useEffect(() => {
     setActiveMovie(null)
-  }, [activeTab])
+  }, [slideIndex])
+
+  // Scroll Jacking Logic
+  useEffect(() => {
+    let lastScrollTime = 0;
+    const COOLDOWN = 1000; // ms between switches
+
+    const handleWheel = (e: WheelEvent) => {
+        const now = Date.now();
+        if (now - lastScrollTime < COOLDOWN) return;
+
+        // Down scroll -> Next Slide
+        if (e.deltaY > 0) {
+            if (slideIndex < SLIDES.length - 1) {
+                lastScrollTime = now;
+                setSlideIndex(prev => prev + 1);
+            }
+        } 
+        // Up scroll -> Prev Slide
+        else if (e.deltaY < 0) {
+            if (slideIndex > 0) {
+                lastScrollTime = now;
+                setSlideIndex(prev => prev - 1);
+            }
+        }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [slideIndex]);
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
@@ -134,7 +169,7 @@ export function DesktopHome() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-y-auto scrollbar-hide">
+      <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-hidden">
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
@@ -216,27 +251,12 @@ export function DesktopHome() {
 
         {/* Trending Slider */}
         <div className="w-full">
-            <div className="w-full">
+            <div key={slideIndex} className="w-full animate-in slide-in-from-bottom-10 fade-in duration-700">
                 {activeMovie ? (
                     <MovieSlider 
-                        url={currentUrl}
-                        title={
-                            <div className="flex items-center gap-6">
-                                <button 
-                                    onClick={() => setActiveTab("trending")}
-                                    className={`transition-all duration-300 ${activeTab === "trending" ? "text-white scale-105 font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "text-zinc-500 hover:text-zinc-300 font-medium"}`}
-                                >
-                                    В тренде
-                                </button>
-                                <div className="w-px h-5 bg-zinc-800" />
-                                <button 
-                                    onClick={() => setActiveTab("watching")}
-                                    className={`transition-all duration-300 ${activeTab === "watching" ? "text-white scale-105 font-bold drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "text-zinc-500 hover:text-zinc-300 font-medium"}`}
-                                >
-                                    Сейчас смотрят
-                                </button>
-                            </div>
-                        }
+                        key={activeSlide.id}
+                        url={activeSlide.url}
+                        title={activeSlide.title}
                         onMovieHover={handleMovieHover}
                         compactOnMobile={false}
                         perPageOverride={15}
@@ -264,53 +284,57 @@ function BackdropImage({ src }: { src: string }) {
     const [current, setCurrent] = useState(src);
     const [prev, setPrev] = useState(src);
     const [isLoading, setIsLoading] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
   
     useEffect(() => {
       if (src !== current) {
-        // Save current as prev before switching
         setPrev(current);
         setCurrent(src);
-        setIsLoading(true);
+        setIsLoading(!!src);
       }
     }, [src, current]);
   
+    useEffect(() => {
+        if (imgRef.current && imgRef.current.complete) {
+            setIsLoading(false);
+        }
+    }, [current]);
+
     const handleLoad = () => {
       setIsLoading(false);
-      // Once loaded, we don't strictly need to clear prev immediately, 
-      // but we can let the opacity transition handle the crossfade.
-      // The 'prev' image is behind 'current', so as 'current' becomes opaque, 'prev' is covered.
     };
   
     return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 bg-zinc-950">
-        {/* Previous Image Layer (Background) */}
+      <div className="absolute top-0 right-0 w-[85%] h-[70vh] overflow-hidden pointer-events-none select-none z-0">
+        {/* Previous Image Layer */}
         {prev && (
-           <div 
+           <img 
               key={prev}
-              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-              style={{ 
-                backgroundImage: `url(${prev})`,
-                opacity: isLoading ? 1 : 0 // Fade out prev when new one finishes loading (optional, or just let new one cover it)
-              }}
+              src={prev}
+              className="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700"
+              style={{ opacity: isLoading ? 1 : 0 }}
+              alt=""
            />
         )}
   
-        {/* Current Image Layer (Foreground) */}
+        {/* Current Image Layer */}
         {current && (
           <img
+            ref={imgRef}
             key={current}
             src={current}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${isLoading ? 'opacity-0 blur-xl scale-105' : 'opacity-100 blur-0 scale-100'}`}
+            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
             onLoad={handleLoad}
             alt=""
           />
         )}
         
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent w-[70%]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent h-full" />
+        {/* Gradient Masks for smooth blend */}
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-zinc-950 to-transparent" />
       </div>
     );
-  }
+}
 
 function NavItem({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active?: boolean }) {
     return (
