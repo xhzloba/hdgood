@@ -28,7 +28,7 @@ export function formatRatingLabel(r?: number | string) {
   const val = typeof r === 'string' ? parseFloat(r) : r
   if (val === 0) return '—'
   if (val == null || Number.isNaN(val)) return ''
-  return typeof r === 'string' ? r : String(val)
+  return val.toFixed(1)
 }
 
 export function formatCurrency(val: any) {

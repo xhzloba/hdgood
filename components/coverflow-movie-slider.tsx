@@ -603,7 +603,7 @@ export default function CoverflowMovieSlider({
 
                       {movie.rating && (
                         <div
-                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-white font-bold z-[20] transition-opacity duration-300 ${
+                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 text-[11px] md:text-[12px] text-white font-bold z-[20] transition-opacity duration-300 ${
                             isActive ? "opacity-100" : "opacity-0"
                           } ${ratingBgColor(movie.rating)}`}
                         >

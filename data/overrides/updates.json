@@ -1888,5 +1888,138 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "691cec60f807186f77e8da5d",
+    "timestamp": "2025-12-02T12:11:36.858Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:24:55.349Z",
+    "poster": "/movies/vezun-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:27:52.153Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:28:06.178Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:29:19.363Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:30:25.031Z",
+    "poster": "/movies/vezun-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:32:15.725Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:33:44.709Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:33:47.190Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:34:14.241Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:35:19.777Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:42:00.063Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
+  },
+  {
+    "id": "68f2bc60704f07b213b50c17",
+    "timestamp": "2025-12-02T12:43:36.790Z",
+    "poster": "/movies/vezun-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]

@@ -775,5 +775,24 @@
   },
   "6593f8708914c04deae98ebb": {
     "poster_logo": "/movies/logo/50.webp"
+  },
+  "691cec60f807186f77e8da5d": {
+    "poster_logo": "/movies/logo/51.png",
+    "bg_poster": {
+      "backdrop": "/movies/zlaya-2.jpg"
+    }
+  },
+  "68f2bc60704f07b213b50c17": {
+    "poster_logo": "/movies/logo/52.webp",
+    "poster": "/movies/vezun-poster.webp",
+    "bg_poster": {
+      "backdrop": "/movies/vezun.webp"
+    },
+    "trailers": [
+      {
+        "id": "nrajeRqzYHY",
+        "name": "Везунчики"
+      }
+    ]
   }
 }

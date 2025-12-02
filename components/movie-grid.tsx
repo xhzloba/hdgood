@@ -2679,9 +2679,9 @@ export function MovieGrid({
                     })()}
                     {movie.rating && (
                       <div
-                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
+                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-0.5 rounded-full md:rounded-md text-[11px] md:text-[13px] text-white font-bold z-[12] ${ratingBgColor(
                           movie.rating
-                        )}`}
+                        )} md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black tracking-normal md:border md:border-white/10`}
                       >
                         {formatRatingLabel(movie.rating)}
                       </div>

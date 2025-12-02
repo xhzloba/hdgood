@@ -201,7 +201,7 @@ export function NetflixSlider({ url, title }: NetflixSliderProps) {
                   {/* Rating Badge (Top Right) */}
                   {movie.rating && (
                     <div
-                      className={`absolute right-3 top-3 rounded-full px-2 py-1 text-xs font-bold text-white shadow-sm ${ratingBgColor(
+                      className={`absolute right-3 top-3 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 px-2 py-1 text-xs font-bold text-white shadow-sm ${ratingBgColor(
                         parseFloat(movie.rating)
                       )}`}
                     >

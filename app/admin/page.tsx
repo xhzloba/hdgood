@@ -397,45 +397,69 @@ export default function AdminOverridesPage() {
       if (!raw || raw.trim() === "") continue;
       // Пытаемся разобрать тип
       let val: any = raw;
-      if (/^\d+$/.test(raw)) {
-        val = parseInt(raw, 10);
-      } else if (/^\d+\.\d+$/.test(raw)) {
-        val = parseFloat(raw);
-      } else if (
-        /^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/.test(
-          raw
-        )
-      ) {
-        // Формат RGB тройки: "r,g,b" или "r g b"
-        const m = raw.match(
-          /^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/
-        )!;
-        const r = Math.min(255, Math.max(0, parseInt(m[1], 10)));
-        const g = Math.min(255, Math.max(0, parseInt(m[2], 10)));
-        const b = Math.min(255, Math.max(0, parseInt(m[3], 10)));
-        val = [r, g, b];
-      } else if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
-        // Формат HEX: "#rrggbb" или "rrggbb"
-        const hex = raw.replace("#", "");
-        const r = parseInt(hex.slice(0, 2), 16);
-        const g = parseInt(hex.slice(2, 4), 16);
-        const b = parseInt(hex.slice(4, 6), 16);
-        val = [r, g, b];
-      } else if (raw === "true" || raw === "false") {
-        val = raw === "true";
-      } else if (raw.includes(",")) {
-        // Простая обработка массивов строк по запятым
-        val = raw
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
+
+      // Сначала пробуем JSON (для объектов/массивов типа trailers)
+      if (/^(\[|\{).*(\]|\})$/.test(raw.trim())) {
+        try {
+          val = JSON.parse(raw);
+        } catch {}
+      }
+
+      // Если не распарсилось как JSON (осталось строкой), пробуем другие типы
+      if (val === raw) {
+        if (/^\d+$/.test(raw)) {
+          val = parseInt(raw, 10);
+        } else if (/^\d+\.\d+$/.test(raw)) {
+          val = parseFloat(raw);
+        } else if (
+          /^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/.test(
+            raw
+          )
+        ) {
+          // Формат RGB тройки: "r,g,b" или "r g b"
+          const m = raw.match(
+            /^\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*[ ,;\-]\s*(\d{1,3})\s*$/
+          )!;
+          const r = Math.min(255, Math.max(0, parseInt(m[1], 10)));
+          const g = Math.min(255, Math.max(0, parseInt(m[2], 10)));
+          const b = Math.min(255, Math.max(0, parseInt(m[3], 10)));
+          val = [r, g, b];
+        } else if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+          // Формат HEX: "#rrggbb" или "rrggbb"
+          const hex = raw.replace("#", "");
+          const r = parseInt(hex.slice(0, 2), 16);
+          const g = parseInt(hex.slice(2, 4), 16);
+          const b = parseInt(hex.slice(4, 6), 16);
+          val = [r, g, b];
+        } else if (raw === "true" || raw === "false") {
+          val = raw === "true";
+        } else if (raw.includes(",")) {
+          // Простая обработка массивов строк по запятым
+          val = raw
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
       }
       setDeep(overrideObj, path, val);
     }
 
     // Дополнительно учитываем JSON-редактор для сложных структур
+    let jsonExtra: any = {};
+
+    if (jsonOverrideText.trim().startsWith('"trailers":')) {
+      setError('Ошибка: JSON должен быть объектом, обернутым в { }. Например: { "trailers": [...] }');
+      return;
+    }
+
     try {
-      const jsonExtra = JSON.parse(jsonOverrideText || "{}");
+      jsonExtra = JSON.parse(jsonOverrideText || "{}");
+    } catch (e) {
+      setError("Ошибка в JSON редакторе: Некорректный JSON. Проверьте запятые и скобки.");
+      return;
+    }
+
+    try {
       // Глубокий мердж: jsonExtra имеет приоритет
       const deepMerge = (dst: any, src: any) => {
         if (src && typeof src === "object" && !Array.isArray(src)) {
