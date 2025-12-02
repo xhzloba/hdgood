@@ -25,14 +25,11 @@ export function DesktopHome() {
   const [activeMovie, setActiveMovie] = useState<any>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isFetchingOverride, setIsFetchingOverride] = useState(false)
+  const lastUrlRef = useRef<string | null>(null)
   
   const activeSlide = SLIDES[slideIndex]
   const { data } = useSWR(activeSlide.url, fetcher)
-
-  // When slide changes, reset activeMovie
-  useEffect(() => {
-    setActiveMovie(null)
-  }, [slideIndex])
 
   // Scroll Jacking Logic
   useEffect(() => {
@@ -68,25 +65,34 @@ export function DesktopHome() {
     if (!activeMovie) return;
     
     // If we already have a logo, no need to fetch
-    if (activeMovie.logo) return;
+    // BUT if we just switched slides (isFetchingOverride is true manually set), we MUST proceed
+    if (activeMovie.logo && !isFetchingOverride) return;
 
     const fetchOverride = async () => {
+      if (!isFetchingOverride) setIsFetchingOverride(true) // Ensure loading state is on
       try {
         const res = await fetch(`/api/overrides/movies?ids=${activeMovie.id}`)
         if (res.ok) {
           const overrides = await res.json()
           const ov = overrides[String(activeMovie.id)]
           if (ov) {
-            setActiveMovie((prev: any) => ({
-              ...prev,
-              logo: ov.poster_logo || prev.logo,
-              // Prioritize override backdrop (bg_poster.backdrop)
-              backdrop: ov.bg_poster?.backdrop || prev.backdrop
-            }))
+            setActiveMovie((prev: any) => {
+                // If the active movie changed while we were fetching, don't update
+                if (!prev || prev.id !== activeMovie.id) return prev;
+                
+                return {
+                    ...prev,
+                    logo: ov.poster_logo || prev.logo,
+                    // Prioritize override backdrop (bg_poster.backdrop)
+                    backdrop: ov.bg_poster?.backdrop || prev.backdrop
+                };
+            })
           }
         }
       } catch (e) {
         console.error("Failed to fetch override", e)
+      } finally {
+        setIsFetchingOverride(false)
       }
     }
 
@@ -94,10 +100,9 @@ export function DesktopHome() {
   }, [activeMovie?.id]) // Only re-run if ID changes
 
   useEffect(() => {
-    if (data && !activeMovie) {
+    if (data) {
       const movies = data.channels || data
       if (movies && movies.length > 0) {
-        // Normalize the first movie
         const first = movies[0]
         const normalized = {
           id: first.details?.id || first.id,
@@ -113,10 +118,25 @@ export function DesktopHome() {
           duration: first.details?.duration || first.duration,
           logo: null, // Will be fetched
         }
-        setActiveMovie(normalized)
+        
+        // If URL changed (slide switched) or first load, update activeMovie
+        if (lastUrlRef.current !== activeSlide.url || !activeMovie) {
+            // Pre-emptively clear logo if we are switching slides to avoid showing old logo
+            if (lastUrlRef.current !== activeSlide.url) {
+                normalized.logo = null; 
+            }
+            
+            setActiveMovie(normalized)
+            lastUrlRef.current = activeSlide.url
+            
+            // Trigger fetch immediately for the new first movie
+            // We need to manually trigger this check because activeMovie update might be batched
+            // or we want to ensure 'isFetchingOverride' is true BEFORE the component re-renders with the new title
+            setIsFetchingOverride(true)
+        }
       }
     }
-  }, [data, activeMovie])
+  }, [data, activeMovie, activeSlide.url])
 
   const handleMovieHover = useCallback((movie: any) => {
     if (!movie) return
@@ -134,7 +154,7 @@ export function DesktopHome() {
       genre: movie.genre,
       description: movie.description || "", // Might be missing in list view
       duration: movie.duration,
-      logo: movie.logo || null,
+      logo: movie.logo || null, // Keep logo if passed from slider
     }
     setActiveMovie(normalized)
   }, [])
@@ -173,20 +193,23 @@ export function DesktopHome() {
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-48 max-w-3xl animate-in slide-in-from-left-10 duration-700 fade-in mt-auto px-16">
-                {activeMovie.logo ? (
-                  <div className="mb-6">
-                    <img 
-                      src={activeMovie.logo} 
-                      alt={activeMovie.title} 
-                      className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl"
-                    />
-                  </div>
-                ) : (
-                  <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight drop-shadow-2xl tracking-tight">
-                      {activeMovie.title}
-                  </h1>
-                )}
+            <div className="mb-48 max-w-3xl mt-auto px-16">
+                <div className="h-[120px] mb-6 flex items-end">
+                    {activeMovie.logo ? (
+                        <img 
+                          src={activeMovie.logo} 
+                          alt={activeMovie.title} 
+                          className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl"
+                        />
+                    ) : isFetchingOverride ? (
+                         // Show nothing or skeleton while checking for logo
+                         <div className="h-[80px] w-[240px] bg-transparent" />
+                    ) : (
+                      <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
+                          {activeMovie.title}
+                      </h1>
+                    )}
+                </div>
                 
                 <div className="flex items-center gap-3 mb-4">
                     {activeMovie.rating && (
