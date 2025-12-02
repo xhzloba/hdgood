@@ -1780,5 +1780,103 @@
       "franchise.shooting_photos"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "690fbd65c45a0a91ca9a31a1",
+    "timestamp": "2025-12-02T11:20:01.660Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop",
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68a4f3e5a840f0a611f667fe",
+    "timestamp": "2025-12-02T11:29:58.820Z",
+    "poster": "/movies/ten-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "691654e074e3057d2efdfad7",
+    "timestamp": "2025-12-02T11:32:52.844Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "692626e6cf9d2a9df5e7a314",
+    "timestamp": "2025-12-02T11:47:57.122Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6922326544af5cedcd34879d",
+    "timestamp": "2025-12-02T11:50:21.007Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "692e0fe192d74d36ff60a27a",
+    "timestamp": "2025-12-02T11:53:04.547Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster"
+    ]
+  },
+  {
+    "id": "692e0fe192d74d36ff60a27a",
+    "timestamp": "2025-12-02T11:54:03.145Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6920e0e0f807186f7714181e",
+    "timestamp": "2025-12-02T11:57:48.929Z",
+    "poster": "/movies/sny-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6920e0e0f807186f7714181e",
+    "timestamp": "2025-12-02T11:58:39.545Z",
+    "poster": "/movies/sny-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
   }
 ]

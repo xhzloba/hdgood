@@ -729,5 +729,48 @@
   },
   "65c008e13b34c2845ba29fba": {
     "poster_logo": "/movies/logo/43.webp"
+  },
+  "690fbd65c45a0a91ca9a31a1": {
+    "bg_poster": {
+      "backdrop": "/movies/umri-love.webp"
+    },
+    "poster_logo": "/movies/logo/44.webp"
+  },
+  "68a4f3e5a840f0a611f667fe": {
+    "poster_logo": "/movies/logo/45.webp",
+    "poster": "/movies/ten-poster.webp",
+    "bg_poster": {
+      "backdrop": "/movies/ten.webp"
+    }
+  },
+  "691654e074e3057d2efdfad7": {
+    "poster_logo": "/movies/logo/46.webp",
+    "bg_poster": {
+      "backdrop": "/movies/beg.webp"
+    }
+  },
+  "692626e6cf9d2a9df5e7a314": {
+    "poster_logo": "/movies/logo/47.webp",
+    "bg_poster": {
+      "backdrop": "/movies/twomira.webp"
+    }
+  },
+  "6922326544af5cedcd34879d": {
+    "bg_poster": {
+      "backdrop": "/movies/sentiment.webp"
+    }
+  },
+  "692e0fe192d74d36ff60a27a": {
+    "poster_logo": "/movies/logo/48.png",
+    "bg_poster": {
+      "backdrop": "/movies/pobratski.jpg"
+    }
+  },
+  "6920e0e0f807186f7714181e": {
+    "poster_logo": "/movies/logo/49.png",
+    "poster": "/movies/sny-poster.jpg",
+    "bg_poster": {
+      "backdrop": "/movies/sny.jpg"
+    }
   }
 }
