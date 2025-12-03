@@ -548,12 +548,13 @@ export default function HomeClient({
            {/* Sidebar Skeleton */}
            <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 glass-panel border-r border-white/5 bg-black/20 backdrop-blur-sm">
               <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
-              <nav className="flex flex-col gap-8 flex-1 justify-center">
-                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
-                  <div className="p-3 rounded-xl text-white bg-white/10"><div className="w-6 h-6 bg-white/20 rounded animate-pulse" /></div>
-                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
-                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
-                  <div className="p-3 rounded-xl text-zinc-400"><div className="w-6 h-6 bg-white/10 rounded animate-pulse" /></div>
+              <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
+                  {/* Home */}
+                  <div className="p-3 rounded-xl text-white bg-white/10"><div className="w-7 h-7 bg-white/20 rounded animate-pulse" /></div>
+                  {/* Categories */}
+                  {CATEGORIES.filter(cat => cat.route && cat.route !== "/updates").map((_, i) => (
+                      <div key={i} className="p-3 rounded-xl text-zinc-400"><div className="w-7 h-7 bg-white/10 rounded animate-pulse" /></div>
+                  ))}
               </nav>
            </aside>
            

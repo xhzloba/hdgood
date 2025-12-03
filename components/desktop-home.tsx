@@ -24,6 +24,16 @@ const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=
 const MOVIES_URL = "https://api.vokino.pro/v2/list?sort=popular&type=movie&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 const SERIALS_URL = "https://api.vokino.pro/v2/list?sort=popular&type=serial&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 
+const PROFILE_AVATARS = [
+  "https://i.pinimg.com/564x/1b/71/b8/1b71b85dd741ad27bffa5c834a7ed797.jpg",
+  "https://i.pinimg.com/564x/1b/a2/e6/1ba2e6d1d4874546c70c91f1024e17fb.jpg",
+  "https://i.pinimg.com/236x/ec/74/7a/ec747a688a5d6232663caaf114bad1c3.jpg",
+  "https://i.pinimg.com/236x/89/51/35/89513597910ab6ce4285402ab7c0e591.jpg",
+  "https://i.pinimg.com/474x/b6/77/cd/b677cd1cde292f261166533d6fe75872.jpg",
+  "https://pbs.twimg.com/media/GvFs5kxWEAAJpzR.jpg",
+  "https://i.pinimg.com/474x/60/80/81/60808105ca579916a1b3eda8768dd570.jpg"
+]
+
 const fetcher = async (url: string) => {
   const res = await fetch(url)
   if (!res.ok) throw new Error('Failed to fetch')
@@ -75,7 +85,7 @@ function IconHomeCustom({ className, ...props }: any) {
 }
 
 function CategoryIcon({ name, className = "" }: { name: string; className?: string }) {
-  const props = { className, size: 24, stroke: 1.5 } as const
+  const props = { className, size: 28, stroke: 1.5 } as const
   switch (name) {
     case "clock":
       return <IconClock {...props} />
@@ -182,10 +192,16 @@ export function DesktopHome() {
   const [slideIndex, setSlideIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isFetchingOverride, setIsFetchingOverride] = useState(false)
+  const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0])
   const lastUrlRef = useRef<string | null>(null)
   const lastInputTimeRef = useRef(0)
   
   const activeSlide = SLIDES[slideIndex]
+
+  useEffect(() => {
+    setProfileAvatar(PROFILE_AVATARS[Math.floor(Math.random() * PROFILE_AVATARS.length)])
+  }, [])
+
   const { data } = useSWR(activeSlide.url, fetcher)
 
   // Scroll Jacking Logic
@@ -350,14 +366,14 @@ export function DesktopHome() {
       <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950">
          <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
          
-         <nav className="flex flex-col gap-4 flex-1 justify-start w-full items-center">
-            <NavItem icon={<Search size={24} />} label="Поиск" href="/search" />
-            <NavItem icon={<IconHomeCustom className="w-6 h-6" />} label="Главная" href="/" active />
+         <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
+            <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
+            <NavItem icon={<IconHomeCustom className="w-7 h-7" />} label="Главная" href="/" active />
             
             {CATEGORIES.filter(cat => cat.route && cat.route !== "/updates").map((cat, i) => (
                 <NavItem 
                     key={i}
-                    icon={<CategoryIcon name={cat.ico} className="w-6 h-6" />} 
+                    icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />} 
                     label={cat.title} 
                     href={cat.route || "#"} 
                 />
@@ -365,7 +381,15 @@ export function DesktopHome() {
          </nav>
 
          <div className="mt-auto">
-            <NavItem icon={<User size={24} />} label="Профиль" href="#" />
+            <NavItem 
+              icon={
+                <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                  <img src={profileAvatar} className="w-full h-full object-cover" alt="Профиль" />
+                </div>
+              } 
+              label="Профиль" 
+              href="#" 
+            />
          </div>
       </aside>
 
