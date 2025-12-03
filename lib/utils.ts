@@ -18,9 +18,7 @@ export function ratingBgColor(r?: number | string) {
   const val = typeof r === 'string' ? parseFloat(r) : r
   if (val == null || Number.isNaN(val)) return 'bg-zinc-700'
   if (val === 0) return 'bg-zinc-800'
-  if (val < 5.6) return 'bg-red-600'
-  if (val <= 6.9) return 'bg-orange-500'
-  if (val < 8.0) return 'bg-green-500'
+  if (val < 7.0) return 'bg-zinc-700'
   return 'bg-green-600'
 }
 

@@ -441,8 +441,8 @@ export default function MovieSlider({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
+            <CarouselPrevious className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
+            <CarouselNext className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
           </Carousel>
           <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
             {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
@@ -687,8 +687,8 @@ export default function MovieSlider({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
+            <CarouselPrevious className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
+            <CarouselNext className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
           </Carousel>
           {!hideIndicators && (
             <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
