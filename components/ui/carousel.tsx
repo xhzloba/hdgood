@@ -63,6 +63,34 @@ function Carousel({
   const containerRef = React.useRef<HTMLDivElement>(null)
   const isKeyboardRef = React.useRef(false)
 
+  const disableKeyboardMode = React.useCallback(() => {
+    if (containerRef.current) {
+      delete containerRef.current.dataset.keyboardNav
+    }
+  }, [])
+
+  const enableKeyboardMode = React.useCallback(() => {
+    if (containerRef.current) {
+      containerRef.current.dataset.keyboardNav = 'true'
+    }
+  }, [])
+
+  React.useEffect(() => {
+    const handleMouseMove = () => {
+      disableKeyboardMode()
+    }
+    const handleMouseDown = () => {
+      disableKeyboardMode()
+    }
+    // Add listeners to window to catch any mouse movement/click
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousedown', handleMouseDown)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mousedown', handleMouseDown)
+    }
+  }, [disableKeyboardMode])
+
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return
     setCanScrollPrev(api.canScrollPrev())
@@ -89,6 +117,7 @@ function Carousel({
       if (isFocusInside) return
 
       if (event.key === 'ArrowLeft') {
+        enableKeyboardMode()
         event.preventDefault()
         const idx = api.selectedScrollSnap()
         const slides = api.slideNodes()
@@ -107,6 +136,7 @@ function Carousel({
            scrollPrev()
         }
       } else if (event.key === 'ArrowRight') {
+        enableKeyboardMode()
         event.preventDefault()
         const idx = api.selectedScrollSnap()
         const slides = api.slideNodes()
@@ -129,7 +159,7 @@ function Carousel({
 
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [api, enableGlobalKeyNavigation, scrollPrev, scrollNext])
+  }, [api, enableGlobalKeyNavigation, scrollPrev, scrollNext, enableKeyboardMode])
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -137,6 +167,7 @@ function Carousel({
       
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         isKeyboardRef.current = true
+        enableKeyboardMode()
       }
 
       if (event.key === 'ArrowLeft') {
@@ -181,7 +212,7 @@ function Carousel({
         }
       }
     },
-    [api, scrollPrev, scrollNext],
+    [api, scrollPrev, scrollNext, enableKeyboardMode],
   )
 
   const handleFocusCapture = React.useCallback(

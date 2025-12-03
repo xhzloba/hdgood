@@ -1323,3 +1323,8 @@ html[data-toploader="silent"] #nprogress .peg {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+/* Fix for carousel focus fighting with mouse hover */
+[data-keyboard-nav="true"] [data-slot="carousel-item"] {
+  pointer-events: none;
+}
