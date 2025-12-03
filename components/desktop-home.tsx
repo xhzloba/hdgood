@@ -399,12 +399,12 @@ export function DesktopHome() {
         {/* Movie Info */}
         {activeMovie ? (
             <div className="mb-20 max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out [@media(min-height:800px)]:mb-28 [@media(min-height:1000px)]:mb-32">
-                <div className="h-[120px] mb-6 flex items-end">
+                <div className="h-[120px] mb-6 flex items-end transition-[height] duration-500 ease-out [@media(min-height:800px)]:h-[160px] [@media(min-height:1000px)]:h-[200px]">
                     {activeMovie.logo ? (
                         <img 
                           src={activeMovie.logo} 
                           alt={activeMovie.title} 
-                          className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl"
+                          className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl transition-all duration-500 ease-out [@media(min-height:800px)]:max-w-[340px] [@media(min-height:800px)]:max-h-[160px] [@media(min-height:1000px)]:max-w-[460px] [@media(min-height:1000px)]:max-h-[200px]"
                         />
                     ) : isFetchingOverride ? (
                          // Show nothing or skeleton while checking for logo
