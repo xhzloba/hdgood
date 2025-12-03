@@ -423,17 +423,17 @@ export function DesktopHome() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-full flex flex-col pb-20 px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out [@media(min-height:800px)]:pb-32 [@media(min-height:1000px)]:pb-40">
+      <main className="relative z-10 ml-24 h-full flex flex-col pb-[8vh] px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out">
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-20 max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out [@media(min-height:800px)]:mb-28 [@media(min-height:1000px)]:mb-32">
-                <div className="h-[120px] mb-6 flex items-end transition-[height] duration-500 ease-out [@media(min-height:800px)]:h-[160px] [@media(min-height:1000px)]:h-[200px]">
+            <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
+                <div className="h-[16vh] max-h-[200px] min-h-[100px] mb-6 flex items-end transition-[height] duration-500 ease-out">
                     {activeMovie.logo ? (
                         <img 
                           src={activeMovie.logo} 
                           alt={activeMovie.title} 
-                          className="max-w-[240px] max-h-[120px] object-contain drop-shadow-2xl transition-all duration-500 ease-out [@media(min-height:800px)]:max-w-[340px] [@media(min-height:800px)]:max-h-[160px] [@media(min-height:1000px)]:max-w-[460px] [@media(min-height:1000px)]:max-h-[200px]"
+                          className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
                         />
                     ) : isFetchingOverride ? (
                          // Show nothing or skeleton while checking for logo
@@ -476,9 +476,9 @@ export function DesktopHome() {
                 </div>
             </div>
         ) : (
-            <div className="mb-20 max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out [@media(min-height:800px)]:mb-28 [@media(min-height:1000px)]:mb-32">
+            <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
                 {/* Logo/Title Skeleton */}
-                <div className="mb-6">
+                <div className="mb-6 h-[16vh] max-h-[200px] min-h-[100px] flex items-end">
                     <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
                 </div>
                 
