@@ -37,6 +37,7 @@ type MovieSliderProps = {
   sortByYear?: "asc" | "desc";
   onMovieHover?: (movie: any) => void;
   hideIndicators?: boolean;
+  hideMetadata?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -134,6 +135,7 @@ export default function MovieSlider({
   sortByYear,
   onMovieHover,
   hideIndicators = false,
+  hideMetadata = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
@@ -628,12 +630,13 @@ export default function MovieSlider({
                           {formatRatingLabel(movie.rating)}
                         </div>
                       )}
-                      {movie.quality && (
+                      {!hideMetadata && movie.quality && (
                         <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
                           {String(movie.quality)}
                         </div>
                       )}
                     </div>
+                    {!hideMetadata && (
                     <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
                       <div className="relative z-[2]">
                         <h3
@@ -679,6 +682,7 @@ export default function MovieSlider({
                         })()}
                       </div>
                     </div>
+                    )}
                   </Link>
                 </CarouselItem>
               ))}

@@ -343,7 +343,7 @@ export function DesktopHome() {
       <BackdropImage src={getBackdrop(activeMovie)} />
 
       {/* Sidebar Navigation */}
-      <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 glass-panel border-r border-white/5 bg-black/20 backdrop-blur-sm">
+      <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950">
          <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
          
          <nav className="flex flex-col gap-4 flex-1 justify-start w-full items-center">
@@ -366,11 +366,11 @@ export function DesktopHome() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-hidden">
+      <main className="relative z-10 ml-24 h-full flex flex-col pb-20 px-0 pt-24 overflow-hidden">
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-48 max-w-3xl mt-auto px-16">
+            <div className="mb-20 max-w-3xl mt-auto px-16">
                 <div className="h-[120px] mb-6 flex items-end">
                     {activeMovie.logo ? (
                         <img 
@@ -419,7 +419,7 @@ export function DesktopHome() {
                 </div>
             </div>
         ) : (
-            <div className="mb-48 max-w-3xl mt-auto px-16">
+            <div className="mb-20 max-w-3xl mt-auto px-16">
                 {/* Logo/Title Skeleton */}
                 <div className="mb-6">
                     <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
@@ -461,6 +461,7 @@ export function DesktopHome() {
                         compactOnMobile={false}
                         perPageOverride={15}
                         hideIndicators
+                        hideMetadata
                     />
                 ) : (
                      <div className="w-full mb-8 px-4 md:px-12">
