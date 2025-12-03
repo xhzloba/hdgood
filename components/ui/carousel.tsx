@@ -61,6 +61,7 @@ function Carousel({
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
+  const isKeyboardRef = React.useRef(false)
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return
@@ -133,6 +134,10 @@ function Carousel({
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (!api) return
+      
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        isKeyboardRef.current = true
+      }
 
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
@@ -189,11 +194,16 @@ function Carousel({
         const slides = Array.from(slide.parentElement.children)
         const index = slides.indexOf(slide)
         if (index >= 0) {
-           // Проверяем, виден ли слайд полностью
-           const selectedIndex = api.selectedScrollSnap();
-           // const slidesInView = api.slidesInView(); // (если доступно в вашей версии embla)
-           // Упрощенно: если индекс отличается от текущего видимого набора, скроллим
-           api.scrollTo(index);
+           // Check if the slide is already visible
+           // If it is, we don't want to scroll, especially on click (which triggers focus)
+           // But we DO want to scroll if it was triggered by keyboard navigation
+           if (!isKeyboardRef.current && api.slidesInView().includes(index)) {
+             return
+           }
+           
+           api.scrollTo(index)
+           // Reset flag
+           isKeyboardRef.current = false
         }
       }
     },
