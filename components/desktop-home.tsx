@@ -394,11 +394,11 @@ export function DesktopHome() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-full flex flex-col pb-20 px-0 pt-24 overflow-hidden">
+      <main className="relative z-10 ml-24 h-full flex flex-col pb-20 px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out [@media(min-height:800px)]:pb-32 [@media(min-height:1000px)]:pb-40">
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-20 max-w-3xl mt-auto px-16">
+            <div className="mb-20 max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out [@media(min-height:800px)]:mb-28 [@media(min-height:1000px)]:mb-32">
                 <div className="h-[120px] mb-6 flex items-end">
                     {activeMovie.logo ? (
                         <img 
@@ -447,7 +447,7 @@ export function DesktopHome() {
                 </div>
             </div>
         ) : (
-            <div className="mb-20 max-w-3xl mt-auto px-16">
+            <div className="mb-20 max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out [@media(min-height:800px)]:mb-28 [@media(min-height:1000px)]:mb-32">
                 {/* Logo/Title Skeleton */}
                 <div className="mb-6">
                     <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
