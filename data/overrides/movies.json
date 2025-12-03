@@ -317,6 +317,10 @@
     }
   },
   "6593f8b68914c04deaea15df": {
+    "bg_poster": {
+      "backdrop": "/movies/things-backdrop.webp"
+    },
+    "poster": "/movies/things-5.webp",
     "franchise": {
       "shooting_photos": [
         "https://images.kinorium.com/movie/shot/1545339/w1500_55519239.jpg",
