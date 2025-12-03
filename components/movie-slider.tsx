@@ -38,6 +38,7 @@ type MovieSliderProps = {
   onMovieHover?: (movie: any) => void;
   hideIndicators?: boolean;
   hideMetadata?: boolean;
+  enableGlobalKeyNavigation?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -136,6 +137,7 @@ export default function MovieSlider({
   onMovieHover,
   hideIndicators = false,
   hideMetadata = false,
+  enableGlobalKeyNavigation = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
@@ -456,7 +458,7 @@ export default function MovieSlider({
         </div>
       ) : (
         <div className="relative px-2 md:px-12" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
-          <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi}>
+          <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi} enableGlobalKeyNavigation={enableGlobalKeyNavigation}>
             <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
@@ -467,7 +469,19 @@ export default function MovieSlider({
                 >
                   <Link
                     href={`/movie/${movie.id}`}
-                    className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm"
+                    className="group block bg-transparent hover:bg-transparent outline-none focus-visible:outline-none transition-all duration-200 overflow-hidden rounded-sm focus:ring-0 hover:outline hover:outline-[1.5px] hover:outline-zinc-700 [&.is-focused]:outline [&.is-focused]:outline-[1.5px] [&.is-focused]:outline-zinc-700"
+                    onFocus={(e) => {
+                      onMovieHover?.(movie);
+                      // Add active state manually for consistent styling with hover
+                      e.currentTarget.classList.add('is-focused');
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.classList.remove('is-focused');
+                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      if (!posterEl) return;
+                      posterEl.style.setProperty('--mx', '0');
+                      posterEl.style.setProperty('--my', '0');
+                    }}
                     onMouseMove={(e) => {
                       onMovieHover?.(movie);
                       const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
@@ -518,7 +532,7 @@ export default function MovieSlider({
                     } catch {}
                   }}
                 >
-                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu">
+                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200">
                     {(() => {
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
@@ -571,7 +585,7 @@ export default function MovieSlider({
                           : null;
                       return posterSrc && loadedImages.has(String(movie.id)) ? (
                         <div
-                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300"
                           style={{
                             background:
                               "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
@@ -599,7 +613,7 @@ export default function MovieSlider({
                       const hasCountry = !!movie.country;
                       if (!hasCountry && genres.length === 0) return null;
                       return (
-                        <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200">
+                        <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
                           <div
                             className="absolute inset-x-0 bottom-0 h-[40%]"
                             style={{

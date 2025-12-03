@@ -519,6 +519,7 @@ export function DesktopHome() {
                         perPageOverride={15}
                         hideIndicators
                         hideMetadata
+                        enableGlobalKeyNavigation
                     />
                 ) : (
                      <div className="w-full mb-8 px-4 md:px-12">

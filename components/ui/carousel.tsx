@@ -17,6 +17,7 @@ type CarouselProps = {
   plugins?: CarouselPlugin
   orientation?: 'horizontal' | 'vertical'
   setApi?: (api: CarouselApi) => void
+  enableGlobalKeyNavigation?: boolean
 }
 
 type CarouselContextProps = {
@@ -47,6 +48,7 @@ function Carousel({
   plugins,
   className,
   children,
+  enableGlobalKeyNavigation = false,
   ...props
 }: React.ComponentProps<'div'> & CarouselProps) {
   const [carouselRef, api] = useEmblaCarousel(
@@ -58,6 +60,7 @@ function Carousel({
   )
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return
@@ -73,17 +76,128 @@ function Carousel({
     api?.scrollNext()
   }, [api])
 
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+  // Global keyboard navigation
+  React.useEffect(() => {
+    if (!enableGlobalKeyNavigation || !api) return
+
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
+      
+      // Check if focus is already inside the carousel
+      const isFocusInside = containerRef.current?.contains(document.activeElement)
+      if (isFocusInside) return
+
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
-        scrollPrev()
+        const idx = api.selectedScrollSnap()
+        const slides = api.slideNodes()
+        const targetIdx = idx - 1
+        
+        if (targetIdx >= 0) {
+           const slide = slides[targetIdx]
+           const link = slide.querySelector('a, button') as HTMLElement
+           if (link) link.focus()
+           api.scrollTo(targetIdx)
+        } else {
+           // First slide
+           const slide = slides[0]
+           const link = slide.querySelector('a, button') as HTMLElement
+           if (link) link.focus()
+           scrollPrev()
+        }
       } else if (event.key === 'ArrowRight') {
         event.preventDefault()
-        scrollNext()
+        const idx = api.selectedScrollSnap()
+        const slides = api.slideNodes()
+        const targetIdx = idx + 1
+        
+        if (targetIdx < slides.length) {
+           const slide = slides[targetIdx]
+           const link = slide.querySelector('a, button') as HTMLElement
+           if (link) link.focus()
+           api.scrollTo(targetIdx)
+        } else {
+           // Last slide or loop
+           const slide = slides[idx]
+           const link = slide.querySelector('a, button') as HTMLElement
+           if (link) link.focus()
+           scrollNext()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [api, enableGlobalKeyNavigation, scrollPrev, scrollNext])
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!api) return
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        // Находим текущий активный элемент внутри карусели
+        const activeElement = document.activeElement as HTMLElement;
+        const currentSlide = activeElement?.closest('[data-slot="carousel-item"]');
+        
+        if (currentSlide) {
+          // Если фокус уже внутри, перемещаем его на предыдущий слайд
+          const previousSlide = currentSlide.previousElementSibling as HTMLElement;
+          if (previousSlide) {
+             const link = previousSlide.querySelector('a, button') as HTMLElement;
+             if (link) link.focus();
+          } else {
+             // Если это первый слайд, скроллим карусель назад
+             scrollPrev();
+          }
+        } else {
+          // Если фокус не внутри, просто скроллим
+          scrollPrev();
+        }
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        // Находим текущий активный элемент внутри карусели
+        const activeElement = document.activeElement as HTMLElement;
+        const currentSlide = activeElement?.closest('[data-slot="carousel-item"]');
+        
+        if (currentSlide) {
+           // Если фокус уже внутри, перемещаем его на следующий слайд
+           const nextSlide = currentSlide.nextElementSibling as HTMLElement;
+           if (nextSlide) {
+              const link = nextSlide.querySelector('a, button') as HTMLElement;
+              if (link) link.focus();
+           } else {
+              // Если это последний видимый слайд, скроллим карусель вперед
+              scrollNext();
+           }
+        } else {
+           // Если фокус не внутри, просто скроллим
+           scrollNext();
+        }
       }
     },
-    [scrollPrev, scrollNext],
+    [api, scrollPrev, scrollNext],
+  )
+
+  const handleFocusCapture = React.useCallback(
+    (event: React.FocusEvent<HTMLDivElement>) => {
+      if (!api) return
+      const slide = (event.target as HTMLElement).closest(
+        '[data-slot="carousel-item"]'
+      )
+      if (slide && slide.parentElement) {
+        const slides = Array.from(slide.parentElement.children)
+        const index = slides.indexOf(slide)
+        if (index >= 0) {
+           // Проверяем, виден ли слайд полностью
+           const selectedIndex = api.selectedScrollSnap();
+           // const slidesInView = api.slidesInView(); // (если доступно в вашей версии embla)
+           // Упрощенно: если индекс отличается от текущего видимого набора, скроллим
+           api.scrollTo(index);
+        }
+      }
+    },
+    [api]
   )
 
   React.useEffect(() => {
@@ -117,7 +231,9 @@ function Carousel({
       }}
     >
       <div
+        ref={containerRef}
         onKeyDownCapture={handleKeyDown}
+        onFocusCapture={handleFocusCapture}
         className={cn('relative', className)}
         role="region"
         aria-roledescription="carousel"
