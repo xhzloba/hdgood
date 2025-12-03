@@ -18,6 +18,12 @@ import { CATEGORIES } from "@/lib/categories"
 import MovieSlider from "@/components/movie-slider"
 import useSWR from "swr"
 import Link from "next/link"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const TRENDING_URL = "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
@@ -116,13 +122,21 @@ function CategoryIcon({ name, className = "" }: { name: string; className?: stri
 
 function NavItem({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active?: boolean }) {
     return (
-        <Link 
-            href={href} 
-            className={`p-3 rounded-xl transition-all group relative flex items-center justify-center ${active ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
-            title={label}
-        >
-            {icon}
-        </Link>
+        <TooltipProvider delayDuration={0}>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Link 
+                        href={href} 
+                        className={`p-3 rounded-xl transition-all group relative flex items-center justify-center ${active ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                        {icon}
+                    </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="font-bold bg-white text-black border-0 shadow-xl ml-2">
+                    <p>{label}</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     )
 }
 
@@ -267,6 +281,10 @@ export function DesktopHome() {
           const overrides = await res.json()
           const ov = overrides[String(activeMovie.id)]
           if (ov) {
+            // Update cache
+            const overridesCache = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+            overridesCache[String(activeMovie.id)] = ov;
+            
             setActiveMovie((prev: any) => {
                 // If the active movie changed while we were fetching, don't update
                 if (!prev || prev.id !== activeMovie.id) return prev;
@@ -288,7 +306,7 @@ export function DesktopHome() {
     }
 
     fetchOverride()
-  }, [activeMovie?.id, isFetchingOverride]) // Re-run if ID changes or if we explicitly requested a fetch (e.g. slide switch)
+  }, [activeMovie?.id, activeSlide.id]) // Re-run if ID changes or if slide changes
 
   useEffect(() => {
     if (data) {
@@ -312,9 +330,17 @@ export function DesktopHome() {
         
         // If URL changed (slide switched) or first load, update activeMovie
         if (lastUrlRef.current !== activeSlide.url || !activeMovie) {
-            // Pre-emptively clear logo if we are switching slides to avoid showing old logo
-            if (lastUrlRef.current !== activeSlide.url) {
-                normalized.logo = null; 
+            // Try to restore from cache immediately if available
+            const overridesCache = (globalThis as any).__movieOverridesCache || {};
+            const cachedOverride = overridesCache[String(normalized.id)];
+            if (cachedOverride) {
+                normalized.logo = cachedOverride.poster_logo || normalized.logo;
+                normalized.backdrop = cachedOverride.bg_poster?.backdrop || normalized.backdrop;
+            } else {
+                 // Pre-emptively clear logo if we are switching slides to avoid showing old logo
+                 if (lastUrlRef.current !== activeSlide.url) {
+                    normalized.logo = null; 
+                 }
             }
             
             setActiveMovie(normalized)
@@ -323,7 +349,10 @@ export function DesktopHome() {
             // Trigger fetch immediately for the new first movie
             // We need to manually trigger this check because activeMovie update might be batched
             // or we want to ensure 'isFetchingOverride' is true BEFORE the component re-renders with the new title
-            setIsFetchingOverride(true)
+            // IF we didn't have it cached
+            if (!cachedOverride) {
+                 setIsFetchingOverride(true)
+            }
         }
       }
     }
