@@ -534,30 +534,37 @@ export function DesktopHome() {
             </div>
         </div>
         </div>
-        {/* Vertical Slider Indicators */}
+        {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div className="absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12">
-            <div className="pointer-events-auto flex flex-col gap-8 items-end">
-                {SLIDES.map((slide, i) => (
-                    <button
-                        key={slide.id}
-                        onClick={() => setSlideIndex(i)}
-                        className="group flex items-center gap-5 focus:outline-none"
-                    >
-                        <span className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
-                            slideIndex === i 
-                                ? "text-xl text-white drop-shadow-lg scale-105" 
-                                : "text-sm text-zinc-600 group-hover:text-zinc-300"
-                        }`}>
-                            {slide.title}
-                        </span>
-                        
-                        <div className={`transition-all duration-500 rounded-full ${
-                            slideIndex === i 
-                                ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]" 
-                                : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
-                        }`} />
-                    </button>
-                ))}
+            <div className="h-[160px] w-full relative overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]">
+                <div 
+                    className="absolute top-0 right-0 flex flex-col gap-6 items-end transition-transform duration-500 ease-out w-full"
+                    style={{ 
+                        transform: `translateY(${60 - slideIndex * 50}px)` 
+                    }}
+                >
+                    {SLIDES.map((slide, i) => (
+                        <button
+                            key={slide.id}
+                            onClick={() => setSlideIndex(i)}
+                            className="group flex items-center gap-5 focus:outline-none pointer-events-auto min-h-[30px]"
+                        >
+                            <span className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
+                                slideIndex === i 
+                                    ? "text-xl text-white drop-shadow-lg scale-105" 
+                                    : "text-sm text-zinc-600 group-hover:text-zinc-300"
+                            }`}>
+                                {slide.title}
+                            </span>
+                            
+                            <div className={`transition-all duration-500 rounded-full ${
+                                slideIndex === i 
+                                    ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]" 
+                                    : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
+                            }`} />
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
 
