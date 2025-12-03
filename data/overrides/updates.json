@@ -2083,5 +2083,16 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "67980ff104c4a575606c1d41",
+    "timestamp": "2025-12-03T12:49:35.236Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]
