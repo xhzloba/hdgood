@@ -21,6 +21,8 @@ import Link from "next/link"
 
 const TRENDING_URL = "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+const MOVIES_URL = "https://api.vokino.pro/v2/list?sort=popular&type=movie&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+const SERIALS_URL = "https://api.vokino.pro/v2/list?sort=popular&type=serial&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -31,6 +33,8 @@ const fetcher = async (url: string) => {
 const SLIDES = [
     { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
     { id: "trending", title: "В тренде", url: TRENDING_URL },
+    { id: "movies", title: "Фильмы", url: MOVIES_URL },
+    { id: "serials", title: "Сериалы", url: SERIALS_URL },
 ]
 
 // --- Helper Components ---
@@ -268,7 +272,7 @@ export function DesktopHome() {
     }
 
     fetchOverride()
-  }, [activeMovie?.id]) // Only re-run if ID changes
+  }, [activeMovie?.id, isFetchingOverride]) // Re-run if ID changes or if we explicitly requested a fetch (e.g. slide switch)
 
   useEffect(() => {
     if (data) {
