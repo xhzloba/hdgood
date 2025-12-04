@@ -238,6 +238,14 @@ export default function MovieSlider({
           const nd = await fetcher(nextUrl, 10000);
           const items = extractMoviesFromData(nd);
           if (!items || items.length === 0) break;
+
+          // Проверка на дубликаты: если все пришедшие фильмы уже есть в списке, прерываем загрузку
+          const currentMovies = pagesData.flatMap(p => extractMoviesFromData(p.data));
+          const currentIds = new Set(currentMovies.map((m: any) => String(m.id)));
+          const isAllDuplicates = items.every((item: any) => currentIds.has(String(item.id)));
+          
+          if (isAllDuplicates) break;
+
           setPagesData((prev) => {
             if (prev.some((p) => p.page === next)) return prev;
             return [...prev, { page: next, data: nd }];
