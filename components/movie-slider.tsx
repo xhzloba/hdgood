@@ -495,18 +495,20 @@ export default function MovieSlider({
                       <Skeleton className="w-full h-full" />
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-                    {!hideMetadata && (
-                      <div className="relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden">
-                        <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-                        <div className="relative">
-                          <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
-                          <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
-                            <Skeleton className="h-3 md:h-4 w-10" />
-                            <Skeleton className="h-3 md:h-4 w-16" />
+                    <div className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${hideMetadata ? 'invisible' : ''}`}>
+                      {!hideMetadata && (
+                        <>
+                          <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+                          <div className="relative">
+                            <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                            <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                              <Skeleton className="h-3 md:h-4 w-10" />
+                              <Skeleton className="h-3 md:h-4 w-16" />
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </CarouselItem>
               ))}
@@ -741,53 +743,53 @@ export default function MovieSlider({
                         </div>
                       )}
                     </div>
-                    {!hideMetadata && (
-                    <div className="relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden">
-                      <div className="relative z-[2]">
-                        <h3
-                          className="text-[13px] md:text-[14px] font-bold truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
-                          title={movie.title || "Без названия"}
-                        >
-                          {movie.title || "Без названия"}
-                        </h3>
-                        {(() => {
-                          const year = movie.year ? String(movie.year) : null;
-                          const quality = movie.quality ? String(movie.quality) : null;
-                          const tagsArr = (() => {
-                            const raw = (movie as any)?.tags;
-                            let items: string[] = [];
-                            if (Array.isArray(raw)) {
-                              items = raw
-                                .map((v) => String(v || "").trim())
-                                .filter((v) => v.length > 0);
-                            } else if (typeof raw === "string") {
-                              items = raw
-                                .split(/[,/|]/)
-                                .map((p) => p.trim())
-                                .filter(Boolean);
-                            }
-                            return items.slice(0, 1);
-                          })();
-                          if (!year && !quality && tagsArr.length === 0) return null;
-                          return (
-                            <div className="flex items-center gap-2 text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
-                              {year && <span>{year}</span>}
-                              {year && (quality || tagsArr.length > 0) && (
-                                <span className="text-zinc-500/60">•</span>
-                              )}
-                              {quality && <span>{quality}</span>}
-                              {quality && tagsArr.length > 0 && (
-                                <span className="text-zinc-500/60">•</span>
-                              )}
-                              {tagsArr.length > 0 && (
-                                <span className="truncate max-w-[70%]">{tagsArr.join(" • ")}</span>
-                              )}
-                            </div>
-                          );
-                        })()}
-                      </div>
+                    <div className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${hideMetadata ? 'invisible' : ''}`}>
+                      {!hideMetadata && (
+                        <div className="relative z-[2]">
+                          <h3
+                            className="text-[13px] md:text-[14px] font-bold truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
+                            title={movie.title || "Без названия"}
+                          >
+                            {movie.title || "Без названия"}
+                          </h3>
+                          {(() => {
+                            const year = movie.year ? String(movie.year) : null;
+                            const quality = movie.quality ? String(movie.quality) : null;
+                            const tagsArr = (() => {
+                              const raw = (movie as any)?.tags;
+                              let items: string[] = [];
+                              if (Array.isArray(raw)) {
+                                items = raw
+                                  .map((v) => String(v || "").trim())
+                                  .filter((v) => v.length > 0);
+                              } else if (typeof raw === "string") {
+                                items = raw
+                                  .split(/[,/|]/)
+                                  .map((p) => p.trim())
+                                  .filter(Boolean);
+                              }
+                              return items.slice(0, 1);
+                            })();
+                            if (!year && !quality && tagsArr.length === 0) return null;
+                            return (
+                              <div className="flex items-center gap-2 text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
+                                {year && <span>{year}</span>}
+                                {year && (quality || tagsArr.length > 0) && (
+                                  <span className="text-zinc-500/60">•</span>
+                                )}
+                                {quality && <span>{quality}</span>}
+                                {quality && tagsArr.length > 0 && (
+                                  <span className="text-zinc-500/60">•</span>
+                                )}
+                                {tagsArr.length > 0 && (
+                                  <span className="truncate max-w-[70%]">{tagsArr.join(" • ")}</span>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
                     </div>
-                    )}
                   </Link>
                 </CarouselItem>
               ))}
