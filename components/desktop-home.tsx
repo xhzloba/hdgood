@@ -486,142 +486,80 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
         <div className="min-h-full w-full flex flex-col justify-end">
         {/* Movie Info */}
         {activeMovie ? (
-            <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
-                <div className="h-[16vh] max-h-[200px] min-h-[100px] mb-6 flex items-end transition-[height] duration-500 ease-out">
-                    {activeMovie.logo ? (
-                        <img 
-                          src={activeMovie.logo} 
-                          alt={activeMovie.title} 
-                          className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
+            <>
+                <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
+                    <div className="h-[16vh] max-h-[200px] min-h-[100px] mb-6 flex items-end transition-[height] duration-500 ease-out">
+                        {activeMovie.logo ? (
+                            <img 
+                              src={activeMovie.logo} 
+                              alt={activeMovie.title} 
+                              className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
+                            />
+                        ) : isFetchingOverride ? (
+                             // Show nothing or skeleton while checking for logo
+                             <div className="h-[80px] w-[240px] bg-transparent" />
+                        ) : (
+                          <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
+                              {activeMovie.title}
+                          </h1>
+                        )}
+                    </div>
+                    
+                    <div className="flex items-center gap-3 mb-4">
+                        {activeMovie.rating && (
+                             <span className={`px-2 py-1 rounded text-sm font-bold ${Number(activeMovie.rating) >= 7 ? 'bg-green-600' : 'bg-zinc-700'}`}>
+                                 {Number(activeMovie.rating).toFixed(1)}
+                             </span>
+                        )}
+                        <span className="text-zinc-300 text-sm">{activeMovie.year}</span>
+                        <span className="text-zinc-300 text-sm">
+                            {activeMovie.genre?.split(',').slice(0, 2).join(',')}
+                        </span>
+                        {activeMovie.country && <span className="text-zinc-300 text-sm">{activeMovie.country}</span>}
+                    </div>
+                    
+                    <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
+                        {activeMovie.description || "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
+                    </p>
+                    
+                    <div className="flex items-center gap-4">
+                        <Link 
+                            href={`/movie/${activeMovie.id}`}
+                            className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
+                        >
+                            <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" />
+                            <span className="text-base md:text-lg">Смотреть</span>
+                        </Link>
+                         <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
+                            <Plus size={20} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Trending Slider */}
+                <div className="w-full">
+                    <div key={slideIndex} className="w-full">
+                        <MovieSlider 
+                            key={activeSlide.id}
+                            url={activeSlide.url}
+                            title={activeSlide.title}
+                            onMovieHover={handleMovieHover}
+                            compactOnMobile={false}
+                            perPageOverride={15}
+                            hideIndicators
+                            hideMetadata={!showPosterMetadata}
+                            enableGlobalKeyNavigation
+                            cardType={cardDisplayMode}
+                            fetchAllPages={(activeSlide as any).fetchAll}
                         />
-                    ) : isFetchingOverride ? (
-                         // Show nothing or skeleton while checking for logo
-                         <div className="h-[80px] w-[240px] bg-transparent" />
-                    ) : (
-                      <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
-                          {activeMovie.title}
-                      </h1>
-                    )}
+                    </div>
                 </div>
-                
-                <div className="flex items-center gap-3 mb-4">
-                    {activeMovie.rating && (
-                         <span className={`px-2 py-1 rounded text-sm font-bold ${Number(activeMovie.rating) >= 7 ? 'bg-green-600' : 'bg-zinc-700'}`}>
-                             {Number(activeMovie.rating).toFixed(1)}
-                         </span>
-                    )}
-                    <span className="text-zinc-300 text-sm">{activeMovie.year}</span>
-                    <span className="text-zinc-300 text-sm">
-                        {activeMovie.genre?.split(',').slice(0, 2).join(',')}
-                    </span>
-                    {activeMovie.country && <span className="text-zinc-300 text-sm">{activeMovie.country}</span>}
-                </div>
-                
-                <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
-                    {activeMovie.description || "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
-                </p>
-                
-                <div className="flex items-center gap-4">
-                    <Link 
-                        href={`/movie/${activeMovie.id}`}
-                        className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
-                    >
-                        <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" />
-                        <span className="text-base md:text-lg">Смотреть</span>
-                    </Link>
-                     <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
-                        <Plus size={20} />
-                    </button>
-                </div>
-            </div>
+            </>
         ) : (
-            <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
-                {/* Logo/Title Skeleton */}
-                <div className="mb-6 h-[16vh] max-h-[200px] min-h-[100px] flex items-end">
-                    <div className="h-[80px] w-[240px] bg-white/5 rounded-lg animate-pulse" />
-                </div>
-                
-                {/* Meta Row Skeleton */}
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="h-6 w-12 bg-white/5 rounded animate-pulse" />
-                    <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
-                    <div className="h-4 w-24 bg-white/5 rounded animate-pulse" />
-                    <div className="h-4 w-20 bg-white/5 rounded animate-pulse" />
-                    <div className="h-5 w-16 bg-white/5 rounded animate-pulse" />
-                </div>
-                
-                {/* Description Skeleton */}
-                <div className="mb-8 space-y-2 max-w-2xl">
-                    <div className="h-5 w-full bg-white/5 rounded animate-pulse" />
-                    <div className="h-5 w-[90%] bg-white/5 rounded animate-pulse" />
-                    <div className="h-5 w-[80%] bg-white/5 rounded animate-pulse" />
-                </div>
-                
-                {/* Buttons Skeleton */}
-                <div className="flex items-center gap-4">
-                    <div className="h-[52px] w-[160px] bg-white/5 rounded-[4px] animate-pulse" />
-                    <div className="h-[52px] w-[52px] bg-white/5 rounded-full animate-pulse" />
-                </div>
+            <div className="flex-1 w-full flex items-center justify-center pb-32">
+                <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
             </div>
         )}
-
-        {/* Trending Slider */}
-        <div className="w-full">
-            <div key={slideIndex} className="w-full">
-                {activeMovie ? (
-                    <MovieSlider 
-                        key={activeSlide.id}
-                        url={activeSlide.url}
-                        title={activeSlide.title}
-                        onMovieHover={handleMovieHover}
-                        compactOnMobile={false}
-                        perPageOverride={15}
-                        hideIndicators
-                        hideMetadata={!showPosterMetadata}
-                        enableGlobalKeyNavigation
-                        cardType={cardDisplayMode}
-                        fetchAllPages={(activeSlide as any).fetchAll}
-                    />
-                ) : (
-                    <div className="w-full mb-8 px-4 md:px-12">
-                        <div className="h-8 w-32 bg-white/5 rounded mb-2 animate-pulse" />
-                        <div className="flex gap-2 overflow-hidden">
-                            {cardDisplayMode === "backdrop" ? (
-                                [...Array(4)].map((_, i) => (
-                                    <div key={i} className="w-[25%] shrink-0">
-                                        <div className="aspect-video bg-white/5 rounded-[10px] animate-pulse" />
-                                        {showPosterMetadata && (
-                                            <div className="p-2 md:p-3 h-[54px] md:h-[68px]">
-                                                <div className="h-3 md:h-4 w-3/4 bg-white/5 rounded mb-1 animate-pulse" />
-                                                <div className="flex gap-2">
-                                                    <div className="h-3 md:h-4 w-10 bg-white/5 rounded animate-pulse" />
-                                                    <div className="h-3 md:h-4 w-16 bg-white/5 rounded animate-pulse" />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
-                            ) : (
-                                [...Array(7)].map((_, i) => (
-                                    <div key={i} className="w-[14%] shrink-0">
-                                        <div className="aspect-[2/3] bg-white/5 rounded-[10px] animate-pulse" />
-                                        {showPosterMetadata && (
-                                            <div className="p-2 md:p-3 h-[54px] md:h-[68px]">
-                                                <div className="h-3 md:h-4 w-3/4 bg-white/5 rounded mb-1 animate-pulse" />
-                                                <div className="flex gap-2">
-                                                    <div className="h-3 md:h-4 w-10 bg-white/5 rounded animate-pulse" />
-                                                    <div className="h-3 md:h-4 w-16 bg-white/5 rounded animate-pulse" />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div className="absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12">

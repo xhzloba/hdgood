@@ -553,38 +553,8 @@ export default function HomeClient({
            {/* Content Skeleton */}
            <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-y-auto scrollbar-hide">
              <div className="min-h-full w-full flex flex-col justify-end">
-                <div className="mb-20 max-w-3xl mt-auto px-16">
-                    <div className="mb-6"><div className="h-[100px] w-[300px] bg-white/5 rounded-lg animate-pulse" /></div>
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-6 w-12 bg-white/5 rounded animate-pulse" />
-                        <div className="h-4 w-16 bg-white/5 rounded animate-pulse" />
-                        <div className="h-4 w-24 bg-white/5 rounded animate-pulse" />
-                    </div>
-                    <div className="mb-8 space-y-2 max-w-2xl">
-                        <div className="h-5 w-full bg-white/5 rounded animate-pulse" />
-                        <div className="h-5 w-[90%] bg-white/5 rounded animate-pulse" />
-                        <div className="h-5 w-[80%] bg-white/5 rounded animate-pulse" />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="h-[52px] w-[160px] bg-white/5 rounded-[4px] animate-pulse" />
-                        <div className="h-[52px] w-[52px] bg-white/5 rounded-full animate-pulse" />
-                    </div>
-                </div>
-                
-                {/* Trending Slider Skeleton - Generic Aspect Ratio */}
-                <div className="w-full mb-8 px-4 md:px-12">
-                    <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
-                    <div className="flex gap-2 overflow-hidden">
-                        {initialCardDisplayMode === "backdrop" ? (
-                             [...Array(4)].map((_, i) => (
-                                 <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
-                             ))
-                        ) : (
-                             [...Array(7)].map((_, i) => (
-                                 <div key={i} className="w-[14%] aspect-[2/3] bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
-                             ))
-                        )}
-                    </div>
+                <div className="flex-1 w-full flex items-center justify-center pb-32">
+                    <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
                 </div>
              </div>
            </main>
