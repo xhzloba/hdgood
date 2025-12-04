@@ -2510,33 +2510,13 @@ export function MovieGrid({
                       }
                       if (posterSrc && !errorImages.has(String(movie.id))) {
                         const eager = (virtualizationEnabled && rowHeight ? vVirtStart + index : index) < effectiveCols;
+                        const isLoaded = loadedImages.has(String(movie.id));
                         const cls = `absolute inset-0 w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
-                          loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                          isLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
                         }`;
                         const style = { transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" } as const;
-                        return isLoadMoreMode ? (
-                          <a
-                            href={`/movie/${movie.id}`}
-                            className="block absolute inset-0"
-                            onClick={(e) => {
-                              if (e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
-                                e.preventDefault();
-                              }
-                            }}
-                          >
-                            <img
-                              src={posterSrc || "/placeholder.svg"}
-                              alt={movie.title || "Постер"}
-                              decoding="async"
-                              loading={eager ? "eager" : "lazy"}
-                              fetchPriority={eager ? "high" : "low"}
-                              className={cls}
-                              style={style}
-                              onLoad={() => handleImageLoad(movie.id)}
-                              onError={() => handleImageError(movie.id)}
-                            />
-                          </a>
-                        ) : (
+                        
+                        const content = (
                           <img
                             src={posterSrc || "/placeholder.svg"}
                             alt={movie.title || "Постер"}
@@ -2548,6 +2528,27 @@ export function MovieGrid({
                             onLoad={() => handleImageLoad(movie.id)}
                             onError={() => handleImageError(movie.id)}
                           />
+                        );
+
+                        return (
+                          <>
+                            {!isLoaded && <Skeleton className="absolute inset-0 w-full h-full rounded-[10px]" />}
+                            {isLoadMoreMode ? (
+                              <a
+                                href={`/movie/${movie.id}`}
+                                className="block absolute inset-0"
+                                onClick={(e) => {
+                                  if (e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              >
+                                {content}
+                              </a>
+                            ) : (
+                              content
+                            )}
+                          </>
                         );
                       }
                       if (waiting) {
