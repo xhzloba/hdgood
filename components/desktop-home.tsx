@@ -51,7 +51,7 @@ const SLIDES = [
     { id: "trending", title: "В тренде", url: TRENDING_URL },
     { id: "movies", title: "Фильмы", url: MOVIES_URL },
     { id: "serials", title: "Сериалы", url: SERIALS_URL },
-    { id: "fast_furious", title: "Франшиза: Форсаж", url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4", fetchAll: true },
+    { id: "fast_furious", title: "Франшиза: Форсаж", navTitle: "Форсаж", url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4", fetchAll: true },
 ]
 
 // --- Helper Components ---
@@ -563,7 +563,7 @@ export function DesktopHome() {
                                     ? "text-xl text-white drop-shadow-lg scale-105" 
                                     : "text-sm text-zinc-600 group-hover:text-zinc-300"
                             }`}>
-                                {slide.title}
+                                {(slide as any).navTitle || slide.title}
                             </span>
                             
                             <div className={`transition-all duration-500 rounded-full ${
