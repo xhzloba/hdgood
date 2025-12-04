@@ -948,5 +948,41 @@
     "bg_poster": {
       "backdrop": "/movies/dearsanta.webp"
     }
+  },
+  "692f61d54253c1a0c08b39d7": {
+    "poster_logo": "/movies/logo/82.png",
+    "bg_poster": {
+      "backdrop": "/movies/skoraya-8.jpg"
+    }
+  },
+  "6593f9218914c04deaeaf704": {
+    "poster_logo": "/movies/logo/83.webp",
+    "bg_poster": {
+      "backdrop": "/movies/kiber.webp"
+    }
+  },
+  "6593fcbfe264662a2fc580d7": {
+    "poster_logo": "/movies/logo/84.webp",
+    "bg_poster": {
+      "backdrop": "/movies/fisher.webp"
+    }
+  },
+  "68f55f61704f07b213d12f6c": {
+    "poster_logo": "/movies/logo/85.webp",
+    "bg_poster": {
+      "backdrop": "/movies/method-exept.webp"
+    }
+  },
+  "6647d37b23ddf5cbf06772b6": {
+    "poster_logo": "/movies/logo/86.png",
+    "bg_poster": {
+      "backdrop": "/movies/freddy-5.webp"
+    }
+  },
+  "675f5f77a8ed59ebe2f34712": {
+    "poster_logo": "/movies/logo/87.webp",
+    "bg_poster": {
+      "backdrop": "/movies/avatar-pepel.webp"
+    }
   }
 }
