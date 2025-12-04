@@ -271,10 +271,15 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(initialDisplayMode)
+  const [showPosterMetadata, setShowPosterMetadata] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
+    const savedMeta = localStorage.getItem("desktop_show_poster_metadata")
+    if (savedMeta) {
+      setShowPosterMetadata(savedMeta === "true")
+    }
   }, [])
 
   const handleDisplayModeChange = (checked: boolean) => {
@@ -282,6 +287,11 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
     setCardDisplayMode(newMode)
     // Save to cookie for server-side persistence (1 year)
     document.cookie = `desktop_home_card_display_mode=${newMode}; path=/; max-age=31536000`
+  }
+
+  const handleMetadataChange = (show: boolean) => {
+    setShowPosterMetadata(show)
+    localStorage.setItem("desktop_show_poster_metadata", String(show))
   }
 
   const activeSlide = SLIDES[slideIndex]
@@ -567,7 +577,7 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
                         compactOnMobile={false}
                         perPageOverride={15}
                         hideIndicators
-                        hideMetadata
+                        hideMetadata={!showPosterMetadata}
                         enableGlobalKeyNavigation
                         cardType={cardDisplayMode}
                         fetchAllPages={(activeSlide as any).fetchAll}
@@ -626,30 +636,65 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
         </div>
 
         <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-100">
-          <DialogHeader>
-            <DialogTitle>Настройки</DialogTitle>
-            <DialogDescription className="text-zinc-400">
-              Настройте внешний вид главной страницы.
+        <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="p-6 bg-zinc-900/30 border-b border-white/5">
+            <DialogTitle className="text-xl font-black tracking-tight flex items-center gap-2">
+                <Settings className="w-5 h-5 text-zinc-400" />
+                Настройки интерфейса
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400 text-sm">
+              Персонализируйте внешний вид под свои предпочтения
             </DialogDescription>
           </DialogHeader>
-          <div className="py-6">
-              <div className="flex items-center justify-between space-x-4 rounded-lg border border-zinc-800 p-4 bg-zinc-900/50">
-                  <div className="flex flex-col space-y-1">
-                      <Label htmlFor="display-mode" className="text-base font-medium text-zinc-100">
-                          Широкие обложки
-                      </Label>
-                      <span className="text-sm text-zinc-400">
-                          Показывать карточки с логотипами вместо постеров
-                      </span>
+          
+          <div className="p-6 space-y-6">
+              {/* Display Mode Section */}
+              <div className="space-y-4">
+                  <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">Вид карточек</h4>
+                  
+                  <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                      <div className="flex flex-col space-y-1.5">
+                          <Label htmlFor="display-mode" className="text-base font-bold text-zinc-100 cursor-pointer">
+                              Расширенный режим
+                          </Label>
+                          <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
+                              Использовать широкие горизонтальные обложки (Backdrops) вместо стандартных постеров.
+                          </span>
+                      </div>
+                      <Switch
+                          id="display-mode"
+                          checked={cardDisplayMode === "backdrop"}
+                          onCheckedChange={handleDisplayModeChange}
+                          className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
+                      />
                   </div>
-                  <Switch
-                      id="display-mode"
-                      checked={cardDisplayMode === "backdrop"}
-                      onCheckedChange={handleDisplayModeChange}
-                      className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-700"
-                  />
               </div>
+
+              {/* Metadata Section */}
+              <div className="space-y-4">
+                  <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">Метаданные</h4>
+
+                  <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                      <div className="flex flex-col space-y-1.5">
+                          <Label htmlFor="show-metadata" className="text-base font-bold text-zinc-100 cursor-pointer">
+                              Информация под постером
+                          </Label>
+                          <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
+                              Отображать название, год и теги качества под карточками фильмов.
+                          </span>
+                      </div>
+                      <Switch
+                          id="show-metadata"
+                          checked={showPosterMetadata}
+                          onCheckedChange={handleMetadataChange}
+                          className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
+                      />
+                  </div>
+              </div>
+          </div>
+          
+          <div className="p-4 bg-zinc-900/30 border-t border-white/5 text-center">
+              <p className="text-[10px] text-zinc-600">HDGood v2.5.0 • Settings</p>
           </div>
         </DialogContent>
       </Dialog>
