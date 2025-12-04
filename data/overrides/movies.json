@@ -840,5 +840,32 @@
   },
   "6593f8818914c04deae9ae5b": {
     "poster_logo": "/movies/logo/60.webp"
+  },
+  "6593f85b8914c04deae963fd": {
+    "poster_logo": "/movies/logo/61.webp"
+  },
+  "6593f8968914c04deae9d6f9": {
+    "poster_logo": "/movies/logo/62.png",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-3.webp"
+    }
+  },
+  "6593f8708914c04deae98eb2": {
+    "poster_logo": "/movies/logo/63.png",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-4.webp"
+    }
+  },
+  "6593f8878914c04deae9ba19": {
+    "poster_logo": "/movies/logo/64.png",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-5.webp"
+    }
+  },
+  "6593f8738914c04deae99473": {
+    "poster_logo": "/movies/logo/65.webp",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-6.webp"
+    }
   }
 }
