@@ -556,13 +556,13 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
                 </div>
             </>
         ) : (
-            <div className="flex-1 w-full flex items-center justify-center pb-32">
+            <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
             </div>
         )}
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
-        <div className="absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12">
+        <div className={`absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12 transition-opacity duration-700 ${activeMovie ? "opacity-100" : "opacity-0"}`}>
             <div className="h-[160px] w-full relative overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]">
                 <div 
                     className="absolute top-0 right-0 flex flex-col gap-6 items-end transition-transform duration-500 ease-out w-full"

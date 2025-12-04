@@ -551,11 +551,9 @@ export default function HomeClient({
            <DesktopSidebar />
            
            {/* Content Skeleton */}
-           <main className="relative z-10 ml-24 h-full flex flex-col pb-12 px-0 pt-24 overflow-y-auto scrollbar-hide">
-             <div className="min-h-full w-full flex flex-col justify-end">
-                <div className="flex-1 w-full flex items-center justify-center pb-32">
-                    <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
-                </div>
+           <main className="relative z-10 ml-24 h-full flex flex-col px-0 overflow-hidden">
+             <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
              </div>
            </main>
         </div>
