@@ -831,5 +831,11 @@
     "bg_poster": {
       "backdrop": "/movies/watson.webp"
     }
+  },
+  "692f61684253c1a0c08b2b26": {
+    "poster_logo": "/movies/logo/59.png",
+    "bg_poster": {
+      "backdrop": "/movies/sklif.webp"
+    }
   }
 }
