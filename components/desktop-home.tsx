@@ -259,13 +259,7 @@ export function DesktopSidebar({
   )
 }
 
-export function DesktopHome({ 
-  initialDisplayMode = "backdrop", 
-  initialShowPosterMetadata = true 
-}: { 
-  initialDisplayMode?: "backdrop" | "poster", 
-  initialShowPosterMetadata?: boolean 
-}) {
+export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDisplayMode?: "backdrop" | "poster" }) {
   const [activeMovie, setActiveMovie] = useState<any>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -277,22 +271,14 @@ export function DesktopHome({
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(initialDisplayMode)
-  const [showPosterMetadata, setShowPosterMetadata] = useState(initialShowPosterMetadata)
+  const [showPosterMetadata, setShowPosterMetadata] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
-    // We rely on cookies for the initial value (passed via props),
-    // but we still check localStorage for legacy support or client-side-only changes
-    // and to keep them in sync if needed.
-    if (typeof window !== 'undefined') {
-       const saved = localStorage.getItem("desktop_show_poster_metadata")
-       if (saved !== null) {
-         const val = saved === "true"
-         if (val !== showPosterMetadata) {
-             setShowPosterMetadata(val)
-         }
-       }
+    const savedMeta = localStorage.getItem("desktop_show_poster_metadata")
+    if (savedMeta) {
+      setShowPosterMetadata(savedMeta === "true")
     }
   }, [])
 
@@ -306,8 +292,6 @@ export function DesktopHome({
   const handleMetadataChange = (show: boolean) => {
     setShowPosterMetadata(show)
     localStorage.setItem("desktop_show_poster_metadata", String(show))
-    // Also save to cookie for SSR
-    document.cookie = `desktop_show_poster_metadata=${show}; path=/; max-age=31536000`
   }
 
   const activeSlide = SLIDES[slideIndex]
