@@ -262,6 +262,7 @@ export function DesktopSidebar({
 export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDisplayMode?: "backdrop" | "poster" }) {
   const [activeMovie, setActiveMovie] = useState<any>(null)
   const [slideIndex, setSlideIndex] = useState(0)
+  const [isIndicatorHovered, setIsIndicatorHovered] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isFetchingOverride, setIsFetchingOverride] = useState(false)
   const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0])
@@ -487,7 +488,7 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
         {/* Movie Info */}
         {activeMovie ? (
             <>
-                <div className="mb-[6vh] max-w-3xl mt-auto px-16 transition-[margin] duration-500 ease-out">
+                <div className="mb-[6vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
                     <div className="h-[16vh] max-h-[200px] min-h-[100px] mb-6 flex items-end transition-[height] duration-500 ease-out">
                         {activeMovie.logo ? (
                             <img 
