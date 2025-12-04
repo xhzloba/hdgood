@@ -2255,5 +2255,159 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f85c8914c04deae96626",
+    "timestamp": "2025-12-04T19:19:03.096Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f85c8914c04deae96626",
+    "timestamp": "2025-12-04T19:19:39.339Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f85c8914c04deae96626",
+    "timestamp": "2025-12-04T19:19:41.421Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f88e8914c04deae9c7af",
+    "timestamp": "2025-12-04T19:22:25.653Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "65942aeb1cdf277bc1985b5f",
+    "timestamp": "2025-12-04T19:28:28.190Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65942beaf9adc4da8a0f6593",
+    "timestamp": "2025-12-04T19:30:46.774Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f83d8914c04deae923f2",
+    "timestamp": "2025-12-04T19:35:34.220Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f83d8914c04deae923f2",
+    "timestamp": "2025-12-04T19:35:57.190Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "65942b86f9adc4da8a0f40fa",
+    "timestamp": "2025-12-04T19:38:43.293Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f8328914c04deae90b4c",
+    "timestamp": "2025-12-04T19:41:30.719Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "676c8e709bb6cdbdd27e2bee",
+    "timestamp": "2025-12-04T19:44:32.581Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f86f8914c04deae98c89",
+    "timestamp": "2025-12-04T19:51:50.395Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "672d467138a7f3fe2edfeed6",
+    "timestamp": "2025-12-04T19:54:40.753Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "674501704d639bcc93ee8ed7",
+    "timestamp": "2025-12-04T19:57:24.182Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "674501704d639bcc93ee8ed7",
+    "timestamp": "2025-12-04T19:57:53.828Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
   }
 ]

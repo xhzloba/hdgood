@@ -897,5 +897,56 @@
     "bg_poster": {
       "backdrop": "/movies/forsage-10.webp"
     }
+  },
+  "6593f85c8914c04deae96626": {
+    "poster_logo": "/movies/logo/71.png",
+    "bg_poster": {
+      "backdrop": "/movies/odin.webp"
+    }
+  },
+  "6593f88e8914c04deae9c7af": {
+    "poster_logo": "/movies/logo/72.webp",
+    "bg_poster": {
+      "backdrop": "/movies/odin-2.webp"
+    }
+  },
+  "65942aeb1cdf277bc1985b5f": {
+    "poster_logo": "/movies/logo/73.webp"
+  },
+  "65942beaf9adc4da8a0f6593": {
+    "poster_logo": "/movies/logo/74.webp"
+  },
+  "6593f83d8914c04deae923f2": {
+    "poster_logo": "/movies/logo/75.png"
+  },
+  "65942b86f9adc4da8a0f40fa": {
+    "poster_logo": "/movies/logo/76.webp"
+  },
+  "6593f8328914c04deae90b4c": {
+    "poster_logo": "/movies/logo/77.webp",
+    "bg_poster": {
+      "backdrop": "/movies/grinch.webp"
+    }
+  },
+  "676c8e709bb6cdbdd27e2bee": {
+    "poster_logo": "/movies/logo/78.webp",
+    "bg_poster": {
+      "backdrop": "/movies/yaga-spas.webp"
+    }
+  },
+  "6593f86f8914c04deae98c89": {
+    "poster_logo": "/movies/logo/79.png"
+  },
+  "672d467138a7f3fe2edfeed6": {
+    "poster_logo": "/movies/logo/80.webp",
+    "bg_poster": {
+      "backdrop": "/movies/misred.webp"
+    }
+  },
+  "674501704d639bcc93ee8ed7": {
+    "poster_logo": "/movies/logo/81.webp",
+    "bg_poster": {
+      "backdrop": "/movies/dearsanta.webp"
+    }
   }
 }

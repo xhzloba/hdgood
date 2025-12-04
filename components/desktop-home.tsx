@@ -61,6 +61,7 @@ const SLIDES = [
     { id: "movies", title: "Фильмы", url: MOVIES_URL },
     { id: "serials", title: "Сериалы", url: SERIALS_URL },
     { id: "fast_furious", title: "Франшиза: Форсаж", navTitle: "Форсаж", url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4", fetchAll: true },
+    { id: "new_year", title: "Подборка: Новогодние фильмы", navTitle: "Новогодние", url: "https://api.vokino.pro/v2/compilations/content/675e9a26b453dd0c4a47bee3", fetchAll: true },
 ]
 
 // --- Helper Components ---
