@@ -20,11 +20,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 type HomeClientProps = {
   initialSelectedTitle?: string;
   initialOverridesMap?: Record<string, any>;
+  initialCardDisplayMode?: "backdrop" | "poster";
 };
 
 export default function HomeClient({
   initialSelectedTitle,
   initialOverridesMap,
+  initialCardDisplayMode = "backdrop",
 }: HomeClientProps) {
   const isMobile = useIsMobile();
   const [isMounted, setIsMounted] = useState(false);
@@ -528,7 +530,7 @@ export default function HomeClient({
   const isMainPage = !selected;
 
   if (isMounted && !isMobile && !initialSelectedTitle) {
-    return <DesktopHome />;
+    return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
   }
 
   return (
@@ -546,7 +548,7 @@ export default function HomeClient({
       {isMainPage && (
         <div className="hidden md:block fixed inset-0 z-50 bg-zinc-950">
            {/* Sidebar Skeleton */}
-           <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 glass-panel border-r border-white/5 bg-black/20 backdrop-blur-sm">
+           <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950 border-r border-white/5">
               <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
               <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
                   {/* Home */}
@@ -579,13 +581,19 @@ export default function HomeClient({
                     </div>
                 </div>
                 
-                {/* Trending Slider Skeleton */}
+                {/* Trending Slider Skeleton - Generic Aspect Ratio */}
                 <div className="w-full mb-8 px-4 md:px-12">
                     <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
                     <div className="flex gap-2 overflow-hidden">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
-                        ))}
+                        {initialCardDisplayMode === "backdrop" ? (
+                             [...Array(4)].map((_, i) => (
+                                 <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                             ))
+                        ) : (
+                             [...Array(7)].map((_, i) => (
+                                 <div key={i} className="w-[14%] aspect-[2/3] bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                             ))
+                        )}
                     </div>
                 </div>
              </div>

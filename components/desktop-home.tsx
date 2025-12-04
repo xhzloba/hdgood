@@ -219,7 +219,7 @@ function BackdropImage({ src }: { src: string }) {
 
 // --- Main Component ---
 
-export function DesktopHome() {
+export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDisplayMode?: "backdrop" | "poster" }) {
   const [activeMovie, setActiveMovie] = useState<any>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -230,28 +230,18 @@ export function DesktopHome() {
   
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(() => {
-    if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem("desktop_home_card_display_mode") as "backdrop" | "poster"
-        if (saved === "poster" || saved === "backdrop") return saved
-    }
-    return "backdrop"
-  })
+  const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(initialDisplayMode)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
-    // Double check in effect just in case, but state should be already correct from lazy init
-    const saved = localStorage.getItem("desktop_home_card_display_mode") as "backdrop" | "poster"
-    if ((saved === "poster" || saved === "backdrop") && saved !== cardDisplayMode) {
-        setCardDisplayMode(saved)
-    }
   }, [])
 
   const handleDisplayModeChange = (checked: boolean) => {
     const newMode = checked ? "backdrop" : "poster"
     setCardDisplayMode(newMode)
-    localStorage.setItem("desktop_home_card_display_mode", newMode)
+    // Save to cookie for server-side persistence (1 year)
+    document.cookie = `desktop_home_card_display_mode=${newMode}; path=/; max-age=31536000`
   }
 
   const activeSlide = SLIDES[slideIndex]
@@ -552,7 +542,7 @@ export function DesktopHome() {
 
         {/* Trending Slider */}
         <div className="w-full">
-            <div key={slideIndex} className="w-full animate-in slide-in-from-bottom-10 fade-in duration-700">
+            <div key={slideIndex} className="w-full">
                 {activeMovie ? (
                     <MovieSlider 
                         key={activeSlide.id}
@@ -571,15 +561,7 @@ export function DesktopHome() {
                      <div className="w-full mb-8 px-4 md:px-12">
                         <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
                         <div className="flex gap-2 overflow-hidden">
-                            {(!isMounted && typeof window === 'undefined') ? (
-                                // Server render - show backdrop default to match server state
-                                [...Array(4)].map((_, i) => (
-                                    <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
-                                ))
-                            ) : !isMounted ? (
-                                // Client hydration first pass - show nothing to let state settle if needed
-                                <div className="w-full h-32" /> 
-                            ) : cardDisplayMode === "backdrop" ? (
+                            {cardDisplayMode === "backdrop" ? (
                                 [...Array(4)].map((_, i) => (
                                     <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
                                 ))

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import HomeClient from "@/components/home-client"
+import { cookies } from "next/headers"
 
 export const metadata: Metadata = {
   title: "Смотреть фильмы онлайн в хорошем качестве",
@@ -21,6 +22,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default function Home() {
-  return <HomeClient />
+export default async function Home() {
+  const cookieStore = await cookies()
+  const cardDisplayMode = cookieStore.get("desktop_home_card_display_mode")?.value as "backdrop" | "poster" | undefined
+
+  return <HomeClient initialCardDisplayMode={cardDisplayMode || "backdrop"} />
 }
