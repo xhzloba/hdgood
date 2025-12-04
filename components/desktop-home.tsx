@@ -583,16 +583,38 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
                         fetchAllPages={(activeSlide as any).fetchAll}
                     />
                 ) : (
-                     <div className="w-full mb-8 px-4 md:px-12">
-                        <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
+                    <div className="w-full mb-8 px-4 md:px-12">
+                        <div className="h-8 w-32 bg-white/5 rounded mb-2 animate-pulse" />
                         <div className="flex gap-2 overflow-hidden">
                             {cardDisplayMode === "backdrop" ? (
                                 [...Array(4)].map((_, i) => (
-                                    <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                    <div key={i} className="w-[25%] shrink-0">
+                                        <div className="aspect-video bg-white/5 rounded-[10px] animate-pulse" />
+                                        {showPosterMetadata && (
+                                            <div className="p-2 md:p-3 h-[54px] md:h-[68px]">
+                                                <div className="h-3 md:h-4 w-3/4 bg-white/5 rounded mb-1 animate-pulse" />
+                                                <div className="flex gap-2">
+                                                    <div className="h-3 md:h-4 w-10 bg-white/5 rounded animate-pulse" />
+                                                    <div className="h-3 md:h-4 w-16 bg-white/5 rounded animate-pulse" />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 ))
                             ) : (
                                 [...Array(7)].map((_, i) => (
-                                    <div key={i} className="w-[14%] aspect-[2/3] bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                    <div key={i} className="w-[14%] shrink-0">
+                                        <div className="aspect-[2/3] bg-white/5 rounded-[10px] animate-pulse" />
+                                        {showPosterMetadata && (
+                                            <div className="p-2 md:p-3 h-[54px] md:h-[68px]">
+                                                <div className="h-3 md:h-4 w-3/4 bg-white/5 rounded mb-1 animate-pulse" />
+                                                <div className="flex gap-2">
+                                                    <div className="h-3 md:h-4 w-10 bg-white/5 rounded animate-pulse" />
+                                                    <div className="h-3 md:h-4 w-16 bg-white/5 rounded animate-pulse" />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 ))
                             )}
                         </div>

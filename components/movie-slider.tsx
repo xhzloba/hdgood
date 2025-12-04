@@ -252,28 +252,33 @@ export default function MovieSlider({
     return () => { cancelled = true; };
   }, [fetchAllPages, data, page, url, pagesData]);
 
-  let movies: any[] = [];
-  pagesData
-    .sort((a, b) => a.page - b.page)
-    .forEach((ds) => {
-      movies = movies.concat(extractMoviesFromData(ds.data));
+  const movies = useMemo(() => {
+    let m: any[] = [];
+    // Create a copy before sorting to avoid mutating state
+    [...pagesData]
+      .sort((a, b) => a.page - b.page)
+      .forEach((ds) => {
+        m = m.concat(extractMoviesFromData(ds.data));
+      });
+
+    // Remove duplicates by id
+    const seen = new Set<string>();
+    return m.filter((movie) => {
+      const id = String(movie.id);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
     });
+  }, [pagesData]);
 
-  // Remove duplicates by id
-  const seen = new Set<string>();
-  movies = movies.filter((m) => {
-    const id = String(m.id);
-    if (seen.has(id)) return false;
-    seen.add(id);
-    return true;
-  });
-
-  if (sortByYear) {
+  const sortedMovies = useMemo(() => {
+    if (!sortByYear) return movies;
+    const copy = [...movies];
     const toNum = (y: any) => {
       const n = Number(String(y).replace(/[^0-9]/g, ""));
       return Number.isFinite(n) ? n : NaN;
     };
-    movies.sort((a: any, b: any) => {
+    copy.sort((a: any, b: any) => {
       const ya = toNum(a.year);
       const yb = toNum(b.year);
       const aU = Number.isNaN(ya);
@@ -283,9 +288,10 @@ export default function MovieSlider({
       if (bU) return -1;
       return sortByYear === "asc" ? ya - yb : yb - ya;
     });
-  }
+    return copy;
+  }, [movies, sortByYear]);
 
-  const display = fetchAllPages ? movies : movies.slice(0, perPage);
+  const display = fetchAllPages ? sortedMovies : sortedMovies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
   const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
@@ -481,8 +487,8 @@ export default function MovieSlider({
                       <Skeleton className="w-full h-full" />
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-                    {cardType !== 'backdrop' && !hideMetadata && (
-                      <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                    {!hideMetadata && (
+                      <div className="relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden">
                         <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
                         <div className="relative">
                           <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
@@ -728,7 +734,7 @@ export default function MovieSlider({
                       )}
                     </div>
                     {!hideMetadata && (
-                    <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                    <div className="relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden">
                       <div className="relative z-[2]">
                         <h3
                           className="text-[13px] md:text-[14px] font-bold truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"
