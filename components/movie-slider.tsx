@@ -462,7 +462,7 @@ export default function MovieSlider({
         </div>
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
-        <div className="relative z-10 px-2 md:px-12">
+        <div className="relative px-2 md:px-12">
           <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
             <CarouselContent className="-ml-2">
               {Array.from({ length: perPage }).map((_, i) => (
@@ -481,7 +481,7 @@ export default function MovieSlider({
                       <Skeleton className="w-full h-full" />
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-                    {cardType !== 'backdrop' && (
+                    {cardType !== 'backdrop' && !hideMetadata && (
                       <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
                         <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
                         <div className="relative">
