@@ -21,14 +21,12 @@ type HomeClientProps = {
   initialSelectedTitle?: string;
   initialOverridesMap?: Record<string, any>;
   initialCardDisplayMode?: "backdrop" | "poster";
-  initialShowPosterMetadata?: boolean;
 };
 
 export default function HomeClient({
   initialSelectedTitle,
   initialOverridesMap,
   initialCardDisplayMode = "backdrop",
-  initialShowPosterMetadata = true,
 }: HomeClientProps) {
   const isMobile = useIsMobile();
   const [isMounted, setIsMounted] = useState(false);
@@ -532,8 +530,8 @@ export default function HomeClient({
   const isMainPage = !selected;
 
   if (isMounted && !isMobile && !initialSelectedTitle) {
-    return <DesktopHome initialDisplayMode={initialCardDisplayMode} initialShowPosterMetadata={initialShowPosterMetadata} />;
-  }
+      return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
+    }
 
   return (
     <PosterBackground

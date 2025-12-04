@@ -25,11 +25,6 @@ export const metadata: Metadata = {
 export default async function Home() {
   const cookieStore = await cookies()
   const cardDisplayMode = cookieStore.get("desktop_home_card_display_mode")?.value as "backdrop" | "poster" | undefined
-  const showPosterMetadataCookie = cookieStore.get("desktop_show_poster_metadata")?.value
-  const showPosterMetadata = showPosterMetadataCookie === "false" ? false : true
 
-  return <HomeClient 
-    initialCardDisplayMode={cardDisplayMode || "backdrop"} 
-    initialShowPosterMetadata={showPosterMetadata}
-  />
+  return <HomeClient initialCardDisplayMode={cardDisplayMode || "backdrop"} />
 }
