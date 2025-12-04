@@ -885,5 +885,17 @@
     "bg_poster": {
       "backdrop": "/movies/forsage-9.webp"
     }
+  },
+  "6593f8f18914c04deaea896c": {
+    "poster_logo": "/movies/logo/69.png",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-9.jpg"
+    }
+  },
+  "6593f9178914c04deaeadec4": {
+    "poster_logo": "/movies/logo/70.webp",
+    "bg_poster": {
+      "backdrop": "/movies/forsage-10.webp"
+    }
   }
 }
