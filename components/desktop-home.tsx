@@ -219,6 +219,46 @@ function BackdropImage({ src }: { src: string }) {
 
 // --- Main Component ---
 
+export function DesktopSidebar({ 
+  profileAvatar = PROFILE_AVATARS[0], 
+  onSettingsClick 
+}: { 
+  profileAvatar?: string, 
+  onSettingsClick?: () => void 
+}) {
+  return (
+      <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950">
+         <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
+         
+         <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
+            <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
+            <NavItem icon={<IconHomeCustom className="w-7 h-7" />} label="Главная" href="/" active />
+            
+            {CATEGORIES.filter(cat => cat.route && cat.route !== "/updates").map((cat, i) => (
+                <NavItem 
+                    key={i}
+                    icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />} 
+                    label={cat.title} 
+                    href={cat.route || "#"} 
+                />
+            ))}
+         </nav>
+
+         <div className="mt-auto">
+            <NavItem 
+              icon={
+                <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+                  <img src={profileAvatar} className="w-full h-full object-cover" alt="Профиль" />
+                </div>
+              } 
+              label="Профиль" 
+              onClick={onSettingsClick}
+            />
+         </div>
+      </aside>
+  )
+}
+
 export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDisplayMode?: "backdrop" | "poster" }) {
   const [activeMovie, setActiveMovie] = useState<any>(null)
   const [slideIndex, setSlideIndex] = useState(0)
@@ -426,35 +466,10 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
       <BackdropImage src={getBackdrop(activeMovie)} />
 
       {/* Sidebar Navigation */}
-      <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950">
-         <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
-         
-         <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
-            <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
-            <NavItem icon={<IconHomeCustom className="w-7 h-7" />} label="Главная" href="/" active />
-            
-            {CATEGORIES.filter(cat => cat.route && cat.route !== "/updates").map((cat, i) => (
-                <NavItem 
-                    key={i}
-                    icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />} 
-                    label={cat.title} 
-                    href={cat.route || "#"} 
-                />
-            ))}
-         </nav>
-
-         <div className="mt-auto">
-            <NavItem 
-              icon={
-                <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
-                  <img src={profileAvatar} className="w-full h-full object-cover" alt="Профиль" />
-                </div>
-              } 
-              label="Профиль" 
-              onClick={() => setIsSettingsOpen(true)}
-            />
-         </div>
-      </aside>
+      <DesktopSidebar 
+        profileAvatar={profileAvatar} 
+        onSettingsClick={() => setIsSettingsOpen(true)} 
+      />
 
       {/* Main Content Area */}
       <main className="relative z-10 ml-24 h-full flex flex-col pb-[8vh] px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out">
