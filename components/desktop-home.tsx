@@ -557,7 +557,7 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
                 </div>
             </>
         ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 z-50">
                 <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
             </div>
         )}
