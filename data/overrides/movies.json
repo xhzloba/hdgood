@@ -837,5 +837,8 @@
     "bg_poster": {
       "backdrop": "/movies/sklif.webp"
     }
+  },
+  "6593f8818914c04deae9ae5b": {
+    "poster_logo": "/movies/logo/60.webp"
   }
 }

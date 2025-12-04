@@ -51,6 +51,7 @@ const SLIDES = [
     { id: "trending", title: "В тренде", url: TRENDING_URL },
     { id: "movies", title: "Фильмы", url: MOVIES_URL },
     { id: "serials", title: "Сериалы", url: SERIALS_URL },
+    { id: "fast_furious", title: "Франшиза: Форсаж", url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4", fetchAll: true },
 ]
 
 // --- Helper Components ---
@@ -520,14 +521,22 @@ export function DesktopHome() {
                         hideIndicators
                         hideMetadata
                         enableGlobalKeyNavigation
+                        cardType={activeSlide.id === 'fast_furious' ? 'backdrop' : 'poster'}
+                        fetchAllPages={(activeSlide as any).fetchAll}
                     />
                 ) : (
                      <div className="w-full mb-8 px-4 md:px-12">
                         <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
                         <div className="flex gap-2 overflow-hidden">
-                            {[...Array(9)].map((_, i) => (
-                                <div key={i} className="w-[12.5%] aspect-[2/3] bg-white/5 rounded-xl shrink-0 animate-pulse" />
-                            ))}
+                            {activeSlide.id === 'fast_furious' ? (
+                                [...Array(4)].map((_, i) => (
+                                    <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                ))
+                            ) : (
+                                [...Array(9)].map((_, i) => (
+                                    <div key={i} className="w-[12.5%] aspect-[2/3] bg-white/5 rounded-xl shrink-0 animate-pulse" />
+                                ))
+                            )}
                         </div>
                     </div>
                 )}

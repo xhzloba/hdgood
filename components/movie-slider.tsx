@@ -17,6 +17,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import movieOverrides from "@/data/overrides/movies.json";
 
 type MovieSliderProps = {
   url: string;
@@ -39,6 +40,9 @@ type MovieSliderProps = {
   hideIndicators?: boolean;
   hideMetadata?: boolean;
   enableGlobalKeyNavigation?: boolean;
+  cardType?: "poster" | "backdrop";
+  initialPages?: number;
+  minItems?: number;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -138,15 +142,26 @@ export default function MovieSlider({
   hideIndicators = false,
   hideMetadata = false,
   enableGlobalKeyNavigation = false,
+  cardType = "poster",
+  initialPages,
+  minItems = 30,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const fetchingPages = useRef<Set<number>>(new Set());
+  
   const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
     if (typeof window === "undefined") return 2;
+    if (cardType === "backdrop") {
+        if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 4;
+        if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches) return 3;
+        if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches) return 2;
+        return 1;
+    }
     if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 6;
     if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches) return 5;
     if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches) return 4;
@@ -157,6 +172,7 @@ export default function MovieSlider({
   useEffect(() => {
     setPage(1);
     setPagesData([]);
+    fetchingPages.current.clear();
   }, [url]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
@@ -170,6 +186,40 @@ export default function MovieSlider({
       return [...prev, { page, data }];
     });
   }, [data, page]);
+
+  // Предзагрузка дополнительных страниц (initialPages)
+  useEffect(() => {
+    if (!initialPages || initialPages <= 1) return;
+    // Если мы уже загрузили первую страницу (через SWR выше), загружаем остальные
+    // Но нужно убедиться, что мы не загружаем их повторно
+    
+    const loadMore = async () => {
+        for (let i = 2; i <= initialPages; i++) {
+            if (fetchingPages.current.has(i)) continue;
+            // Проверяем, есть ли уже данные
+            if (pagesData.some(p => p.page === i)) continue;
+
+            fetchingPages.current.add(i);
+            try {
+                const nextUrl = makePageUrl(url, i);
+                const nd = await fetcher(nextUrl, 10000);
+                const items = extractMoviesFromData(nd);
+                if (items && items.length > 0) {
+                    setPagesData(prev => {
+                        if (prev.some(p => p.page === i)) return prev;
+                        return [...prev, { page: i, data: nd }];
+                    });
+                }
+            } catch (e) {
+                console.error(`Failed to preload page ${i}`, e);
+            } finally {
+                fetchingPages.current.delete(i);
+            }
+        }
+    };
+    
+    loadMore();
+  }, [initialPages, url, pagesData]); // Trigger on pagesData change to avoid stale checks, but logic handles dupes
 
   // Когда требуется загрузить все страницы (например, профиль актёра),
   // последовательно подтягиваем следующие страницы, пока данные не закончатся
@@ -294,10 +344,8 @@ export default function MovieSlider({
 
   const finalDisplay = useMemo(() => {
     return (display || []).map((m: any) => {
-      const ov = overridesMap[String(m.id)] || null;
+      const ov = overridesMap[String(m.id)] || (movieOverrides as any)[String(m.id)] || null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
-      // Если в override задано название, используем его:
-      // поддерживаем как `name`, так и `title` на случай разных источников
       const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
       const patchedLogo = ov && ov.poster_logo ? ov.poster_logo : m.logo;
       const patchedBackdrop = ov && ov.bg_poster && ov.bg_poster.backdrop ? ov.bg_poster.backdrop : m.backdrop;
@@ -376,7 +424,7 @@ export default function MovieSlider({
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
-  }, []);
+  }, [cardType]); // Added cardType dependency
   const handleImageLoad = (id: string | number) => {
     const key = String(id);
     setLoadedImages((prev) => {
@@ -422,23 +470,29 @@ export default function MovieSlider({
                   key={i}
                   className={`pl-2 ${
                     compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]`}
+                  } ${
+                    cardType === 'backdrop' 
+                    ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4" 
+                    : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
+                  }`}
                 >
                   <div className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm">
-                    <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]">
+                    <div className={`${cardType === 'backdrop' ? 'aspect-video' : 'aspect-[2/3]'} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]`}>
                       <Skeleton className="w-full h-full" />
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-                    <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
-                      <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
-                      <div className="relative">
-                        <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
-                        <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
-                          <Skeleton className="h-3 md:h-4 w-10" />
-                          <Skeleton className="h-3 md:h-4 w-16" />
+                    {cardType !== 'backdrop' && (
+                      <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden">
+                        <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
+                        <div className="relative">
+                          <Skeleton className="h-3 md:h-4 w-3/4 mb-1" />
+                          <div className="flex items-center gap-2 text-[10px] md:text-[11px]">
+                            <Skeleton className="h-3 md:h-4 w-10" />
+                            <Skeleton className="h-3 md:h-4 w-16" />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </CarouselItem>
               ))}
@@ -446,6 +500,7 @@ export default function MovieSlider({
             <CarouselPrevious className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
             <CarouselNext className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
           </Carousel>
+          {!hideIndicators && (
           <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
             {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
               <span
@@ -455,6 +510,7 @@ export default function MovieSlider({
               />
             ))}
           </div>
+          )}
         </div>
       ) : (
         <div className="relative px-2 md:px-12" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
@@ -465,7 +521,11 @@ export default function MovieSlider({
                   key={movie.id || index}
                   className={`pl-2 ${
                     compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
-                  } md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]`}
+                  } ${
+                    cardType === 'backdrop' 
+                    ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4" 
+                    : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
+                  }`}
                 >
                   <Link
                     href={`/movie/${movie.id}`}
@@ -512,7 +572,7 @@ export default function MovieSlider({
                     NProgress.start();
 
                     // Сохраняем позицию постера для анимации перехода (только десктоп)
-                    const posterEl = e.currentTarget.querySelector('.aspect-\\[2\\/3\\]') as HTMLElement
+                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement
                     if (posterEl && movie.poster) {
                       const rect = posterEl.getBoundingClientRect()
                       savePosterTransition({
@@ -532,19 +592,25 @@ export default function MovieSlider({
                     } catch {}
                   }}
                 >
-                  <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200">
+                  <div className={`${cardType === 'backdrop' ? 'aspect-video' : 'aspect-[2/3]'} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}>
                     {(() => {
                       const idStr = String(movie.id);
-                      const ovEntry = (overridesMap as any)[idStr];
+                      const ovEntry = (overridesMap as any)[idStr] || (movieOverrides as any)[idStr];
                       const known = ovEntry !== undefined;
-                      const posterSrc = known
-                        ? (ovEntry?.poster ?? movie.poster ?? null)
-                        : null;
-                      const waiting = !known;
+                      const isBackdrop = cardType === 'backdrop';
+                      
+                      // Determine source based on cardType
+                      const posterSrc = isBackdrop 
+                         ? (ovEntry?.bg_poster?.backdrop || movie.backdrop || movie.poster || null)
+                         : (ovEntry?.poster ?? movie.poster ?? null);
+                         
+                      const waiting = !known && !posterSrc; // If we have posterSrc, we don't need to wait for override to confirm it's missing
+                      
                       if (posterSrc && failedSrcById[String(movie.id)] !== (posterSrc || "")) {
                         return (
+                          <>
                           <img
-                            key={String(movie.id)}
+                            key={String(movie.id) + (isBackdrop ? '-bd' : '-p')}
                             src={posterSrc || "/placeholder.svg"}
                             alt={movie.title || "Постер"}
                             decoding="async"
@@ -569,12 +635,23 @@ export default function MovieSlider({
                               setFailedSrcById((prev) => ({ ...prev, [key]: src }));
                             }}
                           />
+                          {/* Logo Overlay for Backdrop Cards */}
+                          {isBackdrop && movie.logo && (
+                              <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
+                                  <img 
+                                    src={movie.logo} 
+                                    alt={movie.title} 
+                                    className="max-w-[80%] max-h-[60%] object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                                  />
+                              </div>
+                          )}
+                          </>
                         );
                       }
                       if (waiting) {
                         return <Skeleton className="w-full h-full" />;
                       }
-                      return <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>;
+                      return <div className="text-zinc-600 text-[10px] text-center p-1">Нет изображения</div>;
                     })()}
                       {(() => {
                         const idStr = String(movie.id);
@@ -594,7 +671,7 @@ export default function MovieSlider({
                       ) : null;
                     })()}
 
-                    {(() => {
+                    {cardType !== 'backdrop' && (() => {
                       const genres = (() => {
                         const raw = (movie as any)?.genre;
                         let items: string[] = [];
@@ -635,7 +712,7 @@ export default function MovieSlider({
                       );
                     })()}
                       
-                      {movie.rating && (
+                      {cardType !== 'backdrop' && movie.rating && (
                         <div
                           className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
                             movie.rating
@@ -644,7 +721,7 @@ export default function MovieSlider({
                           {formatRatingLabel(movie.rating)}
                         </div>
                       )}
-                      {!hideMetadata && movie.quality && (
+                      {cardType !== 'backdrop' && !hideMetadata && movie.quality && (
                         <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
                           {String(movie.quality)}
                         </div>
