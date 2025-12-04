@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import { Search, User, Play, Plus } from "lucide-react"
+import { Search, User, Play, Plus, Settings } from "lucide-react"
 import { 
   IconClock, 
   IconMovie, 
@@ -24,6 +24,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 const TRENDING_URL = "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
 const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
@@ -121,17 +130,25 @@ function CategoryIcon({ name, className = "" }: { name: string; className?: stri
   }
 }
 
-function NavItem({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active?: boolean }) {
+function NavItem({ icon, label, href, active, onClick }: { icon: React.ReactNode, label: string, href?: string, active?: boolean, onClick?: () => void }) {
+    const className = `p-3 rounded-xl transition-all group relative flex items-center justify-center ${active ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`
+    
     return (
         <TooltipProvider delayDuration={0}>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Link 
-                        href={href} 
-                        className={`p-3 rounded-xl transition-all group relative flex items-center justify-center ${active ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
-                    >
-                        {icon}
-                    </Link>
+                    {onClick ? (
+                        <button onClick={onClick} className={className}>
+                            {icon}
+                        </button>
+                    ) : (
+                        <Link 
+                            href={href || "#"} 
+                            className={className}
+                        >
+                            {icon}
+                        </Link>
+                    )}
                 </TooltipTrigger>
                 <TooltipContent side="right" className="font-bold bg-white text-black border-0 shadow-xl ml-2">
                     <p>{label}</p>
@@ -211,6 +228,32 @@ export function DesktopHome() {
   const lastUrlRef = useRef<string | null>(null)
   const lastInputTimeRef = useRef(0)
   
+  // Settings State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(() => {
+    if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem("desktop_home_card_display_mode") as "backdrop" | "poster"
+        if (saved === "poster" || saved === "backdrop") return saved
+    }
+    return "backdrop"
+  })
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+    // Double check in effect just in case, but state should be already correct from lazy init
+    const saved = localStorage.getItem("desktop_home_card_display_mode") as "backdrop" | "poster"
+    if ((saved === "poster" || saved === "backdrop") && saved !== cardDisplayMode) {
+        setCardDisplayMode(saved)
+    }
+  }, [])
+
+  const handleDisplayModeChange = (checked: boolean) => {
+    const newMode = checked ? "backdrop" : "poster"
+    setCardDisplayMode(newMode)
+    localStorage.setItem("desktop_home_card_display_mode", newMode)
+  }
+
   const activeSlide = SLIDES[slideIndex]
 
   useEffect(() => {
@@ -418,7 +461,7 @@ export function DesktopHome() {
                 </div>
               } 
               label="Профиль" 
-              href="#" 
+              onClick={() => setIsSettingsOpen(true)}
             />
          </div>
       </aside>
@@ -521,16 +564,30 @@ export function DesktopHome() {
                         hideIndicators
                         hideMetadata
                         enableGlobalKeyNavigation
-                        cardType="backdrop"
+                        cardType={cardDisplayMode}
                         fetchAllPages={(activeSlide as any).fetchAll}
                     />
                 ) : (
                      <div className="w-full mb-8 px-4 md:px-12">
                         <div className="h-8 w-32 bg-white/5 rounded mb-4 animate-pulse" />
                         <div className="flex gap-2 overflow-hidden">
-                            {[...Array(4)].map((_, i) => (
-                                <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
-                            ))}
+                            {(!isMounted && typeof window === 'undefined') ? (
+                                // Server render - show backdrop default to match server state
+                                [...Array(4)].map((_, i) => (
+                                    <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                ))
+                            ) : !isMounted ? (
+                                // Client hydration first pass - show nothing to let state settle if needed
+                                <div className="w-full h-32" /> 
+                            ) : cardDisplayMode === "backdrop" ? (
+                                [...Array(4)].map((_, i) => (
+                                    <div key={i} className="w-[25%] aspect-video bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                ))
+                            ) : (
+                                [...Array(7)].map((_, i) => (
+                                    <div key={i} className="w-[14%] aspect-[2/3] bg-white/5 rounded-[10px] shrink-0 animate-pulse" />
+                                ))
+                            )}
                         </div>
                     </div>
                 )}
@@ -570,6 +627,35 @@ export function DesktopHome() {
                 </div>
             </div>
         </div>
+
+        <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-100">
+          <DialogHeader>
+            <DialogTitle>Настройки</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Настройте внешний вид главной страницы.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6">
+              <div className="flex items-center justify-between space-x-4 rounded-lg border border-zinc-800 p-4 bg-zinc-900/50">
+                  <div className="flex flex-col space-y-1">
+                      <Label htmlFor="display-mode" className="text-base font-medium text-zinc-100">
+                          Широкие обложки
+                      </Label>
+                      <span className="text-sm text-zinc-400">
+                          Показывать карточки с логотипами вместо постеров
+                      </span>
+                  </div>
+                  <Switch
+                      id="display-mode"
+                      checked={cardDisplayMode === "backdrop"}
+                      onCheckedChange={handleDisplayModeChange}
+                      className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-700"
+                  />
+              </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       </main>
     </div>
