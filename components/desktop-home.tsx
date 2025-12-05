@@ -430,33 +430,66 @@ export function DesktopHome({
     }
 
     // Приоритет: цвета из overrides (poster_colors)
-    try {
-      const overridesCache = (globalThis as any).__movieOverridesCache || {};
-      const ovColors = movieId ? overridesCache[movieId]?.poster_colors : null;
+    const tryApplyOverrideColors = (ovColors: any) => {
       const toHex = (arr?: number[]) =>
         Array.isArray(arr) && arr.length >= 3
           ? rgbToHex([arr[0], arr[1], arr[2]])
           : null;
-      if (ovColors) {
-        const tl = toHex(ovColors.accentTl) || toHex(ovColors.dominant1);
-        const tr = toHex(ovColors.accentTr) || tl;
-        const br = toHex(ovColors.accentBr) || toHex(ovColors.dominant2) || tl;
-        const bl = toHex(ovColors.accentBl) || br;
-        if (tl || tr || br || bl) {
-          const next = {
-            tl: tl || DEFAULT_UB_COLORS.tl,
-            tr: tr || tl || DEFAULT_UB_COLORS.tr,
-            br: br || tl || DEFAULT_UB_COLORS.br,
-            bl: bl || br || DEFAULT_UB_COLORS.bl,
-          };
-          setUbColors(next);
-          if (cacheKey) paletteCacheRef.current[cacheKey] = next;
-          setPaletteReady(true);
-          return;
-        }
+      const tl = toHex(ovColors?.accentTl) || toHex(ovColors?.dominant1);
+      const tr = toHex(ovColors?.accentTr) || tl;
+      const br = toHex(ovColors?.accentBr) || toHex(ovColors?.dominant2) || tl;
+      const bl = toHex(ovColors?.accentBl) || br;
+      if (tl || tr || br || bl) {
+        const next = {
+          tl: tl || DEFAULT_UB_COLORS.tl,
+          tr: tr || tl || DEFAULT_UB_COLORS.tr,
+          br: br || tl || DEFAULT_UB_COLORS.br,
+          bl: bl || br || DEFAULT_UB_COLORS.bl,
+        };
+        setUbColors(next);
+        if (cacheKey) paletteCacheRef.current[cacheKey] = next;
+        setPaletteReady(true);
+        return true;
       }
+      return false;
+    };
+
+    try {
+      const overridesCache = (globalThis as any).__movieOverridesCache || {};
+      const ovColors = movieId ? overridesCache[movieId]?.poster_colors : null;
+      if (ovColors && tryApplyOverrideColors(ovColors)) return;
     } catch {}
 
+    // Если overrides не дали цвета — попробуем забрать свежие overrides, затем fallback на автопалитру
+    let overrideApplied = false;
+    if (movieId) {
+      void (async () => {
+        try {
+          const res = await fetch(`/api/overrides/movies?ids=${movieId}`, {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          });
+          if (!res.ok) return;
+          const data = await res.json();
+          const ov = data?.[movieId];
+          if (ov?.poster_colors) {
+            const ok = tryApplyOverrideColors(ov.poster_colors);
+            if (ok) {
+              overrideApplied = true;
+              const overridesCache =
+                (globalThis as any).__movieOverridesCache ||
+                ((globalThis as any).__movieOverridesCache = {});
+              overridesCache[movieId] = {
+                ...(overridesCache[movieId] || {}),
+                poster_colors: ov.poster_colors,
+              };
+            }
+          }
+        } catch {}
+      })();
+    }
+
+    if (overrideApplied) return;
     setPaletteReady(false);
 
     const loadImage = (
@@ -851,25 +884,50 @@ export function DesktopHome({
     }
   }, [data, activeMovie, activeSlide.url]);
 
+  const activeIdRef = useRef<string | null>(null);
+  const hoverPendingRef = useRef<any>(null);
+  const hoverRafRef = useRef<number | null>(null);
+  const hoverLastTsRef = useRef<number>(0);
+  useEffect(() => {
+    if (activeMovie?.id != null) activeIdRef.current = String(activeMovie.id);
+  }, [activeMovie?.id]);
+
   const handleMovieHover = useCallback((movie: any) => {
     if (!movie) return;
-    // Normalize on hover as well
-    const normalized = {
-      id: movie.id,
-      title: movie.title,
-      poster: movie.poster,
-      // MovieSlider now provides 'backdrop' which handles bg_poster logic
-      // If it's still missing, fallback to poster
-      backdrop: movie.backdrop || movie.poster,
-      year: movie.year,
-      rating: movie.rating,
-      country: movie.country,
-      genre: movie.genre,
-      description: movie.description || "", // Might be missing in list view
-      duration: movie.duration,
-      logo: movie.logo || null, // Keep logo if passed from slider
-    };
-    setActiveMovie(normalized);
+    if (activeIdRef.current && String(movie.id) === activeIdRef.current) return;
+
+    const now =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+    if (now - hoverLastTsRef.current < 160) return; // дольше задержка, чтобы не дёргалось при авто-докрутке
+    hoverLastTsRef.current = now;
+
+    hoverPendingRef.current = movie;
+    if (hoverRafRef.current != null) return;
+
+    hoverRafRef.current = requestAnimationFrame(() => {
+      const m = hoverPendingRef.current;
+      hoverPendingRef.current = null;
+      hoverRafRef.current = null;
+      if (!m) return;
+      const normalized = {
+        id: m.id,
+        title: m.title,
+        poster: m.poster,
+        backdrop: m.backdrop || m.poster,
+        year: m.year,
+        rating: m.rating,
+        country: m.country,
+        genre: m.genre,
+        description: m.description || "",
+        duration: m.duration,
+        logo: m.logo || null,
+      };
+      activeIdRef.current = String(normalized.id);
+      setActiveMovie((prev) => {
+        if (prev && String(prev.id) === String(normalized.id)) return prev;
+        return normalized;
+      });
+    });
   }, []);
 
   // Helper to get high-res image if possible, or fallback

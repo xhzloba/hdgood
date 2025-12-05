@@ -386,6 +386,28 @@ export default function AdminOverridesPage() {
     setFormValues((prev) => ({ ...prev, [path]: rawVal }));
   }
 
+  function clearPosterColors() {
+    setFormValues((prev) => {
+      const next = { ...prev };
+      delete next["poster_colors.dominant1"];
+      delete next["poster_colors.dominant2"];
+      delete next["poster_colors.accentTl"];
+      delete next["poster_colors.accentTr"];
+      delete next["poster_colors.accentBr"];
+      delete next["poster_colors.accentBl"];
+      return next;
+    });
+    try {
+      const obj = JSON.parse(jsonOverrideText || "{}");
+      if (obj && typeof obj === "object") {
+        delete obj.poster_colors;
+        setJsonOverrideText(JSON.stringify(obj, null, 2));
+      }
+    } catch {
+      // ignore parse error
+    }
+  }
+
   async function saveOverride() {
     if (!ident) {
       setError("Сначала укажи ident");
@@ -448,14 +470,18 @@ export default function AdminOverridesPage() {
     let jsonExtra: any = {};
 
     if (jsonOverrideText.trim().startsWith('"trailers":')) {
-      setError('Ошибка: JSON должен быть объектом, обернутым в { }. Например: { "trailers": [...] }');
+      setError(
+        'Ошибка: JSON должен быть объектом, обернутым в { }. Например: { "trailers": [...] }'
+      );
       return;
     }
 
     try {
       jsonExtra = JSON.parse(jsonOverrideText || "{}");
     } catch (e) {
-      setError("Ошибка в JSON редакторе: Некорректный JSON. Проверьте запятые и скобки.");
+      setError(
+        "Ошибка в JSON редакторе: Некорректный JSON. Проверьте запятые и скобки."
+      );
       return;
     }
 
@@ -842,8 +868,17 @@ export default function AdminOverridesPage() {
 
               {/* Правая колонка: поля оверрайда цветов */}
               <div>
-                <div className="text-sm font-medium mb-2">
-                  Цвета постера (override)
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <div className="text-sm font-medium">
+                    Цвета постера (override)
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearPosterColors}
+                    className="h-8 px-3 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs text-zinc-200"
+                  >
+                    Авто (сбросить цвета)
+                  </button>
                 </div>
                 <div className="text-xs text-zinc-400 mb-3">
                   Вводи как "r,g,b" или HEX "#rrggbb". Пустые поля — берутся из

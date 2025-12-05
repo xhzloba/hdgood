@@ -72,7 +72,6 @@
     "name": "Протокол выхода"
   },
   "690d1a609cfe849a33163677": {
-    "intro_video": "/intro/hishnik.mp4",
     "poster_colors": {
       "dominant1": [
         207,
@@ -85,21 +84,27 @@
         198
       ],
       "accentTl": [
-        250,
-        238,
-        219
+        8,
+        40,
+        55
       ],
       "accentBr": [
-        28,
-        57,
-        62
+        115,
+        126,
+        110
       ],
       "accentBl": [
-        20,
-        47,
-        56
+        116,
+        119,
+        97
+      ],
+      "accentTr": [
+        15,
+        49,
+        63
       ]
     },
+    "intro_video": "/intro/hishnik.mp4",
     "poster": "/movies/planeta-poster.jpg",
     "bg_poster": {
       "backdrop": "/movies/planeta.jpg"
@@ -181,24 +186,24 @@
         141
       ],
       "accentTl": [
-        15,
-        29,
-        68
+        5,
+        24,
+        48
       ],
       "accentBr": [
-        22,
-        47,
-        85
+        38,
+        81,
+        135
       ],
       "accentBl": [
-        14,
-        37,
-        83
+        38,
+        85,
+        134
       ],
       "accentTr": [
-        10,
-        10,
-        11
+        12,
+        27,
+        71
       ]
     },
     "poster_logo": "/movies/logo/obman-3-1-logo.webp",
@@ -328,29 +333,7 @@
         "https://images.kinorium.com/movie/shot/1545339/w1500_55519342.jpg"
       ]
     },
-    "poster_logo": "/movies/logo/7.webp",
-    "poster_colors": {
-      "accentTl": [
-        139,
-        4,
-        11
-      ],
-      "accentBr": [
-        54,
-        182,
-        202
-      ],
-      "accentBl": [
-        62,
-        153,
-        164
-      ],
-      "accentTr": [
-        0,
-        84,
-        212
-      ]
-    }
+    "poster_logo": "/movies/logo/7.webp"
   },
   "691f8f60f807186f7705ce53": {
     "intro_video": "/intro/sushnost.mp4",
@@ -378,24 +361,24 @@
   "68fff9779630419905edf2a5": {
     "poster_colors": {
       "accentTl": [
-        58,
-        103,
-        108
+        134,
+        6,
+        9
       ],
       "accentBl": [
-        79,
-        10,
-        10
+        87,
+        139,
+        143
       ],
       "accentBr": [
-        71,
-        8,
-        8
+        55,
+        116,
+        131
       ],
       "accentTr": [
-        46,
-        90,
-        92
+        184,
+        6,
+        5
       ]
     },
     "poster_logo": "https://images.kinorium.com/movie/plogo/9078233/w1500_55475548.png"
@@ -560,6 +543,38 @@
     }
   },
   "6593f8aa8914c04deae9fd74": {
+    "poster_colors": {
+      "dominant2": [
+        25,
+        26,
+        28
+      ],
+      "dominant1": [
+        27,
+        31,
+        33
+      ],
+      "accentTr": [
+        33,
+        37,
+        40
+      ],
+      "accentBr": [
+        45,
+        48,
+        48
+      ],
+      "accentBl": [
+        22,
+        23,
+        27
+      ],
+      "accentTl": [
+        35,
+        38,
+        39
+      ]
+    },
     "poster_logo": "/movies/logo/16.webp",
     "bg_poster": {
       "backdrop": "/series/igra-prestolov.webp"

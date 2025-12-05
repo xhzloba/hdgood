@@ -2475,5 +2475,145 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T13:09:42.195Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T13:09:44.355Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T13:17:40.777Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-05T13:19:10.162Z",
+    "poster": "/movies/things-5.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "690d1a609cfe849a33163677",
+    "timestamp": "2025-12-05T13:20:05.361Z",
+    "poster": "/movies/planeta-poster.jpg",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": [
+      "poster_colors.accentTr"
+    ]
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T13:21:13.889Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-05T13:22:40.149Z",
+    "poster": "/movies/things-5.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": [
+      "poster_colors.dominant1"
+    ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-12-05T13:29:01.691Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8aa8914c04deae9fd74",
+    "timestamp": "2025-12-05T13:30:34.499Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant2",
+      "poster_colors.dominant1"
+    ]
+  },
+  {
+    "id": "6593f8aa8914c04deae9fd74",
+    "timestamp": "2025-12-05T13:35:25.015Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-05T13:39:33.819Z",
+    "poster": "/movies/things-5.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTr",
+      "poster_colors.dominant1"
+    ],
+    "addedPaths": []
   }
 ]
