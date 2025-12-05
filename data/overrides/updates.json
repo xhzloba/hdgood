@@ -2615,5 +2615,207 @@
       "poster_colors.dominant1"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8aa8914c04deae9fd74",
+    "timestamp": "2025-12-05T14:26:18.019Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T14:37:11.693Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T14:37:47.246Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": [
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T14:38:24.587Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-05T14:39:02.630Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:46:15.617Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:47:28.907Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:49:06.294Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:49:07.579Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:49:54.171Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBl",
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:50:21.632Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "67a6907c22cfaf1c053e2f08",
+    "timestamp": "2025-12-05T14:50:22.491Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-12-05T15:00:24.479Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-12-05T15:03:16.150Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-12-05T15:09:55.336Z",
+    "poster": "/movies/frankenshtein-poster.jpg",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr"
+    ],
+    "addedPaths": [
+      "poster_colors.accentTr"
+    ]
+  },
+  {
+    "id": "68fea7f1b935d9900a3bce1a",
+    "timestamp": "2025-12-05T15:11:35.968Z",
+    "poster": "/movies/frankenshtein-poster.jpg",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentBl",
+      "poster_colors.accentBr",
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-12-05T15:13:04.577Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
   }
 ]

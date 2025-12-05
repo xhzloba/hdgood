@@ -1,5 +1,32 @@
 {
   "68fff9749630419905edf217": {
+    "poster_colors": {
+      "accentTr": [
+        65,
+        66,
+        130
+      ],
+      "accentTl": [
+        223,
+        69,
+        130
+      ],
+      "dominant2": [
+        91,
+        52,
+        38
+      ],
+      "accentBr": [
+        241,
+        109,
+        164
+      ],
+      "accentBl": [
+        35,
+        43,
+        78
+      ]
+    },
     "poster_logo": "/movies/logo/alica-logo.webp",
     "bg_poster": {
       "backdrop": "https://avatars.mds.yandex.net/get-kinopoisk-image/4486362/98395260-5107-436a-bbde-ae9864229590/3840x"
@@ -30,27 +57,32 @@
     }
   },
   "68fea7f1b935d9900a3bce1a": {
+    "poster_colors": {
+      "accentTl": [
+        20,
+        15,
+        18
+      ],
+      "accentBl": [
+        114,
+        174,
+        46
+      ],
+      "accentBr": [
+        204,
+        222,
+        139
+      ],
+      "accentTr": [
+        17,
+        14,
+        17
+      ]
+    },
     "poster": "/movies/frankenshtein-poster.jpg",
     "poster_logo": "/movies/logo/frankestein-logo.webp",
     "bg_poster": {
       "backdrop": "/movies/frankenstein.webp"
-    },
-    "poster_colors": {
-      "accentTl": [
-        118,
-        132,
-        80
-      ],
-      "accentBl": [
-        35,
-        20,
-        18
-      ],
-      "accentBr": [
-        151,
-        154,
-        117
-      ]
     }
   },
   "690e6be00aaa1df50b8ae075": {
@@ -360,25 +392,25 @@
   },
   "68fff9779630419905edf2a5": {
     "poster_colors": {
-      "accentTl": [
-        134,
-        6,
+      "accentTr": [
+        171,
+        8,
         9
       ],
-      "accentBl": [
-        87,
-        139,
-        143
+      "accentTl": [
+        26,
+        44,
+        52
       ],
       "accentBr": [
-        55,
-        116,
-        131
+        86,
+        13,
+        17
       ],
-      "accentTr": [
-        184,
-        6,
-        5
+      "accentBl": [
+        37,
+        64,
+        73
       ]
     },
     "poster_logo": "https://images.kinorium.com/movie/plogo/9078233/w1500_55475548.png"
@@ -460,32 +492,32 @@
     }
   },
   "67a6907c22cfaf1c053e2f08": {
-    "bg_poster": {
-      "backdrop": "/movies/lisa-backdrop.webp"
-    },
-    "poster_logo": "/movies/logo/lisa.png",
     "poster_colors": {
-      "accentBr": [
-        33,
-        37,
-        30
-      ],
-      "accentTl": [
-        31,
-        39,
-        31
-      ],
       "accentTr": [
-        33,
-        38,
-        31
+        40,
+        43,
+        34
+      ],
+      "accentBr": [
+        37,
+        45,
+        32
       ],
       "accentBl": [
         36,
-        38,
-        32
+        37,
+        33
+      ],
+      "accentTl": [
+        37,
+        43,
+        33
       ]
-    }
+    },
+    "bg_poster": {
+      "backdrop": "/movies/lisa-backdrop.webp"
+    },
+    "poster_logo": "/movies/logo/lisa.png"
   },
   "6593f87e8914c04deae9aa7f": {
     "poster_logo": "/movies/logo/4.png"
@@ -555,24 +587,24 @@
         33
       ],
       "accentTr": [
-        33,
-        37,
-        40
+        59,
+        63,
+        66
       ],
       "accentBr": [
-        45,
-        48,
-        48
+        37,
+        42,
+        45
       ],
       "accentBl": [
-        22,
-        23,
-        27
+        55,
+        59,
+        62
       ],
       "accentTl": [
-        35,
-        38,
-        39
+        49,
+        53,
+        56
       ]
     },
     "poster_logo": "/movies/logo/16.webp",

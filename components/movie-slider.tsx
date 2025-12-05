@@ -91,7 +91,11 @@ function extractMoviesFromData(data: any): any[] {
       id: item.details?.id || item.id,
       title: item.details?.name || item.title,
       poster: item.details?.poster || item.poster,
-      backdrop: item.details?.bg_poster?.backdrop || item.details?.wide_poster || item.details?.backdrop || item.backdrop,
+      backdrop:
+        item.details?.bg_poster?.backdrop ||
+        item.details?.wide_poster ||
+        item.details?.backdrop ||
+        item.backdrop,
       year: item.details?.released || item.year,
       rating: item.details?.rating_kp || item.rating,
       country: item.details?.country || item.country,
@@ -147,24 +151,32 @@ export default function MovieSlider({
   minItems = 30,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
-  const [pagesData, setPagesData] = useState<Array<{ page: number; data: any }>>([]);
+  const [pagesData, setPagesData] = useState<
+    Array<{ page: number; data: any }>
+  >([]);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const fetchingPages = useRef<Set<number>>(new Set());
-  
+
   const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
     if (typeof window === "undefined") return 2;
     if (cardType === "backdrop") {
-        if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 4;
-        if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches) return 3;
-        if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches) return 2;
-        return 1;
+      if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
+        return 4;
+      if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
+        return 3;
+      if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
+        return 2;
+      return 1;
     }
-    if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches) return 6;
-    if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches) return 5;
-    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches) return 4;
+    if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
+      return 6;
+    if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
+      return 5;
+    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
+      return 4;
     return 2;
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);
@@ -176,7 +188,10 @@ export default function MovieSlider({
   }, [url]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
-  const { data, error, isLoading, isValidating } = useSWR<string>(currentUrl, fetcher);
+  const { data, error, isLoading, isValidating } = useSWR<string>(
+    currentUrl,
+    fetcher
+  );
 
   useEffect(() => {
     if (!data) return;
@@ -192,32 +207,32 @@ export default function MovieSlider({
     if (!initialPages || initialPages <= 1) return;
     // Если мы уже загрузили первую страницу (через SWR выше), загружаем остальные
     // Но нужно убедиться, что мы не загружаем их повторно
-    
-    const loadMore = async () => {
-        for (let i = 2; i <= initialPages; i++) {
-            if (fetchingPages.current.has(i)) continue;
-            // Проверяем, есть ли уже данные
-            if (pagesData.some(p => p.page === i)) continue;
 
-            fetchingPages.current.add(i);
-            try {
-                const nextUrl = makePageUrl(url, i);
-                const nd = await fetcher(nextUrl, 10000);
-                const items = extractMoviesFromData(nd);
-                if (items && items.length > 0) {
-                    setPagesData(prev => {
-                        if (prev.some(p => p.page === i)) return prev;
-                        return [...prev, { page: i, data: nd }];
-                    });
-                }
-            } catch (e) {
-                console.error(`Failed to preload page ${i}`, e);
-            } finally {
-                fetchingPages.current.delete(i);
-            }
+    const loadMore = async () => {
+      for (let i = 2; i <= initialPages; i++) {
+        if (fetchingPages.current.has(i)) continue;
+        // Проверяем, есть ли уже данные
+        if (pagesData.some((p) => p.page === i)) continue;
+
+        fetchingPages.current.add(i);
+        try {
+          const nextUrl = makePageUrl(url, i);
+          const nd = await fetcher(nextUrl, 10000);
+          const items = extractMoviesFromData(nd);
+          if (items && items.length > 0) {
+            setPagesData((prev) => {
+              if (prev.some((p) => p.page === i)) return prev;
+              return [...prev, { page: i, data: nd }];
+            });
+          }
+        } catch (e) {
+          console.error(`Failed to preload page ${i}`, e);
+        } finally {
+          fetchingPages.current.delete(i);
         }
+      }
     };
-    
+
     loadMore();
   }, [initialPages, url, pagesData]); // Trigger on pagesData change to avoid stale checks, but logic handles dupes
 
@@ -232,7 +247,10 @@ export default function MovieSlider({
       let next = page + 1;
       for (let i = 0; i < 100; i++) {
         if (cancelled) break;
-        if (already.has(next)) { next++; continue; }
+        if (already.has(next)) {
+          next++;
+          continue;
+        }
         try {
           const nextUrl = makePageUrl(url, next);
           const nd = await fetcher(nextUrl, 10000);
@@ -240,10 +258,16 @@ export default function MovieSlider({
           if (!items || items.length === 0) break;
 
           // Проверка на дубликаты: если все пришедшие фильмы уже есть в списке, прерываем загрузку
-          const currentMovies = pagesData.flatMap(p => extractMoviesFromData(p.data));
-          const currentIds = new Set(currentMovies.map((m: any) => String(m.id)));
-          const isAllDuplicates = items.every((item: any) => currentIds.has(String(item.id)));
-          
+          const currentMovies = pagesData.flatMap((p) =>
+            extractMoviesFromData(p.data)
+          );
+          const currentIds = new Set(
+            currentMovies.map((m: any) => String(m.id))
+          );
+          const isAllDuplicates = items.every((item: any) =>
+            currentIds.has(String(item.id))
+          );
+
           if (isAllDuplicates) break;
 
           setPagesData((prev) => {
@@ -257,7 +281,9 @@ export default function MovieSlider({
         }
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [fetchAllPages, data, page, url, pagesData]);
 
   const movies = useMemo(() => {
@@ -302,11 +328,23 @@ export default function MovieSlider({
   const display = fetchAllPages ? sortedMovies : sortedMovies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
-  const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
-  const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({ ...overridesCacheRef }));
-  const idsString = useMemo(() => (display || []).map((m: any) => String(m.id)).join(","), [display]);
-  const [failedSrcById, setFailedSrcById] = useState<Record<string, string>>({});
-  const [pendingOverrideIds, setPendingOverrideIds] = useState<Set<string>>(new Set());
+  const overridesCacheRef =
+    (globalThis as any).__movieOverridesCache ||
+    ((globalThis as any).__movieOverridesCache = {});
+  const [overridesMap, setOverridesMap] = useState<Record<string, any>>(() => ({
+    ...overridesCacheRef,
+  }));
+  const [overrideRefresh, setOverrideRefresh] = useState(0);
+  const idsString = useMemo(
+    () => (display || []).map((m: any) => String(m.id)).join(","),
+    [display]
+  );
+  const [failedSrcById, setFailedSrcById] = useState<Record<string, string>>(
+    {}
+  );
+  const [pendingOverrideIds, setPendingOverrideIds] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (!idsString) return;
@@ -315,17 +353,21 @@ export default function MovieSlider({
     setPendingOverrideIds((prev) => {
       const next = new Set(prev);
       for (const id of idsArray) {
-        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap)) next.add(id);
+        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap))
+          next.add(id);
       }
       return next;
     });
     (async () => {
       try {
-        const res = await fetch(`/api/overrides/movies?ids=${encodeURIComponent(idsString)}`, {
-          signal: controller.signal,
-          cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
+        const res = await fetch(
+          `/api/overrides/movies?ids=${encodeURIComponent(idsString)}`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+            headers: { Accept: "application/json" },
+          }
+        );
         const ok = res.ok;
         const data = ok ? (await res.json()) || {} : {};
         setOverridesMap((prev) => {
@@ -354,16 +396,69 @@ export default function MovieSlider({
       }
     })();
     return () => controller.abort();
-  }, [idsString]);
+  }, [idsString, overrideRefresh]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent)?.detail as
+        | { ids?: string[]; op?: string; ts?: number }
+        | undefined;
+      const changedIds = detail?.ids;
+
+      const idsToAffect =
+        changedIds && changedIds.length
+          ? changedIds
+          : idsString.split(",").filter(Boolean);
+
+      if (!idsToAffect.length) return;
+
+      const displayIds = new Set(idsString.split(",").filter(Boolean));
+      const intersects = idsToAffect.some((id) => displayIds.has(String(id)));
+      if (!intersects) return;
+
+      setOverridesMap((prev) => {
+        const next = { ...prev };
+        idsToAffect.forEach((id) => {
+          delete next[String(id)];
+        });
+        return next;
+      });
+
+      try {
+        idsToAffect.forEach((id) => {
+          delete (overridesCacheRef as any)[String(id)];
+        });
+      } catch {}
+
+      setOverrideRefresh((v) => v + 1);
+    };
+
+    window.addEventListener("override:changed", handler as EventListener);
+    return () =>
+      window.removeEventListener("override:changed", handler as EventListener);
+  }, [idsString, overridesCacheRef]);
 
   const finalDisplay = useMemo(() => {
     return (display || []).map((m: any) => {
-      const ov = overridesMap[String(m.id)] || (movieOverrides as any)[String(m.id)] || null;
+      const ov =
+        overridesMap[String(m.id)] ||
+        (movieOverrides as any)[String(m.id)] ||
+        null;
       const patchedPoster = ov && ov.poster ? ov.poster : m.poster;
-      const patchedTitle = ov && (ov.name || ov.title) ? (ov.name || ov.title) : m.title;
+      const patchedTitle =
+        ov && (ov.name || ov.title) ? ov.name || ov.title : m.title;
       const patchedLogo = ov && ov.poster_logo ? ov.poster_logo : m.logo;
-      const patchedBackdrop = ov && ov.bg_poster && ov.bg_poster.backdrop ? ov.bg_poster.backdrop : m.backdrop;
-      return { ...m, poster: patchedPoster, title: patchedTitle, logo: patchedLogo, backdrop: patchedBackdrop };
+      const patchedBackdrop =
+        ov && ov.bg_poster && ov.bg_poster.backdrop
+          ? ov.bg_poster.backdrop
+          : m.backdrop;
+      return {
+        ...m,
+        poster: patchedPoster,
+        title: patchedTitle,
+        logo: patchedLogo,
+        backdrop: patchedBackdrop,
+      };
     });
   }, [display, overridesMap]);
   useEffect(() => {
@@ -383,11 +478,21 @@ export default function MovieSlider({
   useEffect(() => {
     const api: any = carouselApi as any;
     if (!api || typeof api.on !== "function") return;
-    const onDown = () => { isInteractingRef.current = true; };
-    const onUp = () => { isInteractingRef.current = false; };
-    try { api.on("pointerDown", onDown); api.on("pointerUp", onUp); } catch {}
+    const onDown = () => {
+      isInteractingRef.current = true;
+    };
+    const onUp = () => {
+      isInteractingRef.current = false;
+    };
+    try {
+      api.on("pointerDown", onDown);
+      api.on("pointerUp", onUp);
+    } catch {}
     return () => {
-      try { api.off("pointerDown", onDown); api.off("pointerUp", onUp); } catch {}
+      try {
+        api.off("pointerDown", onDown);
+        api.off("pointerUp", onUp);
+      } catch {}
     };
   }, [carouselApi]);
 
@@ -399,9 +504,13 @@ export default function MovieSlider({
     if (!api || !targetId) return;
     if (isInteractingRef.current) return;
     if (!finalDisplay || finalDisplay.length === 0) return;
-    const idx = finalDisplay.findIndex((m: any) => String(m.id) === String(targetId));
+    const idx = finalDisplay.findIndex(
+      (m: any) => String(m.id) === String(targetId)
+    );
     if (idx >= 0) {
-      try { api.scrollTo?.(idx); } catch {}
+      try {
+        api.scrollTo?.(idx);
+      } catch {}
       lastSyncedIdRef.current = targetId;
       pendingSyncIdRef.current = null;
     }
@@ -425,7 +534,8 @@ export default function MovieSlider({
     const id = setInterval(() => {
       if (paused) return;
       if (loop) {
-        if (api.canScrollNext()) api.scrollNext(); else api.scrollTo(0);
+        if (api.canScrollNext()) api.scrollNext();
+        else api.scrollTo(0);
       } else {
         if (api.canScrollNext()) api.scrollNext();
       }
@@ -453,7 +563,9 @@ export default function MovieSlider({
       {(title || viewAllHref) && (
         <div className="flex items-center justify-between relative z-20 mb-2 px-3 md:px-12">
           {title ? (
-            <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</div>
+            <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
+              {title}
+            </div>
           ) : (
             <div />
           )}
@@ -477,25 +589,41 @@ export default function MovieSlider({
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
         <div className="relative px-2 md:px-12">
-          <Carousel className="w-full" opts={{ dragFree: true, loop: false, align: "start" }} setApi={setCarouselApi}>
+          <Carousel
+            className="w-full"
+            opts={{ dragFree: true, loop: false, align: "start" }}
+            setApi={setCarouselApi}
+          >
             <CarouselContent className="-ml-2">
               {Array.from({ length: perPage }).map((_, i) => (
                 <CarouselItem
                   key={i}
                   className={`pl-2 ${
-                    compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                    compactOnMobile
+                      ? "basis-1/2 sm:basis-1/2"
+                      : "basis-1/2 sm:basis-1/2"
                   } ${
-                    cardType === 'backdrop' 
-                    ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4" 
-                    : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
+                    cardType === "backdrop"
+                      ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
                   }`}
                 >
                   <div className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 overflow-hidden rounded-sm">
-                    <div className={`${cardType === 'backdrop' ? 'aspect-video' : 'aspect-[2/3]'} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]`}>
+                    <div
+                      className={`${
+                        cardType === "backdrop"
+                          ? "aspect-video"
+                          : "aspect-[2/3]"
+                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px]`}
+                    >
                       <Skeleton className="w-full h-full" />
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
-                    <div className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${hideMetadata ? 'invisible' : ''}`}>
+                    <div
+                      className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${
+                        hideMetadata ? "invisible" : ""
+                      }`}
+                    >
                       {!hideMetadata && (
                         <>
                           <div className="pointer-events-none absolute top-[4%] h-[52%] left-1/2 -translate-x-1/2 w-[46%] hidden md:block opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 movie-title-flame" />
@@ -517,30 +645,50 @@ export default function MovieSlider({
             <CarouselNext className="hidden md:flex xl:w-10 xl:h-10 md:top-1/2" />
           </Carousel>
           {!hideIndicators && (
-          <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-            {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
-              <span
-                key={i}
-                className={`${selectedIndex === i ? "w-6" : "w-2"} h-2 rounded-full transition-all duration-300`}
-                style={{ backgroundColor: selectedIndex === i ? "rgba(var(--ui-accent-rgb), 0.9)" : "rgba(255,255,255,0.3)" }}
-              />
-            ))}
-          </div>
+            <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
+              {(
+                carouselApi?.scrollSnapList() || Array.from({ length: 10 })
+              ).map((_: any, i: number) => (
+                <span
+                  key={i}
+                  className={`${
+                    selectedIndex === i ? "w-6" : "w-2"
+                  } h-2 rounded-full transition-all duration-300`}
+                  style={{
+                    backgroundColor:
+                      selectedIndex === i
+                        ? "rgba(var(--ui-accent-rgb), 0.9)"
+                        : "rgba(255,255,255,0.3)",
+                  }}
+                />
+              ))}
+            </div>
           )}
         </div>
       ) : (
-        <div className="relative px-2 md:px-12" onMouseEnter={() => hoverPause && setPaused(true)} onMouseLeave={() => hoverPause && setPaused(false)}>
-          <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi} enableGlobalKeyNavigation={enableGlobalKeyNavigation}>
+        <div
+          className="relative px-2 md:px-12"
+          onMouseEnter={() => hoverPause && setPaused(true)}
+          onMouseLeave={() => hoverPause && setPaused(false)}
+        >
+          <Carousel
+            className="w-full"
+            opts={{ dragFree: true, loop: loop ?? false, align: "start" }}
+            setApi={setCarouselApi}
+            enableGlobalKeyNavigation={enableGlobalKeyNavigation}
+          >
             <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
                   className={`pl-2 ${
-                    compactOnMobile ? "basis-1/2 sm:basis-1/2" : "basis-1/2 sm:basis-1/2"
+                    compactOnMobile
+                      ? "basis-1/2 sm:basis-1/2"
+                      : "basis-1/2 sm:basis-1/2"
                   } ${
-                    cardType === 'backdrop' 
-                    ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4" 
-                    : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
+                    cardType === "backdrop"
+                      ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
                   }`}
                 >
                   <Link
@@ -549,185 +697,248 @@ export default function MovieSlider({
                     onFocus={(e) => {
                       onMovieHover?.(movie);
                       // Add active state manually for consistent styling with hover
-                      e.currentTarget.classList.add('is-focused');
+                      e.currentTarget.classList.add("is-focused");
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.classList.remove('is-focused');
-                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      e.currentTarget.classList.remove("is-focused");
+                      const posterEl = e.currentTarget.querySelector(
+                        ".poster-card"
+                      ) as HTMLElement;
                       if (!posterEl) return;
-                      posterEl.style.setProperty('--mx', '0');
-                      posterEl.style.setProperty('--my', '0');
+                      posterEl.style.setProperty("--mx", "0");
+                      posterEl.style.setProperty("--my", "0");
                     }}
                     onMouseMove={(e) => {
                       onMovieHover?.(movie);
-                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      const posterEl = e.currentTarget.querySelector(
+                        ".poster-card"
+                      ) as HTMLElement;
                       if (!posterEl) return;
                       const rect = posterEl.getBoundingClientRect();
                       const x = e.clientX - rect.left;
                       const y = e.clientY - rect.top;
-                      const mx = x / rect.width * 2 - 1;
-                      const my = y / rect.height * 2 - 1;
-                      posterEl.style.setProperty('--x', `${x}px`);
-                      posterEl.style.setProperty('--y', `${y}px`);
-                      posterEl.style.setProperty('--mx', `${mx}`);
-                      posterEl.style.setProperty('--my', `${my}`);
+                      const mx = (x / rect.width) * 2 - 1;
+                      const my = (y / rect.height) * 2 - 1;
+                      posterEl.style.setProperty("--x", `${x}px`);
+                      posterEl.style.setProperty("--y", `${y}px`);
+                      posterEl.style.setProperty("--mx", `${mx}`);
+                      posterEl.style.setProperty("--my", `${my}`);
                     }}
                     onMouseLeave={(e) => {
-                      const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement;
+                      const posterEl = e.currentTarget.querySelector(
+                        ".poster-card"
+                      ) as HTMLElement;
                       if (!posterEl) return;
-                      posterEl.style.setProperty('--mx', '0');
-                      posterEl.style.setProperty('--my', '0');
+                      posterEl.style.setProperty("--mx", "0");
+                      posterEl.style.setProperty("--my", "0");
                     }}
-                  onClick={(e) => {
-                    const api = carouselApi as unknown as { clickAllowed?: () => boolean } | null
-                    if (api?.clickAllowed && !api.clickAllowed()) {
-                      e.preventDefault()
-                      return
-                    }
-                    
-                    NProgress.start();
+                    onClick={(e) => {
+                      const api = carouselApi as unknown as {
+                        clickAllowed?: () => boolean;
+                      } | null;
+                      if (api?.clickAllowed && !api.clickAllowed()) {
+                        e.preventDefault();
+                        return;
+                      }
 
-                    // Сохраняем позицию постера для анимации перехода (только десктоп)
-                    const posterEl = e.currentTarget.querySelector('.poster-card') as HTMLElement
-                    if (posterEl && movie.poster) {
-                      const rect = posterEl.getBoundingClientRect()
-                      savePosterTransition({
-                        movieId: String(movie.id),
-                        posterUrl: movie.poster,
-                        rect: rect,
-                      })
-                    }
+                      NProgress.start();
 
-                    try {
-                      const ids = (finalDisplay || []).map((m: any) => String(m.id))
-                      const index = ids.indexOf(String(movie.id))
-                      const ctx = { origin: "slider", ids, index, timestamp: Date.now() }
-                      localStorage.setItem("__navContext", JSON.stringify(ctx))
-                      const href = `${location.pathname}${location.search}`
-                      localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }))
-                    } catch {}
-                  }}
-                >
-                  <div className={`${cardType === 'backdrop' ? 'aspect-video' : 'aspect-[2/3]'} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}>
-                    {(() => {
-                      const idStr = String(movie.id);
-                      const ovEntry = (overridesMap as any)[idStr] || (movieOverrides as any)[idStr];
-                      const known = ovEntry !== undefined;
-                      const isBackdrop = cardType === 'backdrop';
-                      
-                      // Determine source based on cardType
-                      const posterSrc = isBackdrop 
-                         ? (ovEntry?.bg_poster?.backdrop || movie.backdrop || movie.poster || null)
-                         : (ovEntry?.poster ?? movie.poster ?? null);
-                         
-                      const waiting = !known && !posterSrc; // If we have posterSrc, we don't need to wait for override to confirm it's missing
-                      
-                      if (posterSrc && failedSrcById[String(movie.id)] !== (posterSrc || "")) {
-                        return (
-                          <>
-                          <img
-                            key={String(movie.id) + (isBackdrop ? '-bd' : '-p')}
-                            src={posterSrc || "/placeholder.svg"}
-                            alt={movie.title || "Постер"}
-                            decoding="async"
-                            loading={index < itemsPerView ? "eager" : "lazy"}
-                            fetchPriority={index < itemsPerView ? "high" : "low"}
-                            className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
-                              loadedImages.has(String(movie.id)) ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
-                            }`}
-                            style={{ transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" }}
-                            onLoad={() => {
-                              handleImageLoad(movie.id);
-                              const key = String(movie.id);
-                              setFailedSrcById((prev) => {
-                                const next = { ...prev };
-                                if (next[key]) delete next[key];
-                                return next;
-                              });
-                            }}
-                            onError={() => {
-                              const key = String(movie.id);
-                              const src = posterSrc || "";
-                              setFailedSrcById((prev) => ({ ...prev, [key]: src }));
-                            }}
-                          />
-                          {/* Logo Overlay for Backdrop Cards */}
-                          {isBackdrop && movie.logo && (
-                              <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
-                                  <img 
-                                    src={movie.logo} 
-                                    alt={movie.title} 
+                      // Сохраняем позицию постера для анимации перехода (только десктоп)
+                      const posterEl = e.currentTarget.querySelector(
+                        ".poster-card"
+                      ) as HTMLElement;
+                      if (posterEl && movie.poster) {
+                        const rect = posterEl.getBoundingClientRect();
+                        savePosterTransition({
+                          movieId: String(movie.id),
+                          posterUrl: movie.poster,
+                          rect: rect,
+                        });
+                      }
+
+                      try {
+                        const ids = (finalDisplay || []).map((m: any) =>
+                          String(m.id)
+                        );
+                        const index = ids.indexOf(String(movie.id));
+                        const ctx = {
+                          origin: "slider",
+                          ids,
+                          index,
+                          timestamp: Date.now(),
+                        };
+                        localStorage.setItem(
+                          "__navContext",
+                          JSON.stringify(ctx)
+                        );
+                        const href = `${location.pathname}${location.search}`;
+                        localStorage.setItem(
+                          "__returnTo",
+                          JSON.stringify({ href, timestamp: Date.now() })
+                        );
+                      } catch {}
+                    }}
+                  >
+                    <div
+                      className={`${
+                        cardType === "backdrop"
+                          ? "aspect-video"
+                          : "aspect-[2/3]"
+                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}
+                    >
+                      {(() => {
+                        const idStr = String(movie.id);
+                        const ovEntry =
+                          (overridesMap as any)[idStr] ||
+                          (movieOverrides as any)[idStr];
+                        const known = ovEntry !== undefined;
+                        const isBackdrop = cardType === "backdrop";
+
+                        // Determine source based on cardType
+                        const posterSrc = isBackdrop
+                          ? ovEntry?.bg_poster?.backdrop ||
+                            movie.backdrop ||
+                            movie.poster ||
+                            null
+                          : ovEntry?.poster ?? movie.poster ?? null;
+
+                        const waiting = !known && !posterSrc; // If we have posterSrc, we don't need to wait for override to confirm it's missing
+
+                        if (
+                          posterSrc &&
+                          failedSrcById[String(movie.id)] !== (posterSrc || "")
+                        ) {
+                          return (
+                            <>
+                              <img
+                                key={
+                                  String(movie.id) + (isBackdrop ? "-bd" : "-p")
+                                }
+                                src={posterSrc || "/placeholder.svg"}
+                                alt={movie.title || "Постер"}
+                                decoding="async"
+                                loading={
+                                  index < itemsPerView ? "eager" : "lazy"
+                                }
+                                fetchPriority={
+                                  index < itemsPerView ? "high" : "low"
+                                }
+                                className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
+                                  loadedImages.has(String(movie.id))
+                                    ? "opacity-100 blur-0 scale-100"
+                                    : "opacity-0 blur-md scale-[1.02]"
+                                }`}
+                                style={{
+                                  transition:
+                                    "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                                  willChange: "opacity, filter, transform",
+                                }}
+                                onLoad={() => {
+                                  handleImageLoad(movie.id);
+                                  const key = String(movie.id);
+                                  setFailedSrcById((prev) => {
+                                    const next = { ...prev };
+                                    if (next[key]) delete next[key];
+                                    return next;
+                                  });
+                                }}
+                                onError={() => {
+                                  const key = String(movie.id);
+                                  const src = posterSrc || "";
+                                  setFailedSrcById((prev) => ({
+                                    ...prev,
+                                    [key]: src,
+                                  }));
+                                }}
+                              />
+                              {/* Logo Overlay for Backdrop Cards */}
+                              {isBackdrop && movie.logo && (
+                                <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
+                                  <img
+                                    src={movie.logo}
+                                    alt={movie.title}
                                     className="max-w-[70%] max-h-[50%] object-contain drop-shadow-lg transition-transform duration-300 translate-y-8 group-hover:scale-110"
                                   />
-                              </div>
-                          )}
-                          </>
+                                </div>
+                              )}
+                            </>
+                          );
+                        }
+                        if (waiting) {
+                          return <Skeleton className="w-full h-full" />;
+                        }
+                        return (
+                          <div className="text-zinc-600 text-[10px] text-center p-1">
+                            Нет изображения
+                          </div>
                         );
-                      }
-                      if (waiting) {
-                        return <Skeleton className="w-full h-full" />;
-                      }
-                      return <div className="text-zinc-600 text-[10px] text-center p-1">Нет изображения</div>;
-                    })()}
+                      })()}
                       {(() => {
                         const idStr = String(movie.id);
                         const ovEntry = (overridesMap as any)[idStr];
                         const known = ovEntry !== undefined;
                         const posterSrc = known
-                          ? (ovEntry?.poster ?? movie.poster ?? null)
+                          ? ovEntry?.poster ?? movie.poster ?? null
                           : null;
-                      return posterSrc && loadedImages.has(String(movie.id)) ? (
-                        <div
-                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300"
-                          style={{
-                            background:
-                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                          }}
-                        />
-                      ) : null;
-                    })()}
-
-                    {cardType !== 'backdrop' && (() => {
-                      const genres = (() => {
-                        const raw = (movie as any)?.genre;
-                        let items: string[] = [];
-                        if (Array.isArray(raw)) {
-                          items = raw
-                            .map((v) => String(v || "").trim())
-                            .filter((v) => v.length > 0);
-                        } else if (typeof raw === "string") {
-                          items = raw
-                            .split(/[,/|]/)
-                            .map((p) => p.trim())
-                            .filter(Boolean);
-                        }
-                        return items.slice(0, 2);
-                      })();
-                      const hasCountry = !!movie.country;
-                      if (!hasCountry && genres.length === 0) return null;
-                      return (
-                        <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
+                        return posterSrc &&
+                          loadedImages.has(String(movie.id)) ? (
                           <div
-                            className="absolute inset-x-0 bottom-0 h-[40%]"
+                            className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300"
                             style={{
                               background:
-                                "linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.28) 45%, rgba(0,0,0,0.0) 100%)",
+                                "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
                             }}
                           />
-                          <div className="absolute inset-x-0 bottom-1 md:bottom-2 flex items-center justify-center px-3">
-                            <div className="px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] text-white flex items-center justify-center gap-2 flex-wrap text-center">
-                              {hasCountry && (
-                                <CountryFlag country={movie.country} size="md" />
-                              )}
-                              {genres.length > 0 && (
-                                <span className="opacity-90">{genres.join(" • ")}</span>
-                              )}
+                        ) : null;
+                      })()}
+
+                      {cardType !== "backdrop" &&
+                        (() => {
+                          const genres = (() => {
+                            const raw = (movie as any)?.genre;
+                            let items: string[] = [];
+                            if (Array.isArray(raw)) {
+                              items = raw
+                                .map((v) => String(v || "").trim())
+                                .filter((v) => v.length > 0);
+                            } else if (typeof raw === "string") {
+                              items = raw
+                                .split(/[,/|]/)
+                                .map((p) => p.trim())
+                                .filter(Boolean);
+                            }
+                            return items.slice(0, 2);
+                          })();
+                          const hasCountry = !!movie.country;
+                          if (!hasCountry && genres.length === 0) return null;
+                          return (
+                            <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
+                              <div
+                                className="absolute inset-x-0 bottom-0 h-[40%]"
+                                style={{
+                                  background:
+                                    "linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.28) 45%, rgba(0,0,0,0.0) 100%)",
+                                }}
+                              />
+                              <div className="absolute inset-x-0 bottom-1 md:bottom-2 flex items-center justify-center px-3">
+                                <div className="px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] text-white flex items-center justify-center gap-2 flex-wrap text-center">
+                                  {hasCountry && (
+                                    <CountryFlag
+                                      country={movie.country}
+                                      size="md"
+                                    />
+                                  )}
+                                  {genres.length > 0 && (
+                                    <span className="opacity-90">
+                                      {genres.join(" • ")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
-                      
+                          );
+                        })()}
+
                       {movie.rating && (
                         <div
                           className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
@@ -737,13 +948,19 @@ export default function MovieSlider({
                           {formatRatingLabel(movie.rating)}
                         </div>
                       )}
-                      {cardType !== 'backdrop' && !hideMetadata && movie.quality && (
-                        <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                          {String(movie.quality)}
-                        </div>
-                      )}
+                      {cardType !== "backdrop" &&
+                        !hideMetadata &&
+                        movie.quality && (
+                          <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                            {String(movie.quality)}
+                          </div>
+                        )}
                     </div>
-                    <div className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${hideMetadata ? 'invisible' : ''}`}>
+                    <div
+                      className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${
+                        hideMetadata ? "invisible" : ""
+                      }`}
+                    >
                       {!hideMetadata && (
                         <div className="relative z-[2]">
                           <h3
@@ -754,7 +971,9 @@ export default function MovieSlider({
                           </h3>
                           {(() => {
                             const year = movie.year ? String(movie.year) : null;
-                            const quality = movie.quality ? String(movie.quality) : null;
+                            const quality = movie.quality
+                              ? String(movie.quality)
+                              : null;
                             const tagsArr = (() => {
                               const raw = (movie as any)?.tags;
                               let items: string[] = [];
@@ -770,7 +989,8 @@ export default function MovieSlider({
                               }
                               return items.slice(0, 1);
                             })();
-                            if (!year && !quality && tagsArr.length === 0) return null;
+                            if (!year && !quality && tagsArr.length === 0)
+                              return null;
                             return (
                               <div className="flex items-center gap-2 text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                                 {year && <span>{year}</span>}
@@ -782,7 +1002,9 @@ export default function MovieSlider({
                                   <span className="text-zinc-500/60">•</span>
                                 )}
                                 {tagsArr.length > 0 && (
-                                  <span className="truncate max-w-[70%]">{tagsArr.join(" • ")}</span>
+                                  <span className="truncate max-w-[70%]">
+                                    {tagsArr.join(" • ")}
+                                  </span>
                                 )}
                               </div>
                             );
@@ -799,15 +1021,23 @@ export default function MovieSlider({
           </Carousel>
           {!hideIndicators && (
             <div className="hidden md:flex items-center justify-center gap-1 mt-3 min-h-[10px]">
-              {(carouselApi?.scrollSnapList() || Array.from({ length: 10 })).map((_: any, i: number) => (
+              {(
+                carouselApi?.scrollSnapList() || Array.from({ length: 10 })
+              ).map((_: any, i: number) => (
                 <button
                   key={i}
                   type="button"
                   aria-label={`К слайду ${i + 1}`}
                   aria-current={selectedIndex === i}
                   onClick={() => carouselApi?.scrollTo?.(i)}
-                  className={`${selectedIndex === i ? "w-6" : "w-2 bg-white/30"} h-2 rounded-full transition-all duration-300`}
-                  style={selectedIndex === i ? { backgroundColor: "rgb(var(--ui-accent-rgb))" } : undefined}
+                  className={`${
+                    selectedIndex === i ? "w-6" : "w-2 bg-white/30"
+                  } h-2 rounded-full transition-all duration-300`}
+                  style={
+                    selectedIndex === i
+                      ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
+                      : undefined
+                  }
                 />
               ))}
             </div>

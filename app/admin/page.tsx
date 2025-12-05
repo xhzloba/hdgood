@@ -363,6 +363,16 @@ export default function AdminOverridesPage() {
     setFormValues(next);
   }
 
+  function broadcastOverrideChange(ids: string[], op: "update" | "delete") {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("override:changed", {
+          detail: { ids, op, ts: Date.now() },
+        })
+      );
+    } catch {}
+  }
+
   // Удаляет текущий override
   async function deleteOverride() {
     if (!ident) {
@@ -377,6 +387,13 @@ export default function AdminOverridesPage() {
       setExistingOverride(null);
       setJsonOverrideText("{}");
       setFormValues({});
+      try {
+        const cache =
+          (globalThis as any).__movieOverridesCache ||
+          ((globalThis as any).__movieOverridesCache = {});
+        delete cache[ident];
+        broadcastOverrideChange([ident], "delete");
+      } catch {}
     } catch (e: any) {
       setError(e?.message || "Ошибка удаления override");
     }
@@ -521,6 +538,13 @@ export default function AdminOverridesPage() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setExistingOverride(overrideObj);
+      try {
+        const cache =
+          (globalThis as any).__movieOverridesCache ||
+          ((globalThis as any).__movieOverridesCache = {});
+        cache[ident] = overrideObj;
+        broadcastOverrideChange([ident], "update");
+      } catch {}
     } catch (e: any) {
       setError(e?.message || "Ошибка сохранения");
     }

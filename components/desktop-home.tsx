@@ -345,6 +345,7 @@ export function DesktopHome({
   const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0]);
   const lastUrlRef = useRef<string | null>(null);
   const lastInputTimeRef = useRef(0);
+  const [overrideRefresh, setOverrideRefresh] = useState(0);
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -422,19 +423,18 @@ export function DesktopHome({
       return;
     }
 
-    // Если есть кэш — используем без мерцания
-    if (cacheKey && paletteCacheRef.current[cacheKey]) {
-      setUbColors(paletteCacheRef.current[cacheKey]);
-      setPaletteReady(true);
-      return;
-    }
-
-    // Приоритет: цвета из overrides (poster_colors)
     const tryApplyOverrideColors = (ovColors: any) => {
-      const toHex = (arr?: number[]) =>
-        Array.isArray(arr) && arr.length >= 3
-          ? rgbToHex([arr[0], arr[1], arr[2]])
-          : null;
+      const toHex = (arr?: number[]) => {
+        if (!Array.isArray(arr) || arr.length < 3) return null;
+        const [r, g, b] = arr;
+        const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
+        return (
+          "#" +
+          [r, g, b]
+            .map((v) => clamp(v).toString(16).padStart(2, "0"))
+            .join("")
+        );
+      };
       const tl = toHex(ovColors?.accentTl) || toHex(ovColors?.dominant1);
       const tr = toHex(ovColors?.accentTr) || tl;
       const br = toHex(ovColors?.accentBr) || toHex(ovColors?.dominant2) || tl;
@@ -453,6 +453,17 @@ export function DesktopHome({
       }
       return false;
     };
+
+    // Если уже есть цвета в активном фильме (из override) — применяем и выходим
+    const directOvColors = (activeMovie as any)?.poster_colors;
+    if (directOvColors && tryApplyOverrideColors(directOvColors)) return;
+
+    // Если есть кэш — используем без мерцания
+    if (cacheKey && paletteCacheRef.current[cacheKey]) {
+      setUbColors(paletteCacheRef.current[cacheKey]);
+      setPaletteReady(true);
+      return;
+    }
 
     try {
       const overridesCache = (globalThis as any).__movieOverridesCache || {};
@@ -788,12 +799,14 @@ export function DesktopHome({
 
     // If we already have a logo, no need to fetch
     // BUT if we just switched slides (isFetchingOverride is true manually set), we MUST proceed
-    if (activeMovie.logo && !isFetchingOverride) return;
+    if (activeMovie.logo && !isFetchingOverride && overrideRefresh === 0) return;
 
     const fetchOverride = async () => {
       if (!isFetchingOverride) setIsFetchingOverride(true); // Ensure loading state is on
       try {
-        const res = await fetch(`/api/overrides/movies?ids=${activeMovie.id}`);
+        const res = await fetch(`/api/overrides/movies?ids=${activeMovie.id}`, {
+          cache: "no-store",
+        });
         if (res.ok) {
           const overrides = await res.json();
           const ov = overrides[String(activeMovie.id)];
@@ -813,6 +826,7 @@ export function DesktopHome({
                 logo: ov.poster_logo || prev.logo,
                 // Prioritize override backdrop (bg_poster.backdrop)
                 backdrop: ov.bg_poster?.backdrop || prev.backdrop,
+                poster_colors: ov.poster_colors || prev.poster_colors,
               };
             });
           }
@@ -825,7 +839,27 @@ export function DesktopHome({
     };
 
     fetchOverride();
-  }, [activeMovie?.id, activeSlide.id]); // Re-run if ID changes or if slide changes
+  }, [activeMovie?.id, activeSlide.id, overrideRefresh]); // Re-run if ID changes, slide changes, or override invalidated
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent)?.detail as { ids?: string[]; op?: string; ts?: number } | undefined;
+      const changedIds = detail?.ids || [];
+      if (changedIds.length === 0 && activeMovie?.id == null) return;
+      if (changedIds.length === 0 || changedIds.some((id) => String(id) === String(activeMovie?.id))) {
+        // Drop cached entry for current movie
+        try {
+          const cache =
+            (globalThis as any).__movieOverridesCache ||
+            ((globalThis as any).__movieOverridesCache = {});
+          if (activeMovie?.id != null) delete cache[String(activeMovie.id)];
+        } catch {}
+        setOverrideRefresh((v) => v + 1);
+      }
+    };
+    window.addEventListener("override:changed", handler as EventListener);
+    return () => window.removeEventListener("override:changed", handler as EventListener);
+  }, [activeMovie?.id]);
 
   useEffect(() => {
     if (data) {
@@ -862,6 +896,9 @@ export function DesktopHome({
             normalized.logo = cachedOverride.poster_logo || normalized.logo;
             normalized.backdrop =
               cachedOverride.bg_poster?.backdrop || normalized.backdrop;
+            if (cachedOverride.poster_colors) {
+              (normalized as any).poster_colors = cachedOverride.poster_colors;
+            }
           } else {
             // Pre-emptively clear logo if we are switching slides to avoid showing old logo
             if (lastUrlRef.current !== activeSlide.url) {
@@ -909,18 +946,24 @@ export function DesktopHome({
       hoverPendingRef.current = null;
       hoverRafRef.current = null;
       if (!m) return;
+
+      // Применяем override из кеша, если есть (включая poster_colors)
+      const overridesCache = (globalThis as any).__movieOverridesCache || {};
+      const ov = overridesCache[String(m.id)];
+
       const normalized = {
         id: m.id,
         title: m.title,
-        poster: m.poster,
-        backdrop: m.backdrop || m.poster,
+        poster: ov?.poster ?? m.poster,
+        backdrop: ov?.bg_poster?.backdrop ?? m.backdrop ?? m.poster,
         year: m.year,
         rating: m.rating,
         country: m.country,
         genre: m.genre,
         description: m.description || "",
         duration: m.duration,
-        logo: m.logo || null,
+        logo: ov?.poster_logo ?? m.logo ?? null,
+        poster_colors: ov?.poster_colors,
       };
       activeIdRef.current = String(normalized.id);
       setActiveMovie((prev) => {
