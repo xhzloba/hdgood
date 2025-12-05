@@ -1,43 +1,54 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from "react"
-import { Search, User, Play, Plus, Settings } from "lucide-react"
-import { 
-  IconClock, 
-  IconMovie, 
-  IconDeviceTv, 
-  IconMoodKid, 
-  IconLayoutGrid, 
-  IconPokeball, 
-  IconFileText, 
-  IconFiles, 
-  IconMicrophone, 
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Search, User, Play, Plus, Settings } from "lucide-react";
+import {
+  IconClock,
+  IconMovie,
+  IconDeviceTv,
+  IconMoodKid,
+  IconLayoutGrid,
+  IconPokeball,
+  IconFileText,
+  IconFiles,
+  IconMicrophone,
   IconCategory,
-} from "@tabler/icons-react"
-import { CATEGORIES } from "@/lib/categories"
-import MovieSlider from "@/components/movie-slider"
-import useSWR from "swr"
-import Link from "next/link"
+} from "@tabler/icons-react";
+import { CATEGORIES } from "@/lib/categories";
+import MovieSlider from "@/components/movie-slider";
+import useSWR from "swr";
+import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
-const TRENDING_URL = "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
-const WATCHING_URL = "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
-const MOVIES_URL = "https://api.vokino.pro/v2/list?sort=popular&type=movie&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
-const SERIALS_URL = "https://api.vokino.pro/v2/list?sort=popular&type=serial&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+const DEFAULT_UB_COLORS = {
+  tl: "#10212f",
+  tr: "#1f2937",
+  br: "#0f172a",
+  bl: "#111827",
+};
+
+const TRENDING_URL =
+  "https://api.vokino.pro/v2/list?sort=popular&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
+const WATCHING_URL =
+  "https://api.vokino.pro/v2/list?sort=watching&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
+const MOVIES_URL =
+  "https://api.vokino.pro/v2/list?sort=popular&type=movie&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
+const SERIALS_URL =
+  "https://api.vokino.pro/v2/list?sort=popular&type=serial&page=1&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
 
 const PROFILE_AVATARS = [
   "https://i.pinimg.com/564x/1b/71/b8/1b71b85dd741ad27bffa5c834a7ed797.jpg",
@@ -46,23 +57,35 @@ const PROFILE_AVATARS = [
   "https://i.pinimg.com/236x/89/51/35/89513597910ab6ce4285402ab7c0e591.jpg",
   "https://i.pinimg.com/474x/b6/77/cd/b677cd1cde292f261166533d6fe75872.jpg",
   "https://pbs.twimg.com/media/GvFs5kxWEAAJpzR.jpg",
-  "https://i.pinimg.com/474x/60/80/81/60808105ca579916a1b3eda8768dd570.jpg"
-]
+  "https://i.pinimg.com/474x/60/80/81/60808105ca579916a1b3eda8768dd570.jpg",
+];
 
 const fetcher = async (url: string) => {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error('Failed to fetch')
-  return res.json()
-}
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch");
+  return res.json();
+};
 
 const SLIDES = [
-    { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
-    { id: "trending", title: "В тренде", url: TRENDING_URL },
-    { id: "movies", title: "Фильмы", url: MOVIES_URL },
-    { id: "serials", title: "Сериалы", url: SERIALS_URL },
-    { id: "fast_furious", title: "Франшиза: Форсаж", navTitle: "Форсаж", url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4", fetchAll: true },
-    { id: "new_year", title: "Подборка: Новогодние фильмы", navTitle: "Новогодние", url: "https://api.vokino.pro/v2/compilations/content/675e9a26b453dd0c4a47bee3", fetchAll: true },
-]
+  { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
+  { id: "trending", title: "В тренде", url: TRENDING_URL },
+  { id: "movies", title: "Фильмы", url: MOVIES_URL },
+  { id: "serials", title: "Сериалы", url: SERIALS_URL },
+  {
+    id: "fast_furious",
+    title: "Франшиза: Форсаж",
+    navTitle: "Форсаж",
+    url: "https://api.vokino.pro/v2/compilations/content/65a6d50302d4113c4cce4fc4",
+    fetchAll: true,
+  },
+  {
+    id: "new_year",
+    title: "Подборка: Новогодние фильмы",
+    navTitle: "Новогодние",
+    url: "https://api.vokino.pro/v2/compilations/content/675e9a26b453dd0c4a47bee3",
+    fetchAll: true,
+  },
+];
 
 // --- Helper Components ---
 
@@ -76,10 +99,18 @@ function Icon4kCustom({ className, ...props }: any) {
       className={className}
       {...rest}
     >
-      <path clipRule="evenodd" fillRule="evenodd" d="M31.0012 13.7598C31.0546 13.3494 30.8569 12.9479 30.4999 12.7417C30.1428 12.5355 29.6963 12.5652 29.3675 12.8166L19.0718 20.6938C18.9639 20.7763 18.8699 20.8853 18.802 21.0031C18.734 21.1207 18.6901 21.2507 18.6725 21.3854L16.9985 34.2402C16.9452 34.6508 17.1428 35.0522 17.4999 35.2584C17.8569 35.4645 18.3035 35.435 18.6323 35.1835L28.928 27.3064C29.0358 27.2238 29.1298 27.1148 29.1977 26.9971C29.2656 26.8794 29.3097 26.7494 29.3273 26.6148L31.0012 13.7598ZM26.1649 25.25C25.4746 26.4458 23.9456 26.8554 22.7499 26.1651C21.5541 25.4747 21.1444 23.9458 21.8348 22.75C22.5252 21.5543 24.0541 21.1446 25.2499 21.835C26.4456 22.5253 26.8553 24.0543 26.1649 25.25Z" />
-      <path clipRule="evenodd" fillRule="evenodd" d="M45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24ZM42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z" />
+      <path
+        clipRule="evenodd"
+        fillRule="evenodd"
+        d="M31.0012 13.7598C31.0546 13.3494 30.8569 12.9479 30.4999 12.7417C30.1428 12.5355 29.6963 12.5652 29.3675 12.8166L19.0718 20.6938C18.9639 20.7763 18.8699 20.8853 18.802 21.0031C18.734 21.1207 18.6901 21.2507 18.6725 21.3854L16.9985 34.2402C16.9452 34.6508 17.1428 35.0522 17.4999 35.2584C17.8569 35.4645 18.3035 35.435 18.6323 35.1835L28.928 27.3064C29.0358 27.2238 29.1298 27.1148 29.1977 26.9971C29.2656 26.8794 29.3097 26.7494 29.3273 26.6148L31.0012 13.7598ZM26.1649 25.25C25.4746 26.4458 23.9456 26.8554 22.7499 26.1651C21.5541 25.4747 21.1444 23.9458 21.8348 22.75C22.5252 21.5543 24.0541 21.1446 25.2499 21.835C26.4456 22.5253 26.8553 24.0543 26.1649 25.25Z"
+      />
+      <path
+        clipRule="evenodd"
+        fillRule="evenodd"
+        d="M45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24ZM42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z"
+      />
     </svg>
-  )
+  );
 }
 
 function IconHomeCustom({ className, ...props }: any) {
@@ -98,354 +129,627 @@ function IconHomeCustom({ className, ...props }: any) {
         d="M23.9864 4.00009C24.3242 4.00009 24.6522 4.11294 24.9185 4.32071L45 20V39.636C44.9985 40.4312 44.5623 41.4377 44 42C43.4377 42.5623 42.4311 42.9985 41.6359 43H27V28H21V43H6.5C5.70485 42.9984 4.56226 42.682 4 42.1197C3.43774 41.5575 3.00163 40.7952 3 40V21L23.0544 4.32071C23.3207 4.11294 23.6487 4.00009 23.9864 4.00009ZM30 28V40H42V21.4314L24 7.40726L6 22V40L18 40V28C18.0008 27.2046 18.3171 26.442 18.8796 25.8796C19.442 25.3171 20.2046 25.0008 21 25H27C27.7954 25.0009 28.5579 25.3173 29.1203 25.8797C29.6827 26.4421 29.9991 27.2046 30 28Z"
       />
     </svg>
-  )
+  );
 }
 
-function CategoryIcon({ name, className = "" }: { name: string; className?: string }) {
-  const props = { className, size: 28, stroke: 1.5 } as const
+function CategoryIcon({
+  name,
+  className = "",
+}: {
+  name: string;
+  className?: string;
+}) {
+  const props = { className, size: 28, stroke: 1.5 } as const;
   switch (name) {
     case "clock":
-      return <IconClock {...props} />
+      return <IconClock {...props} />;
     case "4k":
-      return <Icon4kCustom {...props} />
+      return <Icon4kCustom {...props} />;
     case "movie":
-      return <IconMovie {...props} />
+      return <IconMovie {...props} />;
     case "serial":
-      return <IconDeviceTv {...props} />
+      return <IconDeviceTv {...props} />;
     case "multfilm":
-      return <IconMoodKid {...props} />
+      return <IconMoodKid {...props} />;
     case "multserial":
-      return <IconLayoutGrid {...props} />
+      return <IconLayoutGrid {...props} />;
     case "anime":
-      return <IconPokeball {...props} />
+      return <IconPokeball {...props} />;
     case "documovie":
-      return <IconFileText {...props} />
+      return <IconFileText {...props} />;
     case "docuserial":
-      return <IconFiles {...props} />
+      return <IconFiles {...props} />;
     case "tvshow":
-      return <IconMicrophone {...props} />
+      return <IconMicrophone {...props} />;
     case "compilations":
-      return <IconCategory {...props} />
+      return <IconCategory {...props} />;
     default:
-      return <IconMovie {...props} />
+      return <IconMovie {...props} />;
   }
 }
 
-function NavItem({ icon, label, href, active, onClick }: { icon: React.ReactNode, label: string, href?: string, active?: boolean, onClick?: () => void }) {
-    const className = `p-3 rounded-xl transition-all group relative flex items-center justify-center ${active ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-white hover:bg-white/5'}`
-    
-    return (
-        <TooltipProvider delayDuration={0}>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    {onClick ? (
-                        <button onClick={onClick} className={className}>
-                            {icon}
-                        </button>
-                    ) : (
-                        <Link 
-                            href={href || "#"} 
-                            className={className}
-                        >
-                            {icon}
-                        </Link>
-                    )}
-                </TooltipTrigger>
-                <TooltipContent side="right" className="font-bold bg-white text-black border-0 shadow-xl ml-2">
-                    <p>{label}</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
-    )
+function NavItem({
+  icon,
+  label,
+  href,
+  active,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  href?: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const className = `p-3 rounded-xl transition-all group relative flex items-center justify-center ${
+    active
+      ? "text-white bg-white/10"
+      : "text-zinc-400 hover:text-white hover:bg-white/5"
+  }`;
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {onClick ? (
+            <button onClick={onClick} className={className}>
+              {icon}
+            </button>
+          ) : (
+            <Link href={href || "#"} className={className}>
+              {icon}
+            </Link>
+          )}
+        </TooltipTrigger>
+        <TooltipContent
+          side="right"
+          className="font-bold bg-white text-black border-0 shadow-xl ml-2"
+        >
+          <p>{label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 function BackdropImage({ src }: { src: string }) {
-    const [current, setCurrent] = useState(src);
-    const [prev, setPrev] = useState(src);
-    const [isLoading, setIsLoading] = useState(false);
-    const imgRef = useRef<HTMLImageElement>(null);
-  
-    useEffect(() => {
-      if (src !== current) {
-        setPrev(current);
-        setCurrent(src);
-        setIsLoading(!!src);
-      }
-    }, [src, current]);
-  
-    useEffect(() => {
-        if (imgRef.current && imgRef.current.complete) {
-            setIsLoading(false);
-        }
-    }, [current]);
+  const [current, setCurrent] = useState(src);
+  const [prev, setPrev] = useState(src);
+  const [isLoading, setIsLoading] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-    const handleLoad = () => {
+  useEffect(() => {
+    if (src !== current) {
+      setPrev(current);
+      setCurrent(src);
+      setIsLoading(!!src);
+    }
+  }, [src, current]);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
       setIsLoading(false);
-    };
-  
-    return (
-      <div className="absolute top-0 right-0 w-[85%] h-[70vh] overflow-hidden pointer-events-none select-none z-0">
-        {/* Previous Image Layer */}
-        {prev && (
-           <img 
-              key={prev}
-              src={prev}
-              className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 blur-xl scale-105 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
-              alt=""
-           />
-        )}
-  
-        {/* Current Image Layer */}
-        {current && (
-          <img
-            ref={imgRef}
-            key={current}
-            src={current}
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${isLoading ? 'opacity-0 blur-xl scale-105' : 'opacity-100 blur-0 scale-100'}`}
-            onLoad={handleLoad}
-            alt=""
-          />
-        )}
-        
-        {/* Gradient Masks for smooth blend */}
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-zinc-950 to-transparent" />
-        {/* Top Gradient for Text Visibility */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-zinc-950/80 to-transparent" />
-        {/* Right Gradient for Indicators */}
-        <div className="absolute top-0 right-0 bottom-0 w-96 bg-gradient-to-l from-zinc-950 via-zinc-950/60 to-transparent" />
-      </div>
-    );
+    }
+  }, [current]);
+
+  const handleLoad = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="absolute top-0 right-0 w-[85%] h-[70vh] overflow-hidden pointer-events-none select-none z-0">
+      {/* Previous Image Layer */}
+      {prev && (
+        <img
+          key={prev}
+          src={prev}
+          className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 blur-xl scale-105 ${
+            isLoading ? "opacity-100" : "opacity-0"
+          }`}
+          alt=""
+        />
+      )}
+
+      {/* Current Image Layer */}
+      {current && (
+        <img
+          ref={imgRef}
+          key={current}
+          src={current}
+          className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${
+            isLoading
+              ? "opacity-0 blur-xl scale-105"
+              : "opacity-100 blur-0 scale-100"
+          }`}
+          onLoad={handleLoad}
+          alt=""
+        />
+      )}
+
+      {/* Gradient Masks for smooth blend */}
+      <div className="absolute inset-0 bg-linear-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-zinc-950 to-transparent" />
+      {/* Top Gradient for Text Visibility */}
+      <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-b from-zinc-950/80 to-transparent" />
+      {/* Right Gradient for Indicators */}
+      <div className="absolute top-0 right-0 bottom-0 w-96 bg-linear-to-l from-zinc-950 via-zinc-950/60 to-transparent" />
+    </div>
+  );
 }
 
 // --- Main Component ---
 
-export function DesktopSidebar({ 
-  profileAvatar = PROFILE_AVATARS[0], 
-  onSettingsClick 
-}: { 
-  profileAvatar?: string, 
-  onSettingsClick?: () => void 
+export function DesktopSidebar({
+  profileAvatar = PROFILE_AVATARS[0],
+  onSettingsClick,
+}: {
+  profileAvatar?: string;
+  onSettingsClick?: () => void;
 }) {
   return (
-      <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-zinc-950">
-         <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">HD</div>
-         
-         <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
-            <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
-            <NavItem icon={<IconHomeCustom className="w-7 h-7" />} label="Главная" href="/" active />
-            
-            {CATEGORIES.filter(cat => cat.route && cat.route !== "/updates").map((cat, i) => (
-                <NavItem 
-                    key={i}
-                    icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />} 
-                    label={cat.title} 
-                    href={cat.route || "#"} 
-                />
-            ))}
-         </nav>
+    <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-transparent">
+      <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">
+        HD
+      </div>
 
-         <div className="mt-auto">
-            <NavItem 
-              icon={
-                <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
-                  <img src={profileAvatar} className="w-full h-full object-cover" alt="Профиль" />
-                </div>
-              } 
-              label="Профиль" 
-              onClick={onSettingsClick}
+      <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
+        <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
+        <NavItem
+          icon={<IconHomeCustom className="w-7 h-7" />}
+          label="Главная"
+          href="/"
+          active
+        />
+
+        {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
+          (cat, i) => (
+            <NavItem
+              key={i}
+              icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />}
+              label={cat.title}
+              href={cat.route || "#"}
             />
-         </div>
-      </aside>
-  )
+          )
+        )}
+      </nav>
+
+      <div className="mt-auto">
+        <NavItem
+          icon={
+            <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+              <img
+                src={profileAvatar}
+                className="w-full h-full object-cover"
+                alt="Профиль"
+              />
+            </div>
+          }
+          label="Профиль"
+          onClick={onSettingsClick}
+        />
+      </div>
+    </aside>
+  );
 }
 
-export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDisplayMode?: "backdrop" | "poster" }) {
-  const [activeMovie, setActiveMovie] = useState<any>(null)
-  const [slideIndex, setSlideIndex] = useState(0)
-  const [isIndicatorHovered, setIsIndicatorHovered] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [isFetchingOverride, setIsFetchingOverride] = useState(false)
-  const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0])
-  const lastUrlRef = useRef<string | null>(null)
-  const lastInputTimeRef = useRef(0)
-  
+export function DesktopHome({
+  initialDisplayMode = "backdrop",
+}: {
+  initialDisplayMode?: "backdrop" | "poster";
+}) {
+  const [activeMovie, setActiveMovie] = useState<any>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [isIndicatorHovered, setIsIndicatorHovered] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isFetchingOverride, setIsFetchingOverride] = useState(false);
+  const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0]);
+  const lastUrlRef = useRef<string | null>(null);
+  const lastInputTimeRef = useRef(0);
+
   // Settings State
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(initialDisplayMode)
-  const [showPosterMetadata, setShowPosterMetadata] = useState(true)
-  const [isMounted, setIsMounted] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [cardDisplayMode, setCardDisplayMode] = useState<"backdrop" | "poster">(
+    initialDisplayMode
+  );
+  const [showPosterMetadata, setShowPosterMetadata] = useState(true);
+  const [enablePosterColors, setEnablePosterColors] = useState(true);
+  const [ubOpacity, setUbOpacity] = useState(0.6);
+  const [isMounted, setIsMounted] = useState(false);
+  const [ubColors, setUbColors] = useState(DEFAULT_UB_COLORS);
+  const paletteCacheRef = useRef<
+    Record<string, { tl: string; tr: string; br: string; bl: string }>
+  >({});
 
   useEffect(() => {
-    setIsMounted(true)
-    const savedMeta = localStorage.getItem("desktop_show_poster_metadata")
+    setIsMounted(true);
+    const savedMeta = localStorage.getItem("desktop_show_poster_metadata");
     if (savedMeta) {
-      setShowPosterMetadata(savedMeta === "true")
+      setShowPosterMetadata(savedMeta === "true");
     }
-  }, [])
+    const savedColors = localStorage.getItem("desktop_enable_poster_colors");
+    if (savedColors) {
+      const enabled = savedColors !== "false";
+      setEnablePosterColors(enabled);
+      setUbOpacity(enabled ? 0.6 : 0.4);
+    }
+  }, []);
 
   const handleDisplayModeChange = (checked: boolean) => {
-    const newMode = checked ? "backdrop" : "poster"
-    setCardDisplayMode(newMode)
+    const newMode = checked ? "backdrop" : "poster";
+    setCardDisplayMode(newMode);
     // Save to cookie for server-side persistence (1 year)
-    document.cookie = `desktop_home_card_display_mode=${newMode}; path=/; max-age=31536000`
-  }
+    document.cookie = `desktop_home_card_display_mode=${newMode}; path=/; max-age=31536000`;
+  };
 
   const handleMetadataChange = (show: boolean) => {
-    setShowPosterMetadata(show)
-    localStorage.setItem("desktop_show_poster_metadata", String(show))
-  }
+    setShowPosterMetadata(show);
+    localStorage.setItem("desktop_show_poster_metadata", String(show));
+  };
 
-  const activeSlide = SLIDES[slideIndex]
+  const handlePosterColorsChange = (enable: boolean) => {
+    setEnablePosterColors(enable);
+    localStorage.setItem("desktop_enable_poster_colors", String(enable));
+    if (!enable) {
+      setUbColors(DEFAULT_UB_COLORS);
+      setUbOpacity(0.4);
+    } else {
+      setUbOpacity(0.6);
+    }
+  };
 
   useEffect(() => {
-    setProfileAvatar(PROFILE_AVATARS[Math.floor(Math.random() * PROFILE_AVATARS.length)])
-  }, [])
+    const src = activeMovie?.poster || activeMovie?.backdrop;
+    if (!enablePosterColors) {
+      setUbColors(DEFAULT_UB_COLORS);
+      setUbOpacity(0.4);
+      return;
+    }
+    setUbOpacity(0.6);
+    if (!src) return;
 
-  const { data } = useSWR(activeSlide.url, fetcher)
+    const loadImage = (
+      source: string
+    ): Promise<{ img: HTMLImageElement; blobUrl?: string }> =>
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.decoding = "async";
+        img.referrerPolicy = "no-referrer";
+        img.onload = () => resolve({ img });
+        img.onerror = async () => {
+          try {
+            const resp = await fetch(source);
+            if (!resp.ok) return reject(new Error("fetch failed"));
+            const blob = await resp.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const img2 = new Image();
+            img2.crossOrigin = "anonymous";
+            img2.decoding = "async";
+            img2.referrerPolicy = "no-referrer";
+            img2.onload = () => resolve({ img: img2, blobUrl });
+            img2.onerror = () => {
+              URL.revokeObjectURL(blobUrl);
+              reject(new Error("blob load failed"));
+            };
+            img2.src = blobUrl;
+          } catch (e) {
+            reject(e as any);
+          }
+        };
+        img.src = source;
+      });
+
+    const getPaletteFromImage = (img: HTMLImageElement): number[][] => {
+      const maxSize = 120;
+      const w = img.naturalWidth || img.width || 1;
+      const h = img.naturalHeight || img.height || 1;
+      const scale = Math.min(1, maxSize / Math.max(w, h));
+      const cw = Math.max(1, Math.round(w * scale));
+      const ch = Math.max(1, Math.round(h * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = cw;
+      canvas.height = ch;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return [];
+      ctx.drawImage(img, 0, 0, cw, ch);
+      const data = ctx.getImageData(0, 0, cw, ch).data;
+      const buckets = new Map<
+        number,
+        { r: number; g: number; b: number; count: number }
+      >();
+      const step = 4; // we already downscale, so step 1 pixel
+      for (let i = 0; i < data.length; i += 4 * step) {
+        const a = data[i + 3];
+        if (a < 200) continue;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const r5 = r >> 3;
+        const g5 = g >> 3;
+        const b5 = b >> 3;
+        const key = (r5 << 10) | (g5 << 5) | b5;
+        const bucket = buckets.get(key) || { r: 0, g: 0, b: 0, count: 0 };
+        bucket.r += r;
+        bucket.g += g;
+        bucket.b += b;
+        bucket.count += 1;
+        buckets.set(key, bucket);
+      }
+      const colors = Array.from(buckets.values())
+        .filter((b) => b.count > 0)
+        .map((b) => [b.r / b.count, b.g / b.count, b.b / b.count] as number[]);
+      return colors;
+    };
+
+    const rgbToHsl = (r: number, g: number, b: number) => {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h = 0;
+      let s = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+          case g:
+            h = (b - r) / d + 2;
+            break;
+          default:
+            h = (r - g) / d + 4;
+        }
+        h /= 6;
+      }
+      return { h, s, l };
+    };
+
+    const clamp = (v: number, a: number, b: number) =>
+      Math.min(b, Math.max(a, v));
+    const rgbToHex = (rgb: number[]) =>
+      "#" +
+      rgb
+        .map((c) =>
+          Math.max(0, Math.min(255, Math.round(c)))
+            .toString(16)
+            .padStart(2, "0")
+        )
+        .join("");
+
+    const sanitize = (rgb: number[]) => {
+      const [r, g, b] = rgb;
+      const { s, l } = rgbToHsl(r, g, b);
+      // убираем слишком серые и слишком светлые/тёмные
+      const sFixed = s < 0.2 ? 0.22 : s;
+      const lFixed = clamp(l, 0.18, 0.6);
+      // пересчитывать обратно в rgb не нужно для простоты — просто слегка затемним в hex
+      const factor = lFixed / (l || 0.0001);
+      return rgbToHex([r * factor, g * factor, b * factor]);
+    };
+
+    const applyPalette = (palette: number[][] | null) => {
+      const colors = (palette || [])
+        .map((p) => ({ raw: p, hsl: rgbToHsl(p[0], p[1], p[2]) }))
+        .filter((c) => c.hsl.s > 0.12) // отсекаем серое
+        .map((c) => ({
+          ...c,
+          score:
+            1 *
+            (0.4 + c.hsl.s * 0.6) *
+            (c.hsl.l < 0.78 ? 1 : 0.6) *
+            (c.hsl.l > 0.12 ? 1 : 0.6),
+        }))
+        .sort((a, b) => b.score - a.score);
+
+      const first = colors[0]?.raw || palette?.[0] || null;
+      const second =
+        colors.find(
+          (c, idx) =>
+            idx > 0 &&
+            Math.abs(c.hsl.h - (colors[0]?.hsl.h ?? 0)) > 0.08 && // другой оттенок
+            Math.abs(c.hsl.l - (colors[0]?.hsl.l ?? 0)) > 0.02
+        )?.raw ||
+        colors[1]?.raw ||
+        palette?.[1] ||
+        null;
+
+      const c1 = first ? sanitize(first) : DEFAULT_UB_COLORS.tl;
+      const c2 = second ? sanitize(second) : c1;
+      const next = { tl: c1, br: c1, tr: c2, bl: c2 };
+      setUbColors(next);
+      paletteCacheRef.current[src] = next;
+    };
+
+    let cancelled = false;
+    let blobUrl: string | null = null;
+    const run = async () => {
+      if (paletteCacheRef.current[src]) {
+        setUbColors(paletteCacheRef.current[src]);
+        return;
+      }
+      try {
+        const { img, blobUrl: bu } = await loadImage(src);
+        blobUrl = bu || null;
+        const palette = getPaletteFromImage(img);
+        if (!cancelled) applyPalette(palette.length > 0 ? palette : null);
+      } catch {
+        if (!cancelled) applyPalette(null);
+      }
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  }, [activeMovie?.poster, activeMovie?.backdrop, enablePosterColors]);
+
+  const activeSlide = SLIDES[slideIndex];
+
+  useEffect(() => {
+    setProfileAvatar(
+      PROFILE_AVATARS[Math.floor(Math.random() * PROFILE_AVATARS.length)]
+    );
+  }, []);
+
+  const { data } = useSWR(activeSlide.url, fetcher);
 
   // Scroll Jacking Logic
   useEffect(() => {
     const COOLDOWN = 1000; // ms between switches
 
-    const handleInput = (direction: 'next' | 'prev') => {
-        const now = Date.now();
-        if (now - lastInputTimeRef.current < COOLDOWN) return;
+    const handleInput = (direction: "next" | "prev") => {
+      const now = Date.now();
+      if (now - lastInputTimeRef.current < COOLDOWN) return;
 
-        if (direction === 'next') {
-            if (slideIndex < SLIDES.length - 1) {
-                lastInputTimeRef.current = now;
-                setSlideIndex(prev => prev + 1);
-            }
-        } else {
-             if (slideIndex > 0) {
-                lastInputTimeRef.current = now;
-                setSlideIndex(prev => prev - 1);
-            }
+      if (direction === "next") {
+        if (slideIndex < SLIDES.length - 1) {
+          lastInputTimeRef.current = now;
+          setSlideIndex((prev) => prev + 1);
         }
+      } else {
+        if (slideIndex > 0) {
+          lastInputTimeRef.current = now;
+          setSlideIndex((prev) => prev - 1);
+        }
+      }
     };
 
     const handleWheel = (e: WheelEvent) => {
-        // Down scroll -> Next Slide
-        if (e.deltaY > 0) handleInput('next');
-        // Up scroll -> Prev Slide
-        else if (e.deltaY < 0) handleInput('prev');
+      // Down scroll -> Next Slide
+      if (e.deltaY > 0) handleInput("next");
+      // Up scroll -> Prev Slide
+      else if (e.deltaY < 0) handleInput("prev");
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            handleInput('next');
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            handleInput('prev');
-        }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        handleInput("next");
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        handleInput("prev");
+      }
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-        window.removeEventListener("wheel", handleWheel);
-        window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [slideIndex]);
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
     if (!activeMovie) return;
-    
+
     // If we already have a logo, no need to fetch
     // BUT if we just switched slides (isFetchingOverride is true manually set), we MUST proceed
     if (activeMovie.logo && !isFetchingOverride) return;
 
     const fetchOverride = async () => {
-      if (!isFetchingOverride) setIsFetchingOverride(true) // Ensure loading state is on
+      if (!isFetchingOverride) setIsFetchingOverride(true); // Ensure loading state is on
       try {
-        const res = await fetch(`/api/overrides/movies?ids=${activeMovie.id}`)
+        const res = await fetch(`/api/overrides/movies?ids=${activeMovie.id}`);
         if (res.ok) {
-          const overrides = await res.json()
-          const ov = overrides[String(activeMovie.id)]
+          const overrides = await res.json();
+          const ov = overrides[String(activeMovie.id)];
           if (ov) {
             // Update cache
-            const overridesCache = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+            const overridesCache =
+              (globalThis as any).__movieOverridesCache ||
+              ((globalThis as any).__movieOverridesCache = {});
             overridesCache[String(activeMovie.id)] = ov;
-            
+
             setActiveMovie((prev: any) => {
-                // If the active movie changed while we were fetching, don't update
-                if (!prev || prev.id !== activeMovie.id) return prev;
-                
-                return {
-                    ...prev,
-                    logo: ov.poster_logo || prev.logo,
-                    // Prioritize override backdrop (bg_poster.backdrop)
-                    backdrop: ov.bg_poster?.backdrop || prev.backdrop
-                };
-            })
+              // If the active movie changed while we were fetching, don't update
+              if (!prev || prev.id !== activeMovie.id) return prev;
+
+              return {
+                ...prev,
+                logo: ov.poster_logo || prev.logo,
+                // Prioritize override backdrop (bg_poster.backdrop)
+                backdrop: ov.bg_poster?.backdrop || prev.backdrop,
+              };
+            });
           }
         }
       } catch (e) {
-        console.error("Failed to fetch override", e)
+        console.error("Failed to fetch override", e);
       } finally {
-        setIsFetchingOverride(false)
+        setIsFetchingOverride(false);
       }
-    }
+    };
 
-    fetchOverride()
-  }, [activeMovie?.id, activeSlide.id]) // Re-run if ID changes or if slide changes
+    fetchOverride();
+  }, [activeMovie?.id, activeSlide.id]); // Re-run if ID changes or if slide changes
 
   useEffect(() => {
     if (data) {
-      const movies = data.channels || data
+      const movies = data.channels || data;
       if (movies && movies.length > 0) {
-        const first = movies[0]
+        const first = movies[0];
         const normalized = {
           id: first.details?.id || first.id,
           title: first.details?.name || first.title,
           poster: first.details?.poster || first.poster,
           // Priority: API bg_poster > API wide_poster > API backdrop > API poster
-          backdrop: first.details?.bg_poster?.backdrop || first.details?.wide_poster || first.details?.backdrop || first.poster,
+          backdrop:
+            first.details?.bg_poster?.backdrop ||
+            first.details?.wide_poster ||
+            first.details?.backdrop ||
+            first.poster,
           year: first.details?.released || first.year,
           rating: first.details?.rating_kp || first.rating,
           country: first.details?.country || first.country,
           genre: first.details?.genre || first.genre,
-          description: first.details?.about || first.about || "Описание отсутствует",
+          description:
+            first.details?.about || first.about || "Описание отсутствует",
           duration: first.details?.duration || first.duration,
           logo: null, // Will be fetched
-        }
-        
+        };
+
         // If URL changed (slide switched) or first load, update activeMovie
         if (lastUrlRef.current !== activeSlide.url || !activeMovie) {
-            // Try to restore from cache immediately if available
-            const overridesCache = (globalThis as any).__movieOverridesCache || {};
-            const cachedOverride = overridesCache[String(normalized.id)];
-            if (cachedOverride) {
-                normalized.logo = cachedOverride.poster_logo || normalized.logo;
-                normalized.backdrop = cachedOverride.bg_poster?.backdrop || normalized.backdrop;
-            } else {
-                 // Pre-emptively clear logo if we are switching slides to avoid showing old logo
-                 if (lastUrlRef.current !== activeSlide.url) {
-                    normalized.logo = null; 
-                 }
+          // Try to restore from cache immediately if available
+          const overridesCache =
+            (globalThis as any).__movieOverridesCache || {};
+          const cachedOverride = overridesCache[String(normalized.id)];
+          if (cachedOverride) {
+            normalized.logo = cachedOverride.poster_logo || normalized.logo;
+            normalized.backdrop =
+              cachedOverride.bg_poster?.backdrop || normalized.backdrop;
+          } else {
+            // Pre-emptively clear logo if we are switching slides to avoid showing old logo
+            if (lastUrlRef.current !== activeSlide.url) {
+              normalized.logo = null;
             }
-            
-            setActiveMovie(normalized)
-            lastUrlRef.current = activeSlide.url
-            
-            // Trigger fetch immediately for the new first movie
-            // We need to manually trigger this check because activeMovie update might be batched
-            // or we want to ensure 'isFetchingOverride' is true BEFORE the component re-renders with the new title
-            // IF we didn't have it cached
-            if (!cachedOverride) {
-                 setIsFetchingOverride(true)
-            }
+          }
+
+          setActiveMovie(normalized);
+          lastUrlRef.current = activeSlide.url;
+
+          // Trigger fetch immediately for the new first movie
+          // We need to manually trigger this check because activeMovie update might be batched
+          // or we want to ensure 'isFetchingOverride' is true BEFORE the component re-renders with the new title
+          // IF we didn't have it cached
+          if (!cachedOverride) {
+            setIsFetchingOverride(true);
+          }
         }
       }
     }
-  }, [data, activeMovie, activeSlide.url])
+  }, [data, activeMovie, activeSlide.url]);
 
   const handleMovieHover = useCallback((movie: any) => {
-    if (!movie) return
+    if (!movie) return;
     // Normalize on hover as well
     const normalized = {
       id: movie.id,
@@ -453,7 +757,7 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
       poster: movie.poster,
       // MovieSlider now provides 'backdrop' which handles bg_poster logic
       // If it's still missing, fallback to poster
-      backdrop: movie.backdrop || movie.poster, 
+      backdrop: movie.backdrop || movie.poster,
       year: movie.year,
       rating: movie.rating,
       country: movie.country,
@@ -461,207 +765,289 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
       description: movie.description || "", // Might be missing in list view
       duration: movie.duration,
       logo: movie.logo || null, // Keep logo if passed from slider
-    }
-    setActiveMovie(normalized)
-  }, [])
-  
+    };
+    setActiveMovie(normalized);
+  }, []);
+
   // Helper to get high-res image if possible, or fallback
   const getBackdrop = (movie: any) => {
-    if (!movie) return ""
-    return movie.backdrop || movie.poster || "" 
-  }
+    if (!movie) return "";
+    return movie.backdrop || movie.poster || "";
+  };
 
   return (
     <div className="relative h-screen w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
-      
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
+      {/* Цветовой слой из постера (2 доминанты, по диагоналям) */}
+      <div
+        className="ub-color-layer"
+        style={
+          {
+            "--color-ub-tl": ubColors.tl,
+            "--color-ub-tr": ubColors.tr,
+            "--color-ub-br": ubColors.br,
+            "--color-ub-bl": ubColors.bl,
+            opacity: ubOpacity,
+          } as React.CSSProperties
+        }
+        aria-hidden
+      />
 
       {/* Sidebar Navigation */}
-      <DesktopSidebar 
-        profileAvatar={profileAvatar} 
-        onSettingsClick={() => setIsSettingsOpen(true)} 
+      <DesktopSidebar
+        profileAvatar={profileAvatar}
+        onSettingsClick={() => setIsSettingsOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="relative z-10 ml-24 h-full flex flex-col pb-[8vh] px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out">
         <div className="min-h-full w-full flex flex-col justify-end">
-        {/* Movie Info */}
-        {activeMovie ? (
+          {/* Movie Info */}
+          {activeMovie ? (
             <>
-                <div className="mb-[4vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
-                    <div className="h-[12vh] max-h-[100px] min-h-[60px] mb-6 flex items-end transition-[height] duration-500 ease-out">
-                        {activeMovie.logo ? (
-                            <img 
-                              src={activeMovie.logo} 
-                              alt={activeMovie.title} 
-                              className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
-                            />
-                        ) : isFetchingOverride ? (
-                             // Show nothing or skeleton while checking for logo
-                             <div className="h-[80px] w-[240px] bg-transparent" />
-                        ) : (
-                          <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
-                              {activeMovie.title}
-                          </h1>
-                        )}
-                    </div>
-                    
-                    <div className="flex items-center gap-3 mb-4">
-                        {activeMovie.rating && (
-                             <span className={`px-2 py-1 rounded text-sm font-bold ${Number(activeMovie.rating) >= 7 ? 'bg-green-600' : 'bg-zinc-700'}`}>
-                                 {Number(activeMovie.rating).toFixed(1)}
-                             </span>
-                        )}
-                        <span className="text-zinc-300 text-sm">{activeMovie.year}</span>
-                        <span className="text-zinc-300 text-sm">
-                            {activeMovie.genre?.split(',').slice(0, 2).join(',')}
-                        </span>
-                        {activeMovie.country && <span className="text-zinc-300 text-sm">{activeMovie.country}</span>}
-                    </div>
-                    
-                    <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
-                        {activeMovie.description || "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
-                    </p>
-                    
-                    <div className="flex items-center gap-4">
-                        <Link 
-                            href={`/movie/${activeMovie.id}`}
-                            className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
-                        >
-                            <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" />
-                            <span className="text-base md:text-lg">Смотреть</span>
-                        </Link>
-                         <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
-                            <Plus size={20} />
-                        </button>
-                    </div>
+              <div className="mb-[4vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
+                <div className="h-[12vh] max-h-[100px] min-h-[60px] mb-6 flex items-end transition-[height] duration-500 ease-out">
+                  {activeMovie.logo ? (
+                    <img
+                      src={activeMovie.logo}
+                      alt={activeMovie.title}
+                      className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
+                    />
+                  ) : isFetchingOverride ? (
+                    // Show nothing or skeleton while checking for logo
+                    <div className="h-[80px] w-[240px] bg-transparent" />
+                  ) : (
+                    <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
+                      {activeMovie.title}
+                    </h1>
+                  )}
                 </div>
 
-                {/* Trending Slider */}
-                <div className="w-full">
-                    <div key={slideIndex} className="w-full">
-                        <MovieSlider 
-                            key={activeSlide.id}
-                            url={activeSlide.url}
-                            title={activeSlide.title}
-                            onMovieHover={handleMovieHover}
-                            compactOnMobile={false}
-                            perPageOverride={15}
-                            hideIndicators
-                            hideMetadata={!showPosterMetadata}
-                            enableGlobalKeyNavigation
-                            cardType={cardDisplayMode}
-                            fetchAllPages={(activeSlide as any).fetchAll}
-                        />
-                    </div>
+                <div className="flex items-center gap-3 mb-4">
+                  {activeMovie.rating && (
+                    <span
+                      className={`px-2 py-1 rounded text-sm font-bold ${
+                        Number(activeMovie.rating) >= 7
+                          ? "bg-green-600"
+                          : "bg-zinc-700"
+                      }`}
+                    >
+                      {Number(activeMovie.rating).toFixed(1)}
+                    </span>
+                  )}
+                  <span className="text-zinc-300 text-sm">
+                    {activeMovie.year}
+                  </span>
+                  <span className="text-zinc-300 text-sm">
+                    {activeMovie.genre?.split(",").slice(0, 2).join(",")}
+                  </span>
+                  {activeMovie.country && (
+                    <span className="text-zinc-300 text-sm">
+                      {activeMovie.country}
+                    </span>
+                  )}
                 </div>
+
+                <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
+                  {activeMovie.description ||
+                    "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
+                </p>
+
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={`/movie/${activeMovie.id}`}
+                    className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
+                  >
+                    <Play
+                      size={20}
+                      fill="currentColor"
+                      className="ml-1 md:w-6 md:h-6"
+                    />
+                    <span className="text-base md:text-lg">Смотреть</span>
+                  </Link>
+                  <button
+                    className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm"
+                    title="Добавить в список"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Trending Slider */}
+              <div className="w-full">
+                <div key={slideIndex} className="w-full">
+                  <MovieSlider
+                    key={activeSlide.id}
+                    url={activeSlide.url}
+                    title={activeSlide.title}
+                    onMovieHover={handleMovieHover}
+                    compactOnMobile={false}
+                    perPageOverride={15}
+                    hideIndicators
+                    hideMetadata={!showPosterMetadata}
+                    enableGlobalKeyNavigation
+                    cardType={cardDisplayMode}
+                    fetchAllPages={(activeSlide as any).fetchAll}
+                  />
+                </div>
+              </div>
             </>
-        ) : (
+          ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 z-50">
-                <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
+              <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
             </div>
-        )}
+          )}
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
-        <div className={`absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12 transition-opacity duration-700 ${activeMovie ? "opacity-100" : "opacity-0"}`}>
-            <div className="h-[160px] w-full relative overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]">
-                <div 
-                    className="absolute top-0 right-0 flex flex-col gap-6 items-end transition-transform duration-500 ease-out w-full"
-                    style={{ 
-                        transform: `translateY(${60 - slideIndex * 50}px)` 
-                    }}
+        <div
+          className={`absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12 transition-opacity duration-700 ${
+            activeMovie ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div className="h-[160px] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]">
+            <div
+              className="absolute top-0 right-0 flex flex-col gap-6 items-end transition-transform duration-500 ease-out w-full"
+              style={{
+                transform: `translateY(${60 - slideIndex * 50}px)`,
+              }}
+            >
+              {SLIDES.map((slide, i) => (
+                <button
+                  key={slide.id}
+                  onClick={() => setSlideIndex(i)}
+                  className="group flex items-center gap-5 focus:outline-none pointer-events-auto min-h-[30px]"
                 >
-                    {SLIDES.map((slide, i) => (
-                        <button
-                            key={slide.id}
-                            onClick={() => setSlideIndex(i)}
-                            className="group flex items-center gap-5 focus:outline-none pointer-events-auto min-h-[30px]"
-                        >
-                            <span className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
-                                slideIndex === i 
-                                    ? "text-xl text-white drop-shadow-lg scale-105" 
-                                    : "text-sm text-zinc-600 group-hover:text-zinc-300"
-                            }`}>
-                                {(slide as any).navTitle || slide.title}
-                            </span>
-                            
-                            <div className={`transition-all duration-500 rounded-full ${
-                                slideIndex === i 
-                                    ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]" 
-                                    : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
-                            }`} />
-                        </button>
-                    ))}
-                </div>
+                  <span
+                    className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
+                      slideIndex === i
+                        ? "text-xl text-white drop-shadow-lg scale-105"
+                        : "text-sm text-zinc-600 group-hover:text-zinc-300"
+                    }`}
+                  >
+                    {(slide as any).navTitle || slide.title}
+                  </span>
+
+                  <div
+                    className={`transition-all duration-500 rounded-full ${
+                      slideIndex === i
+                        ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+                        : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
+                    }`}
+                  />
+                </button>
+              ))}
             </div>
+          </div>
         </div>
 
         <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl">
-          <DialogHeader className="p-6 bg-zinc-900/30 border-b border-white/5">
-            <DialogTitle className="text-xl font-black tracking-tight flex items-center gap-2">
+          <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl">
+            <DialogHeader className="p-6 bg-zinc-900/30 border-b border-white/5">
+              <DialogTitle className="text-xl font-black tracking-tight flex items-center gap-2">
                 <Settings className="w-5 h-5 text-zinc-400" />
                 Настройки интерфейса
-            </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-sm">
-              Персонализируйте внешний вид под свои предпочтения
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="p-6 space-y-6">
+              </DialogTitle>
+              <DialogDescription className="text-zinc-400 text-sm">
+                Персонализируйте внешний вид под свои предпочтения
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="p-6 space-y-6">
               {/* Display Mode Section */}
               <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">Вид карточек</h4>
-                  
-                  <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
-                      <div className="flex flex-col space-y-1.5">
-                          <Label htmlFor="display-mode" className="text-base font-bold text-zinc-100 cursor-pointer">
-                              Расширенный режим
-                          </Label>
-                          <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
-                              Использовать широкие горизонтальные обложки (Backdrops) вместо стандартных постеров.
-                          </span>
-                      </div>
-                      <Switch
-                          id="display-mode"
-                          checked={cardDisplayMode === "backdrop"}
-                          onCheckedChange={handleDisplayModeChange}
-                          className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
-                      />
+                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">
+                  Вид карточек
+                </h4>
+
+                <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label
+                      htmlFor="display-mode"
+                      className="text-base font-bold text-zinc-100 cursor-pointer"
+                    >
+                      Расширенный режим
+                    </Label>
+                    <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
+                      Использовать широкие горизонтальные обложки (Backdrops)
+                      вместо стандартных постеров.
+                    </span>
                   </div>
+                  <Switch
+                    id="display-mode"
+                    checked={cardDisplayMode === "backdrop"}
+                    onCheckedChange={handleDisplayModeChange}
+                    className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
+                  />
+                </div>
               </div>
 
               {/* Metadata Section */}
               <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">Метаданные</h4>
+                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">
+                  Метаданные
+                </h4>
 
-                  <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
-                      <div className="flex flex-col space-y-1.5">
-                          <Label htmlFor="show-metadata" className="text-base font-bold text-zinc-100 cursor-pointer">
-                              Информация под постером
-                          </Label>
-                          <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
-                              Отображать название, год и теги качества под карточками фильмов.
-                          </span>
-                      </div>
-                      <Switch
-                          id="show-metadata"
-                          checked={showPosterMetadata}
-                          onCheckedChange={handleMetadataChange}
-                          className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
-                      />
+                <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label
+                      htmlFor="show-metadata"
+                      className="text-base font-bold text-zinc-100 cursor-pointer"
+                    >
+                      Информация под постером
+                    </Label>
+                    <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
+                      Отображать название, год и теги качества под карточками
+                      фильмов.
+                    </span>
                   </div>
+                  <Switch
+                    id="show-metadata"
+                    checked={showPosterMetadata}
+                    onCheckedChange={handleMetadataChange}
+                    className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
+                  />
+                </div>
               </div>
-          </div>
-          
-          <div className="p-4 bg-zinc-900/30 border-t border-white/5 text-center">
-              <p className="text-[10px] text-zinc-600">HDGood v2.5.0 • Settings</p>
-          </div>
-        </DialogContent>
-      </Dialog>
 
+              {/* Poster Colors Section */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider ml-1">
+                  Цвета из постеров
+                </h4>
+
+                <div className="flex items-center justify-between space-x-4 rounded-xl border border-white/5 p-4 bg-zinc-900/20 hover:bg-zinc-900/40 transition-colors">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label
+                      htmlFor="poster-colors"
+                      className="text-base font-bold text-zinc-100 cursor-pointer"
+                    >
+                      Извлекать цвета для фона
+                    </Label>
+                    <span className="text-xs text-zinc-400 leading-relaxed max-w-[280px]">
+                      Если выключить — фон будет как раньше, без подмешивания
+                      цветов постеров.
+                    </span>
+                  </div>
+                  <Switch
+                    id="poster-colors"
+                    checked={enablePosterColors}
+                    onCheckedChange={handlePosterColorsChange}
+                    className="data-[state=checked]:bg-white data-[state=unchecked]:bg-zinc-800 border-2 border-transparent data-[state=checked]:border-indigo-500/20"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-zinc-900/30 border-t border-white/5 text-center">
+              <p className="text-[10px] text-zinc-600">
+                HDGood v2.5.0 • Settings
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
-  )
+  );
 }

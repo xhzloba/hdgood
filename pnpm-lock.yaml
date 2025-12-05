@@ -116,6 +116,9 @@ importers:
       color-thief:
         specifier: ^2.2.5
         version: 2.2.5
+      color-thief-browser:
+        specifier: ^2.0.2
+        version: 2.0.2
       date-fns:
         specifier: 4.1.0
         version: 4.1.0
@@ -1482,6 +1485,9 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  color-thief-browser@2.0.2:
+    resolution: {integrity: sha512-dXHq3ytLWEN7Nbu+oZAbtBP/TRd3uNT1Ll38idklwgr8Cng3XGI7bzMz6xWYID+zPd7AupdHpyNYVacQ8uhK0w==}
 
   color-thief@2.2.5:
     resolution: {integrity: sha512-LMYgiwDeN9dlfQFBO9c5nGQyVvVTcUbZBnmITL0AnTXgJfGAKnqEJjn0K/0t9FQD3LRaGGS1Z1jo+RapK3I64Q==}
@@ -3715,6 +3721,8 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  color-thief-browser@2.0.2: {}
 
   color-thief@2.2.5:
     dependencies:

@@ -45,6 +45,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "color-thief": "^2.2.5",
+    "color-thief-browser": "^2.0.2",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
     "flag-icons": "^7.5.0",
