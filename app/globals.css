@@ -378,7 +378,7 @@
     pointer-events: none;
     transition: --color-ub-tl 1s ease-in-out, --color-ub-tr 1s ease-in-out,
       --color-ub-bl 1s ease-in-out, --color-ub-br 1s ease-in-out,
-      background-color 1s ease-in-out;
+      background-color 1s ease-in-out, opacity 0.8s ease-in-out;
     background-image: radial-gradient(
         circle farthest-side at top left,
         var(--color-ub-tl),

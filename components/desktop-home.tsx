@@ -352,8 +352,8 @@ export function DesktopHome({
     initialDisplayMode
   );
   const [showPosterMetadata, setShowPosterMetadata] = useState(true);
-  const [enablePosterColors, setEnablePosterColors] = useState(true);
-  const [ubOpacity, setUbOpacity] = useState(0.6);
+  const [enablePosterColors, setEnablePosterColors] = useState(false);
+  const [paletteReady, setPaletteReady] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [ubColors, setUbColors] = useState(DEFAULT_UB_COLORS);
   const paletteCacheRef = useRef<
@@ -370,7 +370,16 @@ export function DesktopHome({
     if (savedColors) {
       const enabled = savedColors !== "false";
       setEnablePosterColors(enabled);
-      setUbOpacity(enabled ? 0.6 : 0.4);
+      if (!enabled) {
+        setUbColors(DEFAULT_UB_COLORS);
+        setPaletteReady(true);
+      } else {
+        setPaletteReady(false);
+      }
+    } else {
+      setEnablePosterColors(false);
+      setUbColors(DEFAULT_UB_COLORS);
+      setPaletteReady(true);
     }
   }, []);
 
@@ -391,21 +400,35 @@ export function DesktopHome({
     localStorage.setItem("desktop_enable_poster_colors", String(enable));
     if (!enable) {
       setUbColors(DEFAULT_UB_COLORS);
-      setUbOpacity(0.4);
+      setPaletteReady(true);
     } else {
-      setUbOpacity(0.6);
+      setPaletteReady(false);
     }
   };
 
   useEffect(() => {
     const src = activeMovie?.poster || activeMovie?.backdrop;
+    const movieId = activeMovie?.id ? String(activeMovie.id) : null;
+    const cacheKey = movieId ? `id:${movieId}` : src ? `src:${src}` : null;
+
     if (!enablePosterColors) {
       setUbColors(DEFAULT_UB_COLORS);
-      setUbOpacity(0.4);
+      setPaletteReady(true);
       return;
     }
-    setUbOpacity(0.6);
-    if (!src) return;
+    if (!src) {
+      setUbColors(DEFAULT_UB_COLORS);
+      setPaletteReady(true);
+      return;
+    }
+
+    // Если есть кэш — используем без мерцания
+    if (cacheKey && paletteCacheRef.current[cacheKey]) {
+      setUbColors(paletteCacheRef.current[cacheKey]);
+      setPaletteReady(true);
+      return;
+    }
+    setPaletteReady(false);
 
     const loadImage = (
       source: string
@@ -523,26 +546,38 @@ export function DesktopHome({
     const sanitize = (rgb: number[]) => {
       const [r, g, b] = rgb;
       const { s, l } = rgbToHsl(r, g, b);
-      // убираем слишком серые и слишком светлые/тёмные
+      // убираем серое и светлое, слегка затемняем
       const sFixed = s < 0.2 ? 0.22 : s;
-      const lFixed = clamp(l, 0.18, 0.6);
-      // пересчитывать обратно в rgb не нужно для простоты — просто слегка затемним в hex
+      const lFixed = clamp(l, 0.18, 0.55);
       const factor = lFixed / (l || 0.0001);
       return rgbToHex([r * factor, g * factor, b * factor]);
     };
 
     const applyPalette = (palette: number[][] | null) => {
+      if (cancelled) return;
       const colors = (palette || [])
         .map((p) => ({ raw: p, hsl: rgbToHsl(p[0], p[1], p[2]) }))
         .filter((c) => c.hsl.s > 0.12) // отсекаем серое
-        .map((c) => ({
-          ...c,
-          score:
-            1 *
-            (0.4 + c.hsl.s * 0.6) *
-            (c.hsl.l < 0.78 ? 1 : 0.6) *
-            (c.hsl.l > 0.12 ? 1 : 0.6),
-        }))
+        .map((c) => {
+          const { h, s, l } = c.hsl;
+          let hueWeight = 1;
+          // приоритет тёмным синим/фиолетовым
+          if (h >= 0.55 && h <= 0.78) hueWeight *= 1.35;
+          // тёмно-красные допускаем, но ниже приоритета
+          else if (h <= 0.05 || h >= 0.95) hueWeight *= 1.12;
+          // жёлтые/бежевые/оранжевые — сильно вниз
+          else if (h >= 0.1 && h <= 0.18) hueWeight *= 0.5;
+          else if (h > 0.18 && h <= 0.28) hueWeight *= 0.6;
+
+          const darkBoost = l < 0.4 ? 1.25 : l > 0.55 ? 0.65 : 1;
+          const lightPenalty = l < 0.75 ? 1 : 0.5;
+          const floorPenalty = l > 0.12 ? 1 : 0.6;
+          const satWeight = 0.35 + s * 0.65;
+
+          const score =
+            satWeight * hueWeight * darkBoost * lightPenalty * floorPenalty;
+          return { ...c, score };
+        })
         .sort((a, b) => b.score - a.score);
 
       const first = colors[0]?.raw || palette?.[0] || null;
@@ -561,16 +596,14 @@ export function DesktopHome({
       const c2 = second ? sanitize(second) : c1;
       const next = { tl: c1, br: c1, tr: c2, bl: c2 };
       setUbColors(next);
-      paletteCacheRef.current[src] = next;
+      if (cacheKey) paletteCacheRef.current[cacheKey] = next;
+      else paletteCacheRef.current[src] = next;
+      setPaletteReady(true);
     };
 
     let cancelled = false;
     let blobUrl: string | null = null;
     const run = async () => {
-      if (paletteCacheRef.current[src]) {
-        setUbColors(paletteCacheRef.current[src]);
-        return;
-      }
       try {
         const { img, blobUrl: bu } = await loadImage(src);
         blobUrl = bu || null;
@@ -775,6 +808,16 @@ export function DesktopHome({
     return movie.backdrop || movie.poster || "";
   };
 
+  const isMobile = false;
+  const layerOpacity =
+    enablePosterColors && !isMobile
+      ? paletteReady
+        ? 0.6
+        : 0
+      : !enablePosterColors
+      ? 0.4
+      : 0.6;
+
   return (
     <div className="relative h-screen w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
       {/* Background Backdrop */}
@@ -788,7 +831,7 @@ export function DesktopHome({
             "--color-ub-tr": ubColors.tr,
             "--color-ub-br": ubColors.br,
             "--color-ub-bl": ubColors.bl,
-            opacity: ubOpacity,
+            opacity: layerOpacity,
           } as React.CSSProperties
         }
         aria-hidden
