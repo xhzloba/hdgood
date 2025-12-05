@@ -489,7 +489,7 @@ export function DesktopHome({ initialDisplayMode = "backdrop" }: { initialDispla
         {/* Movie Info */}
         {activeMovie ? (
             <>
-                <div className="mb-[12vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
+                <div className="mb-[4vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
                     <div className="h-[12vh] max-h-[100px] min-h-[60px] mb-6 flex items-end transition-[height] duration-500 ease-out">
                         {activeMovie.logo ? (
                             <img 
