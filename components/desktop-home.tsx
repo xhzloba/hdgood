@@ -557,22 +557,33 @@ export function DesktopHome({
       if (cancelled) return;
       const colors = (palette || [])
         .map((p) => ({ raw: p, hsl: rgbToHsl(p[0], p[1], p[2]) }))
-        .filter((c) => c.hsl.s > 0.12) // отсекаем серое
+        .filter((c) => {
+          const { s, l } = c.hsl;
+          // отсекаем выбитые бежевые/слишком светлые
+          if (l > 0.65 && s < 0.32) return false;
+          // допускаем слабонасыщенные, если они тёмно-серые
+          if (s <= 0.12) return l >= 0.18 && l <= 0.45;
+          return s > 0.12;
+        })
         .map((c) => {
           const { h, s, l } = c.hsl;
           let hueWeight = 1;
           // приоритет тёмным синим/фиолетовым
           if (h >= 0.55 && h <= 0.78) hueWeight *= 1.35;
-          // тёмно-красные допускаем, но ниже приоритета
-          else if (h <= 0.05 || h >= 0.95) hueWeight *= 1.12;
-          // жёлтые/бежевые/оранжевые — сильно вниз
-          else if (h >= 0.1 && h <= 0.18) hueWeight *= 0.5;
-          else if (h > 0.18 && h <= 0.28) hueWeight *= 0.6;
+          // тёмно-красные/бордо/алая
+          else if (h <= 0.05 || h >= 0.95) hueWeight *= l < 0.55 ? 1.2 : 1.0;
+          // красно-оранжевые тёмные
+          else if (h > 0.05 && h <= 0.1) hueWeight *= l < 0.5 ? 1.05 : 0.8;
+          // жёлтые/бежевые/светло-оранжевые — сильно вниз
+          else if (h >= 0.1 && h <= 0.18) hueWeight *= 0.35;
+          else if (h > 0.18 && h <= 0.28) hueWeight *= 0.55;
+          // зелёные/сине-зелёные — умеренный приоритет, но только если не светлые
+          else if (h > 0.28 && h < 0.45) hueWeight *= l < 0.55 ? 1.05 : 0.7;
 
-          const darkBoost = l < 0.4 ? 1.25 : l > 0.55 ? 0.65 : 1;
-          const lightPenalty = l < 0.75 ? 1 : 0.5;
+          const darkBoost = l < 0.4 ? 1.3 : l > 0.55 ? 0.65 : 1;
+          const lightPenalty = l < 0.72 ? 1 : 0.45;
           const floorPenalty = l > 0.12 ? 1 : 0.6;
-          const satWeight = 0.35 + s * 0.65;
+          const satWeight = 0.38 + s * 0.62;
 
           const score =
             satWeight * hueWeight * darkBoost * lightPenalty * floorPenalty;
@@ -580,17 +591,44 @@ export function DesktopHome({
         })
         .sort((a, b) => b.score - a.score);
 
-      const first = colors[0]?.raw || palette?.[0] || null;
-      const second =
+      const isYellow = (h: number) => h >= 0.1 && h <= 0.18;
+
+      // Если доминанта жёлтая — возвращаем фиксированный тёплый набор
+      const top = colors[0];
+      if (top && isYellow(top.hsl.h)) {
+        const fixed = {
+          tl: "#412901",
+          tr: "#60351d",
+          br: "#563119",
+          bl: "#6f5d18",
+        };
+        setUbColors(fixed);
+        if (cacheKey) paletteCacheRef.current[cacheKey] = fixed;
+        setPaletteReady(true);
+        return;
+      }
+
+      const primary =
+        colors.find((c) => !isYellow(c.hsl.h)) || colors[0] || null;
+      let secondary =
         colors.find(
-          (c, idx) =>
-            idx > 0 &&
-            Math.abs(c.hsl.h - (colors[0]?.hsl.h ?? 0)) > 0.08 && // другой оттенок
-            Math.abs(c.hsl.l - (colors[0]?.hsl.l ?? 0)) > 0.02
-        )?.raw ||
-        colors[1]?.raw ||
-        palette?.[1] ||
+          (c) =>
+            c.raw !== primary?.raw &&
+            !isYellow(c.hsl.h) &&
+            Math.abs(c.hsl.h - (primary?.hsl.h ?? 0)) > 0.08 &&
+            Math.abs(c.hsl.l - (primary?.hsl.l ?? 0)) > 0.02
+        ) ||
+        colors.find((c) => !isYellow(c.hsl.h) && c.raw !== primary?.raw) ||
+        colors[1] ||
         null;
+
+      // Если второй цвет слабый или отсутствует — используем первый для обоих углов
+      if (!secondary || (primary && secondary.score < primary.score * 0.6)) {
+        secondary = primary;
+      }
+
+      const first = primary?.raw || null;
+      const second = secondary?.raw || null;
 
       const c1 = first ? sanitize(first) : DEFAULT_UB_COLORS.tl;
       const c2 = second ? sanitize(second) : c1;
