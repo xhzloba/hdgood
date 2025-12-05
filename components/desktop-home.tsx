@@ -428,6 +428,35 @@ export function DesktopHome({
       setPaletteReady(true);
       return;
     }
+
+    // Приоритет: цвета из overrides (poster_colors)
+    try {
+      const overridesCache = (globalThis as any).__movieOverridesCache || {};
+      const ovColors = movieId ? overridesCache[movieId]?.poster_colors : null;
+      const toHex = (arr?: number[]) =>
+        Array.isArray(arr) && arr.length >= 3
+          ? rgbToHex([arr[0], arr[1], arr[2]])
+          : null;
+      if (ovColors) {
+        const tl = toHex(ovColors.accentTl) || toHex(ovColors.dominant1);
+        const tr = toHex(ovColors.accentTr) || tl;
+        const br = toHex(ovColors.accentBr) || toHex(ovColors.dominant2) || tl;
+        const bl = toHex(ovColors.accentBl) || br;
+        if (tl || tr || br || bl) {
+          const next = {
+            tl: tl || DEFAULT_UB_COLORS.tl,
+            tr: tr || tl || DEFAULT_UB_COLORS.tr,
+            br: br || tl || DEFAULT_UB_COLORS.br,
+            bl: bl || br || DEFAULT_UB_COLORS.bl,
+          };
+          setUbColors(next);
+          if (cacheKey) paletteCacheRef.current[cacheKey] = next;
+          setPaletteReady(true);
+          return;
+        }
+      }
+    } catch {}
+
     setPaletteReady(false);
 
     const loadImage = (
@@ -559,31 +588,34 @@ export function DesktopHome({
         .map((p) => ({ raw: p, hsl: rgbToHsl(p[0], p[1], p[2]) }))
         .filter((c) => {
           const { s, l } = c.hsl;
-          // отсекаем выбитые бежевые/слишком светлые
-          if (l > 0.65 && s < 0.32) return false;
-          // допускаем слабонасыщенные, если они тёмно-серые
+          // Жёсткий отсев засвеченных/бело-бежевых: очень светлые или светлые с низкой насыщенностью
+          if (l > 0.72) return false;
+          if (l > 0.62 && s < 0.5) return false;
+          if (l > 0.6 && s < 0.6) return false;
+          if (l > 0.58 && s < 0.45) return false;
+          // допускаем слабонасыщенные только если они тёмно-серые
           if (s <= 0.12) return l >= 0.18 && l <= 0.45;
           return s > 0.12;
         })
         .map((c) => {
           const { h, s, l } = c.hsl;
           let hueWeight = 1;
-          // приоритет тёмным синим/фиолетовым
-          if (h >= 0.55 && h <= 0.78) hueWeight *= 1.35;
-          // тёмно-красные/бордо/алая
-          else if (h <= 0.05 || h >= 0.95) hueWeight *= l < 0.55 ? 1.2 : 1.0;
-          // красно-оранжевые тёмные
-          else if (h > 0.05 && h <= 0.1) hueWeight *= l < 0.5 ? 1.05 : 0.8;
-          // жёлтые/бежевые/светло-оранжевые — сильно вниз
-          else if (h >= 0.1 && h <= 0.18) hueWeight *= 0.35;
-          else if (h > 0.18 && h <= 0.28) hueWeight *= 0.55;
-          // зелёные/сине-зелёные — умеренный приоритет, но только если не светлые
-          else if (h > 0.28 && h < 0.45) hueWeight *= l < 0.55 ? 1.05 : 0.7;
+          // приоритеты по тону (усиливаем зелёно-бирюзовые, ослабляем красные)
+          if (h >= 0.55 && h <= 0.78) hueWeight *= 1.3; // синие/фиолетовые
+          else if (h <= 0.05 || h >= 0.95)
+            hueWeight *= l < 0.55 ? 0.95 : 0.85; // красные/бордо — ослабили
+          else if (h > 0.05 && h <= 0.1)
+            hueWeight *= l < 0.5 ? 1.0 : 0.75; // алые/красно-оранж — мягче
+          else if (h >= 0.1 && h <= 0.18)
+            hueWeight *= 0.25; // жёлто-бежевые — резко вниз
+          else if (h > 0.18 && h <= 0.28)
+            hueWeight *= 0.45; // светло-оранж/охра — вниз
+          else if (h > 0.28 && h < 0.45) hueWeight *= l < 0.6 ? 1.3 : 0.8; // зелёные/сине-зелёные — выше приоритет, если не светлые
 
-          const darkBoost = l < 0.4 ? 1.3 : l > 0.55 ? 0.65 : 1;
-          const lightPenalty = l < 0.72 ? 1 : 0.45;
-          const floorPenalty = l > 0.12 ? 1 : 0.6;
-          const satWeight = 0.38 + s * 0.62;
+          const darkBoost = l < 0.4 ? 1.35 : l > 0.55 ? 0.6 : 1;
+          const lightPenalty = l < 0.72 ? 1 : 0.4;
+          const floorPenalty = l > 0.12 ? 1 : 0.55;
+          const satWeight = 0.4 + s * 0.6;
 
           const score =
             satWeight * hueWeight * darkBoost * lightPenalty * floorPenalty;
@@ -622,8 +654,8 @@ export function DesktopHome({
         colors[1] ||
         null;
 
-      // Если второй цвет слабый или отсутствует — используем первый для обоих углов
-      if (!secondary || (primary && secondary.score < primary.score * 0.6)) {
+      // Если второй цвет слишком слабый — используем первый для обоих углов
+      if (!secondary || (primary && secondary.score < primary.score * 0.5)) {
         secondary = primary;
       }
 
@@ -847,33 +879,29 @@ export function DesktopHome({
   };
 
   const isMobile = false;
-  const layerOpacity =
-    enablePosterColors && !isMobile
-      ? paletteReady
-        ? 0.6
-        : 0
-      : !enablePosterColors
-      ? 0.4
-      : 0.6;
+  const colorLayerEnabled = enablePosterColors && !isMobile;
+  const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
 
   return (
     <div className="relative h-screen w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
-      {/* Цветовой слой из постера (2 доминанты, по диагоналям) */}
-      <div
-        className="ub-color-layer"
-        style={
-          {
-            "--color-ub-tl": ubColors.tl,
-            "--color-ub-tr": ubColors.tr,
-            "--color-ub-br": ubColors.br,
-            "--color-ub-bl": ubColors.bl,
-            opacity: layerOpacity,
-          } as React.CSSProperties
-        }
-        aria-hidden
-      />
+      {/* Цветовой слой из постера (отключен) */}
+      {colorLayerEnabled && (
+        <div
+          className="ub-color-layer"
+          style={
+            {
+              "--color-ub-tl": ubColors.tl,
+              "--color-ub-tr": ubColors.tr,
+              "--color-ub-br": ubColors.br,
+              "--color-ub-bl": ubColors.bl,
+              opacity: layerOpacity,
+            } as React.CSSProperties
+          }
+          aria-hidden
+        />
+      )}
 
       {/* Sidebar Navigation */}
       <DesktopSidebar
