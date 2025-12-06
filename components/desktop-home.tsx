@@ -356,7 +356,7 @@ export function DesktopHome({
     initialDisplayMode
   );
   const [showPosterMetadata, setShowPosterMetadata] = useState(true);
-  const [enablePosterColors, setEnablePosterColors] = useState(false);
+  const [enablePosterColors, setEnablePosterColors] = useState(true);
   const [paletteReady, setPaletteReady] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [ubColors, setUbColors] = useState(DEFAULT_UB_COLORS);
@@ -381,9 +381,8 @@ export function DesktopHome({
         setPaletteReady(false);
       }
     } else {
-      setEnablePosterColors(false);
-      setUbColors(DEFAULT_UB_COLORS);
-      setPaletteReady(true);
+      setEnablePosterColors(true);
+      setPaletteReady(false);
     }
   }, []);
 
