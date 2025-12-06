@@ -174,9 +174,9 @@ export default function MovieSlider({
     if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
       return 6;
     if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
-      return 5;
-    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
       return 4;
+    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
+      return 3;
     return 2;
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);

@@ -336,9 +336,9 @@ function CarouselPrevious({
     <button
       data-slot="carousel-previous"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-[38%] md:top-[41%] lg:top-[42%] xl:top-[43%] -translate-y-1/2 -translate-x-1/2 left-[6px] md:left-[8px] lg:left-[14px] xl:left-[18px]'
+          ? 'top-[38%] md:top-[41%] lg:top-[42%] xl:top-[43%] -translate-y-1/2 -translate-x-1/2 left-[4px] md:left-[8px] lg:left-[14px] xl:left-[18px]'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
@@ -364,9 +364,9 @@ function CarouselNext({
     <button
       data-slot="carousel-next"
       className={cn(
-        'absolute z-20 inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
+        'absolute z-20 inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-full border border-white/70 bg-white text-black shadow-md hover:shadow-lg hover:bg-white/95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
         orientation === 'horizontal'
-          ? 'top-[38%] md:top-[41%] lg:top-[42%] xl:top-[43%] -translate-y-1/2 translate-x-1/2 right-[6px] md:right-[8px] lg:right-[14px] xl:right-[18px]'
+          ? 'top-[38%] md:top-[41%] lg:top-[42%] xl:top-[43%] -translate-y-1/2 translate-x-1/2 right-[4px] md:right-[8px] lg:right-[14px] xl:right-[18px]'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
