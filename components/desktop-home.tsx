@@ -1058,7 +1058,7 @@ export function DesktopHome({
 
   const sliderMarginClass = isFullscreen
     ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
-    : "mt-[clamp(20px,4vh,72px)] min-[1800px]:mt-[88px]";
+    : "mt-[clamp(16px,3.5vh,64px)] min-[1800px]:mt-[64px]";
 
   return (
     <div
