@@ -3,6 +3,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Search, User, Play, Plus, Settings, Maximize2, Minimize2 } from "lucide-react";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   IconClock,
   IconMovie,
   IconDeviceTv,
@@ -18,12 +24,6 @@ import { CATEGORIES } from "@/lib/categories";
 import MovieSlider from "@/components/movie-slider";
 import useSWR from "swr";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -347,6 +347,8 @@ export function DesktopHome({
   const lastInputTimeRef = useRef(0);
   const [overrideRefresh, setOverrideRefresh] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showWideClock, setShowWideClock] = useState(false);
+  const [clockText, setClockText] = useState<string>("");
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -392,6 +394,46 @@ export function DesktopHome({
     document.addEventListener("fullscreenchange", syncFullscreen);
     syncFullscreen();
     return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, "0");
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const dow = ["ВС", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"][now.getDay()];
+      const months = [
+        "ЯНВАРЯ",
+        "ФЕВРАЛЯ",
+        "МАРТА",
+        "АПРЕЛЯ",
+        "МАЯ",
+        "ИЮНЯ",
+        "ИЮЛЯ",
+        "АВГУСТА",
+        "СЕНТЯБРЯ",
+        "ОКТЯБРЯ",
+        "НОЯБРЯ",
+        "ДЕКАБРЯ",
+      ];
+      const month = months[now.getMonth()];
+      setClockText(`${hh}:${mm} ${dow}, ${dd} ${month}`);
+    };
+
+    const checkWidth = () => {
+      const isWide = typeof window !== "undefined" && window.innerWidth >= 1600;
+      setShowWideClock(isWide);
+    };
+
+    updateClock();
+    checkWidth();
+    const iv = setInterval(updateClock, 60_000);
+    window.addEventListener("resize", checkWidth);
+    return () => {
+      clearInterval(iv);
+      window.removeEventListener("resize", checkWidth);
+    };
   }, []);
 
   const toggleFullscreen = async () => {
@@ -1050,19 +1092,35 @@ export function DesktopHome({
         onSettingsClick={() => setIsSettingsOpen(true)}
       />
 
-      {/* Fullscreen toggle (desktop only) */}
-      <button
-        type="button"
-        aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
-        onClick={toggleFullscreen}
-        className="hidden md:flex absolute top-4 right-6 z-40 h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all"
-      >
-        {isFullscreen ? (
-          <Minimize2 className="w-5 h-5" />
-        ) : (
-          <Maximize2 className="w-5 h-5" />
+      {/* Fullscreen toggle + clock (desktop only) */}
+      <div className="hidden md:flex absolute top-4 right-6 z-40 items-center gap-3">
+        {showWideClock && clockText && (
+          <span className="text-white font-bold text-base tracking-wide">{clockText}</span>
         )}
-      </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
+                onClick={toggleFullscreen}
+                className="h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all flex"
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-5 h-5" />
+                ) : (
+                  <Maximize2 className="w-5 h-5" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={8} className="bg-white text-black border-0 shadow-xl">
+              <p className="text-xs font-semibold">
+                {isFullscreen ? "Выйти из полноэкранного" : "Полноэкранный режим"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
       {/* Main Content Area */}
       <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[clamp(48px,6vh,96px)] pb-[clamp(24px,6vh,80px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
