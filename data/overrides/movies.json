@@ -22,9 +22,9 @@
         164
       ],
       "accentBl": [
-        35,
-        43,
-        78
+        20,
+        42,
+        92
       ]
     },
     "poster_logo": "/movies/logo/alica-logo.webp",
@@ -194,7 +194,7 @@
   },
   "690925e29cfe849a33eb3dfa": {
     "bg_poster": {
-      "backdrop": "https://images.kinorium.com/movie/backstage/12316757/w1500_54813510.jpg"
+      "backdrop": "/movies/mama.jpeg"
     },
     "poster_logo": "/movies/logo/mama-vernulas-logo.png"
   },
@@ -1030,6 +1030,40 @@
     "poster_logo": "/movies/logo/87.webp",
     "bg_poster": {
       "backdrop": "/movies/avatar-pepel.webp"
+    }
+  },
+  "68056e63b54df61971a05391": {
+    "poster_colors": {
+      "accentTr": [
+        29,
+        78,
+        216
+      ],
+      "accentTl": [
+        25,
+        154,
+        205
+      ],
+      "accentBr": [
+        29,
+        78,
+        216
+      ],
+      "accentBl": [
+        29,
+        78,
+        216
+      ]
+    },
+    "poster_logo": "/movies/logo/88.webp",
+    "bg_poster": {
+      "backdrop": "/movies/kraken.webp"
+    }
+  },
+  "6932046792d74d36ff8c3e2a": {
+    "poster_logo": "/movies/logo/89.png",
+    "bg_poster": {
+      "backdrop": "/movies/dedmoroz-pismo.jpeg"
     }
   }
 }

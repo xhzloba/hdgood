@@ -2817,5 +2817,79 @@
       "poster_colors.accentBr",
       "poster_colors.accentBl"
     ]
+  },
+  {
+    "id": "68056e63b54df61971a05391",
+    "timestamp": "2025-12-06T12:48:04.846Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68056e63b54df61971a05391",
+    "timestamp": "2025-12-06T12:48:31.875Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "68056e63b54df61971a05391",
+    "timestamp": "2025-12-06T12:50:25.279Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "68056e63b54df61971a05391",
+    "timestamp": "2025-12-06T12:51:13.020Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6932046792d74d36ff8c3e2a",
+    "timestamp": "2025-12-06T12:55:32.519Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690925e29cfe849a33eb3dfa",
+    "timestamp": "2025-12-06T12:58:43.980Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68fff9749630419905edf217",
+    "timestamp": "2025-12-06T12:59:55.562Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
   }
 ]
