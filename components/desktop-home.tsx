@@ -1018,7 +1018,7 @@ export function DesktopHome({
           {activeMovie ? (
             <>
               <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
-                <div className="h-[120px] md:h-[140px] lg:h-[160px] mb-[clamp(12px,2vh,28px)] flex items-center transition-[height] duration-500 ease-out">
+                <div className="h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px] mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]">
                   {activeMovie.logo ? (
                     <img
                       src={activeMovie.logo}
@@ -1087,7 +1087,7 @@ export function DesktopHome({
               </div>
 
               {/* Trending Slider */}
-              <div className="w-full mt-[clamp(32px,6vh,96px)]">
+              <div className="w-full mt-[clamp(20px,4vh,72px)] min-[1800px]:mt-[88px]">
                 <div key={slideIndex} className="w-full">
                   <MovieSlider
                     key={activeSlide.id}
