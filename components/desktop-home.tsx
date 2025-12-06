@@ -984,7 +984,7 @@ export function DesktopHome({
   const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
 
   return (
-    <div className="relative h-screen w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
+    <div className="relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-x-hidden font-sans selection:bg-orange-500/30">
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
       {/* Цветовой слой из постера (отключен) */}
@@ -1011,33 +1011,34 @@ export function DesktopHome({
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-full flex flex-col pb-[8vh] px-0 pt-24 overflow-hidden transition-[padding] duration-500 ease-out">
-        <div className="min-h-full w-full flex flex-col justify-end">
+      <main className="relative z-10 ml-24 min-h-[100dvh] flex flex-col px-0 pt-[clamp(72px,8vh,140px)] pb-[clamp(40px,9vh,140px)] gap-[clamp(20px,3vh,48px)] transition-[padding] duration-500 ease-out">
+        <div className="flex-1 w-full flex flex-col gap-[clamp(16px,3vh,36px)]">
+          <div className="w-full px-8 lg:px-12 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(16px,3vh,32px)]">
           {/* Movie Info */}
           {activeMovie ? (
             <>
-              <div className="mb-[4vh] max-w-3xl mt-auto px-12 transition-[margin] duration-500 ease-out">
-                <div className="h-[12vh] max-h-[100px] min-h-[60px] mb-6 flex items-end transition-[height] duration-500 ease-out">
+              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
+                <div className="h-[clamp(72px,14vh,180px)] mb-[clamp(12px,2vh,28px)] flex items-end transition-[height] duration-500 ease-out">
                   {activeMovie.logo ? (
                     <img
                       src={activeMovie.logo}
                       alt={activeMovie.title}
-                      className="max-w-[240px] h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out md:max-w-[340px] lg:max-w-[460px]"
+                      className="h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out max-w-[min(52vw,520px)]"
                     />
                   ) : isFetchingOverride ? (
                     // Show nothing or skeleton while checking for logo
                     <div className="h-[80px] w-[240px] bg-transparent" />
                   ) : (
-                    <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl tracking-tight">
+                    <h1 className="text-[clamp(28px,4vw,56px)] font-black leading-[1.05] drop-shadow-2xl tracking-tight">
                       {activeMovie.title}
                     </h1>
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-[clamp(12px,2vh,24px)]">
                   {activeMovie.rating && (
                     <span
-                      className={`px-2 py-1 rounded text-sm font-bold ${
+                      className={`px-2 py-1 rounded text-xs md:text-sm font-bold ${
                         Number(activeMovie.rating) >= 7
                           ? "bg-green-600"
                           : "bg-zinc-700"
@@ -1046,20 +1047,20 @@ export function DesktopHome({
                       {Number(activeMovie.rating).toFixed(1)}
                     </span>
                   )}
-                  <span className="text-zinc-300 text-sm">
+                  <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                     {activeMovie.year}
                   </span>
-                  <span className="text-zinc-300 text-sm">
+                  <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                     {activeMovie.genre?.split(",").slice(0, 2).join(",")}
                   </span>
                   {activeMovie.country && (
-                    <span className="text-zinc-300 text-sm">
+                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                       {activeMovie.country}
                     </span>
                   )}
                 </div>
 
-                <p className="text-zinc-300 text-lg line-clamp-3 max-w-2xl mb-8 drop-shadow-md font-light leading-relaxed">
+                <p className="text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed">
                   {activeMovie.description ||
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
                 </p>
@@ -1086,7 +1087,7 @@ export function DesktopHome({
               </div>
 
               {/* Trending Slider */}
-              <div className="w-full">
+              <div className="w-full mt-[clamp(64px,12vh,144px)]">
                 <div key={slideIndex} className="w-full">
                   <MovieSlider
                     key={activeSlide.id}
@@ -1109,6 +1110,7 @@ export function DesktopHome({
               <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
             </div>
           )}
+          </div>
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div

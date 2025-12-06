@@ -561,7 +561,7 @@ export default function MovieSlider({
   return (
     <div className="space-y-4">
       {(title || viewAllHref) && (
-        <div className="flex items-center justify-between relative z-20 mb-2 px-3 md:px-12">
+        <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
           {title ? (
             <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
               {title}
@@ -588,7 +588,7 @@ export default function MovieSlider({
         </div>
       ) : isLoading && display.length === 0 ? (
         // Скелетоны должны точно повторять вёрстку карусели, чтобы не было layout shift
-        <div className="relative px-2 md:px-12">
+        <div className="relative px-0">
           <Carousel
             className="w-full"
             opts={{ dragFree: true, loop: false, align: "start" }}
@@ -667,7 +667,7 @@ export default function MovieSlider({
         </div>
       ) : (
         <div
-          className="relative px-2 md:px-12"
+          className="relative px-0"
           onMouseEnter={() => hoverPause && setPaused(true)}
           onMouseLeave={() => hoverPause && setPaused(false)}
         >
