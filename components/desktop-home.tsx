@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Search, User, Play, Plus, Settings, Maximize2, Minimize2 } from "lucide-react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { Search, User, Play, Plus, Settings, Maximize2, Minimize2, Heart } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,7 @@ import {
   IconFiles,
   IconMicrophone,
   IconCategory,
+  IconHeart,
 } from "@tabler/icons-react";
 import { CATEGORIES } from "@/lib/categories";
 import MovieSlider from "@/components/movie-slider";
@@ -33,12 +34,37 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useFavorites } from "@/hooks/use-favorites";
 
 const DEFAULT_UB_COLORS = {
   tl: "#10212f",
   tr: "#1f2937",
   br: "#0f172a",
   bl: "#111827",
+};
+
+type Slide = {
+  id: string;
+  title: string;
+  navTitle?: string;
+  url?: string;
+  fetchAll?: boolean;
+  items?: any[];
+};
+
+type NormalizedMovie = {
+  id: string | number;
+  title: string;
+  poster?: string | null;
+  backdrop?: string | null;
+  year?: any;
+  rating?: any;
+  country?: any;
+  genre?: any;
+  description?: string | null;
+  duration?: any;
+  logo?: string | null;
+  poster_colors?: any;
 };
 
 const TRENDING_URL =
@@ -66,7 +92,7 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
-const SLIDES = [
+const SLIDES: Slide[] = [
   { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
   { id: "trending", title: "В тренде", url: TRENDING_URL },
   { id: "movies", title: "Фильмы", url: MOVIES_URL },
@@ -174,17 +200,21 @@ function NavItem({
   href,
   active,
   onClick,
+  disabled = false,
 }: {
   icon: React.ReactNode;
   label: string;
   href?: string;
   active?: boolean;
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   const className = `p-3 rounded-xl transition-all group relative flex items-center justify-center ${
-    active
-      ? "text-white bg-white/10"
-      : "text-zinc-400 hover:text-white hover:bg-white/5"
+    disabled
+      ? "text-zinc-500 cursor-not-allowed opacity-60"
+      : active
+        ? "text-white bg-white/10"
+        : "text-zinc-400 hover:text-white hover:bg-white/5"
   }`;
 
   return (
@@ -192,13 +222,23 @@ function NavItem({
       <Tooltip>
         <TooltipTrigger asChild>
           {onClick ? (
-            <button onClick={onClick} className={className}>
+            <button
+              onClick={disabled ? undefined : onClick}
+              className={className}
+              disabled={disabled}
+            >
               {icon}
             </button>
           ) : (
-            <Link href={href || "#"} className={className}>
-              {icon}
-            </Link>
+            disabled ? (
+              <button className={className} disabled aria-disabled>
+                {icon}
+              </button>
+            ) : (
+              <Link href={href || "#"} className={className}>
+                {icon}
+              </Link>
+            )
           )}
         </TooltipTrigger>
         <TooltipContent
@@ -282,9 +322,15 @@ function BackdropImage({ src }: { src: string }) {
 export function DesktopSidebar({
   profileAvatar = PROFILE_AVATARS[0],
   onSettingsClick,
+  showFavorites = false,
+  favoritesActive = false,
+  favoritesCount = 0,
 }: {
   profileAvatar?: string;
   onSettingsClick?: () => void;
+  showFavorites?: boolean;
+  favoritesActive?: boolean;
+  favoritesCount?: number;
 }) {
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-transparent">
@@ -298,8 +344,28 @@ export function DesktopSidebar({
           icon={<IconHomeCustom className="w-7 h-7" />}
           label="Главная"
           href="/"
-          active
+          active={!favoritesActive}
         />
+
+        {showFavorites && (
+          <NavItem
+            icon={
+              <div className="relative">
+                <IconHeart
+                  className={`w-7 h-7 ${favoritesActive ? "text-white" : ""}`}
+                  stroke={1.6}
+                  fill={favoritesActive ? "currentColor" : "none"}
+                />
+                {favoritesCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
+                )}
+              </div>
+            }
+            label="Избранное"
+            href="/favorites"
+            active={favoritesActive}
+          />
+        )}
 
         {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
           (cat, i) => (
@@ -334,8 +400,16 @@ export function DesktopSidebar({
 
 export function DesktopHome({
   initialDisplayMode = "backdrop",
+  customSlides,
+  initialSlideId,
+  favoritesActiveOverride = false,
+  forceShowFavoritesNav = false,
 }: {
   initialDisplayMode?: "backdrop" | "poster";
+  customSlides?: Slide[];
+  initialSlideId?: string;
+  favoritesActiveOverride?: boolean;
+  forceShowFavoritesNav?: boolean;
 }) {
   const [activeMovie, setActiveMovie] = useState<any>(null);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -352,6 +426,9 @@ export function DesktopHome({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWideClock, setShowWideClock] = useState(false);
   const [clockText, setClockText] = useState<string>("");
+  const { favorites, ready: favoritesReady, toggleFavorite, isFavorite } = useFavorites();
+  const favoritesCount = (favorites || []).length;
+  const showFavoritesNav = true;
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -804,7 +881,25 @@ export function DesktopHome({
     };
   }, [activeMovie?.poster, activeMovie?.backdrop, enablePosterColors]);
 
-  const activeSlide = SLIDES[slideIndex];
+  const slides = useMemo<Slide[]>(() => {
+    if (customSlides && customSlides.length > 0) return customSlides;
+    return SLIDES;
+  }, [customSlides]);
+
+  useEffect(() => {
+    if (!slides || slides.length === 0) return;
+    if (slideIndex >= slides.length) {
+      setSlideIndex(Math.max(0, slides.length - 1));
+    }
+  }, [slides, slideIndex]);
+
+  useEffect(() => {
+    if (!initialSlideId) return;
+    const idx = slides.findIndex((s) => s.id === initialSlideId);
+    if (idx >= 0) setSlideIndex(idx);
+  }, [initialSlideId, slides]);
+
+  const activeSlide = slides[slideIndex] ?? slides[0];
 
   useEffect(() => {
     setProfileAvatar(
@@ -812,18 +907,48 @@ export function DesktopHome({
     );
   }, []);
 
-  const { data } = useSWR(activeSlide.url, fetcher);
+  const swrKey = activeSlide?.items ? null : activeSlide?.url || null;
+  const { data } = useSWR(swrKey, fetcher);
+
+  const normalizeMovieForHero = useCallback((item: any): NormalizedMovie | null => {
+    if (!item) return null;
+    const d = item.details ?? item;
+    const normalized: NormalizedMovie = {
+      id: d?.id ?? item.id,
+      title: d?.name ?? item.title ?? "Без названия",
+      poster: d?.poster ?? item.poster ?? null,
+      backdrop:
+        d?.bg_poster?.backdrop ??
+        d?.wide_poster ??
+        d?.backdrop ??
+        item.backdrop ??
+        d?.bg ??
+        item.poster ??
+        null,
+      year: d?.released ?? item.year,
+      rating: d?.rating_kp ?? item.rating,
+      country: d?.country ?? item.country,
+      genre: d?.genre ?? item.genre,
+      description: d?.about ?? item.about ?? item.description ?? null,
+      duration: d?.duration ?? item.duration,
+      logo: item.logo ?? null,
+      poster_colors: item.poster_colors,
+    };
+    return normalized;
+  }, []);
 
   // Scroll Jacking Logic
   useEffect(() => {
     const COOLDOWN = 1000; // ms between switches
+
+    if (!slides || slides.length === 0) return;
 
     const handleInput = (direction: "next" | "prev") => {
       const now = Date.now();
       if (now - lastInputTimeRef.current < COOLDOWN) return;
 
       if (direction === "next") {
-        if (slideIndex < SLIDES.length - 1) {
+        if (slideIndex < slides.length - 1) {
           lastInputTimeRef.current = now;
           setSlideDirection("next");
           setSlideIndex((prev) => prev + 1);
@@ -861,7 +986,7 @@ export function DesktopHome({
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [slideIndex]);
+  }, [slideIndex, slides]);
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
@@ -909,7 +1034,7 @@ export function DesktopHome({
     };
 
     fetchOverride();
-  }, [activeMovie?.id, activeSlide.id, overrideRefresh]); // Re-run if ID changes, slide changes, or override invalidated
+  }, [activeMovie?.id, activeSlide?.id, overrideRefresh]); // Re-run if ID changes, slide changes, or override invalidated
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -932,64 +1057,43 @@ export function DesktopHome({
   }, [activeMovie?.id]);
 
   useEffect(() => {
-    if (data) {
-      const movies = data.channels || data;
-      if (movies && movies.length > 0) {
-        const first = movies[0];
-        const normalized = {
-          id: first.details?.id || first.id,
-          title: first.details?.name || first.title,
-          poster: first.details?.poster || first.poster,
-          // Priority: API bg_poster > API wide_poster > API backdrop > API poster
-          backdrop:
-            first.details?.bg_poster?.backdrop ||
-            first.details?.wide_poster ||
-            first.details?.backdrop ||
-            first.poster,
-          year: first.details?.released || first.year,
-          rating: first.details?.rating_kp || first.rating,
-          country: first.details?.country || first.country,
-          genre: first.details?.genre || first.genre,
-          description:
-            first.details?.about || first.about || "Описание отсутствует",
-          duration: first.details?.duration || first.duration,
-          logo: null, // Will be fetched
-        };
+    if (!activeSlide) return;
+    const rawList = (() => {
+      if (Array.isArray(activeSlide.items)) return activeSlide.items;
+      if (data && Array.isArray((data as any).channels)) return (data as any).channels;
+      if (Array.isArray(data)) return data;
+      return [];
+    })();
+    if (!rawList || rawList.length === 0) return;
 
-        // If URL changed (slide switched) or first load, update activeMovie
-        if (lastUrlRef.current !== activeSlide.url || !activeMovie) {
-          // Try to restore from cache immediately if available
-          const overridesCache =
-            (globalThis as any).__movieOverridesCache || {};
-          const cachedOverride = overridesCache[String(normalized.id)];
-          if (cachedOverride) {
-            normalized.logo = cachedOverride.poster_logo || normalized.logo;
-            normalized.backdrop =
-              cachedOverride.bg_poster?.backdrop || normalized.backdrop;
-            if (cachedOverride.poster_colors) {
-              (normalized as any).poster_colors = cachedOverride.poster_colors;
-            }
-          } else {
-            // Pre-emptively clear logo if we are switching slides to avoid showing old logo
-            if (lastUrlRef.current !== activeSlide.url) {
-              normalized.logo = null;
-            }
-          }
+    const first = normalizeMovieForHero(rawList[0]);
+    if (!first) return;
 
-          setActiveMovie(normalized);
-          lastUrlRef.current = activeSlide.url;
+    const overridesCache =
+      (globalThis as any).__movieOverridesCache ||
+      ((globalThis as any).__movieOverridesCache = {});
+    const cachedOverride = overridesCache[String(first.id)];
+    const normalized = {
+      ...first,
+      logo: cachedOverride?.poster_logo ?? first.logo ?? null,
+      backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
+      poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
+    };
 
-          // Trigger fetch immediately for the new first movie
-          // We need to manually trigger this check because activeMovie update might be batched
-          // or we want to ensure 'isFetchingOverride' is true BEFORE the component re-renders with the new title
-          // IF we didn't have it cached
-          if (!cachedOverride) {
-            setIsFetchingOverride(true);
-          }
-        }
-      }
+    const prevSlideKey = lastUrlRef.current;
+    const nextSlideKey = activeSlide.id || activeSlide.url || String(activeSlide.title);
+    if (prevSlideKey !== nextSlideKey) {
+      lastUrlRef.current = nextSlideKey;
+      if (!cachedOverride) setIsFetchingOverride(true);
     }
-  }, [data, activeMovie, activeSlide.url]);
+
+    setActiveMovie((prev: any) => {
+      if (prev && String(prev.id) === String(normalized.id)) {
+        return { ...prev, ...normalized };
+      }
+      return normalized;
+    });
+  }, [data, activeSlide, normalizeMovieForHero]);
 
   const activeIdRef = useRef<string | null>(null);
   const hoverPendingRef = useRef<any>(null);
@@ -1073,6 +1177,30 @@ export function DesktopHome({
     ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
     : "mt-[clamp(16px,3.5vh,64px)] min-[1800px]:mt-[64px]";
 
+  const isFavoriteActiveMovie = isFavorite(
+    activeMovie?.id ? String(activeMovie.id) : null
+  );
+
+  const handleFavoriteToggle = () => {
+    if (!activeMovie) return;
+    toggleFavorite({
+      id: String(activeMovie.id),
+      title: activeMovie.title,
+      poster: activeMovie.poster,
+      backdrop: activeMovie.backdrop,
+      year: activeMovie.year,
+      rating: activeMovie.rating,
+      country: activeMovie.country,
+      genre: activeMovie.genre,
+      description: activeMovie.description,
+      duration: activeMovie.duration,
+      logo: activeMovie.logo,
+      poster_colors: (activeMovie as any).poster_colors,
+    });
+  };
+
+  if (!activeSlide) return null;
+
   return (
     <div
       className={`relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30 ${
@@ -1102,6 +1230,9 @@ export function DesktopHome({
       <DesktopSidebar
         profileAvatar={profileAvatar}
         onSettingsClick={() => setIsSettingsOpen(true)}
+        showFavorites={showFavoritesNav}
+        favoritesActive={favoritesActiveOverride}
+        favoritesCount={favoritesCount}
       />
 
       {/* Fullscreen toggle + clock (desktop only) */}
@@ -1206,10 +1337,24 @@ export function DesktopHome({
                     <span className="text-base md:text-lg">Смотреть</span>
                   </Link>
                   <button
-                    className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm"
-                    title="Добавить в список"
+                    onClick={handleFavoriteToggle}
+                    className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
+                      isFavoriteActiveMovie
+                        ? "border-white bg-white text-black"
+                        : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
+                    }`}
+                    title={
+                      isFavoriteActiveMovie
+                        ? "Убрать из избранного"
+                        : "Добавить в избранное"
+                    }
+                    aria-pressed={isFavoriteActiveMovie}
                   >
-                    <Plus size={20} />
+                    {isFavoriteActiveMovie ? (
+                      <Heart size={20} fill="currentColor" />
+                    ) : (
+                      <Plus size={20} />
+                    )}
                   </button>
                 </div>
               </div>
@@ -1219,8 +1364,9 @@ export function DesktopHome({
                 <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
                   <MovieSlider
                     key={activeSlide.id}
-                    url={activeSlide.url}
+                    url={activeSlide.url || "/favorites"}
                     title={activeSlide.title}
+                    items={activeSlide.items}
                     onMovieHover={handleMovieHover}
                     compactOnMobile={false}
                     perPageOverride={15}
@@ -1254,7 +1400,7 @@ export function DesktopHome({
                 transform: `translateY(${50 - slideIndex * 44}px)`,
               }}
             >
-              {SLIDES.map((slide, i) => (
+              {slides.map((slide, i) => (
                 <button
                   key={slide.id}
                   onClick={() => {

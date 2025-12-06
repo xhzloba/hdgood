@@ -44,6 +44,7 @@ type MovieSliderProps = {
   initialPages?: number;
   minItems?: number;
   fullscreenMode?: boolean;
+  items?: any[];
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -151,6 +152,7 @@ export default function MovieSlider({
   initialPages,
   minItems = 30,
   fullscreenMode = false,
+  items,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -160,6 +162,7 @@ export default function MovieSlider({
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const fetchingPages = useRef<Set<number>>(new Set());
+  const isStatic = Array.isArray(items);
 
   const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
@@ -226,14 +229,23 @@ export default function MovieSlider({
   const [itemsPerView, setItemsPerView] = useState<number>(2);
 
   useEffect(() => {
+    if (isStatic) return;
     setPage(1);
     setPagesData([]);
     fetchingPages.current.clear();
-  }, [url]);
+  }, [url, isStatic]);
+
+  useEffect(() => {
+    if (!isStatic) return;
+    setPage(1);
+    fetchingPages.current.clear();
+    setPagesData([{ page: 1, data: items || [] }]);
+  }, [isStatic, items]);
 
   const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
-  const { data, error, isLoading, isValidating } = useSWR<string>(
-    currentUrl,
+  const swrKey = isStatic ? null : currentUrl;
+  const { data, error, isLoading, isValidating } = useSWR<string | null>(
+    swrKey,
     fetcher
   );
 
@@ -248,6 +260,7 @@ export default function MovieSlider({
 
   // Предзагрузка дополнительных страниц (initialPages)
   useEffect(() => {
+    if (isStatic) return;
     if (!initialPages || initialPages <= 1) return;
     // Если мы уже загрузили первую страницу (через SWR выше), загружаем остальные
     // Но нужно убедиться, что мы не загружаем их повторно
@@ -278,11 +291,12 @@ export default function MovieSlider({
     };
 
     loadMore();
-  }, [initialPages, url, pagesData]); // Trigger on pagesData change to avoid stale checks, but logic handles dupes
+  }, [initialPages, url, pagesData, isStatic]); // Trigger on pagesData change to avoid stale checks, but logic handles dupes
 
   // Когда требуется загрузить все страницы (например, профиль актёра),
   // последовательно подтягиваем следующие страницы, пока данные не закончатся
   useEffect(() => {
+    if (isStatic) return;
     if (!fetchAllPages) return;
     if (!data) return;
     let cancelled = false;
@@ -328,7 +342,7 @@ export default function MovieSlider({
     return () => {
       cancelled = true;
     };
-  }, [fetchAllPages, data, page, url, pagesData]);
+  }, [fetchAllPages, data, page, url, pagesData, isStatic]);
 
   const movies = useMemo(() => {
     let m: any[] = [];
@@ -369,7 +383,8 @@ export default function MovieSlider({
     return copy;
   }, [movies, sortByYear]);
 
-  const display = fetchAllPages ? sortedMovies : sortedMovies.slice(0, perPage);
+  const display =
+    fetchAllPages || isStatic ? sortedMovies : sortedMovies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
   const overridesCacheRef =

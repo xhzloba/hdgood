@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Maximize, Minimize, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Maximize, Minimize, Volume2, VolumeX, Heart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PlayerSelector } from "@/components/player-selector";
@@ -251,6 +251,7 @@ import { TriviaSection } from "@/components/trivia-section";
 import { ShootingPhotosSlider } from "@/components/shooting-photos-slider";
 import { getMovieOverride, getSeriesOverride } from "@/lib/overrides";
 import { VideoPosterRef } from "@/components/video-poster";
+import { useFavorites } from "@/hooks/use-favorites";
 
 export default function MoviePage({
   params,
@@ -298,6 +299,7 @@ export default function MoviePage({
   const [listUrl, setListUrl] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     setOrigin(typeof window !== "undefined" ? window.location.origin : "");
@@ -1091,6 +1093,73 @@ export default function MoviePage({
     }
   }
 
+  const favoriteMovieInfo = (() => {
+    if (!movie) return null;
+    const m: any = movie;
+    const movieId = String(m.id ?? id ?? "");
+    if (!movieId) return null;
+    const title =
+      m.title ??
+      m.name ??
+      m.details?.name ??
+      m.details?.title ??
+      data?.details?.name ??
+      "Без названия";
+    const poster =
+      m.poster ??
+      m.bg_poster?.poster ??
+      m.cover ??
+      m.preview ??
+      m.poster_path ??
+      null;
+    const backdrop =
+      m.bg_poster?.backdrop ??
+      m.wide_poster ??
+      m.backdrop ??
+      m.background ??
+      poster ??
+      null;
+    const year =
+      m.year ??
+      m.released ??
+      m.release_year ??
+      m.releaseYear ??
+      (m.details ? m.details.release_year : null);
+    const rating = m.rating_kp ?? m.rating ?? m.imdb_rating ?? null;
+    const country = m.country ?? m.details?.country ?? null;
+    const genre = Array.isArray(m.genre)
+      ? m.genre[0]
+      : m.genre ?? (Array.isArray(m.tags) ? m.tags[0] : m.tags);
+    const description =
+      m.description ??
+      m.about ??
+      (Array.isArray(m.description) ? m.description.join(" ") : null);
+    const duration = m.duration ?? m.time ?? m.runtime ?? null;
+    const logo = m.poster_logo ?? m.logo ?? null;
+    const payload = {
+      id: movieId,
+      title,
+      poster,
+      backdrop,
+      year,
+      rating,
+      country,
+      genre,
+      description,
+      duration,
+      logo,
+      poster_colors: m.poster_colors,
+    };
+    return { payload, isFav: isFavorite(movieId) };
+  })();
+
+  const handleToggleFavorite = () => {
+    if (!favoriteMovieInfo?.payload) return;
+    toggleFavorite(favoriteMovieInfo.payload);
+  };
+
+  const isFavoriteCurrent = favoriteMovieInfo?.isFav ?? false;
+
   // Helper for actor photos
   const getActorPhoto = (actor: any): string | null => {
     if (!actor || typeof actor !== 'object') return null;
@@ -1611,8 +1680,19 @@ export default function MoviePage({
                  <span className="text-base md:text-lg">Подробнее</span>
                </button>
                <div className="flex gap-3 w-full md:w-auto justify-start">
-                <button className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" title="Добавить в список">
-                   <Plus size={20} />
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
+                    isFavoriteCurrent
+                      ? "border-white bg-white text-black"
+                      : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
+                  }`}
+                  title={
+                    isFavoriteCurrent ? "Убрать из избранного" : "Добавить в избранное"
+                  }
+                  aria-pressed={isFavoriteCurrent}
+                >
+                   {isFavoriteCurrent ? <Heart size={20} fill="currentColor" /> : <Plus size={20} />}
                 </button>
                 {hasTrailers && (
                    <button 

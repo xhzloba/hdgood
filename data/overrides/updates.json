@@ -2972,5 +2972,26 @@
       "bg_poster.backdrop"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "688d38e275a6b2ea17a46a36",
+    "timestamp": "2025-12-06T16:52:04.984Z",
+    "poster": "/movies/drakula-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr"
+    ]
+  },
+  {
+    "id": "688d38e275a6b2ea17a46a36",
+    "timestamp": "2025-12-06T16:52:41.318Z",
+    "poster": "/movies/drakula-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl"
+    ]
   }
 ]

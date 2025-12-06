@@ -658,6 +658,23 @@
     "poster_logo": "/movies/logo/26.webp"
   },
   "688d38e275a6b2ea17a46a36": {
+    "poster_colors": {
+      "accentTr": [
+        83,
+        43,
+        82
+      ],
+      "accentBr": [
+        47,
+        33,
+        66
+      ],
+      "accentTl": [
+        80,
+        37,
+        87
+      ]
+    },
     "poster_logo": "/movies/logo/27.png",
     "poster": "/movies/drakula-poster.jpg",
     "bg_poster": {
