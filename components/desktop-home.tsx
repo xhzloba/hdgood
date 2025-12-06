@@ -984,7 +984,7 @@ export function DesktopHome({
   const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
 
   return (
-    <div className="relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-x-hidden font-sans selection:bg-orange-500/30">
+    <div className="relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
       {/* Цветовой слой из постера (отключен) */}
@@ -1011,9 +1011,9 @@ export function DesktopHome({
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 min-h-[100dvh] flex flex-col px-0 pt-[clamp(72px,8vh,140px)] pb-[clamp(40px,9vh,140px)] gap-[clamp(20px,3vh,48px)] transition-[padding] duration-500 ease-out">
-        <div className="flex-1 w-full flex flex-col gap-[clamp(16px,3vh,36px)]">
-          <div className="w-full px-8 lg:px-12 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(16px,3vh,32px)]">
+      <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[clamp(48px,6vh,96px)] pb-[clamp(24px,6vh,80px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
+        <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
+          <div className="w-full px-8 lg:px-12 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           {/* Movie Info */}
           {activeMovie ? (
             <>
@@ -1087,7 +1087,7 @@ export function DesktopHome({
               </div>
 
               {/* Trending Slider */}
-              <div className="w-full mt-[clamp(64px,12vh,144px)]">
+              <div className="w-full mt-[clamp(32px,6vh,96px)]">
                 <div key={slideIndex} className="w-full">
                   <MovieSlider
                     key={activeSlide.id}
