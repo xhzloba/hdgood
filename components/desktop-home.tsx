@@ -1018,7 +1018,7 @@ export function DesktopHome({
           {activeMovie ? (
             <>
               <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
-                <div className="h-[clamp(72px,14vh,180px)] mb-[clamp(12px,2vh,28px)] flex items-end transition-[height] duration-500 ease-out">
+                <div className="h-[120px] md:h-[140px] lg:h-[160px] mb-[clamp(12px,2vh,28px)] flex items-center transition-[height] duration-500 ease-out">
                   {activeMovie.logo ? (
                     <img
                       src={activeMovie.logo}
@@ -1027,7 +1027,7 @@ export function DesktopHome({
                     />
                   ) : isFetchingOverride ? (
                     // Show nothing or skeleton while checking for logo
-                    <div className="h-[80px] w-[240px] bg-transparent" />
+                    <div className="h-full w-[240px] bg-transparent" />
                   ) : (
                     <h1 className="text-[clamp(28px,4vw,56px)] font-black leading-[1.05] drop-shadow-2xl tracking-tight">
                       {activeMovie.title}
@@ -1060,7 +1060,7 @@ export function DesktopHome({
                   )}
                 </div>
 
-                <p className="text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed">
+                <p className="text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed min-h-[72px] md:min-h-[84px]">
                   {activeMovie.description ||
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
                 </p>
