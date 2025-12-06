@@ -2891,5 +2891,15 @@
       "poster_colors.accentBl"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "65941dfa4d4ca001a2279e2c",
+    "timestamp": "2025-12-06T15:23:18.472Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

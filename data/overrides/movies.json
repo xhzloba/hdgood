@@ -1065,5 +1065,8 @@
     "bg_poster": {
       "backdrop": "/movies/dedmoroz-pismo.jpeg"
     }
+  },
+  "65941dfa4d4ca001a2279e2c": {
+    "poster_logo": "/movies/logo/90.webp"
   }
 }
