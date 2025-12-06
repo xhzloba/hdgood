@@ -1231,40 +1231,39 @@ export function DesktopHome({
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div
-          className={`absolute right-0 top-32 w-80 z-40 pointer-events-none flex flex-col items-end pr-12 transition-opacity duration-700 ${
+          className={`absolute right-0 top-32 w-64 z-40 pointer-events-none flex flex-col items-end pr-10 transition-opacity duration-700 ${
             activeMovie ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="h-[160px] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]">
+          <div className="h-[170px] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)]">
             <div
-              className="absolute top-0 right-0 flex flex-col gap-6 items-end transition-transform duration-500 ease-out w-full"
+              className="absolute top-0 right-0 flex flex-col gap-3 items-end transition-transform duration-500 ease-out w-full"
               style={{
-                transform: `translateY(${60 - slideIndex * 50}px)`,
+                transform: `translateY(${50 - slideIndex * 44}px)`,
               }}
             >
               {SLIDES.map((slide, i) => (
                 <button
                   key={slide.id}
                   onClick={() => setSlideIndex(i)}
-                  className="group flex items-center gap-5 focus:outline-none pointer-events-auto min-h-[30px]"
+                  className="group flex items-center gap-3 focus:outline-none pointer-events-auto min-h-[30px] px-2 py-1 rounded-lg transition-all duration-300"
                 >
-                  <span
-                    className={`font-black tracking-widest uppercase transition-all duration-500 text-right whitespace-nowrap ${
+                  <div
+                    className={`h-px transition-all duration-500 ${
                       slideIndex === i
-                        ? "text-xl text-white drop-shadow-lg scale-105"
-                        : "text-sm text-zinc-600 group-hover:text-zinc-300"
+                        ? "w-10 bg-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]"
+                        : "w-6 bg-white/30 group-hover:bg-white/70"
+                    }`}
+                  />
+                  <span
+                    className={`font-semibold uppercase tracking-[0.25em] transition-all duration-500 text-right whitespace-nowrap ${
+                      slideIndex === i
+                        ? "text-white text-base"
+                        : "text-zinc-400 text-xs group-hover:text-zinc-200"
                     }`}
                   >
                     {(slide as any).navTitle || slide.title}
                   </span>
-
-                  <div
-                    className={`transition-all duration-500 rounded-full ${
-                      slideIndex === i
-                        ? "w-1 h-10 bg-white shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-                        : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-400 group-hover:scale-125"
-                    }`}
-                  />
                 </button>
               ))}
             </div>
