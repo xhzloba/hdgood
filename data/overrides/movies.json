@@ -1074,5 +1074,14 @@
   },
   "65942c021cdf277bc198c6f1": {
     "poster_logo": "/movies/logo/92.webp"
+  },
+  "6593f8e18914c04deaea6ab5": {
+    "poster_logo": "/movies/logo/93.png"
+  },
+  "6594107ee264662a2fcb5663": {
+    "bg_poster": {
+      "backdrop": "/movies/oldnewyear.jpg"
+    },
+    "poster_logo": "/movies/logo/94.png"
   }
 }
