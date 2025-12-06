@@ -1128,7 +1128,7 @@ export function DesktopHome({
           {/* Movie Info */}
           {activeMovie ? (
             <>
-              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
+              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out min-[1800px]:mt-10">
                 <div
                   className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]`}
                 >
