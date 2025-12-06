@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Search, User, Play, Plus, Settings } from "lucide-react";
+import { Search, User, Play, Plus, Settings, Maximize2, Minimize2 } from "lucide-react";
 import {
   IconClock,
   IconMovie,
@@ -393,6 +393,20 @@ export function DesktopHome({
     syncFullscreen();
     return () => document.removeEventListener("fullscreenchange", syncFullscreen);
   }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      const doc: any = document;
+      const el: any = document.documentElement;
+      if (!doc.fullscreenElement) {
+        if (el.requestFullscreen) await el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (doc.exitFullscreen) await doc.exitFullscreen();
+        else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+      }
+    } catch {}
+  };
 
   const handleDisplayModeChange = (checked: boolean) => {
     const newMode = checked ? "backdrop" : "poster";
@@ -1036,10 +1050,24 @@ export function DesktopHome({
         onSettingsClick={() => setIsSettingsOpen(true)}
       />
 
+      {/* Fullscreen toggle (desktop only) */}
+      <button
+        type="button"
+        aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
+        onClick={toggleFullscreen}
+        className="hidden md:flex absolute top-4 right-6 z-40 h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all"
+      >
+        {isFullscreen ? (
+          <Minimize2 className="w-5 h-5" />
+        ) : (
+          <Maximize2 className="w-5 h-5" />
+        )}
+      </button>
+
       {/* Main Content Area */}
       <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[clamp(48px,6vh,96px)] pb-[clamp(24px,6vh,80px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
         <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
-          <div className="w-full px-8 lg:px-12 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
+          <div className="w-full px-1 lg:px-2 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           {/* Movie Info */}
           {activeMovie ? (
             <>

@@ -168,18 +168,23 @@ export default function MovieSlider({
     // Базовая сетка по брейкпоинтам (потом подправим под минимальную ширину карточки)
     let items: number;
     if (cardType === "backdrop") {
-      if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
-        items = fullscreenMode ? 3 : 4;
+      if (window.matchMedia && window.matchMedia("(min-width: 1600px)").matches)
+        items = 2;
+      else if (
+        window.matchMedia &&
+        window.matchMedia("(min-width: 1280px)").matches
+      )
+        items = 2;
       else if (
         window.matchMedia &&
         window.matchMedia("(min-width: 1024px)").matches
       )
-        items = fullscreenMode ? 2 : 3;
+        items = 2;
       else if (
         window.matchMedia &&
         window.matchMedia("(min-width: 768px)").matches
       )
-        items = 2;
+        items = 1;
       else items = 1;
     } else {
       if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
@@ -199,12 +204,12 @@ export default function MovieSlider({
 
     // Автокоррекция под минимальную ширину карточек, чтобы на широких/узких экранах не были слишком маленькие
     const usableWidth = Math.max(320, window.innerWidth - 140); // минус сайдбар/паддинги
-    const gap = 12; // примерно столько между карточками
+    const gap = 16; // чуть больше зазор под широкие карточки
     const minWidth =
       cardType === "backdrop"
         ? fullscreenMode
-          ? 420
-          : 380
+          ? 560
+          : 520
         : fullscreenMode
         ? 260
         : 230;
