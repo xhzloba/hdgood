@@ -2901,5 +2901,35 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "65942a26f9adc4da8a0ec592",
+    "timestamp": "2025-12-06T16:04:52.559Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65942c021cdf277bc198c6f1",
+    "timestamp": "2025-12-06T16:07:09.110Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65942c021cdf277bc198c6f1",
+    "timestamp": "2025-12-06T16:07:30.171Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
   }
 ]
