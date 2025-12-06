@@ -5,7 +5,13 @@ import { useMemo, useState, useEffect } from "react";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
 import { useFavorites } from "@/hooks/use-favorites";
 
-export default function FavoritesClient() {
+type FavoritesClientProps = {
+  initialDisplayMode?: "backdrop" | "poster";
+};
+
+export default function FavoritesClient({
+  initialDisplayMode = "backdrop",
+}: FavoritesClientProps) {
   const { favorites, ready } = useFavorites();
   const [hydrated, setHydrated] = useState(false);
 
@@ -132,6 +138,7 @@ export default function FavoritesClient() {
       initialSlideId="favorites"
       favoritesActiveOverride
       forceShowFavoritesNav
+      initialDisplayMode={initialDisplayMode}
     />
   );
 }
