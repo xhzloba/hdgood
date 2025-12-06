@@ -1149,6 +1149,11 @@ export default function MoviePage({
       duration,
       logo,
       poster_colors: m.poster_colors,
+      type:
+        m.type ??
+        m.details?.type ??
+        (data as any)?.type ??
+        (typeof m.is_serial === "boolean" && m.is_serial ? "serial" : null),
     };
     return { payload, isFav: isFavorite(movieId) };
   })();

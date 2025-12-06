@@ -931,8 +931,13 @@ export function DesktopHome({
       genre: d?.genre ?? item.genre,
       description: d?.about ?? item.about ?? item.description ?? null,
       duration: d?.duration ?? item.duration,
-      logo: item.logo ?? null,
-      poster_colors: item.poster_colors,
+      logo: item.logo ?? d?.poster_logo ?? null,
+      poster_colors:
+        item.poster_colors ??
+        d?.poster_colors ??
+        d?.colors ??
+        item.colors ??
+        null,
     };
     return normalized;
   }, []);
@@ -1078,6 +1083,7 @@ export function DesktopHome({
       logo: cachedOverride?.poster_logo ?? first.logo ?? null,
       backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
+      type: first.type ?? (rawList[0] as any)?.type ?? null,
     };
 
     const prevSlideKey = lastUrlRef.current;
@@ -1138,6 +1144,7 @@ export function DesktopHome({
         duration: m.duration,
         logo: ov?.poster_logo ?? m.logo ?? null,
         poster_colors: ov?.poster_colors,
+        type: m.type ?? null,
       };
       activeIdRef.current = String(normalized.id);
       setActiveMovie((prev) => {
@@ -1196,6 +1203,7 @@ export function DesktopHome({
       duration: activeMovie.duration,
       logo: activeMovie.logo,
       poster_colors: (activeMovie as any).poster_colors,
+      type: (activeMovie as any).type ?? null,
     });
   };
 

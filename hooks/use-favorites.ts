@@ -15,6 +15,7 @@ export type FavoriteMovie = {
   duration?: any;
   logo?: string | null;
   poster_colors?: any;
+  type?: string | null;
 };
 
 const STORAGE_KEY = "favorites:list";
@@ -28,6 +29,7 @@ const normalizeMovie = (movie: FavoriteMovie): FavoriteMovie => {
     backdrop: movie.backdrop ?? movie.poster ?? null,
     description: movie.description ?? null,
     logo: movie.logo ?? null,
+    type: movie.type ?? null,
   };
 };
 

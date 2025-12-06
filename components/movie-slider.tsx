@@ -105,6 +105,13 @@ function extractMoviesFromData(data: any): any[] {
       genre: item.details?.genre || item.genre,
       tags: item.details?.tags || item.tags,
       description: item.details?.about || item.about,
+      poster_colors:
+        item.details?.poster_colors ||
+        item.details?.colors ||
+        item.poster_colors ||
+        item.colors,
+      logo: item.details?.poster_logo || item.poster_logo || item.logo || null,
+      type: item.details?.type || item.type || null,
     }));
   } else if (Array.isArray(data)) {
     movies = data;

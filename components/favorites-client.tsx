@@ -16,6 +16,40 @@ export default function FavoritesClient() {
   const loading = !hydrated || !ready || favorites === null;
   const favList = favorites ?? [];
 
+  const splitByType = useMemo(() => {
+    const movies: typeof favList = [];
+    const serials: typeof favList = [];
+    const isSerialType = (t: string | null | undefined) => {
+      if (!t) return false;
+      const s = String(t).toLowerCase();
+      return (
+        s.includes("serial") ||
+        s.includes("series") ||
+        s.includes("tv") ||
+        s.includes("show") ||
+        s.includes("сериал") ||
+        s.includes("episode")
+      );
+    };
+    const isMovieType = (t: string | null | undefined) => {
+      if (!t) return false;
+      const s = String(t).toLowerCase();
+      return s.includes("movie") || s.includes("film") || s.includes("кино") || s.includes("фильм");
+    };
+    for (const item of favList) {
+      const t = item.type ?? null;
+      if (isSerialType(t)) {
+        serials.push(item);
+      } else if (isMovieType(t)) {
+        movies.push(item);
+      } else {
+        // fallback: если нет типа, кладём в общий "Избранное" (останется в favList)
+        movies.push(item);
+      }
+    }
+    return { movies, serials };
+  }, [favList]);
+
   const slides = useMemo(
     () =>
       favList.length > 0
@@ -26,9 +60,29 @@ export default function FavoritesClient() {
               navTitle: "Избранное",
               items: favList,
             },
+            ...(splitByType.movies.length > 0
+              ? [
+                  {
+                    id: "favorites_movies",
+                    title: "Избранные фильмы",
+                    navTitle: "Фильмы",
+                    items: splitByType.movies,
+                  },
+                ]
+              : []),
+            ...(splitByType.serials.length > 0
+              ? [
+                  {
+                    id: "favorites_serials",
+                    title: "Избранные сериалы",
+                    navTitle: "Сериалы",
+                    items: splitByType.serials,
+                  },
+                ]
+              : []),
           ]
         : [],
-    [favList]
+    [favList, splitByType.movies, splitByType.serials]
   );
 
   if (loading) {
