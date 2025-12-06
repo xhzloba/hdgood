@@ -346,6 +346,7 @@ export function DesktopHome({
   const lastUrlRef = useRef<string | null>(null);
   const lastInputTimeRef = useRef(0);
   const [overrideRefresh, setOverrideRefresh] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -382,6 +383,15 @@ export function DesktopHome({
       setUbColors(DEFAULT_UB_COLORS);
       setPaletteReady(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreen = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    syncFullscreen();
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
   }, []);
 
   const handleDisplayModeChange = (checked: boolean) => {
@@ -983,8 +993,24 @@ export function DesktopHome({
   const colorLayerEnabled = enablePosterColors && !isMobile;
   const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
 
+  const logoHeightClass = isFullscreen
+    ? "h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px]"
+    : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
+
+  const descriptionMinHeight = isFullscreen
+    ? "min-h-[84px] md:min-h-[96px]"
+    : "min-h-[72px] md:min-h-[84px]";
+
+  const sliderMarginClass = isFullscreen
+    ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
+    : "mt-[clamp(20px,4vh,72px)] min-[1800px]:mt-[88px]";
+
   return (
-    <div className="relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30">
+    <div
+      className={`relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30 ${
+        isFullscreen ? "fullscreen-mode" : ""
+      }`}
+    >
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
       {/* Цветовой слой из постера (отключен) */}
@@ -1018,7 +1044,9 @@ export function DesktopHome({
           {activeMovie ? (
             <>
               <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
-                <div className="h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px] mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]">
+                <div
+                  className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]`}
+                >
                   {activeMovie.logo ? (
                     <img
                       src={activeMovie.logo}
@@ -1060,7 +1088,9 @@ export function DesktopHome({
                   )}
                 </div>
 
-                <p className="text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed min-h-[72px] md:min-h-[84px]">
+                <p
+                  className={`text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionMinHeight}`}
+                >
                   {activeMovie.description ||
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
                 </p>
@@ -1087,7 +1117,7 @@ export function DesktopHome({
               </div>
 
               {/* Trending Slider */}
-              <div className="w-full mt-[clamp(20px,4vh,72px)] min-[1800px]:mt-[88px]">
+              <div className={`w-full ${sliderMarginClass}`}>
                 <div key={slideIndex} className="w-full">
                   <MovieSlider
                     key={activeSlide.id}
@@ -1101,6 +1131,7 @@ export function DesktopHome({
                     enableGlobalKeyNavigation
                     cardType={cardDisplayMode}
                     fetchAllPages={(activeSlide as any).fetchAll}
+                    fullscreenMode={isFullscreen}
                   />
                 </div>
               </div>

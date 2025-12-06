@@ -43,6 +43,7 @@ type MovieSliderProps = {
   cardType?: "poster" | "backdrop";
   initialPages?: number;
   minItems?: number;
+  fullscreenMode?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -149,6 +150,7 @@ export default function MovieSlider({
   cardType = "poster",
   initialPages,
   minItems = 30,
+  fullscreenMode = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -162,22 +164,59 @@ export default function MovieSlider({
   const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
     if (typeof window === "undefined") return 2;
+
+    // Базовая сетка по брейкпоинтам (потом подправим под минимальную ширину карточки)
+    let items: number;
     if (cardType === "backdrop") {
       if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
-        return 4;
-      if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
-        return 3;
-      if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
-        return 2;
-      return 1;
+        items = fullscreenMode ? 3 : 4;
+      else if (
+        window.matchMedia &&
+        window.matchMedia("(min-width: 1024px)").matches
+      )
+        items = fullscreenMode ? 2 : 3;
+      else if (
+        window.matchMedia &&
+        window.matchMedia("(min-width: 768px)").matches
+      )
+        items = 2;
+      else items = 1;
+    } else {
+      if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
+        items = fullscreenMode ? 5 : 6;
+      else if (
+        window.matchMedia &&
+        window.matchMedia("(min-width: 1024px)").matches
+      )
+        items = fullscreenMode ? 3 : 4;
+      else if (
+        window.matchMedia &&
+        window.matchMedia("(min-width: 768px)").matches
+      )
+        items = fullscreenMode ? 2 : 3;
+      else items = 2;
     }
-    if (window.matchMedia && window.matchMedia("(min-width: 1280px)").matches)
-      return 6;
-    if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
-      return 4;
-    if (window.matchMedia && window.matchMedia("(min-width: 768px)").matches)
-      return 3;
-    return 2;
+
+    // Автокоррекция под минимальную ширину карточек, чтобы на широких/узких экранах не были слишком маленькие
+    const usableWidth = Math.max(320, window.innerWidth - 140); // минус сайдбар/паддинги
+    const gap = 12; // примерно столько между карточками
+    const minWidth =
+      cardType === "backdrop"
+        ? fullscreenMode
+          ? 420
+          : 380
+        : fullscreenMode
+        ? 260
+        : 230;
+
+    const calcWidth = (cnt: number) =>
+      (usableWidth - gap * Math.max(0, cnt - 1)) / cnt;
+
+    while (items > 1 && calcWidth(items) < minWidth) {
+      items -= 1;
+    }
+
+    return Math.max(1, items);
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);
 
