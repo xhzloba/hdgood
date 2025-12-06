@@ -65,6 +65,7 @@ type NormalizedMovie = {
   duration?: any;
   logo?: string | null;
   poster_colors?: any;
+  type?: string | null;
 };
 
 const TRENDING_URL =
@@ -938,6 +939,7 @@ export function DesktopHome({
         d?.colors ??
         item.colors ??
         null,
+      type: d?.type ?? item.type ?? null,
     };
     return normalized;
   }, []);
@@ -1083,7 +1085,11 @@ export function DesktopHome({
       logo: cachedOverride?.poster_logo ?? first.logo ?? null,
       backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
-      type: first.type ?? (rawList[0] as any)?.type ?? null,
+      type:
+        first.type ??
+        (rawList[0] as any)?.type ??
+        (rawList[0] as any)?.details?.type ??
+        null,
     };
 
     const prevSlideKey = lastUrlRef.current;

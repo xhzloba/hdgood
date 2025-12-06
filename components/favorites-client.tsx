@@ -34,16 +34,19 @@ export default function FavoritesClient() {
     const isMovieType = (t: string | null | undefined) => {
       if (!t) return false;
       const s = String(t).toLowerCase();
-      return s.includes("movie") || s.includes("film") || s.includes("кино") || s.includes("фильм");
+      return (
+        s.includes("movie") ||
+        s.includes("film") ||
+        s.includes("кино") ||
+        s.includes("фильм") ||
+        s === "movie"
+      );
     };
     for (const item of favList) {
       const t = item.type ?? null;
       if (isSerialType(t)) {
         serials.push(item);
       } else if (isMovieType(t)) {
-        movies.push(item);
-      } else {
-        // fallback: если нет типа, кладём в общий "Избранное" (останется в favList)
         movies.push(item);
       }
     }
