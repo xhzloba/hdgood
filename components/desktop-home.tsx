@@ -339,6 +339,9 @@ export function DesktopHome({
 }) {
   const [activeMovie, setActiveMovie] = useState<any>(null);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<"next" | "prev" | "none">(
+    "none"
+  );
   const [isIndicatorHovered, setIsIndicatorHovered] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFetchingOverride, setIsFetchingOverride] = useState(false);
@@ -822,11 +825,13 @@ export function DesktopHome({
       if (direction === "next") {
         if (slideIndex < SLIDES.length - 1) {
           lastInputTimeRef.current = now;
+          setSlideDirection("next");
           setSlideIndex((prev) => prev + 1);
         }
       } else {
         if (slideIndex > 0) {
           lastInputTimeRef.current = now;
+          setSlideDirection("prev");
           setSlideIndex((prev) => prev - 1);
         }
       }
@@ -1056,6 +1061,14 @@ export function DesktopHome({
     ? "min-h-[84px] md:min-h-[96px]"
     : "min-h-[72px] md:min-h-[84px]";
 
+  const sliderAnimClass = !isMounted
+    ? ""
+    : slideDirection === "next"
+      ? "animate-in fade-in slide-in-from-bottom-6 duration-500"
+      : slideDirection === "prev"
+        ? "animate-in fade-in slide-in-from-top-6 duration-500"
+        : "animate-in fade-in duration-500";
+
   const sliderMarginClass = isFullscreen
     ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
     : "mt-[clamp(16px,3.5vh,64px)] min-[1800px]:mt-[64px]";
@@ -1203,7 +1216,7 @@ export function DesktopHome({
 
               {/* Trending Slider */}
               <div className={`w-full ${sliderMarginClass}`}>
-                <div key={slideIndex} className="w-full">
+                <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
                   <MovieSlider
                     key={activeSlide.id}
                     url={activeSlide.url}
@@ -1244,7 +1257,11 @@ export function DesktopHome({
               {SLIDES.map((slide, i) => (
                 <button
                   key={slide.id}
-                  onClick={() => setSlideIndex(i)}
+                  onClick={() => {
+                    if (i === slideIndex) return;
+                    setSlideDirection(i > slideIndex ? "next" : "prev");
+                    setSlideIndex(i);
+                  }}
                   className="group flex items-center gap-3 focus:outline-none pointer-events-auto min-h-[30px] px-2 py-1 rounded-lg transition-all duration-300"
                 >
                   <div
