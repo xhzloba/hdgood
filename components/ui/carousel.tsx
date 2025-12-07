@@ -30,6 +30,7 @@ type CarouselContextProps = {
 } & CarouselProps
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
+const KEY_THROTTLE_MS = 200
 
 function useCarousel() {
   const context = React.useContext(CarouselContext)
@@ -62,6 +63,7 @@ function Carousel({
   const [canScrollNext, setCanScrollNext] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const isKeyboardRef = React.useRef(false)
+  const lastKeyTsRef = React.useRef<number>(0)
 
   const disableKeyboardMode = React.useCallback(() => {
     if (containerRef.current) {
@@ -111,10 +113,18 @@ function Carousel({
 
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
-      
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+
       // Check if focus is already inside the carousel
       const isFocusInside = containerRef.current?.contains(document.activeElement)
       if (isFocusInside) return
+
+      const now = performance.now()
+      if (now - lastKeyTsRef.current < KEY_THROTTLE_MS) {
+        event.preventDefault()
+        return
+      }
+      lastKeyTsRef.current = now
 
       if (event.key === 'ArrowLeft') {
         enableKeyboardMode()
@@ -168,6 +178,13 @@ function Carousel({
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         isKeyboardRef.current = true
         enableKeyboardMode()
+
+        const now = performance.now()
+        if (now - lastKeyTsRef.current < KEY_THROTTLE_MS) {
+          event.preventDefault()
+          return
+        }
+        lastKeyTsRef.current = now
       }
 
       if (event.key === 'ArrowLeft') {
