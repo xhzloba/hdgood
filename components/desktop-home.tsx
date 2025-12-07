@@ -1188,7 +1188,7 @@ export function DesktopHome({
 
   const sliderMarginClass = isFullscreen
     ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
-    : "mt-[clamp(16px,3.5vh,64px)] min-[1800px]:mt-[64px]";
+    : "mt-6 md:mt-8 lg:mt-10";
 
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
@@ -1280,13 +1280,13 @@ export function DesktopHome({
       </div>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[clamp(48px,6vh,96px)] pb-[clamp(24px,6vh,80px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
+      <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[52px] md:pt-[60px] lg:pt-[64px] pb-[clamp(12px,4vh,48px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
         <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
-          <div className="w-full px-1 lg:px-2 max-w-[min(1680px,calc(100%-2.5rem))] mx-auto flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
+          <div className="w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           {/* Movie Info */}
           {activeMovie ? (
             <>
-              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out min-[1800px]:mt-10">
+              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
                 <div
                   className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]`}
                 >
