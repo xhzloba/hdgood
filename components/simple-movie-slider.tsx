@@ -52,6 +52,20 @@ export default function SimpleMovieSlider({
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const smoothEasing = useMemo(
+    () => (t: number) => 1 - Math.pow(1 - t, 3),
+    []
+  );
+  const carouselOpts = useMemo(
+    () => ({
+      dragFree: true,
+      loop: loop ?? false,
+      align: "start" as const,
+      duration: 24,
+      easing: smoothEasing,
+    }),
+    [loop, smoothEasing]
+  );
 
   // Overrides logic
   const overridesCacheRef = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
@@ -199,7 +213,7 @@ export default function SimpleMovieSlider({
       )}
       
       <div className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-        <Carousel className="w-full" opts={{ dragFree: true, loop: loop ?? false, align: "start" }} setApi={setCarouselApi}>
+        <Carousel className="w-full" opts={carouselOpts} setApi={setCarouselApi}>
           <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
             {finalDisplay.map((movie, index) => (
               <CarouselItem

@@ -234,6 +234,30 @@ export default function MovieSlider({
     return Math.max(1, items);
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);
+  const smoothEasing = useMemo(
+    () => (t: number) => 1 - Math.pow(1 - t, 3),
+    []
+  );
+  const carouselOpts = useMemo(
+    () => ({
+      dragFree: true,
+      loop: loop ?? isStaticData,
+      align: "start" as const,
+      duration: 24,
+      easing: smoothEasing,
+    }),
+    [loop, isStaticData, smoothEasing]
+  );
+  const skeletonCarouselOpts = useMemo(
+    () => ({
+      dragFree: true,
+      loop: false,
+      align: "start" as const,
+      duration: 24,
+      easing: smoothEasing,
+    }),
+    [smoothEasing]
+  );
 
   useEffect(() => {
     if (isStatic) return;
@@ -657,7 +681,7 @@ export default function MovieSlider({
         <div className="relative px-0">
           <Carousel
             className="w-full"
-            opts={{ dragFree: true, loop: false, align: "start" }}
+            opts={skeletonCarouselOpts}
             setApi={setCarouselApi}
           >
             <CarouselContent className="-ml-2">
@@ -739,12 +763,7 @@ export default function MovieSlider({
         >
             <Carousel
               className="w-full"
-              opts={{
-                dragFree: true,
-                loop: loop ?? isStaticData,
-                align: "start",
-                duration: isStaticData ? 20 : undefined,
-              }}
+              opts={carouselOpts}
             setApi={setCarouselApi}
             enableGlobalKeyNavigation={enableGlobalKeyNavigation}
           >
