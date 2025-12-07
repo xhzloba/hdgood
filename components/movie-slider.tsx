@@ -7,7 +7,6 @@ import { useRef, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
-import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
 import {
   Carousel,
@@ -170,6 +169,7 @@ export default function MovieSlider({
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const fetchingPages = useRef<Set<number>>(new Set());
   const isStatic = Array.isArray(items);
+  const isStaticData = isStatic || (!!items && Array.isArray(items));
 
   const perPage = perPageOverride ?? 15;
   const getItemsPerView = () => {
@@ -391,7 +391,7 @@ export default function MovieSlider({
   }, [movies, sortByYear]);
 
   const display =
-    fetchAllPages || isStatic ? sortedMovies : sortedMovies.slice(0, perPage);
+    fetchAllPages || isStaticData ? sortedMovies : sortedMovies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
   const overridesCacheRef =
@@ -737,9 +737,14 @@ export default function MovieSlider({
           onMouseEnter={() => hoverPause && setPaused(true)}
           onMouseLeave={() => hoverPause && setPaused(false)}
         >
-          <Carousel
-            className="w-full"
-            opts={{ dragFree: true, loop: loop ?? false, align: "start" }}
+            <Carousel
+              className="w-full"
+              opts={{
+                dragFree: true,
+                loop: loop ?? isStaticData,
+                align: "start",
+                duration: isStaticData ? 20 : undefined,
+              }}
             setApi={setCarouselApi}
             enableGlobalKeyNavigation={enableGlobalKeyNavigation}
           >
@@ -957,53 +962,6 @@ export default function MovieSlider({
                           />
                         ) : null;
                       })()}
-
-                      {cardType !== "backdrop" &&
-                        (() => {
-                          const genres = (() => {
-                            const raw = (movie as any)?.genre;
-                            let items: string[] = [];
-                            if (Array.isArray(raw)) {
-                              items = raw
-                                .map((v) => String(v || "").trim())
-                                .filter((v) => v.length > 0);
-                            } else if (typeof raw === "string") {
-                              items = raw
-                                .split(/[,/|]/)
-                                .map((p) => p.trim())
-                                .filter(Boolean);
-                            }
-                            return items.slice(0, 2);
-                          })();
-                          const hasCountry = !!movie.country;
-                          if (!hasCountry && genres.length === 0) return null;
-                          return (
-                            <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
-                              <div
-                                className="absolute inset-x-0 bottom-0 h-[40%]"
-                                style={{
-                                  background:
-                                    "linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.28) 45%, rgba(0,0,0,0.0) 100%)",
-                                }}
-                              />
-                              <div className="absolute inset-x-0 bottom-1 md:bottom-2 flex items-center justify-center px-3">
-                                <div className="px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] text-white flex items-center justify-center gap-2 flex-wrap text-center">
-                                  {hasCountry && (
-                                    <CountryFlag
-                                      country={movie.country}
-                                      size="md"
-                                    />
-                                  )}
-                                  {genres.length > 0 && (
-                                    <span className="opacity-90">
-                                      {genres.join(" • ")}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })()}
 
                       {movie.rating && (
                         <div

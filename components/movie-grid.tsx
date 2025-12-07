@@ -11,7 +11,7 @@ import { IconChevronLeft, IconChevronRight, IconX, IconPlayerPlayFilled, IconInf
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
-import CountryFlag, { getCountryLabel } from "@/lib/country-flags";
+import { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
 import { PlayerSelector } from "@/components/player-selector";
 import { VideoPoster } from "@/components/video-poster";
@@ -2638,46 +2638,6 @@ export function MovieGrid({
                           }}
                         />
                       )}
-                    {(() => {
-                      const genres = (() => {
-                        const raw = (movie as any)?.genre;
-                        let items: string[] = [];
-                        if (Array.isArray(raw)) {
-                          items = raw
-                            .map((v) => String(v || "").trim())
-                            .filter((v) => v.length > 0);
-                        } else if (typeof raw === "string") {
-                          items = raw
-                            .split(/[,/|]/)
-                            .map((p) => p.trim())
-                            .filter(Boolean);
-                        }
-                        return items.slice(0, 2);
-                      })();
-                      const hasCountry = !!movie.country;
-                      if (!hasCountry && genres.length === 0) return null;
-                      return (
-                        <div className="pointer-events-none absolute inset-0 z-[11] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200">
-                          <div
-                            className="absolute inset-x-0 bottom-0 h-[40%]"
-                            style={{
-                              background:
-                                "linear-gradient(to top, rgba(0,0,0,0.52), rgba(0,0,0,0.28) 45%, rgba(0,0,0,0.0) 100%)",
-                            }}
-                          />
-                          <div className="absolute inset-x-0 bottom-1 md:bottom-2 flex items-center justify-center px-3">
-                            <div className="px-2.5 py-1 md:px-3 md:py-1.5 text-[10px] md:text-[11px] text-white flex items-center justify-center gap-2 flex-wrap text-center">
-                              {hasCountry && (
-                                <CountryFlag country={movie.country} size="md" />
-                              )}
-                              {genres.length > 0 && (
-                                <span className="opacity-90">{genres.join(" • ")}</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
                     {movie.rating && (
                       <div
                         className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-0.5 rounded-full md:rounded-md text-[11px] md:text-[13px] text-white font-bold z-[12] ${ratingBgColor(
