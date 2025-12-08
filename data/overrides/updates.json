@@ -3078,5 +3078,26 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "692e0fe092d74d36ff60a258",
+    "timestamp": "2025-12-08T09:32:29.481Z",
+    "poster": "/movies/troll-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster"
+    ]
+  },
+  {
+    "id": "692e0fe092d74d36ff60a258",
+    "timestamp": "2025-12-08T09:33:20.291Z",
+    "poster": "/movies/troll-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]

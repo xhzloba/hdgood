@@ -1133,5 +1133,12 @@
   "6934a7630fcc5defac1c3e47": {
     "poster_logo": "/movies/logo/97.png",
     "duration": 101
+  },
+  "692e0fe092d74d36ff60a258": {
+    "bg_poster": {
+      "backdrop": "/movies/troll-backdrop.webp"
+    },
+    "poster_logo": "/movies/logo/98.webp",
+    "poster": "/movies/troll-poster.webp"
   }
 }
