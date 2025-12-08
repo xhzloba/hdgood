@@ -59,6 +59,7 @@ interface MovieGridProps {
   resetOverridesOnNavigate?: boolean;
   viewMode?: "pagination" | "loadmore";
   hideLoadMoreOverride?: boolean;
+  cardType?: "poster" | "backdrop";
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -173,6 +174,7 @@ export function MovieGrid({
   resetOverridesOnNavigate,
   viewMode,
   hideLoadMoreOverride,
+  cardType = "poster",
 }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [errorImages, setErrorImages] = useState<Set<string>>(new Set());
@@ -215,8 +217,14 @@ export function MovieGrid({
   const [virtTopPad, setVirtTopPad] = useState<number>(0);
   const [virtBottomPad, setVirtBottomPad] = useState<number>(0);
   const [rowHeight, setRowHeight] = useState<number | null>(null);
+  const keyboardIndexRef = useRef<number>(0);
+  const [isKeyboardNav, setIsKeyboardNav] = useState(false);
 
   const perPage = 15;
+  const aspectClass = cardType === "backdrop" ? "aspect-video" : "aspect-[2/3]";
+  const hoverOutlineClass = isKeyboardNav
+    ? "outline-none focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700"
+    : "hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700";
 
   // Для страниц франшиз хотим более точное количество скелетонов
   // до получения данных, чтобы не было ощущения "лишних" карточек.
@@ -1208,6 +1216,51 @@ export function MovieGrid({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [isLoadMoreMode, isLoading, loadingMore, lastPageEmpty]);
+
+  // Клавиатурная навигация по гриду (стрелки) для view-all (где hideLoadMoreOverride=true)
+  useEffect(() => {
+    if (!hideLoadMoreOverride) return;
+    const handler = (e: KeyboardEvent) => {
+      const key = e.key;
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(key)) {
+        return;
+      }
+      const items = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-grid-item]")
+      );
+      if (items.length === 0) return;
+      const active = document.activeElement as HTMLElement | null;
+      let idx = items.indexOf(active || null as any);
+      if (idx < 0) idx = keyboardIndexRef.current ?? 0;
+
+      const cols = Math.max(1, effectiveCols);
+      if (key === "ArrowRight") idx = Math.min(items.length - 1, idx + 1);
+      if (key === "ArrowLeft") idx = Math.max(0, idx - 1);
+      if (key === "ArrowDown") idx = Math.min(items.length - 1, idx + cols);
+      if (key === "ArrowUp") idx = Math.max(0, idx - cols);
+
+      keyboardIndexRef.current = idx;
+      const next = items[idx];
+      if (next) {
+        e.preventDefault();
+        setIsKeyboardNav(true);
+        next.focus({ preventScroll: false });
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [hideLoadMoreOverride, effectiveCols]);
+
+  // Сброс режима клавиатуры при движении мыши/клике (глобально, чтобы pointer-events:none не мешал)
+  useEffect(() => {
+    const reset = () => setIsKeyboardNav(false);
+    window.addEventListener("mousemove", reset, { passive: true });
+    window.addEventListener("mousedown", reset, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", reset);
+      window.removeEventListener("mousedown", reset);
+    };
+  }, []);
   useEffect(() => {
     try {
       onInlineInfoOpenChange?.(!!showInlineInfo);
@@ -1393,9 +1446,11 @@ export function MovieGrid({
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div
             key={i}
-            className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
+            data-grid-item
+            tabIndex={0}
+            className={`group block bg-transparent hover:bg-transparent outline-none ${hoverOutlineClass} transition-all duration-200 cursor-pointer overflow-hidden rounded-sm`}
           >
-            <div className="aspect-[2/3] bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu">
+            <div className={`${aspectClass} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu`}>
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
@@ -1898,6 +1953,7 @@ export function MovieGrid({
       <div
         ref={gridWrapRef}
         className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}
+        style={isKeyboardNav ? { pointerEvents: "none" } : undefined}
       >
         {showInlineInfo ? (
           <div
@@ -2356,8 +2412,9 @@ export function MovieGrid({
               ).map((movie: any, index: number) => (
                 <div
                   key={movie.id || index}
-                  className="group block bg-transparent hover:bg-transparent outline-none hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700 transition-all duration-200 cursor-pointer overflow-hidden rounded-sm"
-                  data-card-item="true"
+                  data-grid-item
+                  tabIndex={0}
+                  className={`group block bg-transparent hover:bg-transparent outline-none ${hoverOutlineClass} transition-all duration-200 cursor-pointer overflow-hidden rounded-sm`}
                   onMouseMove={(e) => {
                     const posterEl = e.currentTarget.querySelector(
                       ".poster-card"
@@ -2665,7 +2722,7 @@ export function MovieGrid({
                       const posterSrc = known ? (ovEntry?.poster ?? movie.poster ?? null) : null;
                       return (posterSrc || movie.intro_video) && loadedImages.has(String(movie.id)) ? (
                         <div
-                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                          className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${isKeyboardNav ? "" : "group-hover:opacity-100 group-focus-visible:opacity-100"} transition-opacity duration-300`}
                           style={{
                             background:
                               "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
@@ -2675,7 +2732,7 @@ export function MovieGrid({
                     })()}
                       {loadedImages.has(String(movie.id)) && (
                         <div
-                          className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300"
+                          className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${isKeyboardNav ? "" : "group-hover:opacity-100 group-focus-visible:opacity-100"} transition-opacity duration-300`}
                           style={{
                             background:
                               "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
