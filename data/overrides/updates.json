@@ -3058,5 +3058,25 @@
       "poster_colors.accentTr"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6934a7630fcc5defac1c3e47",
+    "timestamp": "2025-12-08T08:45:54.324Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "duration"
+    ]
+  },
+  {
+    "id": "6934a7630fcc5defac1c3e47",
+    "timestamp": "2025-12-08T09:21:43.266Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

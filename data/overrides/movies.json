@@ -1129,5 +1129,9 @@
     "bg_poster": {
       "backdrop": "/movies/vol4ok.jpeg"
     }
+  },
+  "6934a7630fcc5defac1c3e47": {
+    "poster_logo": "/movies/logo/97.png",
+    "duration": 101
   }
 }
