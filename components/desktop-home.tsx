@@ -457,6 +457,10 @@ export function DesktopHome({
   const { favorites, ready: favoritesReady, toggleFavorite, isFavorite } = useFavorites();
   const favoritesCount = (favorites || []).length;
   const showFavoritesNav = true;
+  const [viewportHeight, setViewportHeight] = useState<number>(
+    typeof window !== "undefined" ? window.innerHeight : 1080
+  );
+  const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -537,9 +541,13 @@ export function DesktopHome({
     checkWidth();
     const iv = setInterval(updateClock, 60_000);
     window.addEventListener("resize", checkWidth);
+    const syncHeight = () => setViewportHeight(window.innerHeight);
+    syncHeight();
+    window.addEventListener("resize", syncHeight);
     return () => {
       clearInterval(iv);
       window.removeEventListener("resize", checkWidth);
+      window.removeEventListener("resize", syncHeight);
     };
   }, []);
 
@@ -1199,11 +1207,15 @@ export function DesktopHome({
 
   const logoHeightClass = isFullscreen
     ? "h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px]"
-    : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
+    : isShortHeight
+      ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
+      : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
 
   const descriptionMinHeight = isFullscreen
     ? "min-h-[84px] md:min-h-[96px]"
-    : "min-h-[72px] md:min-h-[84px]";
+    : isShortHeight
+      ? "min-h-[56px] md:min-h-[64px]"
+      : "min-h-[72px] md:min-h-[84px]";
 
   const sliderAnimClass = !isMounted
     ? ""
@@ -1215,7 +1227,19 @@ export function DesktopHome({
 
   const sliderMarginClass = isFullscreen
     ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
-    : "mt-6 md:mt-8 lg:mt-10";
+    : isShortHeight
+      ? "mt-4 md:mt-6 lg:mt-7"
+      : "mt-6 md:mt-8 lg:mt-10";
+
+  const logoBlockMarginClass = isShortHeight
+    ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
+    : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
+
+  const descriptionClampClass = isShortHeight ? "line-clamp-2" : "line-clamp-3";
+
+  const mainPaddingClass = isShortHeight
+    ? "pt-[38px] md:pt-[46px] lg:pt-[52px] pb-[clamp(10px,3vh,26px)] gap-[clamp(12px,1.6vh,24px)] overflow-y-auto"
+    : "pt-[52px] md:pt-[60px] lg:pt-[64px] pb-[clamp(12px,4vh,48px)] gap-[clamp(16px,2vh,32px)] overflow-hidden";
 
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
@@ -1307,7 +1331,9 @@ export function DesktopHome({
       </div>
 
       {/* Main Content Area */}
-      <main className="relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 pt-[52px] md:pt-[60px] lg:pt-[64px] pb-[clamp(12px,4vh,48px)] gap-[clamp(16px,2vh,32px)] transition-[padding] duration-500 ease-out overflow-hidden">
+      <main
+        className={`relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
+      >
         <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           <div className="w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           {/* Movie Info */}
@@ -1315,7 +1341,7 @@ export function DesktopHome({
             <>
               <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
                 <div
-                  className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]`}
+                  className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out ${logoBlockMarginClass}`}
                 >
                   {activeMovie.logo ? (
                     <img
@@ -1361,7 +1387,7 @@ export function DesktopHome({
                 </div>
 
                 <p
-                  className={`text-zinc-300 text-[clamp(15px,1.6vw,19px)] line-clamp-3 max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionMinHeight}`}
+                  className={`text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionMinHeight}`}
                 >
                   {activeMovie.description ||
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
