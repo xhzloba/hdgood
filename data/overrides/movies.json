@@ -731,6 +731,7 @@
     }
   },
   "6928c9e2888ecf1943e5a97c": {
+    "poster_logo": "/movies/logo/96.webp",
     "bg_poster": {
       "backdrop": "/movies/zveropolis-backdrop.webp"
     }
@@ -1100,5 +1101,33 @@
       "backdrop": "/movies/oldnewyear.jpg"
     },
     "poster_logo": "/movies/logo/94.png"
+  },
+  "6934a7600fcc5defac1c3e1c": {
+    "poster_colors": {
+      "accentBr": [
+        33,
+        30,
+        26
+      ],
+      "accentBl": [
+        88,
+        65,
+        39
+      ],
+      "accentTr": [
+        2,
+        65,
+        90
+      ],
+      "accentTl": [
+        88,
+        70,
+        37
+      ]
+    },
+    "poster_logo": "/movies/logo/95.png",
+    "bg_poster": {
+      "backdrop": "/movies/vol4ok.jpeg"
+    }
   }
 }
