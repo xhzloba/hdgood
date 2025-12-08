@@ -3181,5 +3181,126 @@
       "poster_colors.accentBr",
       "poster_colors.accentBl"
     ]
+  },
+  {
+    "id": "68cdd263df0ac946655434d7",
+    "timestamp": "2025-12-08T12:18:29.309Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68cdd263df0ac946655434d7",
+    "timestamp": "2025-12-08T12:19:00.666Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68cdd263df0ac946655434d7",
+    "timestamp": "2025-12-08T12:19:42.892Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "68c34660af41faf6fd884870",
+    "timestamp": "2025-12-08T12:22:40.164Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68ba0be2f3070f5da6bdb125",
+    "timestamp": "2025-12-08T12:25:08.925Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68b222e066e4b71f921cd016",
+    "timestamp": "2025-12-08T12:27:30.950Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "689521e107cc76df041275b3",
+    "timestamp": "2025-12-08T12:30:41.142Z",
+    "poster": "/movies/orudie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "689521e107cc76df041275b3",
+    "timestamp": "2025-12-08T12:32:08.614Z",
+    "poster": "/movies/orudie-backddrop.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_logo",
+      "poster"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "689521e107cc76df041275b3",
+    "timestamp": "2025-12-08T12:32:39.801Z",
+    "poster": "/movies/orudie-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "689521e107cc76df041275b3",
+    "timestamp": "2025-12-08T12:33:00.721Z",
+    "poster": "/movies/orudie-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "689521e107cc76df041275b3",
+    "timestamp": "2025-12-08T12:34:43.144Z",
+    "poster": "/movies/orudie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
   }
 ]
