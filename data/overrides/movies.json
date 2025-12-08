@@ -1140,5 +1140,11 @@
     },
     "poster_logo": "/movies/logo/98.webp",
     "poster": "/movies/troll-poster.webp"
+  },
+  "6593f85e8914c04deae96a5e": {
+    "poster_logo": "/movies/logo/99.png",
+    "bg_poster": {
+      "backdrop": "/movies/bad-santa.webp"
+    }
   }
 }

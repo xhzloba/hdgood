@@ -58,6 +58,7 @@ interface MovieGridProps {
   ) => void;
   resetOverridesOnNavigate?: boolean;
   viewMode?: "pagination" | "loadmore";
+  hideLoadMoreOverride?: boolean;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -171,6 +172,7 @@ export function MovieGrid({
   onHeroInfoOverrideChange,
   resetOverridesOnNavigate,
   viewMode,
+  hideLoadMoreOverride,
 }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [errorImages, setErrorImages] = useState<Set<string>>(new Set());
@@ -200,6 +202,7 @@ export function MovieGrid({
   const [isLargeDesktop, setIsLargeDesktop] = useState<boolean>(false);
   const [playerVisible, setPlayerVisible] = useState<boolean>(false);
   const gridWrapRef = useRef<HTMLDivElement | null>(null);
+  const loadMoreSentinelRef = useRef<HTMLDivElement | null>(null);
   const [gridHeight, setGridHeight] = useState<number | null>(null);
   const [tileWidth, setTileWidth] = useState<number | null>(null);
   const overlayPosterRef = useRef<HTMLDivElement | null>(null);
@@ -443,7 +446,7 @@ export function MovieGrid({
       if (exists) return prev;
       const movies = extractMoviesFromData(data);
       if (!movies || movies.length === 0) {
-        setLastPageEmpty(true);
+        if (!hideLoadMoreOverride) setLastPageEmpty(true);
       }
       const next = [...prev, { page, data }];
       return next;
@@ -458,7 +461,7 @@ export function MovieGrid({
       if (exists) return prev;
       const movies = extractMoviesFromData(nextData);
       if (!movies || movies.length === 0) {
-        setLastPageEmpty(true);
+        if (!hideLoadMoreOverride) setLastPageEmpty(true);
       }
       return [...prev, { page: nextPage, data: nextData }];
     });
@@ -472,7 +475,7 @@ export function MovieGrid({
       if (exists) return prev;
       const movies = extractMoviesFromData(next2Data);
       if (!movies || movies.length === 0) {
-        setLastPageEmpty(true);
+        if (!hideLoadMoreOverride) setLastPageEmpty(true);
       }
       return [...prev, { page: nextPage, data: next2Data }];
     });
@@ -549,6 +552,7 @@ export function MovieGrid({
   // Compute display set and overrides BEFORE any conditional returns.
   const displayMovies = movies.slice(0, perPage * pagesData.length);
   const hideLoadMore = (() => {
+    if (hideLoadMoreOverride) return true;
     const base = (url || "").split("?")[0];
     return base.includes("/api/franchise");
   })();
@@ -583,6 +587,33 @@ export function MovieGrid({
     isArrowCandidate &&
     !hideLoadMore &&
     (!viewMode || viewMode === "pagination");
+
+  // Автоподгрузка (инфинити-скролл) в режиме loadmore
+  useEffect(() => {
+    if (viewMode !== "loadmore") return;
+    const sentinel = loadMoreSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (
+            entry.isIntersecting &&
+            !isLoading &&
+            !loadingMore &&
+            !lastPageEmpty
+          ) {
+            handleLoadMore();
+          }
+        });
+      },
+      { rootMargin: "800px 0px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [viewMode, isLoading, loadingMore, lastPageEmpty]);
+
   const currentPageEntry = useMemo(() => {
     return pagesData.find((p) => p.page === page) || null;
   }, [pagesData, page]);
@@ -1162,6 +1193,21 @@ export function MovieGrid({
   const showLoadMoreButton =
     !lastPageEmpty && !hideLoadMore && (!isArrowDesktopMode || isLoadMoreMode);
   const showInlineInfo = !navigateOnClick && !!selectedMovie;
+
+  // Фолбек на scroll, если IntersectionObserver не срабатывает
+  useEffect(() => {
+    if (!isLoadMoreMode) return;
+    const onScroll = () => {
+      if (lastPageEmpty || isLoading || loadingMore) return;
+      const scrollPos = window.scrollY + window.innerHeight;
+      const threshold = document.body.scrollHeight - 800;
+      if (scrollPos >= threshold) {
+        handleLoadMore();
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isLoadMoreMode, isLoading, loadingMore, lastPageEmpty]);
   useEffect(() => {
     try {
       onInlineInfoOpenChange?.(!!showInlineInfo);
@@ -1482,8 +1528,6 @@ export function MovieGrid({
     if (lastPageEmpty || isLoading) return;
     handleLoadMore();
   };
-
-  
 
   const handleInlinePrev = () => {
     if (!selectedMovie) return;
@@ -2994,6 +3038,10 @@ export function MovieGrid({
           </div>
         )}
 
+      {viewMode === "loadmore" && (
+        <div ref={loadMoreSentinelRef} className="h-[1px]" />
+      )}
+
       {showLoadMoreButton && (
         <div className="flex justify-center mt-4">
           {isLoading || loadingMore ? (
@@ -3061,3 +3109,5 @@ export function MovieGrid({
     </div>
   );
 }
+
+export default MovieGrid;

@@ -51,6 +51,7 @@ type Slide = {
   url?: string;
   fetchAll?: boolean;
   items?: any[];
+  viewAllHref?: string;
 };
 
 type NormalizedMovie = {
@@ -95,10 +96,30 @@ const fetcher = async (url: string) => {
 };
 
 const SLIDES: Slide[] = [
-  { id: "watching", title: "Сейчас смотрят", url: WATCHING_URL },
-  { id: "trending", title: "В тренде", url: TRENDING_URL },
-  { id: "movies", title: "Фильмы", url: MOVIES_URL },
-  { id: "serials", title: "Сериалы", url: SERIALS_URL },
+  {
+    id: "watching",
+    title: "Сейчас смотрят",
+    url: WATCHING_URL,
+    viewAllHref: "/watching/all",
+  },
+  {
+    id: "trending",
+    title: "В тренде",
+    url: TRENDING_URL,
+    viewAllHref: "/trending/all",
+  },
+  {
+    id: "movies",
+    title: "Фильмы",
+    url: MOVIES_URL,
+    viewAllHref: "/movies/all",
+  },
+  {
+    id: "serials",
+    title: "Сериалы",
+    url: SERIALS_URL,
+    viewAllHref: "/serials/all",
+  },
   {
     id: "fast_furious",
     title: "Франшиза: Форсаж",
@@ -1384,6 +1405,7 @@ export function DesktopHome({
                     url={activeSlide.url || "/favorites"}
                     title={activeSlide.title}
                     items={activeSlide.items}
+                    viewAllHref={activeSlide.viewAllHref}
                     onMovieHover={handleMovieHover}
                     compactOnMobile={false}
                     perPageOverride={15}

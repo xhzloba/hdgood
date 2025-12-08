@@ -529,7 +529,7 @@ export default function MovieSlider({
   }, [idsString, overridesCacheRef]);
 
   const finalDisplay = useMemo(() => {
-    return (display || []).map((m: any) => {
+    const base = (display || []).map((m: any) => {
       const ov =
         overridesMap[String(m.id)] ||
         (movieOverrides as any)[String(m.id)] ||
@@ -550,7 +550,18 @@ export default function MovieSlider({
         backdrop: patchedBackdrop,
       };
     });
-  }, [display, overridesMap]);
+
+    if (viewAllHref) {
+      base.push({
+        id: `view-all-${viewAllHref}`,
+        title: viewAllLabel || "Смотреть все",
+        href: viewAllHref,
+        isViewAll: true,
+      });
+    }
+
+    return base;
+  }, [display, overridesMap, viewAllHref, viewAllLabel]);
   useEffect(() => {
     const api = carouselApi;
     if (!api) return;
@@ -650,24 +661,11 @@ export default function MovieSlider({
 
   return (
     <div className="space-y-4">
-      {(title || viewAllHref) && (
+      {title && (
         <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
-          {title ? (
-            <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
-              {title}
-            </div>
-          ) : (
-            <div />
-          )}
-          {viewAllHref && (
-            <Link
-              href={viewAllHref}
-              className="text-xs md:text-sm font-medium text-zinc-400 hover:text-white transition-colors relative z-20 flex items-center gap-1"
-            >
-              {viewAllLabel}
-              <span className="text-[10px]">›</span>
-            </Link>
-          )}
+          <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
+            {title}
+          </div>
         </div>
       )}
       {error && display.length === 0 ? (
@@ -782,11 +780,14 @@ export default function MovieSlider({
                   }`}
                 >
                   <Link
-                    href={`/movie/${movie.id}`}
+                    href={
+                      movie.isViewAll && movie.href
+                        ? movie.href
+                        : `/movie/${movie.id}`
+                    }
                     className="group block bg-transparent hover:bg-transparent outline-none focus-visible:outline-none transition-all duration-200 overflow-hidden rounded-sm focus:ring-0 hover:outline hover:outline-[1.5px] hover:outline-zinc-700 [&.is-focused]:outline [&.is-focused]:outline-[1.5px] [&.is-focused]:outline-zinc-700"
                     onFocus={(e) => {
-                      onMovieHover?.(movie);
-                      // Add active state manually for consistent styling with hover
+                      if (!movie.isViewAll) onMovieHover?.(movie);
                       e.currentTarget.classList.add("is-focused");
                     }}
                     onBlur={(e) => {
@@ -799,6 +800,7 @@ export default function MovieSlider({
                       posterEl.style.setProperty("--my", "0");
                     }}
                     onMouseMove={(e) => {
+                      if (movie.isViewAll) return;
                       onMovieHover?.(movie);
                       const posterEl = e.currentTarget.querySelector(
                         ".poster-card"
@@ -828,6 +830,10 @@ export default function MovieSlider({
                       } | null;
                       if (api?.clickAllowed && !api.clickAllowed()) {
                         e.preventDefault();
+                        return;
+                      }
+
+                      if (movie.isViewAll) {
                         return;
                       }
 
@@ -876,6 +882,14 @@ export default function MovieSlider({
                           : "aspect-[2/3]"
                       } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}
                     >
+                      {movie.isViewAll ? (
+                        <div className="absolute inset-0 flex items-center justify-center text-center px-3">
+                          <div className="text-base md:text-lg font-semibold text-white drop-shadow-md">
+                            {viewAllLabel || "Смотреть все"}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
                       {(() => {
                         const idStr = String(movie.id);
                         const ovEntry =
@@ -1017,13 +1031,15 @@ export default function MovieSlider({
                             {String(movie.quality)}
                           </div>
                         )}
+                        </>
+                      )}
                     </div>
                     <div
                       className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${
                         hideMetadata ? "invisible" : ""
                       }`}
                     >
-                      {!hideMetadata && (
+                      {!hideMetadata && !movie.isViewAll && (
                         <div className="relative z-[2]">
                           <h3
                             className="text-[13px] md:text-[14px] font-bold truncate mb-1 leading-tight text-zinc-300/80 transition-colors duration-200 group-hover:text-zinc-100 group-focus-visible:text-zinc-100"

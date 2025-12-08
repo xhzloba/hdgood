@@ -3099,5 +3099,16 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f85e8914c04deae96a5e",
+    "timestamp": "2025-12-08T09:56:18.056Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]
