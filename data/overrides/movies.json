@@ -341,6 +341,28 @@
     }
   },
   "68c497e0af41faf6fd964f3a": {
+    "poster_colors": {
+      "accentTl": [
+        49,
+        40,
+        37
+      ],
+      "accentTr": [
+        105,
+        86,
+        74
+      ],
+      "accentBr": [
+        38,
+        39,
+        38
+      ],
+      "accentBl": [
+        28,
+        32,
+        33
+      ]
+    },
     "bg_poster": {
       "backdrop": "/movies/long-walk.jpg"
     },
@@ -637,6 +659,28 @@
     }
   },
   "68e981e299eeea9f9441de37": {
+    "poster_colors": {
+      "accentTr": [
+        254,
+        203,
+        50
+      ],
+      "accentTl": [
+        48,
+        76,
+        161
+      ],
+      "accentBr": [
+        14,
+        78,
+        218
+      ],
+      "accentBl": [
+        7,
+        75,
+        216
+      ]
+    },
     "poster_logo": "/movies/logo/22.webp",
     "bg_poster": {
       "backdrop": "/movies/grabitel.webp"
@@ -782,6 +826,28 @@
     }
   },
   "67f6ede3b37a179a98ec983e": {
+    "poster_colors": {
+      "accentTr": [
+        75,
+        98,
+        82
+      ],
+      "accentBr": [
+        92,
+        117,
+        95
+      ],
+      "accentBl": [
+        93,
+        118,
+        93
+      ],
+      "accentTl": [
+        86,
+        111,
+        90
+      ]
+    },
     "poster_logo": "/movies/logo/40.webp",
     "bg_poster": {
       "backdrop": "/movies/edem.webp"
@@ -1151,6 +1217,12 @@
     "poster_logo": "/movies/logo/100.webp",
     "bg_poster": {
       "backdrop": "/movies/po4ka.webp"
+    }
+  },
+  "68e830639ef744911594b2a7": {
+    "poster_logo": "/movies/logo/101.webp",
+    "bg_poster": {
+      "backdrop": "/movies/tron.webp"
     }
   }
 }
