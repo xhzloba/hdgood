@@ -35,6 +35,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFavorites } from "@/hooks/use-favorites";
+import { formatRatingLabel, ratingBgColor } from "@/lib/utils";
 
 const DEFAULT_UB_COLORS = {
   tl: "#10212f",
@@ -1307,17 +1308,19 @@ export function DesktopHome({
                 </div>
 
                 <div className="flex items-center gap-3 mb-[clamp(12px,2vh,24px)]">
-                  {activeMovie.rating && (
-                    <span
-                      className={`px-2 py-1 rounded text-xs md:text-sm font-bold ${
-                        Number(activeMovie.rating) >= 7
-                          ? "bg-green-600"
-                          : "bg-zinc-700"
-                      }`}
-                    >
-                      {Number(activeMovie.rating).toFixed(1)}
-                    </span>
-                  )}
+                  {(() => {
+                    const ratingLabel = formatRatingLabel(activeMovie.rating);
+                    if (!ratingLabel) return null;
+                    return (
+                      <span
+                        className={`px-2 py-1 rounded text-xs md:text-sm font-bold ${ratingBgColor(
+                          activeMovie.rating
+                        )}`}
+                      >
+                        {ratingLabel}
+                      </span>
+                    );
+                  })()}
                   <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                     {activeMovie.year}
                   </span>
