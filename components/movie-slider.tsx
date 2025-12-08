@@ -1015,22 +1015,50 @@ export default function MovieSlider({
                         ) : null;
                       })()}
 
-                      {movie.rating && (
-                        <div
-                          className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-1 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 text-[11px] md:text-[12px] text-white font-bold z-[12] ${ratingBgColor(
-                            movie.rating
-                          )}`}
-                        >
-                          {formatRatingLabel(movie.rating)}
+                      {(() => {
+                        const rawTags = (movie as any)?.tags;
+                        let tagLabel: string | null = null;
+                        if (Array.isArray(rawTags)) {
+                          const first = rawTags
+                            .map((v) => String(v || "").trim())
+                            .find((v) => v.length > 0);
+                          tagLabel = first || null;
+                        } else if (typeof rawTags === "string") {
+                          const first = rawTags
+                            .split(/[,/|]/)
+                            .map((p) => p.trim())
+                            .find((p) => p.length > 0);
+                          tagLabel = first || null;
+                        }
+                        return tagLabel ? (
+                          <div
+                            className="absolute top-1 left-1 md:top-2 md:left-2 px-1.5 md:px-2 py-[2px] md:py-[3px] rounded-sm text-[10px] md:text-[11px] bg-white/90 text-black font-semibold border border-white/70 z-[12] shadow-sm"
+                            title={tagLabel}
+                          >
+                            {tagLabel}
+                          </div>
+                        ) : null;
+                      })()}
+
+                      {(movie.rating || movie.quality) && (
+                        <div className="absolute top-1 right-1 md:top-2 md:right-2 flex flex-col items-end gap-1 z-[12]">
+                          {movie.rating && (
+                            <div
+                              className={`px-2 md:px-2 py-[3px] md:py-1 rounded-full md:rounded-md md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black md:border md:border-white/10 text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
+                                movie.rating
+                              )}`}
+                            >
+                              {formatRatingLabel(movie.rating)}
+                            </div>
+                          )}
+                          {movie.quality && (
+                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                              {String(movie.quality)}
+                            </div>
+                          )}
                         </div>
                       )}
-                      {cardType !== "backdrop" &&
-                        !hideMetadata &&
-                        movie.quality && (
-                          <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                            {String(movie.quality)}
-                          </div>
-                        )}
+                      {/* убрали бейдж качества */}
                         </>
                       )}
                     </div>
@@ -1049,41 +1077,10 @@ export default function MovieSlider({
                           </h3>
                           {(() => {
                             const year = movie.year ? String(movie.year) : null;
-                            const quality = movie.quality
-                              ? String(movie.quality)
-                              : null;
-                            const tagsArr = (() => {
-                              const raw = (movie as any)?.tags;
-                              let items: string[] = [];
-                              if (Array.isArray(raw)) {
-                                items = raw
-                                  .map((v) => String(v || "").trim())
-                                  .filter((v) => v.length > 0);
-                              } else if (typeof raw === "string") {
-                                items = raw
-                                  .split(/[,/|]/)
-                                  .map((p) => p.trim())
-                                  .filter(Boolean);
-                              }
-                              return items.slice(0, 1);
-                            })();
-                            if (!year && !quality && tagsArr.length === 0)
-                              return null;
+                            if (!year) return null;
                             return (
                               <div className="flex items-center gap-2 text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                                 {year && <span>{year}</span>}
-                                {year && (quality || tagsArr.length > 0) && (
-                                  <span className="text-zinc-500/60">•</span>
-                                )}
-                                {quality && <span>{quality}</span>}
-                                {quality && tagsArr.length > 0 && (
-                                  <span className="text-zinc-500/60">•</span>
-                                )}
-                                {tagsArr.length > 0 && (
-                                  <span className="truncate max-w-[70%]">
-                                    {tagsArr.join(" • ")}
-                                  </span>
-                                )}
                               </div>
                             );
                           })()}
