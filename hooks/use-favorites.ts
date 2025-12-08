@@ -47,8 +47,10 @@ export function useFavorites() {
     return [];
   };
 
-  const [favorites, setFavorites] = useState<FavoriteMovie[] | null>(() => readStorage());
-  const [ready, setReady] = useState<boolean>(typeof window !== "undefined");
+  const [favorites, setFavorites] = useState<FavoriteMovie[]>(
+    () => readStorage() ?? []
+  );
+  const [ready, setReady] = useState<boolean>(true);
 
   const loadFromStorage = useCallback(() => {
     if (typeof window === "undefined") return;

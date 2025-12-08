@@ -345,7 +345,7 @@ function BackdropImage({ src }: { src: string }) {
 export function DesktopSidebar({
   profileAvatar = PROFILE_AVATARS[0],
   onSettingsClick,
-  showFavorites = false,
+  showFavorites = true,
   favoritesActive = false,
   favoritesCount = 0,
 }: {
@@ -370,25 +370,23 @@ export function DesktopSidebar({
           active={!favoritesActive}
         />
 
-        {showFavorites && (
-          <NavItem
-            icon={
-              <div className="relative">
-                <IconHeart
-                  className={`w-7 h-7 ${favoritesActive ? "text-white" : ""}`}
-                  stroke={1.6}
-                  fill={favoritesActive ? "currentColor" : "none"}
-                />
-                {favoritesCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
-                )}
-              </div>
-            }
-            label="Избранное"
-            href="/favorites"
-            active={favoritesActive}
-          />
-        )}
+        <NavItem
+          icon={
+            <div className="relative">
+              <IconHeart
+                className={`w-7 h-7 ${favoritesActive ? "text-white" : ""}`}
+                stroke={1.6}
+                fill={favoritesActive ? "currentColor" : "none"}
+              />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
+              )}
+            </div>
+          }
+          label="Избранное"
+          href="/favorites"
+          active={favoritesActive}
+        />
 
         {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
           (cat, i) => (
