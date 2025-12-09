@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import NProgress from "nprogress";
+import { ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRef, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,6 +24,8 @@ type MovieSliderProps = {
   title?: React.ReactNode;
   viewAllHref?: string;
   viewAllLabel?: string;
+  viewAllInHeader?: boolean;
+  hideViewAllCard?: boolean;
   autoplay?: boolean;
   autoplayIntervalMs?: number;
   hoverPause?: boolean;
@@ -143,6 +146,8 @@ export default function MovieSlider({
   title,
   viewAllHref,
   viewAllLabel = "Смотреть все",
+  viewAllInHeader = false,
+  hideViewAllCard = false,
   autoplay = false,
   autoplayIntervalMs = 10000,
   hoverPause = true,
@@ -553,7 +558,7 @@ export default function MovieSlider({
       };
     });
 
-    if (viewAllHref) {
+    if (viewAllHref && !hideViewAllCard) {
       base.push({
         id: `view-all-${viewAllHref}`,
         title: viewAllLabel || "Смотреть все",
@@ -668,6 +673,15 @@ export default function MovieSlider({
           <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
             {title}
           </div>
+          {viewAllInHeader && viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 text-sm md:text-base font-bold text-white hover:text-white/80 transition-colors"
+            >
+              <span>{viewAllLabel || "Смотреть все"}</span>
+              <ChevronRight className="w-[18px] h-[18px]" />
+            </Link>
+          )}
         </div>
       )}
       {error && display.length === 0 ? (

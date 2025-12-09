@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Search, User, Play, Plus, Settings, Maximize2, Minimize2, Heart } from "lucide-react";
+import {
+  Search,
+  User,
+  Play,
+  Plus,
+  Settings,
+  Maximize2,
+  Minimize2,
+  Heart,
+  ChevronRight,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -1261,6 +1271,15 @@ export function DesktopHome({
     activeMovie?.id ? String(activeMovie.id) : null
   );
 
+  const headerViewAllSlides = new Set([
+    "watching",
+    "trending",
+    "movies",
+    "serials",
+    "new_year",
+    "dolbyv",
+  ]);
+
   const handleFavoriteToggle = () => {
     if (!activeMovie) return;
     toggleFavorite({
@@ -1455,6 +1474,12 @@ export function DesktopHome({
                     title={activeSlide.title}
                     items={activeSlide.items}
                     viewAllHref={activeSlide.viewAllHref}
+                    viewAllInHeader={
+                      !!activeSlide.id && headerViewAllSlides.has(activeSlide.id)
+                    }
+                    hideViewAllCard={
+                      !!activeSlide.id && headerViewAllSlides.has(activeSlide.id)
+                    }
                     onMovieHover={handleMovieHover}
                     compactOnMobile={false}
                     perPageOverride={15}
