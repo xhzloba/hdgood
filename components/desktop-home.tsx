@@ -1239,7 +1239,7 @@ export function DesktopHome({
         : "animate-in fade-in duration-500";
 
   const sliderMarginClass = isFullscreen
-    ? "mt-[48px] md:mt-[56px] lg:mt-[64px] xl:mt-[88px]"
+    ? "mt-[60px] md:mt-[72px] lg:mt-[88px] xl:mt-[108px]"
     : isShortHeight
       ? "mt-4 md:mt-6 lg:mt-7"
       : "mt-6 md:mt-8 lg:mt-10";
