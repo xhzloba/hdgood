@@ -16,12 +16,14 @@ export function ViewAllGridPage({ title, apiUrl }: ViewAllGridPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <DesktopSidebar
-        showFavorites={true}
-        favoritesCount={favoritesCount}
-        favoritesActive={false}
-      />
-      <main className="relative z-10 ml-24 flex flex-col px-4 md:px-8 lg:px-10 py-8 gap-6">
+      <div className="hidden md:block">
+        <DesktopSidebar
+          showFavorites={true}
+          favoritesCount={favoritesCount}
+          favoritesActive={false}
+        />
+      </div>
+      <main className="relative z-10 ml-0 md:ml-24 flex flex-col px-4 md:px-8 lg:px-10 py-8 gap-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight drop-shadow-sm">
             {title}

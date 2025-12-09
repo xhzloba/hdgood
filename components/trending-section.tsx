@@ -2,9 +2,7 @@
 
 import { useState } from "react"
 import MovieSlider from "./movie-slider"
-import CoverflowMovieSlider from "./coverflow-movie-slider"
 import { APP_SETTINGS } from "@/lib/settings"
-import { useIsMobile } from "@/hooks/use-mobile"
 
 interface TrendingItem {
   title: string
@@ -72,26 +70,41 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
         <div className="block md:hidden space-y-8">
           {MOBILE_SECTIONS.map((section) => (
             <div key={section.title} className="space-y-4">
-              {section.title === "В тренде" ? (
-                <CoverflowMovieSlider
-                  url={section.playlist_url}
-                  title={section.title}
-                  autoplay={APP_SETTINGS.slider.trending.syncWithBackdrop ? APP_SETTINGS.slider.trending.autoplay : false}
-                  autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
-                  hoverPause={APP_SETTINGS.slider.trending.hoverPause}
-                  perPageOverride={APP_SETTINGS.slider.trending.perPage}
-                  loop={true}
-                  activeItemId={APP_SETTINGS.slider.trending.syncWithBackdrop ? activeBackdropId ?? undefined : undefined}
-                  compactOnMobile
-                />
-              ) : (
-                <MovieSlider
-                  url={section.playlist_url}
-                  title={section.title}
-                  viewAllHref={section.title === "Фильмы" ? "/movies?tab=popular" : section.title === "Сериалы" ? "/serials?tab=popular" : undefined}
-                  compactOnMobile
-                />
-              )}
+              <MovieSlider
+                url={section.playlist_url}
+                title={section.title}
+                viewAllHref={
+                  section.title === "Фильмы"
+                    ? "/movies?tab=popular"
+                    : section.title === "Сериалы"
+                      ? "/serials?tab=popular"
+                      : undefined
+                }
+                autoplay={
+                  section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
+                    ? APP_SETTINGS.slider.trending.autoplay
+                    : false
+                }
+                autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
+                hoverPause={APP_SETTINGS.slider.trending.hoverPause}
+                perPageOverride={APP_SETTINGS.slider.trending.perPage}
+                loop={false}
+                activeItemId={
+                  section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
+                    ? activeBackdropId ?? undefined
+                    : undefined
+                }
+                viewAllHref={
+                  section.title === "В тренде"
+                    ? "/trending"
+                    : section.title === "Фильмы"
+                      ? "/movies?tab=popular"
+                      : section.title === "Сериалы"
+                        ? "/serials?tab=popular"
+                        : undefined
+                }
+                compactOnMobile
+              />
             </div>
           ))}
           {/* Отдельный блок: Топ 250 фильмов — только для мобильных */}

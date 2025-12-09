@@ -688,7 +688,7 @@ export default function MovieSlider({
                   key={i}
                   className={`pl-2 ${
                     compactOnMobile
-                      ? "basis-1/2 sm:basis-1/2"
+                      ? "basis-[40%] sm:basis-[36%]"
                       : "basis-1/2 sm:basis-1/2"
                   } ${
                     cardType === "backdrop"
@@ -769,9 +769,9 @@ export default function MovieSlider({
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
-                  className={`pl-2 ${
+                className={`pl-2 ${
                     compactOnMobile
-                      ? "basis-1/2 sm:basis-1/2"
+                      ? "basis-[40%] sm:basis-[36%]"
                       : "basis-1/2 sm:basis-1/2"
                   } ${
                     cardType === "backdrop"
