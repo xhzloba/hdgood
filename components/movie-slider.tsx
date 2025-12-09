@@ -72,10 +72,12 @@ const fetcher = async (url: string, timeout: number = 10000) => {
 
 function makePageUrl(base: string, page: number) {
   try {
+    if (!base) return "";
     const u = new URL(base);
     u.searchParams.set("page", String(page));
     return u.toString();
   } catch {
+    if (!base) return "";
     const hasQuery = base.includes("?");
     const hasPage = /[?&]page=/.test(base);
     if (hasPage) {
@@ -273,7 +275,7 @@ export default function MovieSlider({
     setPagesData([{ page: 1, data: items || [] }]);
   }, [isStatic, items]);
 
-  const currentUrl = useMemo(() => makePageUrl(url, page), [url, page]);
+  const currentUrl = useMemo(() => (isStatic ? null : makePageUrl(url, page)), [url, page, isStatic]);
   const swrKey = isStatic ? null : currentUrl;
   const { data, error, isLoading, isValidating } = useSWR<string | null>(
     swrKey,
