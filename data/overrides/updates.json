@@ -3375,5 +3375,92 @@
       "poster_colors.accentTl"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-09T15:49:50.027Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-09T15:50:51.842Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-09T15:52:37.251Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593fc4c4d4ca001a21e0922",
+    "timestamp": "2025-12-09T15:56:23.675Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "6593fc4c4d4ca001a21e0922",
+    "timestamp": "2025-12-09T15:57:29.172Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr"
+    ],
+    "addedPaths": [
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "6593f9128914c04deaead3b1",
+    "timestamp": "2025-12-09T15:58:53.046Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant2",
+      "poster_colors.dominant1"
+    ]
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-09T16:06:34.878Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ]
   }
 ]

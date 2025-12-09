@@ -803,6 +803,18 @@
     }
   },
   "6593f9128914c04deaead3b1": {
+    "poster_colors": {
+      "dominant2": [
+        25,
+        32,
+        66
+      ],
+      "dominant1": [
+        57,
+        58,
+        101
+      ]
+    },
     "poster_logo": "/movies/logo/31.webp"
   },
   "6593f85e8914c04deae96a57": {
@@ -1311,5 +1323,68 @@
       "backdrop": "/movies/orudie-backddrop.webp"
     },
     "poster_logo": "/movies/logo/106.webp"
+  },
+  "6593f8e68914c04deaea750f": {
+    "poster_colors": {
+      "accentTr": [
+        243,
+        42,
+        44
+      ],
+      "accentTl": [
+        26,
+        41,
+        31
+      ],
+      "accentBr": [
+        232,
+        39,
+        37
+      ],
+      "accentBl": [
+        57,
+        84,
+        65
+      ],
+      "dominant1": [
+        94,
+        136,
+        126
+      ],
+      "dominant2": [
+        207,
+        38,
+        37
+      ]
+    }
+  },
+  "6593fc4c4d4ca001a21e0922": {
+    "poster_colors": {
+      "accentTr": [
+        245,
+        67,
+        169
+      ],
+      "accentBr": [
+        250,
+        53,
+        164
+      ],
+      "accentBl": [
+        204,
+        22,
+        122
+      ],
+      "accentTl": [
+        84,
+        7,
+        43
+      ],
+      "dominant2": [
+        249,
+        73,
+        175
+      ]
+    }
   }
 }
