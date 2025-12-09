@@ -132,6 +132,13 @@ const SLIDES: Slide[] = [
     viewAllHref: "/serials/all",
   },
   {
+    id: "netflix_serials",
+    title: "Сериалы Netflix",
+    navTitle: "Netflix",
+    url: "https://api.vokino.pro/v2/compilations/content/65a6b9dabce57d552a34b40d?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352",
+    fetchAll: true,
+  },
+  {
     id: "dolbyv",
     title: "4K DolbyV",
     navTitle: "DolbyV",
@@ -1256,11 +1263,12 @@ export function DesktopHome({
         ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
         : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
 
-  const descriptionMinHeight = isFullscreen
-    ? "min-h-[84px] md:min-h-[96px]"
+  // Фиксируем высоту описания, чтобы при переключении карточек не прыгал макет
+  const descriptionHeightClass = isFullscreen
+    ? "h-[140px] md:h-[152px] overflow-hidden"
     : isShortHeight
-      ? "min-h-[56px] md:min-h-[64px]"
-      : "min-h-[72px] md:min-h-[84px]";
+      ? "h-[72px] md:h-[76px] overflow-hidden"
+      : "h-[116px] md:h-[128px] overflow-hidden";
 
   const sliderAnimClass = !isMounted
     ? ""
@@ -1282,7 +1290,8 @@ export function DesktopHome({
       ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
       : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
 
-  const descriptionClampClass = isShortHeight ? "line-clamp-2" : "line-clamp-3";
+  // Убираем line-clamp, чтобы не было двойных многоточий при обрезке
+  const descriptionClampClass = "";
 
   const ctaGapClass = isTinyHeight ? "gap-3" : "gap-4";
   const primaryButtonSizeClass = isTinyHeight
@@ -1504,7 +1513,7 @@ export function DesktopHome({
                 </div>
 
                 <p
-                  className={`text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionMinHeight}`}
+                  className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px] after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-5 after:bg-gradient-to-b after:from-transparent after:to-transparent`}
                 >
                   {activeMovie.description ||
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
