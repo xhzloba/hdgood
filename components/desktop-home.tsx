@@ -693,7 +693,6 @@ export function DesktopHome({
     }
 
     if (overrideApplied) return;
-    setPaletteReady(false);
 
     const loadImage = (
       source: string
