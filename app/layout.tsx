@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     template: "%s — HDGood",
   },
   applicationName: "HDGood",
+  manifest: "/manifest.webmanifest",
+  themeColor: "#0f172a",
   description: "Смотреть фильмы и сериалы онлайн в хорошем качестве",
   openGraph: {
     title: "HDGood",

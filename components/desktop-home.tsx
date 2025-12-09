@@ -11,6 +11,7 @@ import {
   Minimize2,
   Heart,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import {
   Tooltip,
@@ -483,6 +484,9 @@ export function DesktopHome({
   const [paletteReady, setPaletteReady] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [ubColors, setUbColors] = useState(DEFAULT_UB_COLORS);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
   const paletteCacheRef = useRef<
     Record<string, { tl: string; tr: string; br: string; bl: string }>
   >({});
@@ -513,9 +517,28 @@ export function DesktopHome({
     const syncFullscreen = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
+    const detectStandalone = () => {
+      const standaloneMedia =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(display-mode: standalone)").matches;
+      const iosStandalone =
+        typeof (navigator as any) !== "undefined" &&
+        (navigator as any).standalone === true;
+      setIsStandalone(!!(standaloneMedia || iosStandalone));
+    };
     document.addEventListener("fullscreenchange", syncFullscreen);
     syncFullscreen();
-    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+    detectStandalone();
+    const media = window.matchMedia
+      ? window.matchMedia("(display-mode: standalone)")
+      : null;
+    const mediaListener = () => detectStandalone();
+    media?.addEventListener("change", mediaListener);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreen);
+      media?.removeEventListener("change", mediaListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -560,6 +583,16 @@ export function DesktopHome({
       window.removeEventListener("resize", checkWidth);
       window.removeEventListener("resize", syncHeight);
     };
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+      setCanInstall(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const toggleFullscreen = async () => {
@@ -1279,6 +1312,13 @@ export function DesktopHome({
     "dolbyv",
   ]);
 
+  const computeThemeColor = useCallback(() => {
+    const hex = (ubColors?.tl || "").trim();
+    const match = hex.match(/^#?[0-9a-fA-F]{6}$/);
+    if (match) return hex.startsWith("#") ? hex : `#${hex}`;
+    return "#0f172a";
+  }, [ubColors]);
+
   const handleFavoriteToggle = () => {
     if (!activeMovie) return;
     toggleFavorite({
@@ -1298,7 +1338,28 @@ export function DesktopHome({
     });
   };
 
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    try {
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+    } catch {}
+    setInstallPrompt(null);
+  };
+
   if (!activeSlide) return null;
+
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]') as
+      | HTMLMetaElement
+      | null;
+    if (!meta) return;
+    const color =
+      enablePosterColors && paletteReady && ubColors?.tl
+        ? computeThemeColor()
+        : "#0f172a";
+    meta.content = color;
+  }, [enablePosterColors, paletteReady, ubColors, computeThemeColor]);
 
   return (
     <div
@@ -1335,9 +1396,31 @@ export function DesktopHome({
       />
 
       {/* Fullscreen toggle + clock (desktop only) */}
-      <div className="hidden md:flex absolute top-4 right-6 z-40 items-center gap-3">
-        {showWideClock && clockText && (
-          <span className="text-white font-bold text-base tracking-wide">{clockText}</span>
+      <div className="hidden md:flex absolute top-4 right-6 z-40 items-center gap-2">
+        {!isStandalone && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  disabled={!installPrompt}
+                  className={`h-11 w-11 inline-flex items-center justify-center rounded-[10px] text-white/90 transition-all ${
+                    installPrompt
+                      ? "hover:text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/30"
+                      : "text-white/40 cursor-not-allowed"
+                  }`}
+                >
+                  <Download className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" sideOffset={8} className="bg-white text-black border-0 shadow-xl">
+                <p className="text-xs font-semibold">
+                  {installPrompt ? "Установить как приложение" : "Установка недоступна в этом браузере"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
         <TooltipProvider>
           <Tooltip>
