@@ -376,6 +376,28 @@
     }
   },
   "6593f8b68914c04deaea15df": {
+    "poster_colors": {
+      "accentTl": [
+        205,
+        13,
+        9
+      ],
+      "accentTr": [
+        29,
+        78,
+        216
+      ],
+      "accentBr": [
+        29,
+        78,
+        216
+      ],
+      "accentBl": [
+        10,
+        10,
+        10
+      ]
+    },
     "bg_poster": {
       "backdrop": "/movies/things-backdrop.webp"
     },
