@@ -460,6 +460,7 @@ export function DesktopHome({
   const [viewportHeight, setViewportHeight] = useState<number>(
     typeof window !== "undefined" ? window.innerHeight : 1080
   );
+  const isTinyHeight = viewportHeight > 0 && viewportHeight <= 787;
   const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
 
   // Settings State
@@ -1207,9 +1208,11 @@ export function DesktopHome({
 
   const logoHeightClass = isFullscreen
     ? "h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px]"
-    : isShortHeight
-      ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
-      : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
+    : isTinyHeight
+      ? "h-[68px] md:h-[74px] lg:h-[80px] xl:h-[88px]"
+      : isShortHeight
+        ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
+        : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
 
   const descriptionMinHeight = isFullscreen
     ? "min-h-[84px] md:min-h-[96px]"
@@ -1231,11 +1234,24 @@ export function DesktopHome({
       ? "mt-4 md:mt-6 lg:mt-7"
       : "mt-6 md:mt-8 lg:mt-10";
 
-  const logoBlockMarginClass = isShortHeight
-    ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
-    : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
+  const logoBlockMarginClass = isTinyHeight
+    ? "mt-[4px] md:mt-[6px] lg:mt-[8px] xl:mt-[10px]"
+    : isShortHeight
+      ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
+      : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
 
   const descriptionClampClass = isShortHeight ? "line-clamp-2" : "line-clamp-3";
+
+  const ctaGapClass = isTinyHeight ? "gap-3" : "gap-4";
+  const primaryButtonSizeClass = isTinyHeight
+    ? "px-5 py-2.5 md:px-6 min-w-[120px]"
+    : "px-6 py-3 md:px-8 min-w-[140px]";
+  const primaryButtonTextClass = isTinyHeight
+    ? "text-sm md:text-base"
+    : "text-base md:text-lg";
+  const favoriteButtonPaddingClass = isTinyHeight ? "p-2.5" : "p-3";
+  const playIconSize = isTinyHeight ? 18 : 20;
+  const favoriteIconSize = isTinyHeight ? 18 : 20;
 
   const mainPaddingClass = isShortHeight
     ? "pt-[38px] md:pt-[46px] lg:pt-[52px] pb-[clamp(10px,3vh,26px)] gap-[clamp(12px,1.6vh,24px)] overflow-y-auto"
@@ -1393,21 +1409,23 @@ export function DesktopHome({
                     "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
                 </p>
 
-                <div className="flex items-center gap-4">
+                <div className={`flex items-center ${ctaGapClass}`}>
                   <Link
                     href={`/movie/${activeMovie.id}`}
-                    className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
+                    className={`bg-white text-black rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none ${primaryButtonSizeClass}`}
                   >
                     <Play
-                      size={20}
+                      size={playIconSize}
                       fill="currentColor"
-                      className="ml-1 md:w-6 md:h-6"
+                      className={`ml-1 ${
+                        isTinyHeight ? "md:w-[22px] md:h-[22px]" : "md:w-6 md:h-6"
+                      }`}
                     />
-                    <span className="text-base md:text-lg">Смотреть</span>
+                    <span className={primaryButtonTextClass}>Смотреть</span>
                   </Link>
                   <button
                     onClick={handleFavoriteToggle}
-                    className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
+                    className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
                       isFavoriteActiveMovie
                         ? "border-white bg-white text-black"
                         : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
@@ -1420,9 +1438,9 @@ export function DesktopHome({
                     aria-pressed={isFavoriteActiveMovie}
                   >
                     {isFavoriteActiveMovie ? (
-                      <Heart size={20} fill="currentColor" />
+                      <Heart size={favoriteIconSize} fill="currentColor" />
                     ) : (
-                      <Plus size={20} />
+                      <Plus size={favoriteIconSize} />
                     )}
                   </button>
                 </div>
