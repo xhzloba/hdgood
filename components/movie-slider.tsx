@@ -1048,7 +1048,7 @@ export default function MovieSlider({
                         }
                         return tagLabel ? (
                           <div
-                            className="absolute top-1 left-1 md:top-2 md:left-2 px-1.5 md:px-2 py-[2px] md:py-[3px] rounded-sm text-[10px] md:text-[11px] bg-white/90 text-black font-semibold border border-white/70 z-[12] shadow-sm"
+                            className="absolute top-1 left-1 md:top-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-md md:rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 z-[12] shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
                             title={tagLabel}
                           >
                             {tagLabel}
