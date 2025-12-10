@@ -221,7 +221,7 @@ function CategoryIcon({
   name: string;
   className?: string;
 }) {
-  const props = { className, size: 28, stroke: 1.5 } as const;
+  const props = { className, stroke: 1.5 } as const;
   switch (name) {
     case "clock":
       return <IconClock {...props} />;
@@ -265,7 +265,7 @@ function NavItem({
   onClick?: () => void;
   disabled?: boolean;
 }) {
-  const className = `p-3 rounded-xl transition-all group relative flex items-center justify-center ${
+  const className = `p-[clamp(8px,1.2vh,12px)] rounded-xl transition-all group relative flex items-center justify-center ${
     disabled
       ? "text-zinc-500 cursor-not-allowed opacity-60"
       : active
@@ -373,6 +373,9 @@ function BackdropImage({ src }: { src: string }) {
 
 // --- Main Component ---
 
+// Динамические размеры иконок для сайдбара
+const sidebarIconClass = "w-[clamp(20px,3vh,28px)] h-[clamp(20px,3vh,28px)]";
+
 export function DesktopSidebar({
   profileAvatar = PROFILE_AVATARS[0],
   onSettingsClick,
@@ -387,15 +390,19 @@ export function DesktopSidebar({
   favoritesCount?: number;
 }) {
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-24 z-50 flex flex-col items-center py-10 gap-10 bg-transparent">
-      <div className="text-orange-500 font-black text-2xl mb-4 tracking-tighter">
+    <aside className="fixed left-0 top-0 bottom-0 w-[clamp(64px,8vw,96px)] z-50 flex flex-col items-center py-[clamp(24px,4vh,40px)] gap-[clamp(24px,4vh,40px)] bg-transparent">
+      <div className="text-orange-500 font-black text-[clamp(18px,2.5vh,24px)] mb-[clamp(8px,1.5vh,16px)] tracking-tighter">
         HD
       </div>
 
-      <nav className="flex flex-col gap-6 flex-1 justify-center w-full items-center">
-        <NavItem icon={<Search size={28} />} label="Поиск" href="/search" />
+      <nav className="flex flex-col gap-[clamp(12px,2vh,24px)] flex-1 justify-center w-full items-center">
         <NavItem
-          icon={<IconHomeCustom className="w-7 h-7" />}
+          icon={<Search className={sidebarIconClass} />}
+          label="Поиск"
+          href="/search"
+        />
+        <NavItem
+          icon={<IconHomeCustom className={sidebarIconClass} />}
           label="Главная"
           href="/"
           active={!favoritesActive}
@@ -405,7 +412,9 @@ export function DesktopSidebar({
           icon={
             <div className="relative">
               <IconHeart
-                className={`w-7 h-7 ${favoritesActive ? "text-white" : ""}`}
+                className={`${sidebarIconClass} ${
+                  favoritesActive ? "text-white" : ""
+                }`}
                 stroke={1.6}
                 fill={favoritesActive ? "currentColor" : "none"}
               />
@@ -423,7 +432,9 @@ export function DesktopSidebar({
           (cat, i) => (
             <NavItem
               key={i}
-              icon={<CategoryIcon name={cat.ico} className="w-7 h-7" />}
+              icon={
+                <CategoryIcon name={cat.ico} className={sidebarIconClass} />
+              }
               label={cat.title}
               href={cat.route || "#"}
             />
@@ -434,7 +445,9 @@ export function DesktopSidebar({
       <div className="mt-auto">
         <NavItem
           icon={
-            <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all">
+            <div
+              className={`${sidebarIconClass} rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all`}
+            >
               <img
                 src={profileAvatar}
                 className="w-full h-full object-cover"
@@ -1291,22 +1304,15 @@ export function DesktopHome({
   const colorLayerEnabled = enablePosterColors && !isMobile;
   const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
 
+  // Динамические размеры через clamp() + vh для автоматического масштабирования
   const logoHeightClass = isFullscreen
-    ? "h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px]"
-    : isTinyHeight
-    ? "h-[68px] md:h-[74px] lg:h-[80px] xl:h-[88px]"
-    : isShortHeight
-    ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
-    : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
+    ? "h-[clamp(120px,18vh,200px)]"
+    : "h-[clamp(60px,12vh,110px)]";
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
-    ? "line-clamp-3 min-h-[78px]"
-    : isShortHeight
-    ? "line-clamp-2 min-h-[52px]"
-    : isMediumHeight
-    ? "line-clamp-2 min-h-[52px]"
-    : "line-clamp-3 min-h-[78px]";
+    ? "line-clamp-3 min-h-[clamp(60px,8vh,78px)]"
+    : "line-clamp-2 min-h-[clamp(40px,6vh,52px)]";
 
   const sliderAnimClass = !isMounted
     ? ""
@@ -1316,37 +1322,29 @@ export function DesktopHome({
     ? "animate-in fade-in slide-in-from-top-6 duration-500"
     : "animate-in fade-in duration-500";
 
+  // Отступ слайдера - динамический через vh
   const sliderMarginClass = isFullscreen
-    ? isMediumHeight
-      ? "mt-[20px] md:mt-[26px] lg:mt-[32px] xl:mt-[38px]"
-      : "mt-[60px] md:mt-[72px] lg:mt-[88px] xl:mt-[108px]"
-    : isShortHeight
-    ? "mt-4 md:mt-6 lg:mt-7"
-    : "mt-6 md:mt-8 lg:mt-10";
+    ? "mt-[clamp(16px,3vh,40px)]"
+    : "mt-[clamp(12px,2vh,28px)]";
 
-  const logoBlockMarginClass = isTinyHeight
-    ? "mt-[4px] md:mt-[6px] lg:mt-[8px] xl:mt-[10px]"
-    : isShortHeight
-    ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
-    : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
+  // Отступ блока логотипа - динамический
+  const logoBlockMarginClass = "mt-[clamp(4px,1vh,18px)]";
 
   // Убираем line-clamp, чтобы не было двойных многоточий при обрезке
   const descriptionClampClass = "";
 
-  const ctaGapClass = isTinyHeight ? "gap-3" : "gap-4";
-  const primaryButtonSizeClass = isTinyHeight
-    ? "px-5 py-2.5 md:px-6 min-w-[120px]"
-    : "px-6 py-3 md:px-8 min-w-[140px]";
-  const primaryButtonTextClass = isTinyHeight
-    ? "text-sm md:text-base"
-    : "text-base md:text-lg";
-  const favoriteButtonPaddingClass = isTinyHeight ? "p-2.5" : "p-3";
-  const playIconSize = isTinyHeight ? 18 : 20;
-  const favoriteIconSize = isTinyHeight ? 18 : 20;
+  // Динамические размеры кнопок
+  const ctaGapClass = "gap-[clamp(12px,1.5vh,16px)]";
+  const primaryButtonSizeClass =
+    "px-[clamp(20px,3vw,32px)] py-[clamp(10px,1.2vh,14px)] min-w-[clamp(100px,12vw,140px)]";
+  const primaryButtonTextClass = "text-[clamp(14px,1.6vh,18px)]";
+  const favoriteButtonPaddingClass = "p-[clamp(10px,1.2vh,14px)]";
+  const playIconSize = 20;
+  const favoriteIconSize = 20;
 
-  const mainPaddingClass = isShortHeight
-    ? "pt-[38px] md:pt-[46px] lg:pt-[52px] pb-[clamp(10px,3vh,26px)] gap-[clamp(12px,1.6vh,24px)] overflow-y-auto"
-    : "pt-[52px] md:pt-[60px] lg:pt-[64px] pb-[clamp(12px,4vh,48px)] gap-[clamp(16px,2vh,32px)] overflow-hidden";
+  // Динамические паддинги main
+  const mainPaddingClass =
+    "pt-[clamp(36px,5vh,64px)] pb-[clamp(10px,3vh,48px)] gap-[clamp(12px,2vh,32px)] overflow-hidden";
 
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
@@ -1527,7 +1525,7 @@ export function DesktopHome({
 
       {/* Main Content Area */}
       <main
-        className={`relative z-10 ml-24 h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
+        className={`relative z-10 ml-[clamp(64px,8vw,96px)] h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
       >
         <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           <div className="w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
@@ -1618,7 +1616,7 @@ export function DesktopHome({
                   </div>
 
                   <p
-                    className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px]`}
+                    className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-[clamp(400px,50vw,768px)] mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px]`}
                   >
                     {activeMovie.description ||
                       "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
@@ -1632,11 +1630,7 @@ export function DesktopHome({
                       <Play
                         size={playIconSize}
                         fill="currentColor"
-                        className={`ml-1 ${
-                          isTinyHeight
-                            ? "md:w-[22px] md:h-[22px]"
-                            : "md:w-6 md:h-6"
-                        }`}
+                        className="ml-1 w-[clamp(18px,2vh,24px)] h-[clamp(18px,2vh,24px)]"
                       />
                       <span className={primaryButtonTextClass}>Смотреть</span>
                     </Link>
@@ -1699,15 +1693,15 @@ export function DesktopHome({
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div
-          className={`absolute right-0 top-32 w-64 z-40 pointer-events-none flex flex-col items-end pr-10 transition-opacity duration-700 ${
+          className={`absolute right-0 top-[clamp(80px,12vh,128px)] w-[clamp(160px,16vw,256px)] z-40 pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-opacity duration-700 ${
             activeMovie ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="h-[170px] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)]">
+          <div className="h-[clamp(120px,18vh,170px)] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)]">
             <div
-              className="absolute top-0 right-0 flex flex-col gap-3 items-end transition-transform duration-500 ease-out w-full"
+              className="absolute top-0 right-0 flex flex-col gap-[clamp(8px,1.2vh,12px)] items-end transition-transform duration-500 ease-out w-full"
               style={{
-                transform: `translateY(${50 - slideIndex * 44}px)`,
+                transform: `translateY(calc(clamp(30px,5vh,50px) - ${slideIndex} * clamp(28px,4vh,44px)))`,
               }}
             >
               {slides.map((slide, i) => (
@@ -1718,20 +1712,20 @@ export function DesktopHome({
                     setSlideDirection(i > slideIndex ? "next" : "prev");
                     setSlideIndex(i);
                   }}
-                  className="group flex items-center gap-3 focus:outline-none pointer-events-auto min-h-[30px] px-2 py-1 rounded-lg transition-all duration-300"
+                  className="group flex items-center gap-[clamp(8px,1vh,12px)] focus:outline-none pointer-events-auto min-h-[clamp(20px,3vh,30px)] px-2 py-1 rounded-lg transition-all duration-300"
                 >
                   <div
                     className={`h-px transition-all duration-500 ${
                       slideIndex === i
-                        ? "w-10 bg-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]"
-                        : "w-6 bg-white/30 group-hover:bg-white/70"
+                        ? "w-[clamp(24px,3vw,40px)] bg-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]"
+                        : "w-[clamp(16px,2vw,24px)] bg-white/30 group-hover:bg-white/70"
                     }`}
                   />
                   <span
                     className={`font-semibold uppercase tracking-[0.25em] transition-all duration-500 text-right whitespace-nowrap ${
                       slideIndex === i
-                        ? "text-white text-base"
-                        : "text-zinc-400 text-xs group-hover:text-zinc-200"
+                        ? "text-white text-[clamp(12px,1.4vh,16px)]"
+                        : "text-zinc-400 text-[clamp(10px,1.1vh,12px)] group-hover:text-zinc-200"
                     }`}
                   >
                     {(slide as any).navTitle || slide.title}
