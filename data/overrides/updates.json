@@ -3462,5 +3462,36 @@
       "poster_colors.dominant1",
       "poster_colors.dominant2"
     ]
+  },
+  {
+    "id": "65a99f77b16cdf95ebb5efec",
+    "timestamp": "2025-12-10T09:48:13.100Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "692a1bbb4253c1a0c05105ec",
+    "timestamp": "2025-12-10T09:51:44.756Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593faa1e264662a2fc4a2d6",
+    "timestamp": "2025-12-10T09:53:27.524Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

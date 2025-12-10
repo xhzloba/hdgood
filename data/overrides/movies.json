@@ -1386,5 +1386,17 @@
         175
       ]
     }
+  },
+  "65a99f77b16cdf95ebb5efec": {
+    "poster_logo": "/movies/logo/107.png",
+    "bg_poster": {
+      "backdrop": "/movies/zoloto.jpg"
+    }
+  },
+  "692a1bbb4253c1a0c05105ec": {
+    "poster_logo": "/movies/logo/108.webp"
+  },
+  "6593faa1e264662a2fc4a2d6": {
+    "poster_logo": "/movies/logo/109.webp"
   }
 }
