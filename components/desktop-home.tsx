@@ -1299,12 +1299,14 @@ export function DesktopHome({
     ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
     : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
 
-  // Фиксируем высоту описания, чтобы при переключении карточек не прыгал макет
+  // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
-    ? "h-[140px] md:h-[152px] overflow-hidden"
+    ? "line-clamp-4 min-h-[100px]"
     : isShortHeight
-    ? "h-[72px] md:h-[76px] overflow-hidden"
-    : "h-[116px] md:h-[128px] overflow-hidden";
+    ? "line-clamp-2 min-h-[52px]"
+    : isMediumHeight
+    ? "line-clamp-2 min-h-[52px]"
+    : "line-clamp-3 min-h-[78px]";
 
   const sliderAnimClass = !isMounted
     ? ""
@@ -1616,7 +1618,7 @@ export function DesktopHome({
                   </div>
 
                   <p
-                    className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px] after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-5 after:bg-gradient-to-b after:from-transparent after:to-transparent`}
+                    className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px]`}
                   >
                     {activeMovie.description ||
                       "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
