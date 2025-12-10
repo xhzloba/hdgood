@@ -502,6 +502,7 @@ export function DesktopHome({
   const [viewportHeight, setViewportHeight] = useState<number>(
     typeof window !== "undefined" ? window.innerHeight : 1080
   );
+  const isVeryTinyHeight = viewportHeight > 0 && viewportHeight < 700;
   const isTinyHeight = viewportHeight > 0 && viewportHeight <= 787;
   const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
   const isMediumHeight = viewportHeight >= 900 && viewportHeight <= 1200;
@@ -1322,10 +1323,21 @@ export function DesktopHome({
     ? "animate-in fade-in slide-in-from-top-6 duration-500"
     : "animate-in fade-in duration-500";
 
-  // Отступ слайдера - динамический через vh
-  const sliderMarginClass = isFullscreen
-    ? "mt-[clamp(16px,3vh,40px)]"
-    : "mt-[clamp(12px,2vh,28px)]";
+  // Отступ слайдера - динамический через vh, зависит от типа карточек
+  // backdrop (расширенные) меньше по высоте → значительно больший отступ
+  // poster (обычные) выше → меньший отступ
+  // isVeryTinyHeight (<700px) → минимальные отступы
+  const sliderMarginClass = isVeryTinyHeight
+    ? cardDisplayMode === "backdrop"
+      ? "mt-[clamp(16px,3vh,32px)]"
+      : "mt-[clamp(12px,2vh,24px)]"
+    : isFullscreen
+    ? cardDisplayMode === "backdrop"
+      ? "mt-[clamp(72px,10vh,140px)]"
+      : "mt-[clamp(32px,4.5vh,64px)]"
+    : cardDisplayMode === "backdrop"
+    ? "mt-[clamp(60px,9vh,120px)]"
+    : "mt-[clamp(28px,4vh,56px)]";
 
   // Отступ блока логотипа - динамический
   const logoBlockMarginClass = "mt-[clamp(4px,1vh,18px)]";
