@@ -7,7 +7,13 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRouter } from "next/navigation";
-import { IconChevronLeft, IconChevronRight, IconX, IconPlayerPlayFilled, IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconX,
+  IconPlayerPlayFilled,
+  IconInfoCircle,
+} from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
@@ -15,6 +21,7 @@ import { getCountryLabel } from "@/lib/country-flags";
 import { savePosterTransition } from "@/lib/poster-transition";
 import { PlayerSelector } from "@/components/player-selector";
 import { VideoPoster } from "@/components/video-poster";
+import { useFavorites } from "@/hooks/use-favorites";
 
 interface Movie {
   id: string;
@@ -219,6 +226,7 @@ export function MovieGrid({
   const [rowHeight, setRowHeight] = useState<number | null>(null);
   const keyboardIndexRef = useRef<number>(0);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const perPage = 15;
   const aspectClass = cardType === "backdrop" ? "aspect-video" : "aspect-[2/3]";
@@ -774,7 +782,8 @@ export function MovieGrid({
     setPendingOverrideIds((prev) => {
       const next = new Set(prev);
       for (const id of idsArray) {
-        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap)) next.add(id);
+        if (!(id in (overridesCacheRef as any)) && !(id in overridesMap))
+          next.add(id);
       }
       return next;
     });
@@ -835,12 +844,13 @@ export function MovieGrid({
           ov?.details?.released ??
           ov?.details?.release_year ??
           ov?.details?.releaseYear) as any) ?? m.year;
-      const patchedBgPoster = ov && (ov.backdrop || ov?.bg_poster?.backdrop)
-        ? {
-            backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
-            poster: ov?.bg_poster?.poster ?? undefined,
-          }
-        : m?.bg_poster || undefined;
+      const patchedBgPoster =
+        ov && (ov.backdrop || ov?.bg_poster?.backdrop)
+          ? {
+              backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
+              poster: ov?.bg_poster?.poster ?? undefined,
+            }
+          : m?.bg_poster || undefined;
       return {
         ...m,
         poster: patchedPoster,
@@ -869,12 +879,13 @@ export function MovieGrid({
           ov?.details?.released ??
           ov?.details?.release_year ??
           ov?.details?.releaseYear) as any) ?? m?.year;
-      const patchedBgPoster = ov && (ov.backdrop || ov?.bg_poster?.backdrop)
-        ? {
-            backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
-            poster: ov?.bg_poster?.poster ?? undefined,
-          }
-        : m?.bg_poster || undefined;
+      const patchedBgPoster =
+        ov && (ov.backdrop || ov?.bg_poster?.backdrop)
+          ? {
+              backdrop: ov.backdrop || ov?.bg_poster?.backdrop,
+              poster: ov?.bg_poster?.poster ?? undefined,
+            }
+          : m?.bg_poster || undefined;
       return {
         ...(m || {}),
         poster: patchedPoster,
@@ -947,7 +958,9 @@ export function MovieGrid({
         const isAbort =
           e?.name === "AbortError" ||
           e?.code === "ABORT_ERR" ||
-          String(e?.message || "").toLowerCase().includes("abort");
+          String(e?.message || "")
+            .toLowerCase()
+            .includes("abort");
         if (isAbort) return;
         if (attempt < 2) {
           setTimeout(() => run(attempt + 1), 300);
@@ -970,21 +983,24 @@ export function MovieGrid({
       const id = selectedMovie ? String(selectedMovie.id) : null;
       const ov = id ? (overridesMap as any)[id] ?? null : null;
       const d: any = selectedDetails || {};
-      const ovBackdrop = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
+      const ovBackdrop =
+        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
       const localBackdrop =
-        (selectedMovie as any)?.bg_poster?.backdrop || (selectedMovie as any)?.backdrop || null;
-      const detailsId = String(
-        (d && (d.id ?? d?.details?.id)) ?? ""
-      );
-      const isDetailsForCurrent = id != null && detailsId !== "" && detailsId === id;
+        (selectedMovie as any)?.bg_poster?.backdrop ||
+        (selectedMovie as any)?.backdrop ||
+        null;
+      const detailsId = String((d && (d.id ?? d?.details?.id)) ?? "");
+      const isDetailsForCurrent =
+        id != null && detailsId !== "" && detailsId === id;
       const apiBackdrop = isDetailsForCurrent
         ? (d && (d.backdrop || d?.bg_poster?.backdrop)) || null
         : null;
-      const bg = ovBackdrop != null
-        ? ovBackdrop
-        : localBackdrop != null
-        ? localBackdrop
-        : apiBackdrop;
+      const bg =
+        ovBackdrop != null
+          ? ovBackdrop
+          : localBackdrop != null
+          ? localBackdrop
+          : apiBackdrop;
       const poster =
         (ov && (ov.poster || ov?.bg_poster?.poster)) ||
         (d && (d.poster || d?.bg_poster?.poster)) ||
@@ -1129,16 +1145,19 @@ export function MovieGrid({
 
   useEffect(() => {
     if (watchOpen && isDesktop) {
-      const showTimer = setTimeout(() => {
-        setShowEscHint(true);
-        if (!isLargeDesktop) {
-          const hideTimer = setTimeout(() => setShowEscHint(false), 3000);
-          // Не нужно сохранять hideTimer, так как он сработает сам, 
-          // а при размонтировании/изменении мы сбросим всё через cleanup ниже.
-          // Но чтобы не было утечки, если компонент размонтируется во время hideTimer,
-          // можно сохранить его в ref, но проще просто сбросить состояние.
-        }
-      }, isLargeDesktop ? 2000 : 0);
+      const showTimer = setTimeout(
+        () => {
+          setShowEscHint(true);
+          if (!isLargeDesktop) {
+            const hideTimer = setTimeout(() => setShowEscHint(false), 3000);
+            // Не нужно сохранять hideTimer, так как он сработает сам,
+            // а при размонтировании/изменении мы сбросим всё через cleanup ниже.
+            // Но чтобы не было утечки, если компонент размонтируется во время hideTimer,
+            // можно сохранить его в ref, но проще просто сбросить состояние.
+          }
+        },
+        isLargeDesktop ? 2000 : 0
+      );
 
       return () => {
         clearTimeout(showTimer);
@@ -1230,7 +1249,7 @@ export function MovieGrid({
       );
       if (items.length === 0) return;
       const active = document.activeElement as HTMLElement | null;
-      let idx = items.indexOf(active || null as any);
+      let idx = items.indexOf(active || (null as any));
       if (idx < 0) idx = keyboardIndexRef.current ?? 0;
 
       const cols = Math.max(1, effectiveCols);
@@ -1351,21 +1370,23 @@ export function MovieGrid({
       const id = String(selectedMovie.id);
       const ov = (overridesMap as any)[id] ?? null;
       const d: any = selectedDetails || {};
-      const ovBackdrop = (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
+      const ovBackdrop =
+        (ov && (ov.backdrop || ov?.bg_poster?.backdrop)) || null;
       const localBackdrop =
-        (selectedMovie as any)?.bg_poster?.backdrop || (selectedMovie as any)?.backdrop || null;
-      const detailsId = String(
-        (d && (d.id ?? d?.details?.id)) ?? ""
-      );
+        (selectedMovie as any)?.bg_poster?.backdrop ||
+        (selectedMovie as any)?.backdrop ||
+        null;
+      const detailsId = String((d && (d.id ?? d?.details?.id)) ?? "");
       const isDetailsForCurrent = detailsId !== "" && detailsId === id;
       const apiBackdrop = isDetailsForCurrent
         ? (d && (d.backdrop || d?.bg_poster?.backdrop)) || null
         : null;
-      const bg = ovBackdrop != null
-        ? ovBackdrop
-        : localBackdrop != null
-        ? localBackdrop
-        : apiBackdrop;
+      const bg =
+        ovBackdrop != null
+          ? ovBackdrop
+          : localBackdrop != null
+          ? localBackdrop
+          : apiBackdrop;
       const poster =
         (ov && (ov.poster || ov?.bg_poster?.poster)) ||
         (d && (d.poster || d?.bg_poster?.poster)) ||
@@ -1393,12 +1414,15 @@ export function MovieGrid({
   useEffect(() => {
     if (!showInlineInfo && !inlinePlayerOpen) return;
     try {
-      const showTimer = setTimeout(() => {
-        setShowEscHint(true);
-        if (!isLargeDesktop) {
-          setTimeout(() => setShowEscHint(false), 6000);
-        }
-      }, isLargeDesktop ? 2000 : 0);
+      const showTimer = setTimeout(
+        () => {
+          setShowEscHint(true);
+          if (!isLargeDesktop) {
+            setTimeout(() => setShowEscHint(false), 6000);
+          }
+        },
+        isLargeDesktop ? 2000 : 0
+      );
 
       return () => {
         clearTimeout(showTimer);
@@ -1421,7 +1445,8 @@ export function MovieGrid({
         const t = e.target as any;
         const tn = String(t?.tagName || "").toLowerCase();
         const editable = !!t?.isContentEditable;
-        if (tn === "input" || tn === "textarea" || tn === "select" || editable) return;
+        if (tn === "input" || tn === "textarea" || tn === "select" || editable)
+          return;
         e.preventDefault();
         if (k === "ArrowLeft") {
           handleInlinePrev();
@@ -1437,7 +1462,8 @@ export function MovieGrid({
   // Conditional returns AFTER all hooks
   // Show skeletons during initial load/validation when there’s no page data yet.
   if ((isLoading || isValidating) && pagesData.length === 0) {
-    const preferFive = !hideLoadMore && isArrowCandidate && (viewMode === "pagination");
+    const preferFive =
+      !hideLoadMore && isArrowCandidate && viewMode === "pagination";
     const skeletonCount = preferFive ? 5 : perPage;
     const gridClass =
       "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
@@ -1450,7 +1476,9 @@ export function MovieGrid({
             tabIndex={0}
             className={`group block bg-transparent hover:bg-transparent outline-none ${hoverOutlineClass} transition-all duration-200 cursor-pointer overflow-hidden rounded-sm`}
           >
-            <div className={`${aspectClass} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu`}>
+            <div
+              className={`${aspectClass} bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] isolate transform-gpu`}
+            >
               <Skeleton className="w-full h-full" />
             </div>
             {/* Под постером оставляем область для анимации частиц + скелетона текста */}
@@ -1471,7 +1499,8 @@ export function MovieGrid({
   }
 
   if (
-    ((viewMode === "pagination" && isArrowCandidate && !hideLoadMore) || isArrowDesktopMode) &&
+    ((viewMode === "pagination" && isArrowCandidate && !hideLoadMore) ||
+      isArrowDesktopMode) &&
     (isLoading || isValidating) &&
     !pagesData.some((p) => p.page === page)
   ) {
@@ -1514,8 +1543,6 @@ export function MovieGrid({
       </div>
     );
   }
-
-
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   // (handled below just before rendering the grid)
@@ -1641,7 +1668,9 @@ export function MovieGrid({
       }
       return;
     }
-    const atGlobalEnd = subIndex >= currChunkCount - 1 && (!nextPageEntry || nextPageItemsLen === 0);
+    const atGlobalEnd =
+      subIndex >= currChunkCount - 1 &&
+      (!nextPageEntry || nextPageItemsLen === 0);
     if (atGlobalEnd) {
       setInfoSwitching(false);
       return;
@@ -1649,7 +1678,6 @@ export function MovieGrid({
     setPendingSelectDir("next");
     handleNextArrow();
   };
-
 
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   if (!isLoading && !isValidating && movies.length === 0) {
@@ -1683,9 +1711,6 @@ export function MovieGrid({
             maskSize: "100% 100%",
           }}
         >
-
-          
-
           <div className="space-y-4">
             <div className="grid md:grid-cols-[minmax(160px,240px)_1fr] grid-cols-1 gap-3 md:gap-4 items-stretch">
               <div className="hidden md:block">
@@ -1739,9 +1764,7 @@ export function MovieGrid({
                     ? undefined
                     : {
                         width:
-                          tileWidth != null
-                            ? Math.max(tileWidth, 280)
-                            : 280,
+                          tileWidth != null ? Math.max(tileWidth, 280) : 280,
                       }
                 }
               >
@@ -1760,10 +1783,10 @@ export function MovieGrid({
                     if (rating) {
                       return (
                         <span
-                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
-                              rating
-                            )}`}
-                          >
+                          className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
+                            rating
+                          )}`}
+                        >
                           {formatRatingLabel(rating)}
                         </span>
                       );
@@ -1844,7 +1867,7 @@ export function MovieGrid({
                               {p}
                             </span>
                           ))}
-                          </div>
+                        </div>
                       ) : null;
                     })()
                   )}
@@ -1894,26 +1917,34 @@ export function MovieGrid({
                           onHeroInfoOverrideChange?.(null);
                         } catch {}
                       }
-                        try {
-                          const allLoadedMovies = pagesData
-                            .sort((a, b) => a.page - b.page)
-                            .flatMap(p => extractMoviesFromData(p.data));
-                          const ids = allLoadedMovies.map((m: any) => String(m.id));
-                          const index = ids.indexOf(String(selectedMovie.id));
-                          // Pass current page and total pages/url info if needed
-                          const ctx = { 
-                            origin: "grid", 
-                            ids, 
-                            index, 
-                            timestamp: Date.now(),
-                            listUrl: url,
-                            currentPage: page,
-                            totalLoaded: allLoadedMovies.length
-                          };
-                          localStorage.setItem("__navContext", JSON.stringify(ctx));
-                          const href = `${location.pathname}${location.search}`;
-                          localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
-                        } catch {}
+                      try {
+                        const allLoadedMovies = pagesData
+                          .sort((a, b) => a.page - b.page)
+                          .flatMap((p) => extractMoviesFromData(p.data));
+                        const ids = allLoadedMovies.map((m: any) =>
+                          String(m.id)
+                        );
+                        const index = ids.indexOf(String(selectedMovie.id));
+                        // Pass current page and total pages/url info if needed
+                        const ctx = {
+                          origin: "grid",
+                          ids,
+                          index,
+                          timestamp: Date.now(),
+                          listUrl: url,
+                          currentPage: page,
+                          totalLoaded: allLoadedMovies.length,
+                        };
+                        localStorage.setItem(
+                          "__navContext",
+                          JSON.stringify(ctx)
+                        );
+                        const href = `${location.pathname}${location.search}`;
+                        localStorage.setItem(
+                          "__returnTo",
+                          JSON.stringify({ href, timestamp: Date.now() })
+                        );
+                      } catch {}
                     }}
                     className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                   >
@@ -1969,8 +2000,7 @@ export function MovieGrid({
             }`}
             style={gridHeight != null ? { minHeight: gridHeight } : undefined}
           >
-              <div className="relative p-3 md:py-4 md:px-0 smoke-flash overflow-hidden">
-
+            <div className="relative p-3 md:py-4 md:px-0 smoke-flash overflow-hidden">
               <button
                 type="button"
                 aria-label="Закрыть"
@@ -2120,31 +2150,31 @@ export function MovieGrid({
                   </div>
                 </div>
                 <div
-                className="min-w-0 flex-1 md:mx-0 mx-auto"
-                style={
-                  isDesktop
-                    ? undefined
-                    : inlinePlayerOpen
-                    ? { width: "100%" }
-                    : {
-                        width:
-                          tileWidth != null
-                            ? Math.max(tileWidth, 280)
-                            : "calc((100% - 8px)/2)",
-                      }
-                }
-              >
-                {inlinePlayerOpen ? (
-                  <div
+                  className="min-w-0 flex-1 md:mx-0 mx-auto"
+                  style={
+                    isDesktop
+                      ? undefined
+                      : inlinePlayerOpen
+                      ? { width: "100%" }
+                      : {
+                          width:
+                            tileWidth != null
+                              ? Math.max(tileWidth, 280)
+                              : "calc((100% - 8px)/2)",
+                        }
+                  }
+                >
+                  {inlinePlayerOpen ? (
+                    <div
                       className={`relative mt-1 z-[10] w-full md:mr-12 md:mx-0 mx-auto ${
                         inlineClosing
                           ? "animate-out fade-out-0 zoom-out-95"
                           : "animate-in fade-in-0 zoom-in-95"
                       }`}
                     >
-                      
                       {(() => {
-                        const w = tileWidth != null ? Math.max(tileWidth, 280) : 280;
+                        const w =
+                          tileWidth != null ? Math.max(tileWidth, 280) : 280;
                         const h = Math.round((w * 3) / 2);
                         return (
                           <PlayerSelector
@@ -2178,19 +2208,21 @@ export function MovieGrid({
                             if (rating) {
                               const numRating = parseFloat(String(rating));
                               const matchPercent = Math.round(numRating * 10);
-                              
+
                               // Определяем цвет на основе рейтинга
                               const getMatchColor = (r: number) => {
-                                if (r >= 8) return 'text-green-400';
-                                if (r >= 7) return 'text-yellow-400';
-                                if (r >= 6) return 'text-orange-400';
-                                return 'text-red-400';
+                                if (r >= 8) return "text-green-400";
+                                if (r >= 7) return "text-yellow-400";
+                                if (r >= 6) return "text-orange-400";
+                                return "text-red-400";
                               };
-                              
+
                               const color = getMatchColor(numRating);
-                              
+
                               return (
-                                <span className={`text-[14px] md:text-[15px] font-bold ${color}`}>
+                                <span
+                                  className={`text-[14px] md:text-[15px] font-bold ${color}`}
+                                >
                                   {matchPercent}% Match
                                 </span>
                               );
@@ -2198,49 +2230,71 @@ export function MovieGrid({
                             return null;
                           })()}
                         </div>
-                        
+
                         {/* Страна, Год, Возраст, Время */}
                         <div className="flex items-center gap-1.5 flex-wrap text-[13px] md:text-[14px] text-zinc-400">
                           {(() => {
                             const d: any = selectedDetails || {};
-                            const countryRaw = d.country ?? selectedMovie!.country;
+                            const countryRaw =
+                              d.country ?? selectedMovie!.country;
                             const country = Array.isArray(countryRaw)
                               ? countryRaw[0]
-                              : typeof countryRaw === 'string'
-                              ? countryRaw.split(',')[0].trim()
+                              : typeof countryRaw === "string"
+                              ? countryRaw.split(",")[0].trim()
                               : null;
-                            
-                            const ov = (overridesMap as any)[String(selectedMovie!.id)] ?? null;
-                            const year = ov?.year ?? ov?.released ?? d.year ?? d.released ?? selectedMovie!.year;
-                            
-                            const ageRating = d.age_rating ?? d.ageRating ?? d.rating_mpaa ?? d.mpaa;
-                            
-                            const duration = d.duration ?? d.time ?? d.runtime ?? selectedMovie!.duration ?? selectedMovie!.time ?? selectedMovie!.runtime;
+
+                            const ov =
+                              (overridesMap as any)[
+                                String(selectedMovie!.id)
+                              ] ?? null;
+                            const year =
+                              ov?.year ??
+                              ov?.released ??
+                              d.year ??
+                              d.released ??
+                              selectedMovie!.year;
+
+                            const ageRating =
+                              d.age_rating ??
+                              d.ageRating ??
+                              d.rating_mpaa ??
+                              d.mpaa;
+
+                            const duration =
+                              d.duration ??
+                              d.time ??
+                              d.runtime ??
+                              selectedMovie!.duration ??
+                              selectedMovie!.time ??
+                              selectedMovie!.runtime;
                             let durationStr = null;
                             if (duration) {
                               const durStr = String(duration);
                               let mins = 0;
-                              
-                              if (durStr.includes(':')) {
-                                const parts = durStr.split(':').map(p => parseInt(p));
+
+                              if (durStr.includes(":")) {
+                                const parts = durStr
+                                  .split(":")
+                                  .map((p) => parseInt(p));
                                 if (parts.length >= 2) {
                                   mins = parts[0] * 60 + parts[1];
                                 }
                               } else {
                                 mins = parseInt(durStr);
                               }
-                              
+
                               if (!isNaN(mins) && mins > 0) {
                                 if (mins <= 60) {
                                   durationStr = `${mins}мин`;
                                 } else {
                                   const h = Math.floor(mins / 60);
                                   const m = mins % 60;
-                                  durationStr = m > 0 ? `${h}ч ${m}мин` : `${h}ч`;
+                                  durationStr =
+                                    m > 0 ? `${h}ч ${m}мин` : `${h}ч`;
                                 }
                               }
                             }
-                            
+
                             return (
                               <>
                                 {country && <span>{country}</span>}
@@ -2255,7 +2309,7 @@ export function MovieGrid({
                             );
                           })()}
                         </div>
-                        
+
                         {/* Жанры без фона */}
                         <div className="flex items-center gap-1.5 flex-wrap text-[13px] md:text-[14px] text-zinc-400">
                           {(() => {
@@ -2264,17 +2318,21 @@ export function MovieGrid({
                             const genres = Array.isArray(genreRaw)
                               ? genreRaw.slice(0, 3)
                               : typeof genreRaw === "string"
-                              ? genreRaw.split(/[,/|]/).map(g => g.trim()).filter(Boolean).slice(0, 3)
+                              ? genreRaw
+                                  .split(/[,/|]/)
+                                  .map((g) => g.trim())
+                                  .filter(Boolean)
+                                  .slice(0, 3)
                               : [];
-                            
+
                             if (genres.length === 0) return null;
-                            
+
                             return genres.map((genre, i) => (
                               <span key={i}>{genre}</span>
                             ));
                           })()}
                         </div>
-                  </div>
+                      </div>
                       <div className="mt-3 text-[14px] md:text-[15px] text-zinc-300 leading-relaxed overflow-hidden text-left max-w-[280px] md:max-w-[85%] md:mx-0 mx-auto min-h-[72px] md:min-h-[90px]">
                         {selectedLoading ? (
                           <div className="space-y-2">
@@ -2348,25 +2406,35 @@ export function MovieGrid({
                                 onHeroInfoOverrideChange?.(null);
                               } catch {}
                             }
-                          try {
-                            const allLoadedMovies = pagesData
-                              .sort((a, b) => a.page - b.page)
-                              .flatMap(p => extractMoviesFromData(p.data));
-                            const ids = allLoadedMovies.map((m: any) => String(m.id));
-                            const index = ids.indexOf(String(selectedMovie!.id));
-                            const ctx = { 
-                              origin: "grid", 
-                              ids, 
-                              index, 
-                              timestamp: Date.now(),
-                              listUrl: url,
-                              currentPage: page,
-                              totalLoaded: allLoadedMovies.length
-                            };
-                            localStorage.setItem("__navContext", JSON.stringify(ctx));
-                            const href = `${location.pathname}${location.search}`;
-                            localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
-                          } catch {}
+                            try {
+                              const allLoadedMovies = pagesData
+                                .sort((a, b) => a.page - b.page)
+                                .flatMap((p) => extractMoviesFromData(p.data));
+                              const ids = allLoadedMovies.map((m: any) =>
+                                String(m.id)
+                              );
+                              const index = ids.indexOf(
+                                String(selectedMovie!.id)
+                              );
+                              const ctx = {
+                                origin: "grid",
+                                ids,
+                                index,
+                                timestamp: Date.now(),
+                                listUrl: url,
+                                currentPage: page,
+                                totalLoaded: allLoadedMovies.length,
+                              };
+                              localStorage.setItem(
+                                "__navContext",
+                                JSON.stringify(ctx)
+                              );
+                              const href = `${location.pathname}${location.search}`;
+                              localStorage.setItem(
+                                "__returnTo",
+                                JSON.stringify({ href, timestamp: Date.now() })
+                              );
+                            } catch {}
                           }}
                           className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                         >
@@ -2376,10 +2444,9 @@ export function MovieGrid({
                         {selectedError && (
                           <span className="text-[12px] text-red-400">
                             {selectedError}
-                      </span>
-                    )}
-                  </div>
-                  
+                          </span>
+                        )}
+                      </div>
                     </>
                   )}
                 </div>
@@ -2451,21 +2518,29 @@ export function MovieGrid({
                       try {
                         const allLoadedMovies = pagesData
                           .sort((a, b) => a.page - b.page)
-                          .flatMap(p => extractMoviesFromData(p.data));
-                        const ids = allLoadedMovies.map((m: any) => String(m.id));
+                          .flatMap((p) => extractMoviesFromData(p.data));
+                        const ids = allLoadedMovies.map((m: any) =>
+                          String(m.id)
+                        );
                         const index = ids.indexOf(String(movie.id));
-                        const ctx = { 
-                          origin: "grid", 
-                          ids, 
-                          index, 
+                        const ctx = {
+                          origin: "grid",
+                          ids,
+                          index,
                           timestamp: Date.now(),
                           listUrl: url,
                           currentPage: page,
-                          totalLoaded: allLoadedMovies.length
+                          totalLoaded: allLoadedMovies.length,
                         };
-                        localStorage.setItem("__navContext", JSON.stringify(ctx));
+                        localStorage.setItem(
+                          "__navContext",
+                          JSON.stringify(ctx)
+                        );
                         const href = `${location.pathname}${location.search}`;
-                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                        localStorage.setItem(
+                          "__returnTo",
+                          JSON.stringify({ href, timestamp: Date.now() })
+                        );
                       } catch {}
                       NProgress.start();
                       router.push(`/movie/${movie.id}`);
@@ -2537,45 +2612,65 @@ export function MovieGrid({
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
                       const known = ovEntry !== undefined;
-                      const posterSrc = known ? (ovEntry?.poster ?? movie.poster ?? null) : null;
+                      const posterSrc = known
+                        ? ovEntry?.poster ?? movie.poster ?? null
+                        : null;
                       const hasVideo = !!movie.intro_video;
                       const waiting = !known;
                       if (hasVideo) {
                         if (waiting) {
                           return isLoadMoreMode ? (
-                          <a
-                            href={`/movie/${movie.id}`}
-                            className="block absolute inset-0"
-                            onClick={(e) => {
-                              if (
-                                e.button === 0 &&
-                                !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
-                              ) {
-                                e.preventDefault();
-                              }
-                              try {
-                                const allLoadedMovies = pagesData
-                                  .sort((a, b) => a.page - b.page)
-                                  .flatMap(p => extractMoviesFromData(p.data));
-                                const ids = allLoadedMovies.map((m: any) => String(m.id));
-                                const index = ids.indexOf(String(movie.id));
-                                const ctx = { 
-                                  origin: "grid", 
-                                  ids, 
-                                  index, 
-                                  timestamp: Date.now(),
-                                  listUrl: url,
-                                  currentPage: page,
-                                  totalLoaded: allLoadedMovies.length
-                                };
-                                localStorage.setItem("__navContext", JSON.stringify(ctx));
-                                const href = `${location.pathname}${location.search}`;
-                                localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
-                              } catch {}
-                            }}
-                          >
-                            <Skeleton className="absolute inset-0 w-full h-full" />
-                          </a>
+                            <a
+                              href={`/movie/${movie.id}`}
+                              className="block absolute inset-0"
+                              onClick={(e) => {
+                                if (
+                                  e.button === 0 &&
+                                  !(
+                                    e.metaKey ||
+                                    e.ctrlKey ||
+                                    e.shiftKey ||
+                                    e.altKey
+                                  )
+                                ) {
+                                  e.preventDefault();
+                                }
+                                try {
+                                  const allLoadedMovies = pagesData
+                                    .sort((a, b) => a.page - b.page)
+                                    .flatMap((p) =>
+                                      extractMoviesFromData(p.data)
+                                    );
+                                  const ids = allLoadedMovies.map((m: any) =>
+                                    String(m.id)
+                                  );
+                                  const index = ids.indexOf(String(movie.id));
+                                  const ctx = {
+                                    origin: "grid",
+                                    ids,
+                                    index,
+                                    timestamp: Date.now(),
+                                    listUrl: url,
+                                    currentPage: page,
+                                    totalLoaded: allLoadedMovies.length,
+                                  };
+                                  localStorage.setItem(
+                                    "__navContext",
+                                    JSON.stringify(ctx)
+                                  );
+                                  const href = `${location.pathname}${location.search}`;
+                                  localStorage.setItem(
+                                    "__returnTo",
+                                    JSON.stringify({
+                                      href,
+                                      timestamp: Date.now(),
+                                    })
+                                  );
+                                } catch {}
+                              }}
+                            >
+                              <Skeleton className="absolute inset-0 w-full h-full" />
+                            </a>
                           ) : (
                             <Skeleton className="absolute inset-0 w-full h-full" />
                           );
@@ -2587,7 +2682,12 @@ export function MovieGrid({
                             onClick={(e) => {
                               if (
                                 e.button === 0 &&
-                                !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+                                !(
+                                  e.metaKey ||
+                                  e.ctrlKey ||
+                                  e.shiftKey ||
+                                  e.altKey
+                                )
                               ) {
                                 e.preventDefault();
                               }
@@ -2610,13 +2710,22 @@ export function MovieGrid({
                         );
                       }
                       if (posterSrc && !errorImages.has(String(movie.id))) {
-                        const eager = (virtualizationEnabled && rowHeight ? vVirtStart + index : index) < effectiveCols;
+                        const eager =
+                          (virtualizationEnabled && rowHeight
+                            ? vVirtStart + index
+                            : index) < effectiveCols;
                         const isLoaded = loadedImages.has(String(movie.id));
                         const cls = `absolute inset-0 w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
-                          isLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-md scale-[1.02]"
+                          isLoaded
+                            ? "opacity-100 blur-0 scale-100"
+                            : "opacity-0 blur-md scale-[1.02]"
                         }`;
-                        const style = { transition: "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out", willChange: "opacity, filter, transform" } as const;
-                        
+                        const style = {
+                          transition:
+                            "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                          willChange: "opacity, filter, transform",
+                        } as const;
+
                         const content = (
                           <img
                             src={posterSrc || "/placeholder.svg"}
@@ -2633,13 +2742,23 @@ export function MovieGrid({
 
                         return (
                           <>
-                            {!isLoaded && <Skeleton className="absolute inset-0 w-full h-full rounded-[10px]" />}
+                            {!isLoaded && (
+                              <Skeleton className="absolute inset-0 w-full h-full rounded-[10px]" />
+                            )}
                             {isLoadMoreMode ? (
                               <a
                                 href={`/movie/${movie.id}`}
                                 className="block absolute inset-0"
                                 onClick={(e) => {
-                                  if (e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+                                  if (
+                                    e.button === 0 &&
+                                    !(
+                                      e.metaKey ||
+                                      e.ctrlKey ||
+                                      e.shiftKey ||
+                                      e.altKey
+                                    )
+                                  ) {
                                     e.preventDefault();
                                   }
                                 }}
@@ -2659,22 +2778,29 @@ export function MovieGrid({
                             className="block"
                             onClick={() => {
                               try {
-                              const allLoadedMovies = pagesData
-                                .sort((a, b) => a.page - b.page)
-                                .flatMap(p => extractMoviesFromData(p.data));
-                              const ids = allLoadedMovies.map((m: any) => String(m.id));
-                              const index = ids.indexOf(String(movie.id));
-                              const ctx = { 
-                                origin: "grid", 
-                                ids, 
-                                index, 
-                                timestamp: Date.now(),
-                                listUrl: url,
-                                currentPage: page,
-                                totalLoaded: allLoadedMovies.length
-                              };
-                              localStorage.setItem("__navContext", JSON.stringify(ctx));
-                            } catch {}
+                                const allLoadedMovies = pagesData
+                                  .sort((a, b) => a.page - b.page)
+                                  .flatMap((p) =>
+                                    extractMoviesFromData(p.data)
+                                  );
+                                const ids = allLoadedMovies.map((m: any) =>
+                                  String(m.id)
+                                );
+                                const index = ids.indexOf(String(movie.id));
+                                const ctx = {
+                                  origin: "grid",
+                                  ids,
+                                  index,
+                                  timestamp: Date.now(),
+                                  listUrl: url,
+                                  currentPage: page,
+                                  totalLoaded: allLoadedMovies.length,
+                                };
+                                localStorage.setItem(
+                                  "__navContext",
+                                  JSON.stringify(ctx)
+                                );
+                              } catch {}
                             }}
                           >
                             <Skeleton className="absolute inset-0 w-full h-full" />
@@ -2691,38 +2817,57 @@ export function MovieGrid({
                             try {
                               const allLoadedMovies = pagesData
                                 .sort((a, b) => a.page - b.page)
-                                .flatMap(p => extractMoviesFromData(p.data));
-                              const ids = allLoadedMovies.map((m: any) => String(m.id));
+                                .flatMap((p) => extractMoviesFromData(p.data));
+                              const ids = allLoadedMovies.map((m: any) =>
+                                String(m.id)
+                              );
                               const index = ids.indexOf(String(movie.id));
-                              const ctx = { 
-                                origin: "grid", 
-                                ids, 
-                                index, 
+                              const ctx = {
+                                origin: "grid",
+                                ids,
+                                index,
                                 timestamp: Date.now(),
                                 listUrl: url,
                                 currentPage: page,
-                                totalLoaded: allLoadedMovies.length
+                                totalLoaded: allLoadedMovies.length,
                               };
-                              localStorage.setItem("__navContext", JSON.stringify(ctx));
+                              localStorage.setItem(
+                                "__navContext",
+                                JSON.stringify(ctx)
+                              );
                               const href = `${location.pathname}${location.search}`;
-                              localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                              localStorage.setItem(
+                                "__returnTo",
+                                JSON.stringify({ href, timestamp: Date.now() })
+                              );
                             } catch {}
                           }}
                         >
-                          <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                          <div className="text-zinc-600 text-[10px] text-center p-1">
+                            Нет постера
+                          </div>
                         </a>
                       ) : (
-                        <div className="text-zinc-600 text-[10px] text-center p-1">Нет постера</div>
+                        <div className="text-zinc-600 text-[10px] text-center p-1">
+                          Нет постера
+                        </div>
                       );
                     })()}
                     {(() => {
                       const idStr = String(movie.id);
                       const ovEntry = (overridesMap as any)[idStr];
                       const known = ovEntry !== undefined;
-                      const posterSrc = known ? (ovEntry?.poster ?? movie.poster ?? null) : null;
-                      return (posterSrc || movie.intro_video) && loadedImages.has(String(movie.id)) ? (
+                      const posterSrc = known
+                        ? ovEntry?.poster ?? movie.poster ?? null
+                        : null;
+                      return (posterSrc || movie.intro_video) &&
+                        loadedImages.has(String(movie.id)) ? (
                         <div
-                          className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${isKeyboardNav ? "" : "group-hover:opacity-100 group-focus-visible:opacity-100"} transition-opacity duration-300`}
+                          className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${
+                            isKeyboardNav
+                              ? ""
+                              : "group-hover:opacity-100 group-focus-visible:opacity-100"
+                          } transition-opacity duration-300`}
                           style={{
                             background:
                               "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
@@ -2730,29 +2875,139 @@ export function MovieGrid({
                         />
                       ) : null;
                     })()}
-                      {loadedImages.has(String(movie.id)) && (
-                        <div
-                          className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${isKeyboardNav ? "" : "group-hover:opacity-100 group-focus-visible:opacity-100"} transition-opacity duration-300`}
-                          style={{
-                            background:
-                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                          }}
-                        />
-                      )}
-                    {movie.rating && (
+                    {loadedImages.has(String(movie.id)) && (
                       <div
-                        className={`absolute top-1 right-1 md:top-2 md:right-2 px-2 md:px-2 py-[3px] md:py-0.5 rounded-full md:rounded-md text-[11px] md:text-[13px] text-white font-bold z-[12] ${ratingBgColor(
-                          movie.rating
-                        )} md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black tracking-normal md:border md:border-white/10`}
+                        className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${
+                          isKeyboardNav
+                            ? ""
+                            : "group-hover:opacity-100 group-focus-visible:opacity-100"
+                        } transition-opacity duration-300`}
+                        style={{
+                          background:
+                            "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                        }}
+                      />
+                    )}
+                    {!movie.isViewAll && movie.id && (
+                      <button
+                        type="button"
+                        aria-pressed={isFavorite(String(movie.id))}
+                        aria-label={
+                          isFavorite(String(movie.id))
+                            ? "Убрать из избранного"
+                            : "Добавить в избранное"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleFavorite({
+                            id: String(movie.id),
+                            title: movie.title,
+                            poster: movie.poster,
+                            backdrop: movie.backdrop,
+                            year: movie.year,
+                            rating: movie.rating,
+                            country: (movie as any).country,
+                            genre: movie.genre,
+                            description: (movie as any).description,
+                            duration: (movie as any).duration,
+                            logo: (movie as any).logo,
+                            poster_colors: (movie as any).poster_colors,
+                            type: (movie as any).type ?? null,
+                          });
+                        }}
+                        className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
                       >
-                        {formatRatingLabel(movie.rating)}
-                      </div>
+                        <svg
+                          className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"
+                          width="32"
+                          height="46"
+                          viewBox="0 0 24 34"
+                          xmlns="http://www.w3.org/2000/svg"
+                          role="presentation"
+                        >
+                          <polygon
+                            className="ipc-watchlist-ribbon__bg-ribbon"
+                            fill={
+                              isFavorite(String(movie.id))
+                                ? "#f97316"
+                                : "#000000"
+                            }
+                            fillOpacity={0.9}
+                            points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                          ></polygon>
+                          <polygon
+                            className="ipc-watchlist-ribbon__bg-hover"
+                            fill={
+                              isFavorite(String(movie.id))
+                                ? "rgba(249,115,22,0.2)"
+                                : "rgba(255,255,255,0.22)"
+                            }
+                            points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                          ></polygon>
+                          <polygon
+                            className="ipc-watchlist-ribbon__bg-shadow"
+                            fill="rgba(0,0,0,0.45)"
+                            points="24 31.7728343 24 33.7728343 12.2436611 28.2926049 0 34 0 32 12.2436611 26.2926049"
+                          ></polygon>
+                          <g transform="translate(12 15) scale(0.7) translate(-12 -12)">
+                            {isFavorite(String(movie.id)) ? (
+                              <path
+                                d="M20.285 6.709 18.871 5.295 9 15.166 5.129 11.295 3.715 12.709 9 18 20.285 6.709Z"
+                                fill="white"
+                                fillOpacity={0.95}
+                              />
+                            ) : (
+                              <path
+                                d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"
+                                fill="white"
+                                fillOpacity={0.95}
+                              />
+                            )}
+                          </g>
+                        </svg>
+                      </button>
                     )}
-                    {movie.quality && (
-                      <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-sm text-[10px] md:text-[12px] bg-white text-black border border-white/70 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
-                        {String(movie.quality)}
-                      </div>
-                    )}
+                    {(() => {
+                      const rawTags = (movie as any)?.tags;
+                      let tagLabel: string | null = null;
+                      if (Array.isArray(rawTags)) {
+                        tagLabel =
+                          rawTags
+                            .map((v) => String(v || "").trim())
+                            .find((v) => v.length > 0) || null;
+                      } else if (typeof rawTags === "string") {
+                        tagLabel =
+                          rawTags
+                            .split(/[,/|]/)
+                            .map((p) => p.trim())
+                            .find((p) => p.length > 0) || null;
+                      }
+
+                      return movie.rating || movie.quality || tagLabel ? (
+                        <div className="absolute top-1 right-1 md:top-2 md:right-2 flex flex-col items-end gap-1 z-[12]">
+                          {movie.rating && (
+                            <div
+                              className={`px-2 md:px-2 py-[3px] md:py-0.5 rounded-full md:rounded-md text-[11px] md:text-[13px] text-white font-bold ${ratingBgColor(
+                                movie.rating
+                              )} md:shadow-[0_4px_12px_rgba(0,0,0,0.5)] md:font-black tracking-normal md:border md:border-white/10`}
+                            >
+                              {formatRatingLabel(movie.rating)}
+                            </div>
+                          )}
+                          {movie.quality && (
+                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[10px] md:text-[12px] bg-white text-black border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] font-black tracking-tight">
+                              {String(movie.quality)}
+                            </div>
+                          )}
+                          {tagLabel && (
+                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[10px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                              {tagLabel}
+                            </div>
+                          )}
+                        </div>
+                      ) : null;
+                    })()}
                   </div>
                   {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
                   <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
@@ -2765,7 +3020,9 @@ export function MovieGrid({
                       </h3>
                       {(() => {
                         const year = movie.year ? String(movie.year) : null;
-                        const quality = movie.quality ? String(movie.quality) : null;
+                        const quality = movie.quality
+                          ? String(movie.quality)
+                          : null;
                         const tagsArr = (() => {
                           const raw = (movie as any)?.tags;
                           let items: string[] = [];
@@ -2781,7 +3038,8 @@ export function MovieGrid({
                           }
                           return items.slice(0, 1);
                         })();
-                        if (!year && !quality && tagsArr.length === 0) return null;
+                        if (!year && !quality && tagsArr.length === 0)
+                          return null;
                         return (
                           <div className="flex items-center gap-2 justify-start md:justify-start text-[10px] md:text-[12px] text-zinc-400/70 transition-colors duration-200 group-hover:text-zinc-300 group-focus-visible:text-zinc-300">
                             {year && <span>{year}</span>}
@@ -2932,10 +3190,14 @@ export function MovieGrid({
                     </div>
                   ) : null}
                 </div>
-              <div
-                className="min-w-0 md:mx-0 mx-auto"
-                style={tileWidth != null ? { width: Math.max(tileWidth, 280) } : undefined}
-              >
+                <div
+                  className="min-w-0 md:mx-0 mx-auto"
+                  style={
+                    tileWidth != null
+                      ? { width: Math.max(tileWidth, 280) }
+                      : undefined
+                  }
+                >
                   <div className="flex items-center gap-2">
                     <h3
                       className="text-sm md:text-base font-semibold text-zinc-100 truncate"
@@ -2950,10 +3212,10 @@ export function MovieGrid({
                         selectedMovie.rating;
                       return rating ? (
                         <span
-                            className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
-                              rating
-                            )}`}
-                          >
+                          className={`px-2 py-[3px] rounded-full text-[11px] md:text-[12px] text-white font-bold ${ratingBgColor(
+                            rating
+                          )}`}
+                        >
                           {formatRatingLabel(rating)}
                         </span>
                       ) : null;
@@ -3060,21 +3322,29 @@ export function MovieGrid({
                         } catch {}
                         const allLoadedMovies = pagesData
                           .sort((a, b) => a.page - b.page)
-                          .flatMap(p => extractMoviesFromData(p.data));
-                        const ids = allLoadedMovies.map((m: any) => String(m.id));
+                          .flatMap((p) => extractMoviesFromData(p.data));
+                        const ids = allLoadedMovies.map((m: any) =>
+                          String(m.id)
+                        );
                         const index = ids.indexOf(String(selectedMovie.id));
-                        const ctx = { 
-                          origin: "grid", 
-                          ids, 
-                          index, 
+                        const ctx = {
+                          origin: "grid",
+                          ids,
+                          index,
                           timestamp: Date.now(),
                           listUrl: url,
                           currentPage: page,
-                          totalLoaded: allLoadedMovies.length
+                          totalLoaded: allLoadedMovies.length,
                         };
-                        localStorage.setItem("__navContext", JSON.stringify(ctx));
+                        localStorage.setItem(
+                          "__navContext",
+                          JSON.stringify(ctx)
+                        );
                         const href = `${location.pathname}${location.search}`;
-                        localStorage.setItem("__returnTo", JSON.stringify({ href, timestamp: Date.now() }));
+                        localStorage.setItem(
+                          "__returnTo",
+                          JSON.stringify({ href, timestamp: Date.now() })
+                        );
                       }}
                       className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-md text-[15px] font-semibold text-white bg-zinc-600/80 hover:bg-zinc-600/60 transition-all duration-200"
                     >
@@ -3082,14 +3352,13 @@ export function MovieGrid({
                       Подробнее
                     </Link>
 
-                {selectedError && (
-                  <span className="text-[12px] text-red-400">
-                    {selectedError}
-                  </span>
-                )}
-              </div>
-              
-            </div>
+                    {selectedError && (
+                      <span className="text-[12px] text-red-400">
+                        {selectedError}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -3115,54 +3384,64 @@ export function MovieGrid({
         </div>
       )}
 
-      {showEscHint && isLargeDesktop && typeof document !== "undefined" && createPortal(
-        <div 
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300 animate-in fade-in duration-300 cursor-default"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Не закрываем по клику на фон, только по кнопке
-          }}
-        >
-          <div 
-            className="relative bg-zinc-900/90 border border-zinc-700/50 rounded-xl p-8 max-w-2xl text-center shadow-2xl transform scale-100"
-            onClick={(e) => e.stopPropagation()}
+      {showEscHint &&
+        isLargeDesktop &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300 animate-in fade-in duration-300 cursor-default"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Не закрываем по клику на фон, только по кнопке
+            }}
           >
-            <button 
-              onClick={() => setShowEscHint(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+            <div
+              className="relative bg-zinc-900/90 border border-zinc-700/50 rounded-xl p-8 max-w-2xl text-center shadow-2xl transform scale-100"
+              onClick={(e) => e.stopPropagation()}
             >
-              <IconX size={24} />
-            </button>
-            <div className="flex flex-col items-center gap-6">
-              <div className="text-2xl font-bold text-white">Навигация</div>
-              <div className="flex items-center gap-4 text-lg text-zinc-300">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex gap-2">
-                    <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">←</kbd>
-                    <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">→</kbd>
-                  </div>
-                  <span className="text-sm opacity-70">Переключение</span>
-                </div>
-                <div className="h-12 w-px bg-zinc-700 mx-4"></div>
-                <div className="flex flex-col items-center gap-2">
-                  <kbd className="px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl">ESC</kbd>
-                  <span className="text-sm opacity-70">Закрыть</span>
-                </div>
-              </div>
-              <p className="text-zinc-400 max-w-md">
-                Используйте стрелки на клавиатуре для быстрого переключения между фильмами, а ESC для закрытия окна.
-              </p>
-              <button 
+              <button
                 onClick={() => setShowEscHint(false)}
-                className="mt-4 px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors"
+                className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
               >
-                Понятно
+                <IconX size={24} />
               </button>
+              <div className="flex flex-col items-center gap-6">
+                <div className="text-2xl font-bold text-white">Навигация</div>
+                <div className="flex items-center gap-4 text-lg text-zinc-300">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="flex gap-2">
+                      <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">
+                        ←
+                      </kbd>
+                      <kbd className="px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl min-w-[48px] text-center">
+                        →
+                      </kbd>
+                    </div>
+                    <span className="text-sm opacity-70">Переключение</span>
+                  </div>
+                  <div className="h-12 w-px bg-zinc-700 mx-4"></div>
+                  <div className="flex flex-col items-center gap-2">
+                    <kbd className="px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-600 font-bold text-white text-xl">
+                      ESC
+                    </kbd>
+                    <span className="text-sm opacity-70">Закрыть</span>
+                  </div>
+                </div>
+                <p className="text-zinc-400 max-w-md">
+                  Используйте стрелки на клавиатуре для быстрого переключения
+                  между фильмами, а ESC для закрытия окна.
+                </p>
+                <button
+                  onClick={() => setShowEscHint(false)}
+                  className="mt-4 px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors"
+                >
+                  Понятно
+                </button>
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

@@ -1398,5 +1398,12 @@
   },
   "6593faa1e264662a2fc4a2d6": {
     "poster_logo": "/movies/logo/109.webp"
+  },
+  "68bf51e6d81f0a32d979a593": {
+    "poster_logo": "/movies/logo/110.webp",
+    "bg_poster": {
+      "backdrop": "/movies/zadanie-backdrop.webp"
+    },
+    "poster": "/movies/zadanie-poster.webp"
   }
 }

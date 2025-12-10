@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import {
   Search,
   User,
@@ -261,8 +267,8 @@ function NavItem({
     disabled
       ? "text-zinc-500 cursor-not-allowed opacity-60"
       : active
-        ? "text-white bg-white/10"
-        : "text-zinc-400 hover:text-white hover:bg-white/5"
+      ? "text-white bg-white/10"
+      : "text-zinc-400 hover:text-white hover:bg-white/5"
   }`;
 
   return (
@@ -277,16 +283,14 @@ function NavItem({
             >
               {icon}
             </button>
+          ) : disabled ? (
+            <button className={className} disabled aria-disabled>
+              {icon}
+            </button>
           ) : (
-            disabled ? (
-              <button className={className} disabled aria-disabled>
-                {icon}
-              </button>
-            ) : (
-              <Link href={href || "#"} className={className}>
-                {icon}
-              </Link>
-            )
+            <Link href={href || "#"} className={className}>
+              {icon}
+            </Link>
           )}
         </TooltipTrigger>
         <TooltipContent
@@ -459,9 +463,9 @@ export function DesktopHome({
 }) {
   const [activeMovie, setActiveMovie] = useState<any>(null);
   const [slideIndex, setSlideIndex] = useState(0);
-  const [slideDirection, setSlideDirection] = useState<"next" | "prev" | "none">(
-    "none"
-  );
+  const [slideDirection, setSlideDirection] = useState<
+    "next" | "prev" | "none"
+  >("none");
   const [isIndicatorHovered, setIsIndicatorHovered] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFetchingOverride, setIsFetchingOverride] = useState(false);
@@ -472,7 +476,12 @@ export function DesktopHome({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWideClock, setShowWideClock] = useState(false);
   const [clockText, setClockText] = useState<string>("");
-  const { favorites, ready: favoritesReady, toggleFavorite, isFavorite } = useFavorites();
+  const {
+    favorites,
+    ready: favoritesReady,
+    toggleFavorite,
+    isFavorite,
+  } = useFavorites();
   const favoritesCount = (favorites || []).length;
   const showFavoritesNav = true;
   const [viewportHeight, setViewportHeight] = useState<number>(
@@ -662,9 +671,7 @@ export function DesktopHome({
         const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
         return (
           "#" +
-          [r, g, b]
-            .map((v) => clamp(v).toString(16).padStart(2, "0"))
-            .join("")
+          [r, g, b].map((v) => clamp(v).toString(16).padStart(2, "0")).join("")
         );
       };
       const tl = toHex(ovColors?.accentTl) || toHex(ovColors?.dominant1);
@@ -996,38 +1003,41 @@ export function DesktopHome({
   const swrKey = activeSlide?.items ? null : activeSlide?.url || null;
   const { data } = useSWR(swrKey, fetcher);
 
-  const normalizeMovieForHero = useCallback((item: any): NormalizedMovie | null => {
-    if (!item) return null;
-    const d = item.details ?? item;
-    const normalized: NormalizedMovie = {
-      id: d?.id ?? item.id,
-      title: d?.name ?? item.title ?? "Без названия",
-      poster: d?.poster ?? item.poster ?? null,
-      backdrop:
-        d?.bg_poster?.backdrop ??
-        d?.wide_poster ??
-        d?.backdrop ??
-        item.backdrop ??
-        d?.bg ??
-        item.poster ??
-        null,
-      year: d?.released ?? item.year,
-      rating: d?.rating_kp ?? item.rating,
-      country: d?.country ?? item.country,
-      genre: d?.genre ?? item.genre,
-      description: d?.about ?? item.about ?? item.description ?? null,
-      duration: d?.duration ?? item.duration,
-      logo: item.logo ?? d?.poster_logo ?? null,
-      poster_colors:
-        item.poster_colors ??
-        d?.poster_colors ??
-        d?.colors ??
-        item.colors ??
-        null,
-      type: d?.type ?? item.type ?? null,
-    };
-    return normalized;
-  }, []);
+  const normalizeMovieForHero = useCallback(
+    (item: any): NormalizedMovie | null => {
+      if (!item) return null;
+      const d = item.details ?? item;
+      const normalized: NormalizedMovie = {
+        id: d?.id ?? item.id,
+        title: d?.name ?? item.title ?? "Без названия",
+        poster: d?.poster ?? item.poster ?? null,
+        backdrop:
+          d?.bg_poster?.backdrop ??
+          d?.wide_poster ??
+          d?.backdrop ??
+          item.backdrop ??
+          d?.bg ??
+          item.poster ??
+          null,
+        year: d?.released ?? item.year,
+        rating: d?.rating_kp ?? item.rating,
+        country: d?.country ?? item.country,
+        genre: d?.genre ?? item.genre,
+        description: d?.about ?? item.about ?? item.description ?? null,
+        duration: d?.duration ?? item.duration,
+        logo: item.logo ?? d?.poster_logo ?? null,
+        poster_colors:
+          item.poster_colors ??
+          d?.poster_colors ??
+          d?.colors ??
+          item.colors ??
+          null,
+        type: d?.type ?? item.type ?? null,
+      };
+      return normalized;
+    },
+    []
+  );
 
   // Scroll Jacking Logic
   useEffect(() => {
@@ -1086,7 +1096,8 @@ export function DesktopHome({
 
     // If we already have a logo, no need to fetch
     // BUT if we just switched slides (isFetchingOverride is true manually set), we MUST proceed
-    if (activeMovie.logo && !isFetchingOverride && overrideRefresh === 0) return;
+    if (activeMovie.logo && !isFetchingOverride && overrideRefresh === 0)
+      return;
 
     const fetchOverride = async () => {
       if (!isFetchingOverride) setIsFetchingOverride(true); // Ensure loading state is on
@@ -1130,10 +1141,15 @@ export function DesktopHome({
 
   useEffect(() => {
     const handler = (event: Event) => {
-      const detail = (event as CustomEvent)?.detail as { ids?: string[]; op?: string; ts?: number } | undefined;
+      const detail = (event as CustomEvent)?.detail as
+        | { ids?: string[]; op?: string; ts?: number }
+        | undefined;
       const changedIds = detail?.ids || [];
       if (changedIds.length === 0 && activeMovie?.id == null) return;
-      if (changedIds.length === 0 || changedIds.some((id) => String(id) === String(activeMovie?.id))) {
+      if (
+        changedIds.length === 0 ||
+        changedIds.some((id) => String(id) === String(activeMovie?.id))
+      ) {
         // Drop cached entry for current movie
         try {
           const cache =
@@ -1145,14 +1161,16 @@ export function DesktopHome({
       }
     };
     window.addEventListener("override:changed", handler as EventListener);
-    return () => window.removeEventListener("override:changed", handler as EventListener);
+    return () =>
+      window.removeEventListener("override:changed", handler as EventListener);
   }, [activeMovie?.id]);
 
   useEffect(() => {
     if (!activeSlide) return;
     const rawList = (() => {
       if (Array.isArray(activeSlide.items)) return activeSlide.items;
-      if (data && Array.isArray((data as any).channels)) return (data as any).channels;
+      if (data && Array.isArray((data as any).channels))
+        return (data as any).channels;
       if (Array.isArray(data)) return data;
       return [];
     })();
@@ -1178,7 +1196,8 @@ export function DesktopHome({
     };
 
     const prevSlideKey = lastUrlRef.current;
-    const nextSlideKey = activeSlide.id || activeSlide.url || String(activeSlide.title);
+    const nextSlideKey =
+      activeSlide.id || activeSlide.url || String(activeSlide.title);
     if (prevSlideKey !== nextSlideKey) {
       lastUrlRef.current = nextSlideKey;
       if (!cachedOverride) setIsFetchingOverride(true);
@@ -1258,37 +1277,37 @@ export function DesktopHome({
   const logoHeightClass = isFullscreen
     ? "h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px]"
     : isTinyHeight
-      ? "h-[68px] md:h-[74px] lg:h-[80px] xl:h-[88px]"
-      : isShortHeight
-        ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
-        : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
+    ? "h-[68px] md:h-[74px] lg:h-[80px] xl:h-[88px]"
+    : isShortHeight
+    ? "h-[82px] md:h-[94px] lg:h-[100px] xl:h-[104px]"
+    : "h-[110px] md:h-[110px] lg:h-[110px] xl:h-[110px]";
 
   // Фиксируем высоту описания, чтобы при переключении карточек не прыгал макет
   const descriptionHeightClass = isFullscreen
     ? "h-[140px] md:h-[152px] overflow-hidden"
     : isShortHeight
-      ? "h-[72px] md:h-[76px] overflow-hidden"
-      : "h-[116px] md:h-[128px] overflow-hidden";
+    ? "h-[72px] md:h-[76px] overflow-hidden"
+    : "h-[116px] md:h-[128px] overflow-hidden";
 
   const sliderAnimClass = !isMounted
     ? ""
     : slideDirection === "next"
-      ? "animate-in fade-in slide-in-from-bottom-6 duration-500"
-      : slideDirection === "prev"
-        ? "animate-in fade-in slide-in-from-top-6 duration-500"
-        : "animate-in fade-in duration-500";
+    ? "animate-in fade-in slide-in-from-bottom-6 duration-500"
+    : slideDirection === "prev"
+    ? "animate-in fade-in slide-in-from-top-6 duration-500"
+    : "animate-in fade-in duration-500";
 
   const sliderMarginClass = isFullscreen
     ? "mt-[60px] md:mt-[72px] lg:mt-[88px] xl:mt-[108px]"
     : isShortHeight
-      ? "mt-4 md:mt-6 lg:mt-7"
-      : "mt-6 md:mt-8 lg:mt-10";
+    ? "mt-4 md:mt-6 lg:mt-7"
+    : "mt-6 md:mt-8 lg:mt-10";
 
   const logoBlockMarginClass = isTinyHeight
     ? "mt-[4px] md:mt-[6px] lg:mt-[8px] xl:mt-[10px]"
     : isShortHeight
-      ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
-      : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
+    ? "mt-[6px] md:mt-[8px] lg:mt-[10px] xl:mt-[12px]"
+    : "mt-[12px] md:mt-[14px] lg:mt-[16px] xl:mt-[18px]";
 
   // Убираем line-clamp, чтобы не было двойных многоточий при обрезке
   const descriptionClampClass = "";
@@ -1359,9 +1378,9 @@ export function DesktopHome({
   if (!activeSlide) return null;
 
   useEffect(() => {
-    const meta = document.querySelector('meta[name="theme-color"]') as
-      | HTMLMetaElement
-      | null;
+    const meta = document.querySelector(
+      'meta[name="theme-color"]'
+    ) as HTMLMetaElement | null;
     if (!meta) return;
     const color =
       enablePosterColors && paletteReady && ubColors?.tl
@@ -1423,9 +1442,15 @@ export function DesktopHome({
                   <Download className="w-5 h-5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={8} className="bg-white text-black border-0 shadow-xl">
+              <TooltipContent
+                side="bottom"
+                sideOffset={8}
+                className="bg-white text-black border-0 shadow-xl"
+              >
                 <p className="text-xs font-semibold">
-                  {installPrompt ? "Установить как приложение" : "Установка недоступна в этом браузере"}
+                  {installPrompt
+                    ? "Установить как приложение"
+                    : "Установка недоступна в этом браузере"}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -1436,7 +1461,9 @@ export function DesktopHome({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                aria-label={isFullscreen ? "Обычный режим" : "Полноэкранный режим"}
+                aria-label={
+                  isFullscreen ? "Обычный режим" : "Полноэкранный режим"
+                }
                 onClick={toggleFullscreen}
                 className="h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all flex"
               >
@@ -1447,9 +1474,15 @@ export function DesktopHome({
                 )}
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={8} className="bg-white text-black border-0 shadow-xl">
+            <TooltipContent
+              side="bottom"
+              sideOffset={8}
+              className="bg-white text-black border-0 shadow-xl"
+            >
               <p className="text-xs font-semibold">
-                {isFullscreen ? "Выйти из полноэкранного" : "Полноэкранный режим"}
+                {isFullscreen
+                  ? "Выйти из полноэкранного"
+                  : "Полноэкранный режим"}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -1462,133 +1495,133 @@ export function DesktopHome({
       >
         <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
           <div className="w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
-          {/* Movie Info */}
-          {activeMovie ? (
-            <>
-              <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
-                <div
-                  className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out ${logoBlockMarginClass}`}
-                >
-                  {activeMovie.logo ? (
-                    <img
-                      src={activeMovie.logo}
-                      alt={activeMovie.title}
-                      className="h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out max-w-[min(52vw,520px)]"
-                    />
-                  ) : isFetchingOverride ? (
-                    // Show nothing or skeleton while checking for logo
-                    <div className="h-full w-[240px] bg-transparent" />
-                  ) : (
-                    <h1 className="text-[clamp(28px,4vw,56px)] font-black leading-[1.05] drop-shadow-2xl tracking-tight">
-                      {activeMovie.title}
-                    </h1>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 mb-[clamp(12px,2vh,24px)]">
-                  {(() => {
-                    const ratingLabel = formatRatingLabel(activeMovie.rating);
-                    if (!ratingLabel) return null;
-                    return (
-                      <span
-                        className={`px-2 py-1 rounded text-xs md:text-sm font-bold ${ratingBgColor(
-                          activeMovie.rating
-                        )}`}
-                      >
-                        {ratingLabel}
-                      </span>
-                    );
-                  })()}
-                  <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                    {activeMovie.year}
-                  </span>
-                  <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                    {activeMovie.genre?.split(",").slice(0, 2).join(",")}
-                  </span>
-                  {activeMovie.country && (
-                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                      {activeMovie.country}
-                    </span>
-                  )}
-                </div>
-
-                <p
-                  className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px] after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-5 after:bg-gradient-to-b after:from-transparent after:to-transparent`}
-                >
-                  {activeMovie.description ||
-                    "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
-                </p>
-
-                <div className={`flex items-center ${ctaGapClass}`}>
-                  <Link
-                    href={`/movie/${activeMovie.id}`}
-                    className={`bg-white text-black rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none ${primaryButtonSizeClass}`}
+            {/* Movie Info */}
+            {activeMovie ? (
+              <>
+                <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
+                  <div
+                    className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out ${logoBlockMarginClass}`}
                   >
-                    <Play
-                      size={playIconSize}
-                      fill="currentColor"
-                      className={`ml-1 ${
-                        isTinyHeight ? "md:w-[22px] md:h-[22px]" : "md:w-6 md:h-6"
-                      }`}
-                    />
-                    <span className={primaryButtonTextClass}>Смотреть</span>
-                  </Link>
-                  <button
-                    onClick={handleFavoriteToggle}
-                    className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
-                      isFavoriteActiveMovie
-                        ? "border-white bg-white text-black"
-                        : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
-                    }`}
-                    title={
-                      isFavoriteActiveMovie
-                        ? "Убрать из избранного"
-                        : "Добавить в избранное"
-                    }
-                    aria-pressed={isFavoriteActiveMovie}
-                  >
-                    {isFavoriteActiveMovie ? (
-                      <Heart size={favoriteIconSize} fill="currentColor" />
+                    {activeMovie.logo ? (
+                      <img
+                        src={activeMovie.logo}
+                        alt={activeMovie.title}
+                        className="h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out max-w-[min(52vw,520px)]"
+                      />
+                    ) : isFetchingOverride ? (
+                      // Show nothing or skeleton while checking for logo
+                      <div className="h-full w-[240px] bg-transparent" />
                     ) : (
-                      <Plus size={favoriteIconSize} />
+                      <h1 className="text-[clamp(28px,4vw,56px)] font-black leading-[1.05] drop-shadow-2xl tracking-tight">
+                        {activeMovie.title}
+                      </h1>
                     )}
-                  </button>
-                </div>
-              </div>
+                  </div>
 
-              {/* Trending Slider */}
-              <div className={`w-full ${sliderMarginClass}`}>
-                <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
-                  <MovieSlider
-                    key={activeSlide.id}
-                    url={activeSlide.url || "/favorites"}
-                    title={activeSlide.title}
-                    items={activeSlide.items}
-                    viewAllHref={activeSlide.viewAllHref}
-                    viewAllInHeader={
-                      !!activeSlide.id && headerViewAllSlides.has(activeSlide.id)
-                    }
-                    hideViewAllCard={
-                      !!activeSlide.id && headerViewAllSlides.has(activeSlide.id)
-                    }
-                    onMovieHover={handleMovieHover}
-                    compactOnMobile={false}
-                    perPageOverride={15}
-                    hideIndicators
-                    hideMetadata={!showPosterMetadata}
-                    enableGlobalKeyNavigation
-                    cardType={cardDisplayMode}
-                    fetchAllPages={(activeSlide as any).fetchAll}
-                    fullscreenMode={isFullscreen}
-                  />
+                  <div className="flex items-center gap-3 mb-[clamp(12px,2vh,24px)]">
+                    {(() => {
+                      const ratingLabel = formatRatingLabel(activeMovie.rating);
+                      if (!ratingLabel) return null;
+                      return (
+                        <span
+                          className={`px-2 py-1 rounded text-xs md:text-sm font-bold ${ratingBgColor(
+                            activeMovie.rating
+                          )}`}
+                        >
+                          {ratingLabel}
+                        </span>
+                      );
+                    })()}
+                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
+                      {activeMovie.year}
+                    </span>
+                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
+                      {activeMovie.genre?.split(",").slice(0, 2).join(",")}
+                    </span>
+                    {activeMovie.country && (
+                      <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
+                        {activeMovie.country}
+                      </span>
+                    )}
+                  </div>
+
+                  <p
+                    className={`relative text-zinc-300 text-[clamp(15px,1.6vw,19px)] ${descriptionClampClass} max-w-3xl mb-[clamp(18px,3vh,36px)] drop-shadow-md font-light leading-relaxed ${descriptionHeightClass} pr-[2px] after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:right-0 after:h-5 after:bg-gradient-to-b after:from-transparent after:to-transparent`}
+                  >
+                    {activeMovie.description ||
+                      "Описание к этому фильму пока не добавлено, но мы уверены, что оно того стоит."}
+                  </p>
+
+                  <div className={`flex items-center ${ctaGapClass}`}>
+                    <Link
+                      href={`/movie/${activeMovie.id}`}
+                      className={`bg-white text-black rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none ${primaryButtonSizeClass}`}
+                    >
+                      <Play
+                        size={playIconSize}
+                        fill="currentColor"
+                        className={`ml-1 ${
+                          isTinyHeight
+                            ? "md:w-[22px] md:h-[22px]"
+                            : "md:w-6 md:h-6"
+                        }`}
+                      />
+                      <span className={primaryButtonTextClass}>Смотреть</span>
+                    </Link>
+                    <button
+                      onClick={handleFavoriteToggle}
+                      className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
+                        isFavoriteActiveMovie
+                          ? "border-white bg-white text-black"
+                          : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
+                      }`}
+                      title={
+                        isFavoriteActiveMovie
+                          ? "Убрать из избранного"
+                          : "Добавить в избранное"
+                      }
+                      aria-pressed={isFavoriteActiveMovie}
+                    >
+                      {isFavoriteActiveMovie ? (
+                        <Heart size={favoriteIconSize} fill="currentColor" />
+                      ) : (
+                        <Plus size={favoriteIconSize} />
+                      )}
+                    </button>
+                  </div>
                 </div>
+
+                {/* Trending Slider */}
+                <div className={`w-full ${sliderMarginClass}`}>
+                  <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
+                    <MovieSlider
+                      key={activeSlide.id}
+                      url={activeSlide.url || "/favorites"}
+                      title={activeSlide.title}
+                      items={activeSlide.items}
+                      viewAllHref={activeSlide.viewAllHref}
+                      viewAllInHeader={
+                        !!activeSlide.id &&
+                        headerViewAllSlides.has(activeSlide.id)
+                      }
+                      onMovieHover={handleMovieHover}
+                      compactOnMobile={false}
+                      perPageOverride={15}
+                      hideIndicators
+                      hideMetadata={!showPosterMetadata}
+                      enableGlobalKeyNavigation
+                      cardType={cardDisplayMode}
+                      fetchAllPages={(activeSlide as any).fetchAll}
+                      fullscreenMode={isFullscreen}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 z-50">
+                <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
               </div>
-            </>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 z-50">
-              <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
-            </div>
-          )}
+            )}
           </div>
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}

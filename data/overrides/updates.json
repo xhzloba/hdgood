@@ -3493,5 +3493,17 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "68bf51e6d81f0a32d979a593",
+    "timestamp": "2025-12-10T11:06:00.002Z",
+    "poster": "/movies/zadanie-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
   }
 ]
