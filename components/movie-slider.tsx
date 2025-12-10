@@ -719,7 +719,11 @@ export default function MovieSlider({
                       : "basis-1/2 sm:basis-1/2"
                   } ${
                     cardType === "backdrop"
-                      ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      ? hideMetadata
+                        ? "md:basis-[40%] lg:basis-1/3 xl:basis-[28%]"
+                        : "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      : hideMetadata
+                      ? "md:basis-1/5 lg:basis-[16.67%] xl:basis-[14.28%]"
                       : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
                   }`}
                 >
@@ -735,8 +739,10 @@ export default function MovieSlider({
                     </div>
                     {/* Под постером оставляем область для анимации частиц + скелетона текста */}
                     <div
-                      className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${
-                        hideMetadata ? "invisible" : ""
+                      className={`relative p-2 md:p-3 overflow-hidden ${
+                        hideMetadata
+                          ? "hidden md:hidden"
+                          : "h-[54px] md:h-[68px]"
                       }`}
                     >
                       {!hideMetadata && (
@@ -804,7 +810,11 @@ export default function MovieSlider({
                       : "basis-1/2 sm:basis-1/2"
                   } ${
                     cardType === "backdrop"
-                      ? "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      ? hideMetadata
+                        ? "md:basis-[40%] lg:basis-1/3 xl:basis-[28%]"
+                        : "md:basis-1/3 lg:basis-1/4 xl:basis-1/4"
+                      : hideMetadata
+                      ? "md:basis-1/5 lg:basis-[16.67%] xl:basis-[14.28%]"
                       : "md:basis-1/6 lg:basis-[14.28%] xl:basis-[12.5%]"
                   }`}
                 >
@@ -1185,8 +1195,10 @@ export default function MovieSlider({
                       )}
                     </div>
                     <div
-                      className={`relative p-2 md:p-3 h-[54px] md:h-[68px] overflow-hidden ${
-                        hideMetadata ? "invisible" : ""
+                      className={`relative p-2 md:p-3 overflow-hidden ${
+                        hideMetadata
+                          ? "hidden md:hidden"
+                          : "h-[54px] md:h-[68px]"
                       }`}
                     >
                       {!hideMetadata && !movie.isViewAll && (
