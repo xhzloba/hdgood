@@ -3592,5 +3592,38 @@
       "poster_colors.accentTr",
       "poster_colors.accentBl"
     ]
+  },
+  {
+    "id": "68d9afed0d9c28d79eb3860f",
+    "timestamp": "2025-12-10T13:01:31.982Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6869a061317099c479af78b3",
+    "timestamp": "2025-12-10T13:05:49.513Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f90d8914c04deaeac702",
+    "timestamp": "2025-12-10T13:10:14.329Z",
+    "poster": "/movies/mon-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]
