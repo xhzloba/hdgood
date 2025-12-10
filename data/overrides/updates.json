@@ -3676,5 +3676,20 @@
     "addedPaths": [
       "poster_logo"
     ]
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-10T18:11:38.736Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr"
+    ],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ]
   }
 ]

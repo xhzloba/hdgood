@@ -441,24 +441,34 @@
   "68fff9779630419905edf2a5": {
     "poster_colors": {
       "accentTr": [
-        171,
-        8,
-        9
+        64,
+        113,
+        117
       ],
       "accentTl": [
-        26,
-        44,
-        52
+        179,
+        9,
+        11
       ],
       "accentBr": [
-        86,
-        13,
-        17
+        64,
+        113,
+        117
       ],
       "accentBl": [
         37,
         64,
         73
+      ],
+      "dominant1": [
+        190,
+        5,
+        3
+      ],
+      "dominant2": [
+        64,
+        113,
+        117
       ]
     },
     "poster_logo": "https://images.kinorium.com/movie/plogo/9078233/w1500_55475548.png"
