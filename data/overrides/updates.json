@@ -3557,5 +3557,40 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "692f61654253c1a0c08b2aee",
+    "timestamp": "2025-12-10T12:04:05.133Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "692f61654253c1a0c08b2aee",
+    "timestamp": "2025-12-10T12:05:16.313Z",
+    "poster": "/movies/sand-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster"
+    ]
+  },
+  {
+    "id": "692f61654253c1a0c08b2aee",
+    "timestamp": "2025-12-10T12:06:12.595Z",
+    "poster": "/movies/sand-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2",
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBl"
+    ]
   }
 ]

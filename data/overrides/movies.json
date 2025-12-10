@@ -1416,5 +1416,39 @@
     "bg_poster": {
       "backdrop": "/movies/koba.webp"
     }
+  },
+  "692f61654253c1a0c08b2aee": {
+    "poster_colors": {
+      "dominant1": [
+        64,
+        127,
+        124
+      ],
+      "dominant2": [
+        156,
+        142,
+        117
+      ],
+      "accentTl": [
+        81,
+        140,
+        138
+      ],
+      "accentTr": [
+        105,
+        100,
+        83
+      ],
+      "accentBl": [
+        123,
+        87,
+        36
+      ]
+    },
+    "poster": "/movies/sand-poster.webp",
+    "poster_logo": "/movies/logo/114.png",
+    "bg_poster": {
+      "backdrop": "/movies/sand.webp"
+    }
   }
 }
