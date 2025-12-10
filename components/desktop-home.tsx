@@ -1301,7 +1301,7 @@ export function DesktopHome({
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
-    ? "line-clamp-4 min-h-[100px]"
+    ? "line-clamp-3 min-h-[78px]"
     : isShortHeight
     ? "line-clamp-2 min-h-[52px]"
     : isMediumHeight
