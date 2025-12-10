@@ -1347,12 +1347,21 @@ export function DesktopHome({
 
   // Динамические размеры кнопок
   const ctaGapClass = "gap-[clamp(12px,1.5vh,16px)]";
-  const primaryButtonSizeClass =
+  const primaryButtonSizeBase =
     "px-[clamp(20px,3vw,32px)] py-[clamp(10px,1.2vh,14px)] min-w-[clamp(100px,12vw,140px)]";
-  const primaryButtonTextClass = "text-[clamp(14px,1.6vh,18px)]";
-  const favoriteButtonPaddingClass = "p-[clamp(10px,1.2vh,14px)]";
+  // Для широких экранов (например MacBook 16\" при масштабе 100–125%) чуть крупнее, как в fullscreen
+  const primaryButtonSizeClass = showWideClock
+    ? `${primaryButtonSizeBase} md:px-[clamp(24px,3.6vw,40px)] md:py-[clamp(12px,1.5vh,18px)] md:min-w-[clamp(120px,14vw,168px)]`
+    : primaryButtonSizeBase;
+  const primaryButtonTextClass = showWideClock
+    ? "text-[clamp(15px,1.8vh,20px)]"
+    : "text-[clamp(14px,1.6vh,18px)]";
+  const favoriteButtonPaddingBase = "p-[clamp(10px,1.2vh,14px)]";
+  const favoriteButtonPaddingClass = showWideClock
+    ? "p-[clamp(12px,1.6vh,18px)]"
+    : favoriteButtonPaddingBase;
   const playIconSize = 20;
-  const favoriteIconSize = 20;
+  const favoriteIconSize = showWideClock ? 22 : 20;
 
   // Динамические паддинги main
   const mainPaddingClass =
