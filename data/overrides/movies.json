@@ -33,6 +33,10 @@
     }
   },
   "6593f9118914c04deaead1f3": {
+    "poster_logo": "/movies/logo/112.webp",
+    "bg_poster": {
+      "backdrop": "/movies/talsa.webp"
+    },
     "poster_colors": {
       "dominant1": [
         60,
@@ -1405,5 +1409,11 @@
       "backdrop": "/movies/zadanie-backdrop.webp"
     },
     "poster": "/movies/zadanie-poster.webp"
+  },
+  "692383e1ecf3481b244dc1d5": {
+    "poster_logo": "/movies/logo/111.png",
+    "bg_poster": {
+      "backdrop": "/movies/koba.webp"
+    }
   }
 }
