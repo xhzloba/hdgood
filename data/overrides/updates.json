@@ -3537,5 +3537,25 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6922326544af5cedcd34879d",
+    "timestamp": "2025-12-10T11:52:33.009Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6922326544af5cedcd34879d",
+    "timestamp": "2025-12-10T11:52:48.363Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
   }
 ]

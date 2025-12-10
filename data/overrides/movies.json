@@ -929,6 +929,7 @@
     }
   },
   "6922326544af5cedcd34879d": {
+    "poster_logo": "/movies/logo/113.png",
     "bg_poster": {
       "backdrop": "/movies/sentiment.webp"
     }

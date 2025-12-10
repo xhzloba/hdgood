@@ -85,6 +85,8 @@ type NormalizedMovie = {
   logo?: string | null;
   poster_colors?: any;
   type?: string | null;
+  quality?: any;
+  tags?: any;
 };
 
 const TRENDING_URL =
@@ -1033,6 +1035,8 @@ export function DesktopHome({
           item.colors ??
           null,
         type: d?.type ?? item.type ?? null,
+        quality: d?.quality ?? item.quality ?? null,
+        tags: d?.tags ?? item.tags ?? null,
       };
       return normalized;
     },
@@ -1188,6 +1192,16 @@ export function DesktopHome({
       logo: cachedOverride?.poster_logo ?? first.logo ?? null,
       backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
+      quality:
+        first.quality ??
+        (rawList[0] as any)?.details?.quality ??
+        (rawList[0] as any)?.quality ??
+        null,
+      tags:
+        first.tags ??
+        (rawList[0] as any)?.details?.tags ??
+        (rawList[0] as any)?.tags ??
+        null,
       type:
         first.type ??
         (rawList[0] as any)?.type ??
@@ -1255,6 +1269,8 @@ export function DesktopHome({
         logo: ov?.poster_logo ?? m.logo ?? null,
         poster_colors: ov?.poster_colors,
         type: m.type ?? null,
+        quality: m.quality ?? null,
+        tags: m.tags ?? null,
       };
       activeIdRef.current = String(normalized.id);
       setActiveMovie((prev) => {
@@ -1533,7 +1549,7 @@ export function DesktopHome({
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 mb-[clamp(12px,2vh,24px)]">
+                  <div className="flex items-center flex-wrap gap-2 md:gap-3 mb-[clamp(12px,2vh,24px)]">
                     {(() => {
                       const ratingLabel = formatRatingLabel(activeMovie.rating);
                       if (!ratingLabel) return null;
@@ -1547,17 +1563,53 @@ export function DesktopHome({
                         </span>
                       );
                     })()}
-                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                      {activeMovie.year}
-                    </span>
-                    <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                      {activeMovie.genre?.split(",").slice(0, 2).join(",")}
-                    </span>
                     {getPrimaryCountry(activeMovie.country) && (
                       <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                         {getPrimaryCountry(activeMovie.country)}
                       </span>
                     )}
+                    {activeMovie.year && (
+                      <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
+                        {activeMovie.year}
+                      </span>
+                    )}
+                    {activeMovie.genre && (
+                      <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
+                        {activeMovie.genre?.split(",").slice(0, 2).join(",")}
+                      </span>
+                    )}
+                    {(() => {
+                      const rawTags = (activeMovie as any)?.tags;
+                      let tagLabel: string | null = null;
+                      if (Array.isArray(rawTags)) {
+                        tagLabel =
+                          rawTags
+                            .map((v) => String(v || "").trim())
+                            .find((v) => v.length > 0) || null;
+                      } else if (typeof rawTags === "string") {
+                        tagLabel =
+                          rawTags
+                            .split(/[,/|]/)
+                            .map((p) => p.trim())
+                            .find((p) => p.length > 0) || null;
+                      }
+                      const quality = (activeMovie as any)?.quality;
+                      if (!tagLabel && !quality) return null;
+                      return (
+                        <div className="flex items-center gap-2">
+                          {quality && (
+                            <span className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                              {String(quality)}
+                            </span>
+                          )}
+                          {tagLabel && (
+                            <span className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                              {tagLabel}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <p
