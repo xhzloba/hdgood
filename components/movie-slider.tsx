@@ -241,10 +241,7 @@ export default function MovieSlider({
     return Math.max(1, items);
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);
-  const smoothEasing = useMemo(
-    () => (t: number) => 1 - Math.pow(1 - t, 3),
-    []
-  );
+  const smoothEasing = useMemo(() => (t: number) => 1 - Math.pow(1 - t, 3), []);
   const carouselOpts = useMemo(
     () => ({
       dragFree: true,
@@ -280,7 +277,10 @@ export default function MovieSlider({
     setPagesData([{ page: 1, data: items || [] }]);
   }, [isStatic, items]);
 
-  const currentUrl = useMemo(() => (isStatic ? null : makePageUrl(url, page)), [url, page, isStatic]);
+  const currentUrl = useMemo(
+    () => (isStatic ? null : makePageUrl(url, page)),
+    [url, page, isStatic]
+  );
   const swrKey = isStatic ? null : currentUrl;
   const { data, error, isLoading, isValidating } = useSWR<string | null>(
     swrKey,
@@ -422,7 +422,9 @@ export default function MovieSlider({
   }, [movies, sortByYear]);
 
   const display =
-    fetchAllPages || isStaticData ? sortedMovies : sortedMovies.slice(0, perPage);
+    fetchAllPages || isStaticData
+      ? sortedMovies
+      : sortedMovies.slice(0, perPage);
 
   // Загружаем overrides для текущих карточек (батчем по ids)
   const overridesCacheRef =
@@ -775,9 +777,9 @@ export default function MovieSlider({
           onMouseEnter={() => hoverPause && setPaused(true)}
           onMouseLeave={() => hoverPause && setPaused(false)}
         >
-            <Carousel
-              className="w-full"
-              opts={carouselOpts}
+          <Carousel
+            className="w-full"
+            opts={carouselOpts}
             setApi={setCarouselApi}
             enableGlobalKeyNavigation={enableGlobalKeyNavigation}
           >
@@ -785,7 +787,7 @@ export default function MovieSlider({
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
-                className={`pl-2 ${
+                  className={`pl-2 ${
                     compactOnMobile
                       ? "basis-[40%] sm:basis-[36%]"
                       : "basis-1/2 sm:basis-1/2"
@@ -906,175 +908,174 @@ export default function MovieSlider({
                         </div>
                       ) : (
                         <>
-                      {(() => {
-                        const idStr = String(movie.id);
-                        const ovEntry =
-                          (overridesMap as any)[idStr] ||
-                          (movieOverrides as any)[idStr];
-                        const known = ovEntry !== undefined;
-                        const isBackdrop = cardType === "backdrop";
+                          {(() => {
+                            const idStr = String(movie.id);
+                            const ovEntry =
+                              (overridesMap as any)[idStr] ||
+                              (movieOverrides as any)[idStr];
+                            const known = ovEntry !== undefined;
+                            const isBackdrop = cardType === "backdrop";
 
-                        // Determine source based on cardType
-                        const posterSrc = isBackdrop
-                          ? ovEntry?.bg_poster?.backdrop ||
-                            movie.backdrop ||
-                            movie.poster ||
-                            null
-                          : ovEntry?.poster ?? movie.poster ?? null;
+                            // Determine source based on cardType
+                            const posterSrc = isBackdrop
+                              ? ovEntry?.bg_poster?.backdrop ||
+                                movie.backdrop ||
+                                movie.poster ||
+                                null
+                              : ovEntry?.poster ?? movie.poster ?? null;
 
-                        const waiting = !known && !posterSrc; // If we have posterSrc, we don't need to wait for override to confirm it's missing
+                            const waiting = !known && !posterSrc; // If we have posterSrc, we don't need to wait for override to confirm it's missing
 
-                        if (
-                          posterSrc &&
-                          failedSrcById[String(movie.id)] !== (posterSrc || "")
-                        ) {
-                          return (
-                            <>
-                              <img
-                                key={
-                                  String(movie.id) + (isBackdrop ? "-bd" : "-p")
-                                }
-                                src={posterSrc || "/placeholder.svg"}
-                                alt={movie.title || "Постер"}
-                                decoding="async"
-                                loading={
-                                  index < itemsPerView ? "eager" : "lazy"
-                                }
-                                fetchPriority={
-                                  index < itemsPerView ? "high" : "low"
-                                }
-                                className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
-                                  loadedImages.has(String(movie.id))
-                                    ? "opacity-100 blur-0 scale-100"
-                                    : "opacity-0 blur-md scale-[1.02]"
-                                }`}
-                                style={{
-                                  transition:
-                                    "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
-                                  willChange: "opacity, filter, transform",
-                                }}
-                                onLoad={() => {
-                                  handleImageLoad(movie.id);
-                                  const key = String(movie.id);
-                                  setFailedSrcById((prev) => {
-                                    const next = { ...prev };
-                                    if (next[key]) delete next[key];
-                                    return next;
-                                  });
-                                }}
-                                onError={() => {
-                                  const key = String(movie.id);
-                                  const src = posterSrc || "";
-                                  setFailedSrcById((prev) => ({
-                                    ...prev,
-                                    [key]: src,
-                                  }));
-                                }}
-                              />
-                              {/* Logo Overlay for Backdrop Cards */}
-                              {isBackdrop && movie.logo && (
-                                <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
+                            if (
+                              posterSrc &&
+                              failedSrcById[String(movie.id)] !==
+                                (posterSrc || "")
+                            ) {
+                              return (
+                                <>
                                   <img
-                                    src={movie.logo}
-                                    alt={movie.title}
-                                    className="max-w-[70%] max-h-[50%] object-contain drop-shadow-lg transition-transform duration-300 translate-y-8 group-hover:scale-110"
+                                    key={
+                                      String(movie.id) +
+                                      (isBackdrop ? "-bd" : "-p")
+                                    }
+                                    src={posterSrc || "/placeholder.svg"}
+                                    alt={movie.title || "Постер"}
+                                    decoding="async"
+                                    loading={
+                                      index < itemsPerView ? "eager" : "lazy"
+                                    }
+                                    fetchPriority={
+                                      index < itemsPerView ? "high" : "low"
+                                    }
+                                    className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
+                                      loadedImages.has(String(movie.id))
+                                        ? "opacity-100 blur-0 scale-100"
+                                        : "opacity-0 blur-md scale-[1.02]"
+                                    }`}
+                                    style={{
+                                      transition:
+                                        "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                                      willChange: "opacity, filter, transform",
+                                    }}
+                                    onLoad={() => {
+                                      handleImageLoad(movie.id);
+                                      const key = String(movie.id);
+                                      setFailedSrcById((prev) => {
+                                        const next = { ...prev };
+                                        if (next[key]) delete next[key];
+                                        return next;
+                                      });
+                                    }}
+                                    onError={() => {
+                                      const key = String(movie.id);
+                                      const src = posterSrc || "";
+                                      setFailedSrcById((prev) => ({
+                                        ...prev,
+                                        [key]: src,
+                                      }));
+                                    }}
+                                  />
+                                  {/* Logo Overlay for Backdrop Cards */}
+                                  {isBackdrop && movie.logo && (
+                                    <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
+                                      <img
+                                        src={movie.logo}
+                                        alt={movie.title}
+                                        className="max-w-[70%] max-h-[50%] object-contain drop-shadow-lg transition-transform duration-300 translate-y-8 group-hover:scale-110"
+                                      />
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            }
+                            if (waiting) {
+                              return <Skeleton className="w-full h-full" />;
+                            }
+                            return (
+                              <div className="text-zinc-600 text-[10px] text-center p-1">
+                                Нет изображения
+                              </div>
+                            );
+                          })()}
+                          {(() => {
+                            const idStr = String(movie.id);
+                            const ovEntry = (overridesMap as any)[idStr];
+                            const known = ovEntry !== undefined;
+                            const posterSrc = known
+                              ? ovEntry?.poster ?? movie.poster ?? null
+                              : null;
+                            return posterSrc &&
+                              loadedImages.has(String(movie.id)) ? (
+                              <>
+                                {/* Эффект свечения по курсору (только hover) */}
+                                <div
+                                  className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                  style={{
+                                    background:
+                                      "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
+                                  }}
+                                />
+                                {/* Эффект индикатора снизу при навигации стрелками (только is-focused без hover) */}
+                                <div className="pointer-events-none absolute inset-0 z-10 opacity-0 group-[.is-focused]:opacity-100 group-hover:!opacity-0 transition-opacity duration-300 overflow-visible">
+                                  {/* Мягкое обволакивающее свечение по всей карточке */}
+                                  <div
+                                    className="absolute inset-0 animate-[glow-pulse_2s_ease-in-out_infinite]"
+                                    style={{
+                                      background:
+                                        "radial-gradient(140% 130% at 50% 50%, rgba(var(--ui-accent-rgb),0.32) 0%, rgba(var(--ui-accent-rgb),0.18) 45%, rgba(var(--ui-accent-rgb),0.08) 70%, transparent 88%)",
+                                      boxShadow:
+                                        "0 0 40px 14px rgba(var(--ui-accent-rgb),0.3), 0 0 82px 28px rgba(var(--ui-accent-rgb),0.16)",
+                                      filter: "blur(3px)",
+                                    }}
                                   />
                                 </div>
-                              )}
-                            </>
-                          );
-                        }
-                        if (waiting) {
-                          return <Skeleton className="w-full h-full" />;
-                        }
-                        return (
-                          <div className="text-zinc-600 text-[10px] text-center p-1">
-                            Нет изображения
-                          </div>
-                        );
-                      })()}
-                      {(() => {
-                        const idStr = String(movie.id);
-                        const ovEntry = (overridesMap as any)[idStr];
-                        const known = ovEntry !== undefined;
-                        const posterSrc = known
-                          ? ovEntry?.poster ?? movie.poster ?? null
-                          : null;
-                        return posterSrc &&
-                          loadedImages.has(String(movie.id)) ? (
-                          <>
-                            {/* Эффект свечения по курсору (только hover) */}
-                            <div
-                              className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                              style={{
-                                background:
-                                  "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                              }}
-                            />
-                            {/* Эффект индикатора снизу при навигации стрелками (только is-focused без hover) */}
-                            <div
-                              className="pointer-events-none absolute inset-0 z-10 opacity-0 group-[.is-focused]:opacity-100 group-hover:!opacity-0 transition-opacity duration-300 overflow-visible"
-                            >
-                              {/* Мягкое обволакивающее свечение по всей карточке */}
-                              <div
-                                className="absolute inset-0 animate-[glow-pulse_2s_ease-in-out_infinite]"
-                                style={{
-                                  background:
-                                    "radial-gradient(140% 130% at 50% 50%, rgba(var(--ui-accent-rgb),0.32) 0%, rgba(var(--ui-accent-rgb),0.18) 45%, rgba(var(--ui-accent-rgb),0.08) 70%, transparent 88%)",
-                                  boxShadow:
-                                    "0 0 40px 14px rgba(var(--ui-accent-rgb),0.3), 0 0 82px 28px rgba(var(--ui-accent-rgb),0.16)",
-                                  filter: "blur(3px)",
-                                }}
-                              />
-                            </div>
-                          </>
-                        ) : null;
-                      })()}
+                              </>
+                            ) : null;
+                          })()}
 
-                      {(() => {
-                        const rawTags = (movie as any)?.tags;
-                        let tagLabel: string | null = null;
-                        if (Array.isArray(rawTags)) {
-                          const first = rawTags
-                            .map((v) => String(v || "").trim())
-                            .find((v) => v.length > 0);
-                          tagLabel = first || null;
-                        } else if (typeof rawTags === "string") {
-                          const first = rawTags
-                            .split(/[,/|]/)
-                            .map((p) => p.trim())
-                            .find((p) => p.length > 0);
-                          tagLabel = first || null;
-                        }
-                        return tagLabel ? (
-                          <div
-                            className="absolute top-1 left-1 md:top-2 md:left-2 px-2 md:px-2 py-[3px] md:py-1 rounded-md md:rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 z-[12] shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
-                            title={tagLabel}
-                          >
-                            {tagLabel}
-                          </div>
-                        ) : null;
-                      })()}
-
-                      {(movie.rating || movie.quality) && (
-                        <div className="absolute top-1 right-1 md:top-2 md:right-2 flex flex-col items-end gap-1 z-[12]">
-                          {movie.rating && (
-                            <div
-                              className={`px-2 md:px-2 py-[3px] md:py-1 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.5)] font-black border border-white/10 text-[11px] md:text-[12px] text-white ${ratingBgColor(
-                                movie.rating
-                              )}`}
-                            >
-                              {formatRatingLabel(movie.rating)}
-                            </div>
-                          )}
-                          {movie.quality && (
-                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
-                              {String(movie.quality)}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {/* убрали бейдж качества */}
+                          {(() => {
+                            const rawTags = (movie as any)?.tags;
+                            let tagLabel: string | null = null;
+                            if (Array.isArray(rawTags)) {
+                              const first = rawTags
+                                .map((v) => String(v || "").trim())
+                                .find((v) => v.length > 0);
+                              tagLabel = first || null;
+                            } else if (typeof rawTags === "string") {
+                              const first = rawTags
+                                .split(/[,/|]/)
+                                .map((p) => p.trim())
+                                .find((p) => p.length > 0);
+                              tagLabel = first || null;
+                            }
+                            return tagLabel || movie.rating || movie.quality ? (
+                              <div className="absolute top-1 right-1 md:top-2 md:right-2 flex flex-col items-end gap-1 z-[12]">
+                                {movie.rating && (
+                                  <div
+                                    className={`px-2 md:px-2 py-[3px] md:py-1 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.5)] font-black border border-white/10 text-[11px] md:text-[12px] text-white ${ratingBgColor(
+                                      movie.rating
+                                    )}`}
+                                  >
+                                    {formatRatingLabel(movie.rating)}
+                                  </div>
+                                )}
+                                {movie.quality && (
+                                  <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                                    {String(movie.quality)}
+                                  </div>
+                                )}
+                                {tagLabel && (
+                                  <div
+                                    className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
+                                    title={tagLabel}
+                                  >
+                                    {tagLabel}
+                                  </div>
+                                )}
+                              </div>
+                            ) : null;
+                          })()}
+                          {/* убрали бейдж качества */}
                         </>
                       )}
                     </div>
