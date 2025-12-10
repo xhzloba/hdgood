@@ -1339,8 +1339,10 @@ export function DesktopHome({
     ? "mt-[clamp(60px,9vh,120px)]"
     : "mt-[clamp(28px,4vh,56px)]";
 
-  // Отступ блока логотипа - динамический
-  const logoBlockMarginClass = "mt-[clamp(4px,1vh,18px)]";
+  // Отступ блока логотипа - динамический с учётом полноэкранного режима
+  const logoBlockMarginClass = isFullscreen
+    ? "mt-[clamp(16px,2.5vh,40px)]"
+    : "mt-[clamp(8px,1.5vh,24px)]";
 
   // Убираем line-clamp, чтобы не было двойных многоточий при обрезке
   const descriptionClampClass = "";
