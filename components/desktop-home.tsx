@@ -1347,6 +1347,21 @@ export function DesktopHome({
     return "#0f172a";
   }, [ubColors]);
 
+  const getPrimaryCountry = useCallback((country: any): string | null => {
+    if (!country) return null;
+    if (Array.isArray(country)) {
+      const first = country.find(
+        (c) => c != null && String(c).trim().length > 0
+      );
+      return first != null ? String(first).trim() : null;
+    }
+    const parts = String(country)
+      .split(/[,/|]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts[0] || null;
+  }, []);
+
   const handleFavoriteToggle = () => {
     if (!activeMovie) return;
     toggleFavorite({
@@ -1538,9 +1553,9 @@ export function DesktopHome({
                     <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
                       {activeMovie.genre?.split(",").slice(0, 2).join(",")}
                     </span>
-                    {activeMovie.country && (
+                    {getPrimaryCountry(activeMovie.country) && (
                       <span className="text-zinc-300 text-xs md:text-sm lg:text-base">
-                        {activeMovie.country}
+                        {getPrimaryCountry(activeMovie.country)}
                       </span>
                     )}
                   </div>
