@@ -1613,6 +1613,7 @@ export function DesktopHome({
                       cardType={cardDisplayMode}
                       fetchAllPages={(activeSlide as any).fetchAll}
                       fullscreenMode={isFullscreen}
+                      hideFavoriteBadge
                     />
                   </div>
                 </div>

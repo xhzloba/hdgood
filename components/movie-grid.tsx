@@ -2897,9 +2897,19 @@ export function MovieGrid({
                             ? "Убрать из избранного"
                             : "Добавить в избранное"
                         }
-                        onClick={(e) => {
+                        onPointerDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                        }}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onClickCapture={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const ne = e.nativeEvent as any;
+                          ne?.stopImmediatePropagation?.();
                           toggleFavorite({
                             id: String(movie.id),
                             title: movie.title,
@@ -2915,6 +2925,10 @@ export function MovieGrid({
                             poster_colors: (movie as any).poster_colors,
                             type: (movie as any).type ?? null,
                           });
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                         }}
                         className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
                       >

@@ -18,6 +18,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import movieOverrides from "@/data/overrides/movies.json";
+import { useFavorites } from "@/hooks/use-favorites";
 
 type MovieSliderProps = {
   url: string;
@@ -47,6 +48,7 @@ type MovieSliderProps = {
   minItems?: number;
   fullscreenMode?: boolean;
   items?: any[];
+  hideFavoriteBadge?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -166,6 +168,7 @@ export default function MovieSlider({
   minItems = 30,
   fullscreenMode = false,
   items,
+  hideFavoriteBadge = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -444,6 +447,7 @@ export default function MovieSlider({
   const [pendingOverrideIds, setPendingOverrideIds] = useState<Set<string>>(
     new Set()
   );
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     if (!idsString) return;
@@ -900,6 +904,100 @@ export default function MovieSlider({
                           : "aspect-[2/3]"
                       } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}
                     >
+                      {!hideFavoriteBadge && !movie.isViewAll && movie.id && (
+                        <button
+                          type="button"
+                          aria-pressed={isFavorite(String(movie.id))}
+                          aria-label={
+                            isFavorite(String(movie.id))
+                              ? "Убрать из избранного"
+                              : "Добавить в избранное"
+                          }
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClickCapture={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const ne = e.nativeEvent as any;
+                            ne?.stopImmediatePropagation?.();
+                            toggleFavorite({
+                              id: String(movie.id),
+                              title: movie.title,
+                              poster: movie.poster,
+                              backdrop: movie.backdrop,
+                              year: movie.year,
+                              rating: movie.rating,
+                              country: (movie as any).country,
+                              genre: movie.genre,
+                              description: (movie as any).description,
+                              duration: (movie as any).duration,
+                              logo: (movie as any).logo,
+                              poster_colors: (movie as any).poster_colors,
+                              type: (movie as any).type ?? null,
+                            });
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
+                        >
+                          <svg
+                            className="w-6 h-9 md:w-7 md:h-10 drop-shadow-sm"
+                            width="28"
+                            height="40"
+                            viewBox="0 0 24 34"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="presentation"
+                          >
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-ribbon"
+                              fill={
+                                isFavorite(String(movie.id))
+                                  ? "#f97316"
+                                  : "#000000"
+                              }
+                              fillOpacity={0.9}
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-hover"
+                              fill={
+                                isFavorite(String(movie.id))
+                                  ? "rgba(249,115,22,0.2)"
+                                  : "rgba(255,255,255,0.22)"
+                              }
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-shadow"
+                              fill="rgba(0,0,0,0.45)"
+                              points="24 31.7728343 24 33.7728343 12.2436611 28.2926049 0 34 0 32 12.2436611 26.2926049"
+                            ></polygon>
+                            <g transform="translate(12 15) scale(0.7) translate(-12 -12)">
+                              {isFavorite(String(movie.id)) ? (
+                                <path
+                                  d="M20.285 6.709 18.871 5.295 9 15.166 5.129 11.295 3.715 12.709 9 18 20.285 6.709Z"
+                                  fill="white"
+                                  fillOpacity={0.95}
+                                />
+                              ) : (
+                                <path
+                                  d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"
+                                  fill="white"
+                                  fillOpacity={0.95}
+                                />
+                              )}
+                            </g>
+                          </svg>
+                        </button>
+                      )}
                       {movie.isViewAll ? (
                         <div className="absolute inset-0 flex items-center justify-center text-center px-3">
                           <div className="text-base md:text-lg font-semibold text-white drop-shadow-md">
