@@ -124,12 +124,28 @@ function extractMoviesFromData(data: any): any[] {
       id: item.details?.id || item.id,
       title: item.details?.name || item.title,
       poster: item.details?.poster || item.poster,
+      backdrop:
+        item.details?.bg_poster?.backdrop ||
+        item.details?.wide_poster ||
+        item.details?.backdrop ||
+        item.backdrop ||
+        item.poster,
       year: item.details?.released || item.year,
       rating: item.details?.rating_kp || item.rating,
       country: item.details?.country || item.country,
       quality: item.details?.quality || item.quality,
       genre: item.details?.genre || item.genre,
       tags: item.details?.tags || item.tags,
+      description:
+        item.details?.about || item.about || item.description || null,
+      duration: item.details?.duration || item.duration,
+      logo: item.details?.poster_logo || item.logo || null,
+      poster_colors:
+        item.details?.poster_colors ||
+        item.details?.colors ||
+        item.poster_colors ||
+        item.colors,
+      type: item.details?.type || item.type || null,
     }));
   } else if (data?.type === "category" && data?.channels) {
     movies = data.channels.map((item: any, index: number) => ({
