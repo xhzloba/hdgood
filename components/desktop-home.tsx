@@ -491,6 +491,7 @@ export function DesktopHome({
   );
   const isTinyHeight = viewportHeight > 0 && viewportHeight <= 787;
   const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
+  const isMediumHeight = viewportHeight >= 900 && viewportHeight <= 1200;
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -1314,7 +1315,9 @@ export function DesktopHome({
     : "animate-in fade-in duration-500";
 
   const sliderMarginClass = isFullscreen
-    ? "mt-[60px] md:mt-[72px] lg:mt-[88px] xl:mt-[108px]"
+    ? isMediumHeight
+      ? "mt-[20px] md:mt-[26px] lg:mt-[32px] xl:mt-[38px]"
+      : "mt-[60px] md:mt-[72px] lg:mt-[88px] xl:mt-[108px]"
     : isShortHeight
     ? "mt-4 md:mt-6 lg:mt-7"
     : "mt-6 md:mt-8 lg:mt-10";

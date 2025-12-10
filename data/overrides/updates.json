@@ -3625,5 +3625,56 @@
       "poster",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-10T13:20:37.234Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f8e68914c04deaea750f",
+    "timestamp": "2025-12-10T13:22:08.803Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f8e08914c04deaea6899",
+    "timestamp": "2025-12-10T13:23:41.901Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f8f98914c04deaea9aa6",
+    "timestamp": "2025-12-10T13:24:54.415Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65942fa71cdf277bc199ee33",
+    "timestamp": "2025-12-10T13:27:45.348Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

@@ -1330,6 +1330,10 @@
     "poster_logo": "/movies/logo/106.webp"
   },
   "6593f8e68914c04deaea750f": {
+    "poster_logo": "/movies/logo/118.png",
+    "bg_poster": {
+      "backdrop": "/movies/bum.webp"
+    },
     "poster_colors": {
       "accentTr": [
         243,
@@ -1466,5 +1470,14 @@
     "bg_poster": {
       "backdrop": "/movies/mon-backdrop.webp"
     }
+  },
+  "6593f8e08914c04deaea6899": {
+    "poster_logo": "/movies/logo/119.webp"
+  },
+  "6593f8f98914c04deaea9aa6": {
+    "poster_logo": "/movies/logo/120.webp"
+  },
+  "65942fa71cdf277bc199ee33": {
+    "poster_logo": "/movies/logo/121.webp"
   }
 }
