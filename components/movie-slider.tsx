@@ -182,6 +182,7 @@ export default function MovieSlider({
   const isStaticData = isStatic || (!!items && Array.isArray(items));
 
   const perPage = perPageOverride ?? 15;
+  const gapPx = cardType === "backdrop" ? 28 : 20;
   const getItemsPerView = () => {
     if (typeof window === "undefined") return 2;
 
@@ -224,7 +225,7 @@ export default function MovieSlider({
 
     // Автокоррекция под минимальную ширину карточек, чтобы на широких/узких экранах не были слишком маленькие
     const usableWidth = Math.max(320, window.innerWidth - 140); // минус сайдбар/паддинги
-    const gap = 16; // чуть больше зазор под широкие карточки
+    const gap = gapPx; // чуть больше зазор под широкие карточки
     const minWidth =
       cardType === "backdrop"
         ? fullscreenMode
@@ -245,6 +246,10 @@ export default function MovieSlider({
   };
   const [itemsPerView, setItemsPerView] = useState<number>(2);
   const smoothEasing = useMemo(() => (t: number) => 1 - Math.pow(1 - t, 3), []);
+  const carouselContentGapClass =
+    cardType === "backdrop" ? "-ml-3.5 md:-ml-5" : "-ml-3.5";
+  const carouselItemGapClass =
+    cardType === "backdrop" ? "pl-3.5 md:pl-5" : "pl-3.5";
   const carouselOpts = useMemo(
     () => ({
       dragFree: true,
@@ -704,11 +709,11 @@ export default function MovieSlider({
             opts={skeletonCarouselOpts}
             setApi={setCarouselApi}
           >
-            <CarouselContent className="-ml-2">
+            <CarouselContent className={carouselContentGapClass}>
               {Array.from({ length: perPage }).map((_, i) => (
                 <CarouselItem
                   key={i}
-                  className={`pl-2 ${
+                  className={`${carouselItemGapClass} ${
                     compactOnMobile
                       ? "basis-[40%] sm:basis-[36%]"
                       : "basis-1/2 sm:basis-1/2"
@@ -787,11 +792,13 @@ export default function MovieSlider({
             setApi={setCarouselApi}
             enableGlobalKeyNavigation={enableGlobalKeyNavigation}
           >
-            <CarouselContent className="-ml-2 cursor-grab active:cursor-grabbing">
+            <CarouselContent
+              className={`${carouselContentGapClass} cursor-grab active:cursor-grabbing`}
+            >
               {finalDisplay.map((movie: any, index: number) => (
                 <CarouselItem
                   key={movie.id || index}
-                  className={`pl-2 ${
+                  className={`${carouselItemGapClass} ${
                     compactOnMobile
                       ? "basis-[40%] sm:basis-[36%]"
                       : "basis-1/2 sm:basis-1/2"
