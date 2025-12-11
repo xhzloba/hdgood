@@ -23,7 +23,7 @@ export function ViewAllGridPage({ title, apiUrl }: ViewAllGridPageProps) {
           favoritesActive={false}
         />
       </div>
-      <main className="relative z-10 ml-0 md:ml-24 flex flex-col px-4 md:px-8 lg:px-10 py-8 gap-6">
+      <main className="relative z-10 ml-0 md:ml-[clamp(64px,8vw,96px)] flex flex-col px-3 md:px-6 lg:px-8 py-8 gap-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight drop-shadow-sm">
             {title}
@@ -48,4 +48,3 @@ export function ViewAllGridPage({ title, apiUrl }: ViewAllGridPageProps) {
     </div>
   );
 }
-
