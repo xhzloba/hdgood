@@ -93,7 +93,7 @@ export function PlayerSelector({
           value={selectedPlayer ? String(selectedPlayer) : undefined}
           onValueChange={(val) => handlePlayerSelect(Number(val))}
         >
-          <SelectTrigger className="w-[200px] bg-black/60 border-white/20 text-zinc-100 backdrop-blur-md relative z-30">
+          <SelectTrigger className="min-w-[150px] w-auto bg-black/60 border-white/20 text-zinc-100 backdrop-blur-md relative z-30 px-3">
             <SelectValue placeholder="Выберите плеер" />
           </SelectTrigger>
           <SelectContent className="z-[150]" position="popper" align="center">
