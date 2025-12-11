@@ -97,6 +97,18 @@ export default function FavoritesClient({
     [favList, splitByType.movies, splitByType.serials]
   );
 
+  // Show loading while isMobile is being determined
+  if (isMobile === undefined) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 relative">
+        <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   if (isMobile) {
     const hasAny = slides.length > 0;
     return (
@@ -161,11 +173,7 @@ export default function FavoritesClient({
   if (slides.length === 0) {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 relative">
-        <DesktopSidebar
-          showFavorites
-          favoritesActive
-          favoritesCount={0}
-        />
+        <DesktopSidebar showFavorites favoritesActive favoritesCount={0} />
         <div className="ml-24 min-h-screen flex items-center justify-center px-6">
           <div className="max-w-md space-y-4 text-center">
             <h1 className="text-3xl font-black">Избранное пусто</h1>
@@ -195,4 +203,3 @@ export default function FavoritesClient({
     />
   );
 }
-

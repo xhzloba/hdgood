@@ -549,7 +549,7 @@ export default function HomeClient({
 
   const isMainPage = !selected;
 
-  if (isMounted && !isMobile && !initialSelectedTitle) {
+  if (isMounted && isMobile === false && !initialSelectedTitle) {
     return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
   }
 
@@ -984,49 +984,49 @@ export default function HomeClient({
                         })()
                       : null}
                   </div>
-
-                  <section className="w-full mt-[1vh] md:mt-4">
-                    <div className="relative z-20 w-full">
-                      {isMoviesMode ? (
-                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                          <MoviesSection
-                            onBackdropOverrideChange={(bg, poster) => {
-                              setOverrideBg(bg ?? null);
-                              setOverridePoster(poster ?? null);
-                            }}
-                            onHeroInfoOverrideChange={(info) => {
-                              setOverrideHeroMeta(info?.meta ?? null);
-                              setOverrideHeroLogoSrc(info?.logo ?? null);
-                              setOverrideHeroLogoId(info?.logoId ?? null);
-                              setOverrideHeroTitle(info?.title ?? null);
-                            }}
-                          />
-                        </div>
-                      ) : isSerialsMode ? (
-                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                          <SerialsSection
-                            onBackdropOverrideChange={(bg, poster) => {
-                              setOverrideBg(bg ?? null);
-                              setOverridePoster(poster ?? null);
-                            }}
-                            onHeroInfoOverrideChange={(info) => {
-                              setOverrideHeroMeta(info?.meta ?? null);
-                              setOverrideHeroLogoSrc(info?.logo ?? null);
-                              setOverrideHeroLogoId(info?.logoId ?? null);
-                              setOverrideHeroTitle(info?.title ?? null);
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                          <TrendingSection
-                            activeBackdropId={currentId ?? undefined}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </section>
                 </div>
+
+                <section className="w-full mt-[1vh] md:mt-4">
+                  <div className="relative z-20 w-full">
+                    {isMoviesMode ? (
+                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                        <MoviesSection
+                          onBackdropOverrideChange={(bg, poster) => {
+                            setOverrideBg(bg ?? null);
+                            setOverridePoster(poster ?? null);
+                          }}
+                          onHeroInfoOverrideChange={(info) => {
+                            setOverrideHeroMeta(info?.meta ?? null);
+                            setOverrideHeroLogoSrc(info?.logo ?? null);
+                            setOverrideHeroLogoId(info?.logoId ?? null);
+                            setOverrideHeroTitle(info?.title ?? null);
+                          }}
+                        />
+                      </div>
+                    ) : isSerialsMode ? (
+                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                        <SerialsSection
+                          onBackdropOverrideChange={(bg, poster) => {
+                            setOverrideBg(bg ?? null);
+                            setOverridePoster(poster ?? null);
+                          }}
+                          onHeroInfoOverrideChange={(info) => {
+                            setOverrideHeroMeta(info?.meta ?? null);
+                            setOverrideHeroLogoSrc(info?.logo ?? null);
+                            setOverrideHeroLogoId(info?.logoId ?? null);
+                            setOverrideHeroTitle(info?.title ?? null);
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                        <TrendingSection
+                          activeBackdropId={currentId ?? undefined}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </section>
               </>
             )}
           </div>

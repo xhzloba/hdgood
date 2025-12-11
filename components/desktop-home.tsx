@@ -383,15 +383,17 @@ export function DesktopSidebar({
   showFavorites = true,
   favoritesActive = false,
   favoritesCount = 0,
+  activeRoute,
 }: {
   profileAvatar?: string;
   onSettingsClick?: () => void;
   showFavorites?: boolean;
   favoritesActive?: boolean;
   favoritesCount?: number;
+  activeRoute?: string;
 }) {
   const pathname = usePathname();
-  const activePath = pathname || "";
+  const activePath = activeRoute ?? pathname ?? "";
   const isHomeActive = !favoritesActive && activePath === "/";
   const isFavoritesActive =
     favoritesActive || activePath.startsWith("/favorites");
@@ -421,10 +423,10 @@ export function DesktopSidebar({
             <div className="relative">
               <IconHeart
                 className={`${sidebarIconClass} ${
-                  favoritesActive ? "text-white" : ""
+                  isFavoritesActive ? "text-white" : ""
                 }`}
                 stroke={1.6}
-                fill={favoritesActive ? "currentColor" : "none"}
+                fill={isFavoritesActive ? "currentColor" : "none"}
               />
               {favoritesCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
