@@ -677,7 +677,7 @@ export default function HomeClient({
                       </span>
                     )}
                   </div>
-                  <div className="relative z-30 hidden md:flex flex-col items-start justify-start mt-[12vh] min-h-[120px] space-y-3 md:pl-4">
+                  <div className="relative z-30 hidden md:flex flex-col items-start justify-start mt-[12vh] min-h-[120px] space-y-3">
                     {effLogoSrc && effLogoId ? (
                       <Link
                         href={`/movie/${effLogoId}`}

@@ -1487,7 +1487,7 @@ export function MovieGrid({
       !hideLoadMore && isArrowCandidate && viewMode === "pagination";
     const skeletonCount = preferFive ? 5 : perPage;
     const gridClass =
-      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4";
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -1527,7 +1527,7 @@ export function MovieGrid({
   ) {
     const skeletonCount = 5;
     const gridClass =
-      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4";
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -2490,7 +2490,7 @@ export function MovieGrid({
             )}
             <div
               className={
-                "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4"
+                "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"
               }
             >
               {virtualizationEnabled && rowHeight && vTopPad > 0 ? (
