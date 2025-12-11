@@ -1489,5 +1489,17 @@
   },
   "65942fa71cdf277bc199ee33": {
     "poster_logo": "/movies/logo/121.webp"
+  },
+  "679c047b5bb6652b6ba651d2": {
+    "bg_poster": {
+      "backdrop": "/movies/ryb.jpg"
+    },
+    "poster_logo": "/movies/logo/122.png"
+  },
+  "673a7571d72224a87100acb0": {
+    "poster_logo": "/movies/logo/123.webp",
+    "bg_poster": {
+      "backdrop": "/movies/land.webp"
+    }
   }
 }

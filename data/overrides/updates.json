@@ -3691,5 +3691,56 @@
       "poster_colors.dominant1",
       "poster_colors.dominant2"
     ]
+  },
+  {
+    "id": "679c047b5bb6652b6ba651d2",
+    "timestamp": "2025-12-11T08:44:31.584Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "679c047b5bb6652b6ba651d2",
+    "timestamp": "2025-12-11T08:47:38.931Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "679c047b5bb6652b6ba651d2",
+    "timestamp": "2025-12-11T08:48:30.379Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "673a7571d72224a87100acb0",
+    "timestamp": "2025-12-11T09:08:28.960Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "673a7571d72224a87100acb0",
+    "timestamp": "2025-12-11T09:09:02.420Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
   }
 ]
