@@ -502,10 +502,14 @@ export function DesktopHome({
   const [viewportHeight, setViewportHeight] = useState<number>(
     typeof window !== "undefined" ? window.innerHeight : 1080
   );
+  const [viewportWidth, setViewportWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 1920
+  );
   const isVeryTinyHeight = viewportHeight > 0 && viewportHeight < 700;
   const isTinyHeight = viewportHeight > 0 && viewportHeight <= 787;
   const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
   const isMediumHeight = viewportHeight >= 900 && viewportHeight <= 1200;
+  const isWideAndTall = viewportWidth >= 1800 && viewportHeight >= 950;
 
   // Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -608,7 +612,10 @@ export function DesktopHome({
     checkWidth();
     const iv = setInterval(updateClock, 60_000);
     window.addEventListener("resize", checkWidth);
-    const syncHeight = () => setViewportHeight(window.innerHeight);
+    const syncHeight = () => {
+      setViewportHeight(window.innerHeight);
+      setViewportWidth(window.innerWidth);
+    };
     syncHeight();
     window.addEventListener("resize", syncHeight);
     return () => {
@@ -1331,10 +1338,18 @@ export function DesktopHome({
     ? cardDisplayMode === "backdrop"
       ? "mt-[clamp(16px,3vh,32px)]"
       : "mt-[clamp(12px,2vh,24px)]"
+    : isFullscreen && isWideAndTall
+    ? cardDisplayMode === "backdrop"
+      ? "mt-[clamp(140px,17vh,260px)]"
+      : "mt-[clamp(90px,10vh,170px)]"
     : isFullscreen
     ? cardDisplayMode === "backdrop"
-      ? "mt-[clamp(72px,10vh,140px)]"
-      : "mt-[clamp(32px,4.5vh,64px)]"
+      ? "mt-[clamp(90px,12vh,180px)]"
+      : "mt-[clamp(48px,6vh,110px)]"
+    : isWideAndTall
+    ? cardDisplayMode === "backdrop"
+      ? "mt-[clamp(120px,15vh,230px)]"
+      : "mt-[clamp(70px,8vh,130px)]"
     : cardDisplayMode === "backdrop"
     ? "mt-[clamp(60px,9vh,120px)]"
     : "mt-[clamp(28px,4vh,56px)]";
