@@ -1501,5 +1501,24 @@
     "bg_poster": {
       "backdrop": "/movies/land.webp"
     }
+  },
+  "688be76275a6b2ea17967297": {
+    "poster_logo": "/movies/logo/124.webp",
+    "bg_poster": {
+      "backdrop": "/movies/gol.webp"
+    }
+  },
+  "6939ed670292d1a95f1de24a": {
+    "poster_logo": "/movies/logo/125.webp",
+    "bg_poster": {
+      "backdrop": "/movies/shal.jpeg"
+    }
+  },
+  "690d1a679cfe849a33163731": {
+    "poster_logo": "/movies/logo/126.webp",
+    "poster": "/movies/sraz-poster.jpg",
+    "bg_poster": {
+      "backdrop": "/movies/sraz-backdrop.webp"
+    }
   }
 }

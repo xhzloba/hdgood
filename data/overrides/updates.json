@@ -3742,5 +3742,39 @@
       "poster_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "688be76275a6b2ea17967297",
+    "timestamp": "2025-12-11T13:46:20.632Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6939ed670292d1a95f1de24a",
+    "timestamp": "2025-12-11T13:52:52.087Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690d1a679cfe849a33163731",
+    "timestamp": "2025-12-11T14:06:42.984Z",
+    "poster": "/movies/sraz-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]
