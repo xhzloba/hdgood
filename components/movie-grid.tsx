@@ -67,6 +67,7 @@ interface MovieGridProps {
   viewMode?: "pagination" | "loadmore";
   hideLoadMoreOverride?: boolean;
   cardType?: "poster" | "backdrop";
+  gridColsOverride?: number;
 }
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -198,6 +199,7 @@ export function MovieGrid({
   viewMode,
   hideLoadMoreOverride,
   cardType = "poster",
+  gridColsOverride,
 }: MovieGridProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [errorImages, setErrorImages] = useState<Set<string>>(new Set());
@@ -431,6 +433,9 @@ export function MovieGrid({
       const mqlLg = window.matchMedia("(min-width: 1024px)");
       const mqlMd = window.matchMedia("(min-width: 768px)");
       const computeCols = () => {
+        if (typeof gridColsOverride === "number" && gridColsOverride > 0) {
+          return gridColsOverride;
+        }
         if (mqlXl.matches) return 5;
         if (mqlLg.matches) return 5;
         if (mqlMd.matches) return 5;
@@ -449,7 +454,7 @@ export function MovieGrid({
         window.removeEventListener("resize", updateCols);
       };
     } catch {}
-  }, []);
+  }, [gridColsOverride]);
 
   useEffect(() => {
     if (showEscHint && isLargeDesktop) {
@@ -1482,7 +1487,7 @@ export function MovieGrid({
       !hideLoadMore && isArrowCandidate && viewMode === "pagination";
     const skeletonCount = preferFive ? 5 : perPage;
     const gridClass =
-      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -1522,7 +1527,7 @@ export function MovieGrid({
   ) {
     const skeletonCount = 5;
     const gridClass =
-      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2";
+      "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4";
     return (
       <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -1698,7 +1703,7 @@ export function MovieGrid({
   // «Нет данных» показываем только если точно не идёт загрузка/валидация
   if (!isLoading && !isValidating && movies.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="text-left py-8">
         <div className="inline-block bg-zinc-800/50 border border-zinc-700/50 p-4 text-zinc-400 backdrop-blur-sm rounded">
           Нет данных
         </div>
@@ -1999,7 +2004,9 @@ export function MovieGrid({
       ) : null}
       <div
         ref={gridWrapRef}
-        className={isArrowDesktopMode && watchOpen ? "hidden" : "relative"}
+        className={
+          isArrowDesktopMode && watchOpen ? "hidden" : "relative w-full md:pr-8"
+        }
         style={isKeyboardNav ? { pointerEvents: "none" } : undefined}
       >
         {showInlineInfo ? (
@@ -2483,7 +2490,7 @@ export function MovieGrid({
             )}
             <div
               className={
-                "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2"
+                "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-2 md:pl-4"
               }
             >
               {virtualizationEnabled && rowHeight && vTopPad > 0 ? (

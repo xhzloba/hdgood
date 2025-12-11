@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { HeaderCategories } from "./header-categories";
 import { TrendingSection } from "./trending-section";
-import { UhdSection } from "./uhd-section";
+import { UhdSection, UHD_CHANNELS } from "./uhd-section";
 import { MoviesSection } from "./movies-section";
 import { SerialsSection } from "./serials-section";
 import { CATEGORIES } from "@/lib/categories";
@@ -16,6 +16,7 @@ import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { IconLayoutGrid, IconList } from "@tabler/icons-react";
 
 type HomeClientProps = {
   initialSelectedTitle?: string;
@@ -30,7 +31,9 @@ export default function HomeClient({
 }: HomeClientProps) {
   const isMobile = useIsMobile();
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   try {
     if (initialOverridesMap && Object.keys(initialOverridesMap).length > 0) {
@@ -93,9 +96,23 @@ export default function HomeClient({
     genre?: string | null;
     duration?: string | null;
   } | null>(null);
-  const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(null);
-  const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(null);
-  const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(null);
+  const [overrideHeroLogoSrc, setOverrideHeroLogoSrc] = useState<string | null>(
+    null
+  );
+  const [overrideHeroLogoId, setOverrideHeroLogoId] = useState<string | null>(
+    null
+  );
+  const [overrideHeroTitle, setOverrideHeroTitle] = useState<string | null>(
+    null
+  );
+  const [uhdActive, setUhdActive] = useState(0);
+  const [uhdViewMode, setUhdViewMode] = useState<"pagination" | "loadmore">(
+    "pagination"
+  );
+  const [uhdPaging, setUhdPaging] = useState<{
+    page: number;
+    scrolledCount: number;
+  } | null>(null);
 
   const handleSelect = (cat: Category | null) => {
     setSelected(cat);
@@ -191,10 +208,13 @@ export default function HomeClient({
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("https://api.vokino.pro/v2/list?sort=watching", {
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-        });
+        const res = await fetch(
+          "https://api.vokino.pro/v2/list?sort=watching",
+          {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          }
+        );
         if (!res.ok) return;
         const data = await res.json();
         const items: any[] = Array.isArray(data)
@@ -526,12 +546,12 @@ export default function HomeClient({
   const effLogoSrc = hasOverrideBg ? overrideHeroLogoSrc : logoSrc;
   const effLogoId = hasOverrideBg ? overrideHeroLogoId : logoId;
   const effMeta = hasOverrideBg ? overrideHeroMeta : meta;
-  
+
   const isMainPage = !selected;
 
   if (isMounted && !isMobile && !initialSelectedTitle) {
-      return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
-    }
+    return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
+  }
 
   return (
     <PosterBackground
@@ -547,176 +567,470 @@ export default function HomeClient({
       {/* Desktop Skeleton for Main Page (Prevent Flash of Mobile Layout) */}
       {isMainPage && (
         <div className="hidden md:block fixed inset-0 z-50 bg-zinc-950">
-           {/* Sidebar Skeleton */}
-           <DesktopSidebar />
-           
-           {/* Content Skeleton */}
-           <main className="relative z-10 ml-24 h-full flex flex-col px-0 overflow-hidden">
-             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
-             </div>
-           </main>
+          {/* Sidebar Skeleton */}
+          <DesktopSidebar />
+
+          {/* Content Skeleton */}
+          <main className="relative z-10 ml-24 h-full flex flex-col px-0 overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full border-4 border-zinc-800 border-t-zinc-500 animate-spin" />
+            </div>
+          </main>
         </div>
       )}
 
       {/* Mobile/Responsive Layout (Hidden on Desktop Main Page) */}
       <div className={isMainPage ? "md:hidden" : ""}>
-      <main className="w-full min-h-screen pb-16 relative z-10">
-        <div className="mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8">
-          {selected && (
-            <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
-              <HeaderCategories
-                variant="horizontal"
-                className="!bg-transparent !border-transparent relative z-40"
-                onSelect={handleSelect}
-                activeIndex={activeIndex}
-                onActiveIndexChange={handleActiveIndexChange}
-              />
-            </div>
-          )}
-          <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[8vh] min-h-[200px] space-y-6">
-            {effLogoSrc && effLogoId ? (
-              <Link href={`/movie/${effLogoId}`} className="block transition-transform hover:scale-105 duration-300">
-                <img
-                  src={effLogoSrc}
-                  alt="Логотип"
-                  className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain drop-shadow-2xl"
-                />
-              </Link>
-            ) : hasOverrideBg && overrideHeroTitle ? (
-              <div className="flex items-center justify-center px-4">
-                <span className="text-3xl md:text-5xl font-bold text-zinc-100 truncate max-w-[80vw] drop-shadow-xl tracking-tight">
-                  {overrideHeroTitle}
-                </span>
-              </div>
-            ) : null}
-            
-            <div className="text-base md:text-xl font-medium text-zinc-200/90 px-4 text-center leading-relaxed flex items-center justify-center drop-shadow-md">
-            {hasOverrideBg && effMeta ? (
-              (() => {
-                const yearVal =
-                  effMeta.year && String(effMeta.year).trim()
-                    ? String(effMeta.year).trim()
-                    : null;
-                const restArr = [
-                  effMeta.country,
-                  effMeta.genre,
-                  effMeta.duration,
-                ].filter((v) => v && String(v).trim().length > 0) as string[];
-                return (
-                  <span className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-[80vw]">
-                    {(effMeta.ratingKP != null || effMeta.ratingIMDb != null) && (
-                      <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                        {effMeta.ratingKP != null && (
-                        <span className="inline-flex items-center gap-2 align-middle">
-                          <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
-                            alt="Кинопоиск"
-                            className="w-5 h-5 rounded-sm"
-                          />
-                          <span
-                            className={
-                              effMeta.ratingKP != null && effMeta.ratingKP > 8.5
-                                ? "font-bold text-lg bg-clip-text text-transparent"
-                                : `${ratingColor(
-                                    effMeta.ratingKP ?? undefined
-                                  )} font-bold text-lg`
-                            }
-                            style={
-                              effMeta.ratingKP != null && effMeta.ratingKP > 8.5
-                                ? {
-                                    backgroundImage:
-                                      "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
-                                    WebkitBackgroundClip: "text",
-                                    backgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",
-                                  }
-                                : undefined
-                            }
-                          >
-                            {effMeta.ratingKP != null
-                              ? formatRatingLabel(effMeta.ratingKP)
-                              : "—"}
-                          </span>
-                        </span>
-                        )}
-                        {effMeta.ratingIMDb != null && (
-                          <span className="inline-flex items-center gap-2 align-middle">
-                            <img
-                              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
-                              alt="IMDb"
-                              className="w-5 h-5 object-contain"
-                            />
-                            <span
-                              className={
-                                effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
-                                  ? "font-bold text-lg bg-clip-text text-transparent"
-                                  : `${ratingColor(
-                                      effMeta.ratingIMDb ?? undefined
-                                    )} font-bold text-lg`
-                              }
-                              style={
-                                effMeta.ratingIMDb != null && effMeta.ratingIMDb > 8.5
-                                  ? {
-                                      backgroundImage:
-                                        "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
-                                      WebkitBackgroundClip: "text",
-                                      backgroundClip: "text",
-                                      WebkitTextFillColor: "transparent",
-                                    }
-                                  : undefined
-                              }
-                            >
-                              {formatRatingLabel(effMeta.ratingIMDb)}
-                            </span>
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-3 text-zinc-300 font-medium">
-                    {yearVal && (
-                      <span className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-white border border-white/10">
-                        <span className="truncate">{yearVal}</span>
-                      </span>
-                    )}
-                    {restArr.length > 0 && (
-                      <span className="truncate max-w-[60vw] drop-shadow-sm">
-                        {restArr.join(" • ")}
-                      </span>
-                    )}
-                    </div>
-                  </span>
-                );
-              })()
-            ) : null}
-            </div>
-          </div>
-        </div>
-
-        <section className="w-full mt-[1vh] md:mt-4">
-          <div className={`relative z-20 w-full`}>
+        <main className="w-full min-h-screen pb-16 relative z-10">
+          <div
+            className={`mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8 ${
+              isUhdMode ? "md:pl-[clamp(78px,8vw,110px)]" : ""
+            }`}
+          >
             {isUhdMode ? (
-              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                <UhdSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
-              </div>
-            ) : isMoviesMode ? (
-              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                <MoviesSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
-              </div>
-            ) : isSerialsMode ? (
-              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                <SerialsSection onBackdropOverrideChange={(bg, poster) => { setOverrideBg(bg ?? null); setOverridePoster(poster ?? null); }} onHeroInfoOverrideChange={(info) => { setOverrideHeroMeta(info?.meta ?? null); setOverrideHeroLogoSrc(info?.logo ?? null); setOverrideHeroLogoId(info?.logoId ?? null); setOverrideHeroTitle(info?.title ?? null); }} />
+              <div className="md:grid md:grid-cols-[1fr] items-start">
+                <div className="hidden md:block fixed left-0 top-0 bottom-0 z-40">
+                  <DesktopSidebar />
+                </div>
+                <div className="md:ml-0">
+                  <div className="hidden md:flex items-center gap-2 fixed top-4 left-[clamp(82px,8vw,118px)] right-6 z-50 bg-zinc-950/80 backdrop-blur-lg border border-white/5 px-3 py-2 rounded-lg shadow-lg shadow-black/30">
+                    {UHD_CHANNELS.map((ch, idx) => (
+                      <button
+                        key={idx}
+                        data-active={uhdActive === idx ? "true" : "false"}
+                        onClick={() => {
+                          setUhdActive(idx);
+                          if (typeof window !== "undefined") {
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }
+                        }}
+                        className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full md:rounded-md text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
+                          uhdActive === idx
+                            ? "text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[2px] scale-[1.08]"
+                            : "text-zinc-300/90 hover:text-white"
+                        }`}
+                        style={
+                          uhdActive === idx
+                            ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
+                            : undefined
+                        }
+                      >
+                        {ch.title}
+                      </button>
+                    ))}
+                    <div className="hidden md:flex items-center gap-2 ml-auto">
+                      <button
+                        onClick={() => setUhdViewMode("pagination")}
+                        className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                          uhdViewMode === "pagination"
+                            ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        }`}
+                        style={
+                          uhdViewMode === "pagination"
+                            ? {
+                                backgroundColor:
+                                  "rgba(var(--ui-accent-rgb),0.2)",
+                              }
+                            : undefined
+                        }
+                        title="Режим пагинации"
+                      >
+                        <IconLayoutGrid size={14} />
+                      </button>
+                      <button
+                        onClick={() => setUhdViewMode("loadmore")}
+                        className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-[12px] font-medium transition-all duration-200 ${
+                          uhdViewMode === "loadmore"
+                            ? "text-white border border-[rgba(var(--ui-accent-rgb),0.6)]"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        }`}
+                        style={
+                          uhdViewMode === "loadmore"
+                            ? {
+                                backgroundColor:
+                                  "rgba(var(--ui-accent-rgb),0.2)",
+                              }
+                            : undefined
+                        }
+                        title="Режим загрузки"
+                      >
+                        <IconList size={14} />
+                      </button>
+                    </div>
+                    {uhdViewMode === "pagination" && uhdPaging && (
+                      <span className="hidden md:inline-flex items-center gap-2 ml-2 h-8 text-[13px] text-white font-medium">
+                        <span className="text-white">Стр.</span>
+                        <span
+                          className="inline-flex items-center rounded-full text-white px-2 py-[2px]"
+                          style={{
+                            backgroundColor: "rgb(var(--ui-accent-rgb))",
+                          }}
+                        >
+                          {uhdPaging.page}
+                        </span>
+                        <span className="text-white">•</span>
+                        <span className="text-white">Пролистано</span>
+                        <span className="text-white">
+                          {uhdPaging.scrolledCount}
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative z-30 hidden md:flex flex-col items-start justify-start mt-[12vh] min-h-[120px] space-y-3 md:pl-4">
+                    {effLogoSrc && effLogoId ? (
+                      <Link
+                        href={`/movie/${effLogoId}`}
+                        className="block transition-transform hover:scale-105 duration-300 mb-16"
+                      >
+                        <img
+                          src={effLogoSrc}
+                          alt="Логотип"
+                          className="h-20 md:h-24 w-auto max-w-[260px] md:max-w-[340px] object-contain drop-shadow-2xl"
+                        />
+                      </Link>
+                    ) : hasOverrideBg && overrideHeroTitle ? (
+                      <div className="flex items-start justify-start px-1">
+                        <span className="text-3xl md:text-4xl font-bold text-zinc-100 truncate max-w-[70vw] drop-shadow-xl tracking-tight">
+                          {overrideHeroTitle}
+                        </span>
+                      </div>
+                    ) : null}
+
+                    <div className="text-base md:text-xl font-medium text-zinc-200/90 px-1 text-left leading-relaxed flex items-start justify-start drop-shadow-md max-w-[900px]">
+                      {hasOverrideBg && effMeta
+                        ? (() => {
+                            const yearVal =
+                              effMeta.year && String(effMeta.year).trim()
+                                ? String(effMeta.year).trim()
+                                : null;
+                            const restArr = [
+                              effMeta.country,
+                              effMeta.genre,
+                              effMeta.duration,
+                            ].filter(
+                              (v) => v && String(v).trim().length > 0
+                            ) as string[];
+                            return (
+                              <span className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-[80vw]">
+                                {(effMeta.ratingKP != null ||
+                                  effMeta.ratingIMDb != null) && (
+                                  <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                                    {effMeta.ratingKP != null && (
+                                      <span className="inline-flex items-center gap-2 align-middle">
+                                        <img
+                                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
+                                          alt="Кинопоиск"
+                                          className="w-5 h-5 rounded-sm"
+                                        />
+                                        <span
+                                          className={
+                                            effMeta.ratingKP != null &&
+                                            effMeta.ratingKP > 8.5
+                                              ? "font-bold text-lg bg-clip-text text-transparent"
+                                              : `${ratingColor(
+                                                  effMeta.ratingKP ?? undefined
+                                                )} font-bold text-lg`
+                                          }
+                                          style={
+                                            effMeta.ratingKP != null &&
+                                            effMeta.ratingKP > 8.5
+                                              ? {
+                                                  backgroundImage:
+                                                    "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                                  WebkitBackgroundClip: "text",
+                                                  backgroundClip: "text",
+                                                  WebkitTextFillColor:
+                                                    "transparent",
+                                                }
+                                              : undefined
+                                          }
+                                        >
+                                          {effMeta.ratingKP != null
+                                            ? formatRatingLabel(
+                                                effMeta.ratingKP
+                                              )
+                                            : "—"}
+                                        </span>
+                                      </span>
+                                    )}
+                                    {effMeta.ratingIMDb != null && (
+                                      <span className="inline-flex items-center gap-2 align-middle">
+                                        <img
+                                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
+                                          alt="IMDb"
+                                          className="w-5 h-5 object-contain"
+                                        />
+                                        <span
+                                          className={
+                                            effMeta.ratingIMDb != null &&
+                                            effMeta.ratingIMDb > 8.5
+                                              ? "font-bold text-lg bg-clip-text text-transparent"
+                                              : `${ratingColor(
+                                                  effMeta.ratingIMDb ??
+                                                    undefined
+                                                )} font-bold text-lg`
+                                          }
+                                          style={
+                                            effMeta.ratingIMDb != null &&
+                                            effMeta.ratingIMDb > 8.5
+                                              ? {
+                                                  backgroundImage:
+                                                    "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                                  WebkitBackgroundClip: "text",
+                                                  backgroundClip: "text",
+                                                  WebkitTextFillColor:
+                                                    "transparent",
+                                                }
+                                              : undefined
+                                          }
+                                        >
+                                          {formatRatingLabel(
+                                            effMeta.ratingIMDb
+                                          )}
+                                        </span>
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                <div className="flex items-center gap-3 text-zinc-300 font-medium">
+                                  {yearVal && (
+                                    <span className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-white border border-white/10">
+                                      <span className="truncate">
+                                        {yearVal}
+                                      </span>
+                                    </span>
+                                  )}
+                                  {restArr.length > 0 && (
+                                    <span className="truncate max-w-[60vw] drop-shadow-sm">
+                                      {restArr.join(" • ")}
+                                    </span>
+                                  )}
+                                </div>
+                              </span>
+                            );
+                          })()
+                        : null}
+                    </div>
+                  </div>
+
+                  <section className="w-full mt-[1vh] md:mt-0">
+                    <div className="relative z-20 w-full">
+                      <div className="px-4 md:px-0">
+                        <UhdSection
+                          hideTabs={!isMobile}
+                          active={uhdActive}
+                          onActiveChange={setUhdActive}
+                          viewMode={uhdViewMode}
+                          onViewModeChange={setUhdViewMode}
+                          onPagingInfoChange={setUhdPaging}
+                          onBackdropOverrideChange={(bg, poster) => {
+                            setOverrideBg(bg ?? null);
+                            setOverridePoster(poster ?? null);
+                          }}
+                          onHeroInfoOverrideChange={(info) => {
+                            setOverrideHeroMeta(info?.meta ?? null);
+                            setOverrideHeroLogoSrc(info?.logo ?? null);
+                            setOverrideHeroLogoId(info?.logoId ?? null);
+                            setOverrideHeroTitle(info?.title ?? null);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </section>
+                </div>
               </div>
             ) : (
-              <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
-                <TrendingSection activeBackdropId={currentId ?? undefined} />
-              </div>
+              <>
+                {selected && (
+                  <div className="mb-8 hidden md:block px-4 md:px-12 max-w-[1800px] mx-auto -mx-4 md:-mx-12">
+                    <HeaderCategories
+                      variant="horizontal"
+                      className="!bg-transparent !border-transparent relative z-40"
+                      onSelect={handleSelect}
+                      activeIndex={activeIndex}
+                      onActiveIndexChange={handleActiveIndexChange}
+                    />
+                  </div>
+                )}
+
+                <div className="relative z-30 hidden md:flex flex-col items-center justify-center mt-[8vh] min-h-[200px] space-y-6">
+                  {effLogoSrc && effLogoId ? (
+                    <Link
+                      href={`/movie/${effLogoId}`}
+                      className="block transition-transform hover:scale-105 duration-300"
+                    >
+                      <img
+                        src={effLogoSrc}
+                        alt="Логотип"
+                        className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain drop-shadow-2xl"
+                      />
+                    </Link>
+                  ) : hasOverrideBg && overrideHeroTitle ? (
+                    <div className="flex items-center justify-center px-4">
+                      <span className="text-3xl md:text-5xl font-bold text-zinc-100 truncate max-w-[80vw] drop-shadow-xl tracking-tight">
+                        {overrideHeroTitle}
+                      </span>
+                    </div>
+                  ) : null}
+
+                  <div className="text-base md:text-xl font-medium text-zinc-200/90 px-4 text-center leading-relaxed flex items-center justify-center drop-shadow-md">
+                    {hasOverrideBg && effMeta
+                      ? (() => {
+                          const yearVal =
+                            effMeta.year && String(effMeta.year).trim()
+                              ? String(effMeta.year).trim()
+                              : null;
+                          const restArr = [
+                            effMeta.country,
+                            effMeta.genre,
+                            effMeta.duration,
+                          ].filter(
+                            (v) => v && String(v).trim().length > 0
+                          ) as string[];
+                          return (
+                            <span className="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 max-w-[80vw]">
+                              {(effMeta.ratingKP != null ||
+                                effMeta.ratingIMDb != null) && (
+                                <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                                  {effMeta.ratingKP != null && (
+                                    <span className="inline-flex items-center gap-2 align-middle">
+                                      <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Kinopoisk_colored_square_icon.svg/2048px-Kinopoisk_colored_square_icon.svg.png"
+                                        alt="Кинопоиск"
+                                        className="w-5 h-5 rounded-sm"
+                                      />
+                                      <span
+                                        className={
+                                          effMeta.ratingKP != null &&
+                                          effMeta.ratingKP > 8.5
+                                            ? "font-bold text-lg bg-clip-text text-transparent"
+                                            : `${ratingColor(
+                                                effMeta.ratingKP ?? undefined
+                                              )} font-bold text-lg`
+                                        }
+                                        style={
+                                          effMeta.ratingKP != null &&
+                                          effMeta.ratingKP > 8.5
+                                            ? {
+                                                backgroundImage:
+                                                  "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                                WebkitBackgroundClip: "text",
+                                                backgroundClip: "text",
+                                                WebkitTextFillColor:
+                                                  "transparent",
+                                              }
+                                            : undefined
+                                        }
+                                      >
+                                        {effMeta.ratingKP != null
+                                          ? formatRatingLabel(effMeta.ratingKP)
+                                          : "—"}
+                                      </span>
+                                    </span>
+                                  )}
+                                  {effMeta.ratingIMDb != null && (
+                                    <span className="inline-flex items-center gap-2 align-middle">
+                                      <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1280px-IMDB_Logo_2016.svg.png"
+                                        alt="IMDb"
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                      <span
+                                        className={
+                                          effMeta.ratingIMDb != null &&
+                                          effMeta.ratingIMDb > 8.5
+                                            ? "font-bold text-lg bg-clip-text text-transparent"
+                                            : `${ratingColor(
+                                                effMeta.ratingIMDb ?? undefined
+                                              )} font-bold text-lg`
+                                        }
+                                        style={
+                                          effMeta.ratingIMDb != null &&
+                                          effMeta.ratingIMDb > 8.5
+                                            ? {
+                                                backgroundImage:
+                                                  "linear-gradient(165deg, #ffd25e 16.44%, #b59646 63.42%)",
+                                                WebkitBackgroundClip: "text",
+                                                backgroundClip: "text",
+                                                WebkitTextFillColor:
+                                                  "transparent",
+                                              }
+                                            : undefined
+                                        }
+                                      >
+                                        {formatRatingLabel(effMeta.ratingIMDb)}
+                                      </span>
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              <div className="flex items-center gap-3 text-zinc-300 font-medium">
+                                {yearVal && (
+                                  <span className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-white border border-white/10">
+                                    <span className="truncate">{yearVal}</span>
+                                  </span>
+                                )}
+                                {restArr.length > 0 && (
+                                  <span className="truncate max-w-[60vw] drop-shadow-sm">
+                                    {restArr.join(" • ")}
+                                  </span>
+                                )}
+                              </div>
+                            </span>
+                          );
+                        })()
+                      : null}
+                  </div>
+
+                  <section className="w-full mt-[1vh] md:mt-4">
+                    <div className="relative z-20 w-full">
+                      {isMoviesMode ? (
+                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                          <MoviesSection
+                            onBackdropOverrideChange={(bg, poster) => {
+                              setOverrideBg(bg ?? null);
+                              setOverridePoster(poster ?? null);
+                            }}
+                            onHeroInfoOverrideChange={(info) => {
+                              setOverrideHeroMeta(info?.meta ?? null);
+                              setOverrideHeroLogoSrc(info?.logo ?? null);
+                              setOverrideHeroLogoId(info?.logoId ?? null);
+                              setOverrideHeroTitle(info?.title ?? null);
+                            }}
+                          />
+                        </div>
+                      ) : isSerialsMode ? (
+                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                          <SerialsSection
+                            onBackdropOverrideChange={(bg, poster) => {
+                              setOverrideBg(bg ?? null);
+                              setOverridePoster(poster ?? null);
+                            }}
+                            onHeroInfoOverrideChange={(info) => {
+                              setOverrideHeroMeta(info?.meta ?? null);
+                              setOverrideHeroLogoSrc(info?.logo ?? null);
+                              setOverrideHeroLogoId(info?.logoId ?? null);
+                              setOverrideHeroTitle(info?.title ?? null);
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                          <TrendingSection
+                            activeBackdropId={currentId ?? undefined}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </div>
+              </>
             )}
           </div>
-        </section>
-        
-      </main>
+        </main>
       </div>
     </PosterBackground>
   );
