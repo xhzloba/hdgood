@@ -18,9 +18,19 @@ interface PlayerSelectorProps {
   className?: string;
   videoContainerClassName?: string;
   videoContainerStyle?: React.CSSProperties;
+  floatingControls?: boolean;
 }
 
-export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, className = "", videoContainerClassName = "", videoContainerStyle }: PlayerSelectorProps) {
+export function PlayerSelector({
+  onPlayerSelect,
+  onClose,
+  iframeUrl,
+  kpId,
+  className = "",
+  videoContainerClassName = "",
+  videoContainerStyle,
+  floatingControls = false,
+}: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
 
   const handlePlayerSelect = (playerId: number) => {
@@ -55,7 +65,14 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
         handlePlayerSelect(3);
       }
     }
-  }, [player2Available, player1Available, player3Available, kpId, iframeUrl, selectedPlayer]);
+  }, [
+    player2Available,
+    player1Available,
+    player3Available,
+    kpId,
+    iframeUrl,
+    selectedPlayer,
+  ]);
 
   const getPlayerUrl = (playerId: number | null) => {
     if (playerId === 1) return iframeUrl ?? null;
@@ -66,8 +83,63 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
 
   const selectedUrl = getPlayerUrl(selectedPlayer);
 
-  const hasFixedStyle = !!videoContainerStyle && (videoContainerStyle.height != null || videoContainerStyle.width != null);
-  return (
+  const hasFixedStyle =
+    !!videoContainerStyle &&
+    (videoContainerStyle.height != null || videoContainerStyle.width != null);
+  return floatingControls ? (
+    <div className={`relative w-full h-full ${className}`}>
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
+        <Select
+          value={selectedPlayer ? String(selectedPlayer) : undefined}
+          onValueChange={(val) => handlePlayerSelect(Number(val))}
+        >
+          <SelectTrigger className="w-[200px] bg-black/60 border-white/20 text-zinc-100 backdrop-blur-md relative z-30">
+            <SelectValue placeholder="Выберите плеер" />
+          </SelectTrigger>
+          <SelectContent className="z-[150]" position="popper" align="center">
+            {[1, 2, 3].map((playerId) => {
+              const disabled =
+                (playerId === 1 && !player1Available) ||
+                (playerId === 2 && !player2Available) ||
+                (playerId === 3 && !player3Available);
+
+              return (
+                <SelectItem
+                  key={playerId}
+                  value={String(playerId)}
+                  disabled={disabled}
+                  className="cursor-pointer"
+                >
+                  Плеер {playerId}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+      <div
+        className={`group relative w-full h-full rounded-xl overflow-hidden ${
+          videoContainerClassName || "bg-black"
+        } shadow-2xl ring-1 ring-white/10 z-0`}
+        style={videoContainerStyle}
+      >
+        {selectedUrl ? (
+          <iframe
+            src={selectedUrl}
+            className="w-full h-full border-0"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="Movie Player"
+            style={{ zIndex: 1 }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-zinc-500">
+            <span className="text-sm">Плеер недоступен</span>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : (
     <div className={`space-y-4 ${className}`}>
       {/* Player Controls - Top */}
       <div className="mb-4">
@@ -75,10 +147,10 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
           value={selectedPlayer ? String(selectedPlayer) : undefined}
           onValueChange={(val) => handlePlayerSelect(Number(val))}
         >
-          <SelectTrigger className="w-[180px] bg-zinc-900/50 border-white/10 text-zinc-200">
+          <SelectTrigger className="w-[180px] bg-zinc-900/50 border-white/10 text-zinc-200 relative z-10">
             <SelectValue placeholder="Выберите плеер" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[150]" position="popper">
             {[1, 2, 3].map((playerId) => {
               const disabled =
                 (playerId === 1 && !player1Available) ||
@@ -100,7 +172,14 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
         </Select>
       </div>
 
-      <div className={`group relative w-full ${hasFixedStyle ? "" : "aspect-video"} rounded-xl overflow-hidden ${videoContainerClassName || "bg-black"} shadow-2xl ring-1 ring-white/10 z-0`} style={videoContainerStyle}>
+      <div
+        className={`group relative w-full ${
+          hasFixedStyle ? "" : "aspect-video"
+        } rounded-xl overflow-hidden ${
+          videoContainerClassName || "bg-black"
+        } shadow-2xl ring-1 ring-white/10 z-0`}
+        style={videoContainerStyle}
+      >
         {selectedUrl ? (
           <iframe
             src={selectedUrl}
@@ -111,9 +190,9 @@ export function PlayerSelector({ onPlayerSelect, onClose, iframeUrl, kpId, class
             style={{ zIndex: 1 }}
           />
         ) : (
-           <div className="w-full h-full flex items-center justify-center text-zinc-500">
-              <span className="text-sm">Плеер недоступен</span>
-           </div>
+          <div className="w-full h-full flex items-center justify-center text-zinc-500">
+            <span className="text-sm">Плеер недоступен</span>
+          </div>
         )}
       </div>
     </div>

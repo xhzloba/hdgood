@@ -4,14 +4,35 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Loader } from "@/components/loader";
-import { ArrowLeft, Play, Info, Plus, ThumbsUp, ChevronDown, X, Maximize, Minimize, Volume2, VolumeX, Heart } from "lucide-react";
+import {
+  ArrowLeft,
+  Play,
+  Info,
+  Plus,
+  ThumbsUp,
+  ChevronDown,
+  X,
+  Maximize,
+  Minimize,
+  Volume2,
+  VolumeX,
+  Heart,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PlayerSelector } from "@/components/player-selector";
 import { toast } from "@/hooks/use-toast";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import SimpleMovieSlider from "@/components/simple-movie-slider";
-import { FranchiseData, FranchiseSeason, FranchiseEpisode } from "@/types/franchise";
+import {
+  FranchiseData,
+  FranchiseSeason,
+  FranchiseEpisode,
+} from "@/types/franchise";
 
 // Кеш dynamic overrides по id фильма, переживает размонтирование страницы и переиспользуется из списка/слайдера
 const movieOverrideCache: Record<string, any> =
@@ -137,7 +158,6 @@ const fetchMovieFullData = async (id: string) => {
   return result;
 };
 
-
 // Функция для franchise API с retry логикой для надежности
 const fetchFranchise = async (
   kpId: number,
@@ -260,13 +280,16 @@ export default function MoviePage({
 }) {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<any>(null);
-  const [franchiseData, setFranchiseData] = useState<FranchiseData | null>(null);
+  const [franchiseData, setFranchiseData] = useState<FranchiseData | null>(
+    null
+  );
   const [errorDetails, setErrorDetails] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string>("");
   const [kpId, setKpId] = useState<string>("");
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedPlayer, setSelectedPlayer] = useState<number>(1);
+  const [showWatchOverlay, setShowWatchOverlay] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
   const currentIdRef = useRef<string>(""); // Ref для отслеживания текущего id
   const [openSeasons, setOpenSeasons] = useState<Set<number>>(new Set([1])); // По умолчанию открыт только первый сезон
@@ -293,7 +316,9 @@ export default function MoviePage({
   const [isBackdropLoaded, setIsBackdropLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [failedActorImages, setFailedActorImages] = useState<Set<string>>(new Set());
+  const [failedActorImages, setFailedActorImages] = useState<Set<string>>(
+    new Set()
+  );
   const playerRef = useRef<any>(null);
   const [origin, setOrigin] = useState("");
   const [listUrl, setListUrl] = useState<string | null>(null);
@@ -310,8 +335,26 @@ export default function MoviePage({
       setIsFullscreen(!!document.fullscreenElement);
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
+
+  useEffect(() => {
+    if (!showWatchOverlay) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === "Backspace") {
+        e.preventDefault();
+        setShowWatchOverlay(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [showWatchOverlay]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -335,17 +378,17 @@ export default function MoviePage({
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Вычисляем информацию о качестве и TS
   const qualityInfo = useMemo(() => {
     if (!data?.details && !overrideData) return { quality: null, isTS: false };
-    
+
     const m = overrideData ?? data?.details;
     if (!m) return { quality: null, isTS: false };
-    
+
     // Мерджим franchise данные
     let fData = franchiseData;
     if (overrideData?.franchise && fData) {
@@ -357,14 +400,20 @@ export default function MoviePage({
     const tagsList = Array.isArray(tagsRaw)
       ? tagsRaw
       : String(tagsRaw || "").split(",");
-    const firstTag = tagsList.map((s: any) => String(s).trim()).filter(Boolean)[0];
-    
+    const firstTag = tagsList
+      .map((s: any) => String(s).trim())
+      .filter(Boolean)[0];
+
     const franchiseQuality = fData && (fData as any).quality;
     const quality = firstTag || franchiseQuality;
-    
+
     // Check if quality is TS (Telesync) or CAM
-    const isTS = quality && ["ts", "cam", "camrip", "telesync"].includes(String(quality).toLowerCase());
-    
+    const isTS =
+      quality &&
+      ["ts", "cam", "camrip", "telesync"].includes(
+        String(quality).toLowerCase()
+      );
+
     return { quality, isTS };
   }, [data, franchiseData, overrideData]);
 
@@ -444,14 +493,19 @@ export default function MoviePage({
 
   useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("__navContext") : null;
+      const raw =
+        typeof window !== "undefined"
+          ? localStorage.getItem("__navContext")
+          : null;
       if (!raw) {
         setNavIds([]);
         setNavIndex(null);
         return;
       }
       const ctx = JSON.parse(raw || "{}");
-      const ids = Array.isArray(ctx?.ids) ? ctx.ids.map((s: any) => String(s)) : [];
+      const ids = Array.isArray(ctx?.ids)
+        ? ctx.ids.map((s: any) => String(s))
+        : [];
       setNavIds(ids);
       const idx = ids.indexOf(String(id));
       setNavIndex(idx >= 0 ? idx : null);
@@ -466,64 +520,69 @@ export default function MoviePage({
 
   // Dynamic fetching of next page when reaching the end
   useEffect(() => {
-    if (!navIds.length || navIndex === null || !listUrl || isLoadingMore) return;
-    
+    if (!navIds.length || navIndex === null || !listUrl || isLoadingMore)
+      return;
+
     // If we are near the end (e.g., within 5 items)
     if (navIndex >= navIds.length - 5) {
       setIsLoadingMore(true);
       const nextPage = currentPage + 1;
       const nextUrl = makePageUrl(listUrl, nextPage);
-      
+
       console.log(`Fetching next page: ${nextPage}`);
-      
+
       fetcher(nextUrl)
-        .then(data => {
+        .then((data) => {
           const newMovies = extractMoviesFromData(data);
           const newIds = newMovies.map((m: any) => String(m.id));
-          
+
           if (newIds.length > 0) {
-             // Filter out duplicates just in case
-             const uniqueNewIds = newIds.filter((nid: string) => !navIds.includes(nid));
-             
-             if (uniqueNewIds.length > 0) {
-               const updatedIds = [...navIds, ...uniqueNewIds];
-               setNavIds(updatedIds);
-               setCurrentPage(nextPage);
-               
-               // Update localStorage so if user refreshes or comes back, they have the new list
-               try {
-                  const raw = localStorage.getItem("__navContext");
-                  if (raw) {
-                    const ctx = JSON.parse(raw);
-                    ctx.ids = updatedIds;
-                    ctx.currentPage = nextPage;
-                    ctx.totalLoaded = updatedIds.length;
-                    localStorage.setItem("__navContext", JSON.stringify(ctx));
-                  }
-               } catch (e) {
-                 console.error("Failed to update nav context", e);
-               }
-             } else {
-               // Even if no *new* unique IDs (e.g. overlap), we should advance the page
-               // so we don't get stuck fetching the same page forever.
-               console.warn(`Page ${nextPage} returned data but no new unique IDs.`);
-               setCurrentPage(nextPage);
-               
-                // Update currentPage in localStorage too
-               try {
-                  const raw = localStorage.getItem("__navContext");
-                  if (raw) {
-                    const ctx = JSON.parse(raw);
-                    ctx.currentPage = nextPage;
-                    localStorage.setItem("__navContext", JSON.stringify(ctx));
-                  }
-               } catch (e) {}
-             }
-           } else {
-             console.log(`Page ${nextPage} returned no movies.`);
-           }
+            // Filter out duplicates just in case
+            const uniqueNewIds = newIds.filter(
+              (nid: string) => !navIds.includes(nid)
+            );
+
+            if (uniqueNewIds.length > 0) {
+              const updatedIds = [...navIds, ...uniqueNewIds];
+              setNavIds(updatedIds);
+              setCurrentPage(nextPage);
+
+              // Update localStorage so if user refreshes or comes back, they have the new list
+              try {
+                const raw = localStorage.getItem("__navContext");
+                if (raw) {
+                  const ctx = JSON.parse(raw);
+                  ctx.ids = updatedIds;
+                  ctx.currentPage = nextPage;
+                  ctx.totalLoaded = updatedIds.length;
+                  localStorage.setItem("__navContext", JSON.stringify(ctx));
+                }
+              } catch (e) {
+                console.error("Failed to update nav context", e);
+              }
+            } else {
+              // Even if no *new* unique IDs (e.g. overlap), we should advance the page
+              // so we don't get stuck fetching the same page forever.
+              console.warn(
+                `Page ${nextPage} returned data but no new unique IDs.`
+              );
+              setCurrentPage(nextPage);
+
+              // Update currentPage in localStorage too
+              try {
+                const raw = localStorage.getItem("__navContext");
+                if (raw) {
+                  const ctx = JSON.parse(raw);
+                  ctx.currentPage = nextPage;
+                  localStorage.setItem("__navContext", JSON.stringify(ctx));
+                }
+              } catch (e) {}
+            }
+          } else {
+            console.log(`Page ${nextPage} returned no movies.`);
+          }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Failed to load more movies", err);
         })
         .finally(() => {
@@ -547,23 +606,27 @@ export default function MoviePage({
       // 2. Prefetch Override Data (Local API)
       // Проверяем наличие в кеше (учитываем, что там может быть null, поэтому проверяем на undefined)
       if (movieOverrideCache[targetId] === undefined) {
-         fetch(`/api/overrides/movies/${targetId}`, { cache: "no-store" })
-           .then(async (res) => {
-             if (res.ok) return res.json();
-             return null;
-           })
-           .then((data) => {
-             // Сохраняем в кеш (даже если null, чтобы знать, что оверрайда нет)
-             movieOverrideCache[targetId] = data || null;
-             try {
-               (globalThis as any).__movieOverridesCache[targetId] = data || null;
-             } catch {}
-             console.log(`🚀 Prefetched override for ${targetId}:`, data ? "Found" : "None");
-           })
-           .catch(() => {
-             // При ошибке тоже можно закешировать null, чтобы не долбить API
-             movieOverrideCache[targetId] = null;
-           });
+        fetch(`/api/overrides/movies/${targetId}`, { cache: "no-store" })
+          .then(async (res) => {
+            if (res.ok) return res.json();
+            return null;
+          })
+          .then((data) => {
+            // Сохраняем в кеш (даже если null, чтобы знать, что оверрайда нет)
+            movieOverrideCache[targetId] = data || null;
+            try {
+              (globalThis as any).__movieOverridesCache[targetId] =
+                data || null;
+            } catch {}
+            console.log(
+              `🚀 Prefetched override for ${targetId}:`,
+              data ? "Found" : "None"
+            );
+          })
+          .catch(() => {
+            // При ошибке тоже можно закешировать null, чтобы не долбить API
+            movieOverrideCache[targetId] = null;
+          });
       }
     };
 
@@ -579,7 +642,10 @@ export default function MoviePage({
 
   useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem("__returnTo") : null;
+      const raw =
+        typeof window !== "undefined"
+          ? localStorage.getItem("__returnTo")
+          : null;
       const obj = raw ? JSON.parse(raw) : null;
       const href = obj?.href ? String(obj.href) : null;
       setReturnHref(href);
@@ -819,12 +885,11 @@ export default function MoviePage({
     loadParams();
   }, [params]);
 
-
   // Загружаем динамический override из JSON API
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    
+
     const cached = movieOverrideCache[id];
     const hasCache = cached !== undefined;
 
@@ -845,13 +910,13 @@ export default function MoviePage({
         if (!cancelled) {
           // Если данные пришли такие же, как в кеше — не обновляем стейт (оптимизация рендера)
           if (JSON.stringify(data) !== JSON.stringify(movieOverrideCache[id])) {
-             setOverrideData(data);
-             movieOverrideCache[id] = data;
-             try {
-               const ref: any = globalThis as any;
-               const cache = (ref.__movieOverridesCache ||= {});
-               cache[id] = data;
-             } catch {}
+            setOverrideData(data);
+            movieOverrideCache[id] = data;
+            try {
+              const ref: any = globalThis as any;
+              const cache = (ref.__movieOverridesCache ||= {});
+              cache[id] = data;
+            } catch {}
           }
         }
       } catch {
@@ -859,8 +924,8 @@ export default function MoviePage({
           // Если в кеше уже было значение — оставляем его, иначе фиксируем отсутствие override
           // Если кеша не было и произошла ошибка - считаем что override нет
           if (!hasCache) {
-             setOverrideData(null);
-             movieOverrideCache[id] = null; // Кешируем отсутствие
+            setOverrideData(null);
+            movieOverrideCache[id] = null; // Кешируем отсутствие
           }
         }
       } finally {
@@ -880,14 +945,13 @@ export default function MoviePage({
 
     const loadData = async () => {
       console.log(`🔄 Загрузка фильма ${id}`);
-      
+
       // Reset UI states for new movie
       setActiveTab("overview");
       setOpenSeasons(new Set([1]));
       setPlayingEpisode(null);
       setIsTrailerPlaying(false);
 
-      
       // Check cache first for instant transition
       const cached = movieDataCache[id];
       if (cached) {
@@ -908,9 +972,9 @@ export default function MoviePage({
 
       try {
         let result = cached;
-        
+
         if (!result) {
-           result = await fetchMovieFullData(id);
+          result = await fetchMovieFullData(id);
         }
 
         if (isCancelled) return;
@@ -920,7 +984,7 @@ export default function MoviePage({
           setData(result.movieData);
           setLoading(false);
         }
-        
+
         const { kpId } = result;
 
         // Загружаем franchise асинхронно (не блокируем отображение страницы)
@@ -1006,8 +1070,6 @@ export default function MoviePage({
       <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950">
         {/* Background overlay */}
         <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
-
-        
 
         <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
           <div className="flex items-center justify-center min-h-[100dvh] min-h-screen">
@@ -1167,29 +1229,48 @@ export default function MoviePage({
 
   // Helper for actor photos
   const getActorPhoto = (actor: any): string | null => {
-    if (!actor || typeof actor !== 'object') return null;
-    const posterCandidate = actor?.poster ?? actor?.photo ?? actor?.image ?? actor?.avatar ?? actor?.picture ?? actor?.pic ?? actor?.poster_url ?? actor?.cover ?? actor?.icon;
-    const src = String(posterCandidate ?? '').replace(/[`'"]/g, '').trim();
-    const invalids = ['null', 'undefined', '—', 'none', 'n/a', 'no-image'];
-    const isImageLike = src.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) || src.startsWith('/') || src.startsWith('http');
-    return (!!src && !invalids.includes(src.toLowerCase()) && isImageLike) ? src : null;
+    if (!actor || typeof actor !== "object") return null;
+    const posterCandidate =
+      actor?.poster ??
+      actor?.photo ??
+      actor?.image ??
+      actor?.avatar ??
+      actor?.picture ??
+      actor?.pic ??
+      actor?.poster_url ??
+      actor?.cover ??
+      actor?.icon;
+    const src = String(posterCandidate ?? "")
+      .replace(/[`'"]/g, "")
+      .trim();
+    const invalids = ["null", "undefined", "—", "none", "n/a", "no-image"];
+    const isImageLike =
+      src.startsWith("data:image") ||
+      /\.(jpg|jpeg|png|webp|gif|svg)(\?.*)?$/i.test(src) ||
+      src.startsWith("/") ||
+      src.startsWith("http");
+    return !!src && !invalids.includes(src.toLowerCase()) && isImageLike
+      ? src
+      : null;
   };
 
   const topActors = (() => {
-      const list = (movie as any).casts || (data as any).casts || [];
-      if (!Array.isArray(list)) return [];
-      return list
-        .filter((a: any) => {
-           const key = String(a.id || a.name || "");
-           return (a.name || a.title) && getActorPhoto(a) && !failedActorImages.has(key);
-        })
-        .slice(0, 8);
+    const list = (movie as any).casts || (data as any).casts || [];
+    if (!Array.isArray(list)) return [];
+    return list
+      .filter((a: any) => {
+        const key = String(a.id || a.name || "");
+        return (
+          (a.name || a.title) && getActorPhoto(a) && !failedActorImages.has(key)
+        );
+      })
+      .slice(0, 8);
   })();
 
   // Helper to find list in multiple sources with multiple keys
   const findList = (keys: string[], ...sources: any[]) => {
     for (const source of sources) {
-      if (!source || typeof source !== 'object') continue;
+      if (!source || typeof source !== "object") continue;
       for (const key of keys) {
         const val = (source as any)[key];
         if (Array.isArray(val) && val.length > 0) return val;
@@ -1199,7 +1280,13 @@ export default function MoviePage({
   };
 
   const seqList = findList(
-    ["sequelsAndPrequels", "sequels_and_prequels", "sequels", "prequels", "related"],
+    [
+      "sequelsAndPrequels",
+      "sequels_and_prequels",
+      "sequels",
+      "prequels",
+      "related",
+    ],
     movie,
     data,
     franchise,
@@ -1382,7 +1469,6 @@ export default function MoviePage({
     return formatDate(raw);
   };
 
-
   // Подсчет среднего рейтинга (HDBOX) по КП и IMDb
   const getValidRating = (r: any): number | null => {
     if (r == null) return null;
@@ -1394,42 +1480,49 @@ export default function MoviePage({
   const ratingKP = getValidRating((movie as any).rating_kp);
   const ratingIMDb = getValidRating((movie as any).rating_imdb);
 
-  const backdropUrl = (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
+  const backdropUrl =
+    (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
 
   return (
     <>
-    {/* Navigation Arrows - Outside animated container to keep position stable */}
-    {navIds.length > 0 && navIndex !== null && (
-      <>
-        {navIndex > 0 && (
-          <Link
-            href={`/movie/${navIds[navIndex - 1]}`}
-            className="fixed left-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
-            title="Предыдущий"
-          >
-            <IconChevronLeft size={32} stroke={1.5} />
-          </Link>
-        )}
-        {navIndex < navIds.length - 1 && (
-          <Link
-            href={`/movie/${navIds[navIndex + 1]}`}
-            className="fixed right-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
-            title="Следующий"
-          >
-            <IconChevronRight size={32} stroke={1.5} />
-          </Link>
-        )}
-      </>
-    )}
+      {/* Navigation Arrows - Outside animated container to keep position stable */}
+      {navIds.length > 0 && navIndex !== null && (
+        <>
+          {navIndex > 0 && (
+            <Link
+              href={`/movie/${navIds[navIndex - 1]}`}
+              className="fixed left-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+              title="Предыдущий"
+            >
+              <IconChevronLeft size={32} stroke={1.5} />
+            </Link>
+          )}
+          {navIndex < navIds.length - 1 && (
+            <Link
+              href={`/movie/${navIds[navIndex + 1]}`}
+              className="fixed right-4 top-1/2 -translate-y-1/2 z-[100] p-3 bg-black/30 hover:bg-black/60 text-white/70 hover:text-white rounded-full backdrop-blur-sm transition-all hidden md:flex border border-white/10 hover:border-white/30"
+              title="Следующий"
+            >
+              <IconChevronRight size={32} stroke={1.5} />
+            </Link>
+          )}
+        </>
+      )}
 
-    <div key={id} className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative overflow-x-hidden animate-in fade-in duration-700">
-      <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
+      <div
+        key={id}
+        className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 relative overflow-x-hidden animate-in fade-in duration-700"
+      >
+        <header className="absolute top-0 left-0 w-full z-50 p-6 md:p-8 flex items-center justify-between pointer-events-none">
           <Link
             href={returnHref ?? "/"}
             className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-black/40 pointer-events-auto"
             onClick={(e) => {
               try {
-                const sameOriginRef = typeof document !== "undefined" && document.referrer && document.referrer.startsWith(location.origin);
+                const sameOriginRef =
+                  typeof document !== "undefined" &&
+                  document.referrer &&
+                  document.referrer.startsWith(location.origin);
                 if (sameOriginRef) {
                   e.preventDefault();
                   router.back();
@@ -1450,7 +1543,11 @@ export default function MoviePage({
           <button
             onClick={toggleFullscreen}
             className="flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto"
-            title={isFullscreen ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+            title={
+              isFullscreen
+                ? "Выйти из полноэкранного режима"
+                : "Полноэкранный режим"
+            }
           >
             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
           </button>
@@ -1466,225 +1563,250 @@ export default function MoviePage({
           )}
         </header>
 
-      {/* Hero Background */}
-      <div className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end md:block bg-zinc-950">
-         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent z-10" />
-         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
-         
-         
-        {isTrailerPlaying && trailerData ? (
-           <>
-             {/* Desktop Background Player */}
-             {!isMobile && (
-               <div className="hidden md:block absolute inset-0 w-full h-full z-[1] bg-black animate-in fade-in duration-700">
+        {/* Hero Background */}
+        <div className="relative min-h-[100svh] w-full overflow-hidden flex flex-col justify-end md:block bg-zinc-950">
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/50 via-zinc-950/5 to-transparent z-10" />
+
+          {isTrailerPlaying && trailerData ? (
+            <>
+              {/* Desktop Background Player */}
+              {!isMobile && (
+                <div className="hidden md:block absolute inset-0 w-full h-full z-[1] bg-black animate-in fade-in duration-700">
                   <iframe
                     ref={playerRef}
                     src={desktopTrailerUrl || ""}
-                    className="w-full h-full object-cover scale-125 pointer-events-none" 
+                    className="w-full h-full object-cover scale-125 pointer-events-none"
                     allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-               </div>
-             )}
+                </div>
+              )}
 
-             {/* Mobile Modal Player - Absolute in Hero */}
+              {/* Mobile Modal Player - Absolute in Hero */}
               {isMobile && (
                 <div className="md:hidden absolute inset-0 z-[100] bg-zinc-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200">
-                   <button
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsTrailerPlaying(false);
                     }}
-                     className="absolute top-20 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
-                   >
-                     <X size={24} />
-                   </button>
-                   <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                     <iframe
-                       src={mobileTrailerUrl || ""}
-                       className="w-full h-full"
-                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                       allowFullScreen
-                     />
-                   </div>
-                   <p className="mt-4 text-zinc-400 text-sm font-medium">
-                      Трейлер
-                   </p>
+                    className="absolute top-20 right-4 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all active:scale-90 z-50"
+                  >
+                    <X size={24} />
+                  </button>
+                  <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                    <iframe
+                      src={mobileTrailerUrl || ""}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="mt-4 text-zinc-400 text-sm font-medium">
+                    Трейлер
+                  </p>
                 </div>
               )}
             </>
           ) : backdropUrl ? (
-           <img 
-             src={backdropUrl} 
-             alt={movie.name} 
-             loading="eager"
-             fetchPriority="high"
-             onLoad={() => setIsBackdropLoaded(true)}
-             className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-1000 ease-out ${
-               isBackdropLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-xl scale-110"
-             }`}
-           />
-         ) : (
-           <img 
-             src={movie.poster} 
-             alt={movie.name} 
-             className="absolute inset-0 w-full h-full object-cover object-top opacity-40 blur-xl scale-110"
-           />
-         )}
-         
-         {/* Desktop Content Gradient Overlay - Feathered (Растушевка) */}
-         <div className="absolute inset-0 w-full md:w-[75%] bg-gradient-to-r from-zinc-950/60 via-zinc-950/30 to-transparent z-20 pointer-events-none" />
-         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/50 to-transparent z-20 pointer-events-none" />
+            <img
+              src={backdropUrl}
+              alt={movie.name}
+              loading="eager"
+              fetchPriority="high"
+              onLoad={() => setIsBackdropLoaded(true)}
+              className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-1000 ease-out ${
+                isBackdropLoaded
+                  ? "opacity-100 blur-0 scale-100"
+                  : "opacity-0 blur-xl scale-110"
+              }`}
+            />
+          ) : (
+            <img
+              src={movie.poster}
+              alt={movie.name}
+              className="absolute inset-0 w-full h-full object-cover object-top opacity-40 blur-xl scale-110"
+            />
+          )}
 
-         {/* Hero Content Overlay */}
-         <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto md:animate-in md:fade-in md:slide-in-from-left-10 md:duration-1000 md:ease-out">
+          {/* Desktop Content Gradient Overlay - Feathered (Растушевка) */}
+          <div className="absolute inset-0 w-full md:w-[75%] bg-gradient-to-r from-zinc-950/60 via-zinc-950/30 to-transparent z-20 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-950/50 to-transparent z-20 pointer-events-none" />
+
+          {/* Hero Content Overlay */}
+          <div className="relative md:absolute bottom-0 left-0 z-20 p-6 md:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col gap-4 pt-32 pb-8 md:pt-32 md:pb-12 mt-auto md:animate-in md:fade-in md:slide-in-from-left-10 md:duration-1000 md:ease-out">
             {/* TS Quality Warning */}
             {showTsWarning && (
               <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-md flex items-center gap-3 w-fit max-w-xl animate-in fade-in slide-in-from-bottom-2">
-                 <Info className="w-5 h-5 flex-shrink-0 text-yellow-400" />
-                 <p className="text-sm font-medium leading-relaxed">
-                   Не расстраивайтесь, скоро выйдет в хорошем качестве
-                 </p>
+                <Info className="w-5 h-5 flex-shrink-0 text-yellow-400" />
+                <p className="text-sm font-medium leading-relaxed">
+                  Не расстраивайтесь, скоро выйдет в хорошем качестве
+                </p>
               </div>
             )}
 
             {(movie as any).poster_logo ? (
-              <img 
-                src={(movie as any).poster_logo} 
-                alt={movie.name} 
+              <img
+                src={(movie as any).poster_logo}
+                alt={movie.name}
                 loading="eager"
                 fetchPriority="high"
                 decoding="sync"
                 className="h-24 md:h-28 w-auto max-w-[280px] md:max-w-[400px] object-contain self-start mb-2 mt-8"
               />
             ) : isOverrideLoading ? (
-              <div className="h-12 md:h-16 w-64" /> 
+              <div className="h-12 md:h-16 w-64" />
             ) : (
               <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg leading-tight">
-                 {movie.name}
+                {movie.name}
               </h1>
             )}
-            
+
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm md:text-base text-zinc-200 font-medium drop-shadow-md">
-               {(() => {
-                 const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
-                 const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
-                 const hasKp = !isNaN(kp) && kp > 0;
-                 const hasImdb = !isNaN(imdb) && imdb > 0;
+              {(() => {
+                const kp = parseFloat(
+                  String(movie.rating_kp || "").replace(",", ".")
+                );
+                const imdb = parseFloat(
+                  String(movie.rating_imdb || "").replace(",", ".")
+                );
+                const hasKp = !isNaN(kp) && kp > 0;
+                const hasImdb = !isNaN(imdb) && imdb > 0;
 
-                 let rating: number | null = null;
+                let rating: number | null = null;
 
-                 if (hasKp && hasImdb) {
-                   rating = (kp + imdb) / 2;
-                 } else if (hasKp) {
-                   rating = kp;
-                 } else if (hasImdb) {
-                   rating = imdb;
-                 }
+                if (hasKp && hasImdb) {
+                  rating = (kp + imdb) / 2;
+                } else if (hasKp) {
+                  rating = kp;
+                } else if (hasImdb) {
+                  rating = imdb;
+                }
 
-                 if (!rating) return null;
+                if (!rating) return null;
 
-                 // Convert 0-10 scale to percentage (e.g. 8.5 -> 85%)
-                 const percent = Math.round(rating * 10);
-                 const colorClass = rating >= 7 ? "text-green-400" : rating >= 5 ? "text-yellow-400" : "text-red-400";
-                 return <span className={`${colorClass} font-bold`}>{percent}% совпадение</span>;
-               })()}
-               {(() => {
-                 const list = Array.isArray(movie.country) 
-                   ? movie.country 
-                   : String(movie.country || "").split(",");
-                 const topOne = list.map((s: any) => String(s).trim()).filter(Boolean).slice(0, 1);
-                 return topOne.length > 0 ? <span>{topOne[0]}</span> : null;
-               })()}
-               <span>{titleYear}</span>
-                <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
-                  {(() => {
-                    const val = movie.age ?? movie.age_limit;
-                    const num = val !== null && val !== undefined ? String(val).replace(/\D/g, '') : null;
-                    return num ? `${num}+` : "18+";
-                  })()}
-                </span>
-               <span>{formatDuration()}</span>
-               {/* Fix content jump by showing movie quality immediately if available */}
-               {(() => {
-                 // Логика получения качества:
-                 // 1. Сначала проверяем tags (так как пользователь просил приоритет)
-                 // 2. Затем проверяем франшизу (qualityInfo.quality)
-                 // 3. Если ничего нет - не рендерим
-                 
-                 // Пробуем найти качество в тегах
-                 const tags = (movie as any).tags;
-                 let tagQuality = null;
-                 if (Array.isArray(tags)) {
-                   tagQuality = tags.find((t: any) => 
-                     ['4K', 'HD', '1080p', '720p', 'CAMRip', 'TS'].some(q => 
-                       String(t).toUpperCase().includes(q)
-                     )
-                   );
-                 }
-                 
-                 // Определяем финальное значение
-                 const finalQuality = 
-                   tagQuality || 
-                   (typeof qualityInfo !== 'undefined' && qualityInfo?.quality) || 
-                   (movie as any).quality;
+                // Convert 0-10 scale to percentage (e.g. 8.5 -> 85%)
+                const percent = Math.round(rating * 10);
+                const colorClass =
+                  rating >= 7
+                    ? "text-green-400"
+                    : rating >= 5
+                    ? "text-yellow-400"
+                    : "text-red-400";
+                return (
+                  <span className={`${colorClass} font-bold`}>
+                    {percent}% совпадение
+                  </span>
+                );
+              })()}
+              {(() => {
+                const list = Array.isArray(movie.country)
+                  ? movie.country
+                  : String(movie.country || "").split(",");
+                const topOne = list
+                  .map((s: any) => String(s).trim())
+                  .filter(Boolean)
+                  .slice(0, 1);
+                return topOne.length > 0 ? <span>{topOne[0]}</span> : null;
+              })()}
+              <span>{titleYear}</span>
+              <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                {(() => {
+                  const val = movie.age ?? movie.age_limit;
+                  const num =
+                    val !== null && val !== undefined
+                      ? String(val).replace(/\D/g, "")
+                      : null;
+                  return num ? `${num}+` : "18+";
+                })()}
+              </span>
+              <span>{formatDuration()}</span>
+              {/* Fix content jump by showing movie quality immediately if available */}
+              {(() => {
+                // Логика получения качества:
+                // 1. Сначала проверяем tags (так как пользователь просил приоритет)
+                // 2. Затем проверяем франшизу (qualityInfo.quality)
+                // 3. Если ничего нет - не рендерим
 
-                 // Если это мобилка, всегда рендерим контейнер (скелетон или значение), чтобы не прыгало
-                 // Если десктоп - рендерим только если есть значение
-                 
-                 if (isMobile) {
-                    if (finalQuality) {
-                       return (
-                         <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
-                           {finalQuality}
-                         </span>
-                       );
-                    } else {
-                       // Скелетон/пустышка для мобилки, чтобы зарезервировать место и избежать скачка
-                       return (
-                         <span className="border border-transparent px-1.5 py-0.5 rounded text-xs bg-transparent w-[24px] inline-block select-none" aria-hidden="true">
-                           &nbsp;
-                         </span>
-                       );
-                    }
-                 }
-                 
-                 // Для десктопа возвращаем только если есть значение
-                 return finalQuality ? (
-                   <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
-                     {finalQuality}
-                   </span>
-                 ) : null;
-               })()}
+                // Пробуем найти качество в тегах
+                const tags = (movie as any).tags;
+                let tagQuality = null;
+                if (Array.isArray(tags)) {
+                  tagQuality = tags.find((t: any) =>
+                    ["4K", "HD", "1080p", "720p", "CAMRip", "TS"].some((q) =>
+                      String(t).toUpperCase().includes(q)
+                    )
+                  );
+                }
+
+                // Определяем финальное значение
+                const finalQuality =
+                  tagQuality ||
+                  (typeof qualityInfo !== "undefined" &&
+                    qualityInfo?.quality) ||
+                  (movie as any).quality;
+
+                // Если это мобилка, всегда рендерим контейнер (скелетон или значение), чтобы не прыгало
+                // Если десктоп - рендерим только если есть значение
+
+                if (isMobile) {
+                  if (finalQuality) {
+                    return (
+                      <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                        {finalQuality}
+                      </span>
+                    );
+                  } else {
+                    // Скелетон/пустышка для мобилки, чтобы зарезервировать место и избежать скачка
+                    return (
+                      <span
+                        className="border border-transparent px-1.5 py-0.5 rounded text-xs bg-transparent w-[24px] inline-block select-none"
+                        aria-hidden="true"
+                      >
+                        &nbsp;
+                      </span>
+                    );
+                  }
+                }
+
+                // Для десктопа возвращаем только если есть значение
+                return finalQuality ? (
+                  <span className="border border-zinc-400/50 px-1.5 py-0.5 rounded text-xs bg-black/30 backdrop-blur-sm">
+                    {finalQuality}
+                  </span>
+                ) : null;
+              })()}
             </div>
 
             <p className="text-zinc-200 text-sm md:text-lg line-clamp-3 md:line-clamp-4 drop-shadow-md max-w-2xl font-light leading-relaxed">
-               {movie.description || movie.about || "Нет описания"}
+              {movie.description || movie.about || "Нет описания"}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-4">
-               <button 
-                 onClick={() => {
-                    setActiveTab("watch");
-                    setTimeout(() => {
-                      tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                 }}
-                 className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
-               >
-                 <Play size={20} fill="currentColor" className="ml-1 md:w-6 md:h-6" /> 
-                 <span className="text-base md:text-lg">Смотреть</span>
-               </button>
-               <button 
-                 onClick={() => {
-                   tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
-                 }}
-                 className="bg-zinc-500/40 text-white px-4 py-3 md:px-6 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95 flex-1 md:flex-none min-w-[140px]"
-               >
-                 <Info size={20} className="md:w-6 md:h-6" /> 
-                 <span className="text-base md:text-lg">Подробнее</span>
-               </button>
-               <div className="flex gap-3 w-full md:w-auto justify-start">
+              <button
+                onClick={() => {
+                  setShowWatchOverlay(true);
+                }}
+                className="bg-white text-black px-6 py-3 md:px-8 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none min-w-[140px]"
+              >
+                <Play
+                  size={20}
+                  fill="currentColor"
+                  className="ml-1 md:w-6 md:h-6"
+                />
+                <span className="text-base md:text-lg">Смотреть</span>
+              </button>
+              <button
+                onClick={() => {
+                  tabsRef.current?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="bg-zinc-500/40 text-white px-4 py-3 md:px-6 rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-zinc-500/50 transition backdrop-blur-sm active:scale-95 flex-1 md:flex-none min-w-[140px]"
+              >
+                <Info size={20} className="md:w-6 md:h-6" />
+                <span className="text-base md:text-lg">Подробнее</span>
+              </button>
+              <div className="flex gap-3 w-full md:w-auto justify-start">
                 <button
                   onClick={handleToggleFavorite}
                   className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
@@ -1693,45 +1815,86 @@ export default function MoviePage({
                       : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
                   }`}
                   title={
-                    isFavoriteCurrent ? "Убрать из избранного" : "Добавить в избранное"
+                    isFavoriteCurrent
+                      ? "Убрать из избранного"
+                      : "Добавить в избранное"
                   }
                   aria-pressed={isFavoriteCurrent}
                 >
-                   {isFavoriteCurrent ? <Heart size={20} fill="currentColor" /> : <Plus size={20} />}
+                  {isFavoriteCurrent ? (
+                    <Heart size={20} fill="currentColor" />
+                  ) : (
+                    <Plus size={20} />
+                  )}
                 </button>
                 {hasTrailers && (
-                   <button 
-                     onClick={(e) => {
-                     e.stopPropagation();
-                     e.preventDefault();
-                     setIsTrailerPlaying(!isTrailerPlaying);
-                   }}
-                     className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${isTrailerPlaying ? 'border-white text-white bg-white/20' : 'border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10'}`}
-                     title={isTrailerPlaying ? "Остановить трейлер" : "Смотреть трейлер"}
-                   >
-                      {isTrailerPlaying ? <X size={20} /> : (
-                        <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
-                           <path clipRule="evenodd" d="M42 24C42 31.2328 38.3435 37.6115 32.7782 41.3886C33.1935 41.2738 33.602 41.1447 34 41C45.1693 36.9384 47 32 47 32L48 35C48 35 44.3832 40.459 34.5 43.5C28 45.5 21 45 21 45C9.40202 45 0 35.598 0 24C0 12.402 9.40202 3 21 3C32.598 3 42 12.402 42 24ZM21 19C24.3137 19 27 16.3137 27 13C27 9.68629 24.3137 7 21 7C17.6863 7 15 9.68629 15 13C15 16.3137 17.6863 19 21 19ZM10 30C13.3137 30 16 27.3137 16 24C16 20.6863 13.3137 18 10 18C6.68629 18 4 20.6863 4 24C4 27.3137 6.68629 30 10 30ZM38 24C38 27.3137 35.3137 30 32 30C28.6863 30 26 27.3137 26 24C26 20.6863 28.6863 18 32 18C35.3137 18 38 20.6863 38 24ZM21 26C22.1046 26 23 25.1046 23 24C23 22.8954 22.1046 22 21 22C19.8954 22 19 22.8954 19 24C19 25.1046 19.8954 26 21 26ZM27 35C27 38.3137 24.3137 41 21 41C17.6863 41 15 38.3137 15 35C15 31.6863 17.6863 29 21 29C24.3137 29 27 31.6863 27 35Z" fill="currentColor" fillRule="evenodd"></path>
-                        </svg>
-                     )}
-                   </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setIsTrailerPlaying(!isTrailerPlaying);
+                    }}
+                    className={`p-3 rounded-full border-2 transition active:scale-95 backdrop-blur-sm ${
+                      isTrailerPlaying
+                        ? "border-white text-white bg-white/20"
+                        : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10"
+                    }`}
+                    title={
+                      isTrailerPlaying
+                        ? "Остановить трейлер"
+                        : "Смотреть трейлер"
+                    }
+                  >
+                    {isTrailerPlaying ? (
+                      <X size={20} />
+                    ) : (
+                      <svg
+                        aria-hidden="true"
+                        fill="currentColor"
+                        height="20"
+                        viewBox="0 0 48 48"
+                        width="20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          clipRule="evenodd"
+                          d="M42 24C42 31.2328 38.3435 37.6115 32.7782 41.3886C33.1935 41.2738 33.602 41.1447 34 41C45.1693 36.9384 47 32 47 32L48 35C48 35 44.3832 40.459 34.5 43.5C28 45.5 21 45 21 45C9.40202 45 0 35.598 0 24C0 12.402 9.40202 3 21 3C32.598 3 42 12.402 42 24ZM21 19C24.3137 19 27 16.3137 27 13C27 9.68629 24.3137 7 21 7C17.6863 7 15 9.68629 15 13C15 16.3137 17.6863 19 21 19ZM10 30C13.3137 30 16 27.3137 16 24C16 20.6863 13.3137 18 10 18C6.68629 18 4 20.6863 4 24C4 27.3137 6.68629 30 10 30ZM38 24C38 27.3137 35.3137 30 32 30C28.6863 30 26 27.3137 26 24C26 20.6863 28.6863 18 32 18C35.3137 18 38 20.6863 38 24ZM21 26C22.1046 26 23 25.1046 23 24C23 22.8954 22.1046 22 21 22C19.8954 22 19 22.8954 19 24C19 25.1046 19.8954 26 21 26ZM27 35C27 38.3137 24.3137 41 21 41C17.6863 41 15 38.3137 15 35C15 31.6863 17.6863 29 21 29C24.3137 29 27 31.6863 27 35Z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                        ></path>
+                      </svg>
+                    )}
+                  </button>
                 )}
-                <button 
+                <button
                   onClick={handleShare}
-                  className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm" 
+                  className="p-3 rounded-full border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 transition active:scale-95 backdrop-blur-sm"
                   title="Поделиться"
                 >
-                   <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M25.5 5.745L30.885 11.115L33 9L24 0L15 9L17.115 11.115L22.5 5.745V27H25.5V5.745Z" fill="currentColor"></path>
-                     <path d="M5 17V40C5 40.7956 5.31607 41.5587 5.87868 42.1213C6.44129 42.6839 7.20435 43 8 43H40C40.7956 43 41.5587 42.6839 42.1213 42.1213C42.6839 41.5587 43 40.7957 43 40V17C43 16.2043 42.6839 15.4413 42.1213 14.8787C41.5587 14.3161 40.7957 14 40 14H35.5V17H40V40H8L8 17H12.5V14L8 14C7.20435 14 6.44129 14.3161 5.87868 14.8787C5.31607 15.4413 5 16.2043 5 17Z" fill="currentColor"></path>
-                   </svg>
+                  <svg
+                    aria-hidden="true"
+                    fill="currentColor"
+                    height="20"
+                    viewBox="0 0 48 48"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M25.5 5.745L30.885 11.115L33 9L24 0L15 9L17.115 11.115L22.5 5.745V27H25.5V5.745Z"
+                      fill="currentColor"
+                    ></path>
+                    <path
+                      d="M5 17V40C5 40.7956 5.31607 41.5587 5.87868 42.1213C6.44129 42.6839 7.20435 43 8 43H40C40.7956 43 41.5587 42.6839 42.1213 42.1213C42.6839 41.5587 43 40.7957 43 40V17C43 16.2043 42.6839 15.4413 42.1213 14.8787C41.5587 14.3161 40.7957 14 40 14H35.5V17H40V40H8L8 17H12.5V14L8 14C7.20435 14 6.44129 14.3161 5.87868 14.8787C5.31607 15.4413 5 16.2043 5 17Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
                 </button>
               </div>
             </div>
-         </div>
+          </div>
 
-         {/* Desktop Actors Overlay (Bottom Right) */}
-         {topActors.length > 0 && (
+          {/* Desktop Actors Overlay (Bottom Right) */}
+          {topActors.length > 0 && (
             <div className="hidden md:flex absolute bottom-12 right-12 z-20 flex-col items-end gap-2 animate-in fade-in slide-in-from-right-10 duration-1000 delay-200">
               <style jsx global>{`
                 @keyframes blur-fade-in {
@@ -1747,96 +1910,104 @@ export default function MoviePage({
                   }
                 }
                 .animate-blur-fade-in {
-                   animation: blur-fade-in 0.8s ease-out both;
-                 }
-               `}</style>
-               <div className="flex items-center gap-2 pl-0">
-                   {topActors.map((actor: any, i: number) => (
-                    <Tooltip key={i}>
-                      <TooltipTrigger asChild>
-                        <Link 
-                            href={`/actor/${actor.id}`} 
-                            className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
-                            onClick={() => {
-                              try {
-                                const raw = localStorage.getItem("__actorInfo")
-                                const map = raw ? JSON.parse(raw) : {}
-                                map[String(actor.id)] = { name: actor.name || actor.title, photo: getActorPhoto(actor) }
-                                localStorage.setItem("__actorInfo", JSON.stringify(map))
-                              } catch {}
-                            }}
-                        >
-                            <img 
-                              src={getActorPhoto(actor)!} 
-                              alt={actor.name || actor.title} 
-                              className="w-16 h-16 rounded-full object-cover shadow-lg animate-blur-fade-in"
-                              style={{ animationDelay: `${i * 100 + 500}ms` }}
-                              onError={() => {
-                                 const key = String(actor.id || actor.name || "");
-                                 setFailedActorImages(prev => {
-                                   const next = new Set(prev);
-                                   next.add(key);
-                                   return next;
-                                 });
-                              }}
-                            />
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="font-bold bg-white text-black border-0 shadow-xl">
-                        <p>{actor.name || actor.title}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
+                  animation: blur-fade-in 0.8s ease-out both;
+                }
+              `}</style>
+              <div className="flex items-center gap-2 pl-0">
+                {topActors.map((actor: any, i: number) => (
+                  <Tooltip key={i}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/actor/${actor.id}`}
+                        className="relative transition-transform hover:scale-110 hover:z-10 duration-500"
+                        onClick={() => {
+                          try {
+                            const raw = localStorage.getItem("__actorInfo");
+                            const map = raw ? JSON.parse(raw) : {};
+                            map[String(actor.id)] = {
+                              name: actor.name || actor.title,
+                              photo: getActorPhoto(actor),
+                            };
+                            localStorage.setItem(
+                              "__actorInfo",
+                              JSON.stringify(map)
+                            );
+                          } catch {}
+                        }}
+                      >
+                        <img
+                          src={getActorPhoto(actor)!}
+                          alt={actor.name || actor.title}
+                          className="w-16 h-16 rounded-full object-cover shadow-lg animate-blur-fade-in"
+                          style={{ animationDelay: `${i * 100 + 500}ms` }}
+                          onError={() => {
+                            const key = String(actor.id || actor.name || "");
+                            setFailedActorImages((prev) => {
+                              const next = new Set(prev);
+                              next.add(key);
+                              return next;
+                            });
+                          }}
+                        />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="font-bold bg-white text-black border-0 shadow-xl"
+                    >
+                      <p>{actor.name || actor.title}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
               </div>
             </div>
-         )}
-      </div>
-      
-      {/* Tabs Section */}
-      <div ref={tabsRef} className="relative z-30 bg-zinc-950 px-4 md:px-12 pb-20 min-h-screen">
-          <Tabs 
+          )}
+        </div>
+
+        {/* Tabs Section */}
+        <div
+          ref={tabsRef}
+          className="relative z-30 bg-zinc-950 px-4 md:px-12 pb-20 min-h-screen"
+        >
+          <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
             className="w-full"
           >
             <TabsList className="flex items-center gap-6 overflow-x-auto scrollbar-hide border-b border-white/10 bg-transparent p-0 mb-8 w-full justify-start h-auto">
-              <TabsTrigger 
-                value="overview" 
+              <TabsTrigger
+                value="overview"
                 className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
                 Обзор
               </TabsTrigger>
-              <TabsTrigger 
-                value="watch" 
-                className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
-              >
-                Смотреть онлайн
-              </TabsTrigger>
-              <TabsTrigger 
-                value="trailers" 
+              <TabsTrigger
+                value="trailers"
                 className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
               >
                 Трейлеры
               </TabsTrigger>
-              {franchise?.seasons && Array.isArray(franchise.seasons) && franchise.seasons.length > 0 && (
-                <TabsTrigger 
-                  value="episodes" 
-                  className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
-                >
-                  Эпизоды
-                </TabsTrigger>
-              )}
+              {franchise?.seasons &&
+                Array.isArray(franchise.seasons) &&
+                franchise.seasons.length > 0 && (
+                  <TabsTrigger
+                    value="episodes"
+                    className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
+                  >
+                    Эпизоды
+                  </TabsTrigger>
+                )}
               {Array.isArray(seqList) && seqList.length > 0 && (
-                <TabsTrigger 
-                  value="sequels" 
+                <TabsTrigger
+                  value="sequels"
                   className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
                 >
                   Сиквелы и приквелы
                 </TabsTrigger>
               )}
               {Array.isArray(similarList) && similarList.length > 0 && (
-                <TabsTrigger 
-                  value="similar" 
+                <TabsTrigger
+                  value="similar"
                   className="rounded-none border-t-4 border-transparent px-0 py-3 text-sm font-bold uppercase text-zinc-400 hover:text-zinc-200 data-[state=active]:border-transparent data-[state=active]:text-white data-[state=active]:bg-transparent transition-colors"
                 >
                   Похожие
@@ -1845,7 +2016,10 @@ export default function MoviePage({
             </TabsList>
 
             {/* Overview Tab */}
-            <TabsContent value="overview" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
+            <TabsContent
+              value="overview"
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none"
+            >
               <div className="grid md:grid-cols-[2fr_1fr] gap-8 md:gap-16">
                 <div className="space-y-8">
                   {/* Poster + Plot + Ratings Container */}
@@ -1853,75 +2027,117 @@ export default function MoviePage({
                     {/* Poster (Left) - Desktop Only */}
                     {(movie.poster || (movie as any).poster_url) && (
                       <div className="hidden md:block flex-shrink-0 w-[240px]">
-                         <div className="sticky top-24 rounded-lg overflow-hidden shadow-2xl border border-white/10">
-                            <img 
-                              src={movie.poster || (movie as any).poster_url} 
-                              alt={movie.name || "Постер"} 
-                              className="w-full h-auto object-cover aspect-[2/3]"
-                            />
-                         </div>
+                        <div className="sticky top-24 rounded-lg overflow-hidden shadow-2xl border border-white/10">
+                          <img
+                            src={movie.poster || (movie as any).poster_url}
+                            alt={movie.name || "Постер"}
+                            className="w-full h-auto object-cover aspect-[2/3]"
+                          />
+                        </div>
                       </div>
                     )}
 
                     {/* Content (Right) */}
                     <div className="flex-1 space-y-8 min-w-0">
                       <div className="space-y-4">
-                        <h3 className="text-2xl font-semibold text-white">Сюжет</h3>
+                        <h3 className="text-2xl font-semibold text-white">
+                          Сюжет
+                        </h3>
                         <p className="text-zinc-300 text-base md:text-lg leading-relaxed">
-                          {movie.description || movie.about || "Описание отсутствует."}
+                          {movie.description ||
+                            movie.about ||
+                            "Описание отсутствует."}
                         </p>
                       </div>
-                      
+
                       {/* Ratings Block */}
                       <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-lg border border-white/5 w-fit flex-wrap">
-                         {/* Средний рейтинг */}
-                         <div className="flex flex-col items-center px-2">
-                            <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Рейтинг</span>
-                            {(() => {
-                              const kp = parseFloat(String(movie.rating_kp || "").replace(',', '.'));
-                              const imdb = parseFloat(String(movie.rating_imdb || "").replace(',', '.'));
-                              const hasKp = !isNaN(kp) && kp > 0;
-                              const hasImdb = !isNaN(imdb) && imdb > 0;
+                        {/* Средний рейтинг */}
+                        <div className="flex flex-col items-center px-2">
+                          <span className="text-zinc-400 text-xs uppercase tracking-wider mb-1">
+                            Рейтинг
+                          </span>
+                          {(() => {
+                            const kp = parseFloat(
+                              String(movie.rating_kp || "").replace(",", ".")
+                            );
+                            const imdb = parseFloat(
+                              String(movie.rating_imdb || "").replace(",", ".")
+                            );
+                            const hasKp = !isNaN(kp) && kp > 0;
+                            const hasImdb = !isNaN(imdb) && imdb > 0;
 
-                              let rating: number | null = null;
-                              if (hasKp && hasImdb) rating = (kp + imdb) / 2;
-                              else if (hasKp) rating = kp;
-                              else if (hasImdb) rating = imdb;
+                            let rating: number | null = null;
+                            if (hasKp && hasImdb) rating = (kp + imdb) / 2;
+                            else if (hasKp) rating = kp;
+                            else if (hasImdb) rating = imdb;
 
-                              if (!rating) return <span className="text-2xl font-bold text-zinc-500">—</span>;
+                            if (!rating)
+                              return (
+                                <span className="text-2xl font-bold text-zinc-500">
+                                  —
+                                </span>
+                              );
 
-                              const colorClass = rating >= 7 ? "text-green-500" : rating >= 5 ? "text-yellow-500" : "text-red-500";
-                              return <span className={`text-2xl font-bold ${colorClass}`}>{rating.toFixed(1)}</span>;
-                            })()}
-                         </div>
-                         
-                         <div className="w-px h-8 bg-white/10" />
+                            const colorClass =
+                              rating >= 7
+                                ? "text-green-500"
+                                : rating >= 5
+                                ? "text-yellow-500"
+                                : "text-red-500";
+                            return (
+                              <span
+                                className={`text-2xl font-bold ${colorClass}`}
+                              >
+                                {rating.toFixed(1)}
+                              </span>
+                            );
+                          })()}
+                        </div>
 
-                         {/* Кинопоиск */}
-                         <div className="flex items-center gap-3 px-2">
-                            <img 
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7c46WVoj-3Dc9bezLc6iabLcvs813ggQ76A&s" 
-                              alt="Кинопоиск" 
-                              className="w-8 h-8 rounded-md object-cover"
-                            />
-                            <span className={`text-xl font-bold ${ratingColor(movie.rating_kp)}`}>
-                               {movie.rating_kp && movie.rating_kp !== "0.0" && movie.rating_kp !== 0 ? Number(movie.rating_kp).toFixed(1) : "—"}
-                            </span>
-                         </div>
+                        <div className="w-px h-8 bg-white/10" />
 
-                         <div className="w-px h-8 bg-white/10" />
+                        {/* Кинопоиск */}
+                        <div className="flex items-center gap-3 px-2">
+                          <img
+                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7c46WVoj-3Dc9bezLc6iabLcvs813ggQ76A&s"
+                            alt="Кинопоиск"
+                            className="w-8 h-8 rounded-md object-cover"
+                          />
+                          <span
+                            className={`text-xl font-bold ${ratingColor(
+                              movie.rating_kp
+                            )}`}
+                          >
+                            {movie.rating_kp &&
+                            movie.rating_kp !== "0.0" &&
+                            movie.rating_kp !== 0
+                              ? Number(movie.rating_kp).toFixed(1)
+                              : "—"}
+                          </span>
+                        </div>
 
-                         {/* IMDb */}
-                         <div className="flex items-center gap-3 px-2">
-                            <img 
-                              src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" 
-                              alt="IMDb" 
-                              className="w-8 h-8 object-contain"
-                            />
-                            <span className={`text-xl font-bold ${ratingColor(movie.rating_imdb)}`}>
-                               {movie.rating_imdb && movie.rating_imdb !== "0.0" && movie.rating_imdb !== 0 ? Number(movie.rating_imdb).toFixed(1) : "—"}
-                            </span>
-                         </div>
+                        <div className="w-px h-8 bg-white/10" />
+
+                        {/* IMDb */}
+                        <div className="flex items-center gap-3 px-2">
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"
+                            alt="IMDb"
+                            className="w-8 h-8 object-contain"
+                          />
+                          <span
+                            className={`text-xl font-bold ${ratingColor(
+                              movie.rating_imdb
+                            )}`}
+                          >
+                            {movie.rating_imdb &&
+                            movie.rating_imdb !== "0.0" &&
+                            movie.rating_imdb !== 0
+                              ? Number(movie.rating_imdb).toFixed(1)
+                              : "—"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1930,44 +2146,70 @@ export default function MoviePage({
                   <CastList casts={movie.casts || data.casts || []} />
 
                   {/* Shooting Photos Slider */}
-                  {franchise?.shooting_photos && Array.isArray(franchise.shooting_photos) && franchise.shooting_photos.length > 0 && (
-                    <div className="mb-8">
-                      <ShootingPhotosSlider photos={franchise.shooting_photos} />
-                    </div>
-                  )}
+                  {franchise?.shooting_photos &&
+                    Array.isArray(franchise.shooting_photos) &&
+                    franchise.shooting_photos.length > 0 && (
+                      <div className="mb-8">
+                        <ShootingPhotosSlider
+                          photos={franchise.shooting_photos}
+                        />
+                      </div>
+                    )}
 
                   {/* Trivia / Facts Section */}
                   {(() => {
-                    const franchiseTrivia = franchise?.trivia || franchise?.facts;
+                    const franchiseTrivia =
+                      franchise?.trivia || franchise?.facts;
                     const movieFacts = movie?.facts;
 
                     if (franchiseTrivia) {
-                      if (typeof franchiseTrivia === 'string' && franchiseTrivia.trim().length > 0) {
+                      if (
+                        typeof franchiseTrivia === "string" &&
+                        franchiseTrivia.trim().length > 0
+                      ) {
                         return (
                           <div className="space-y-4">
-                            <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                            <h3 className="text-2xl font-semibold text-white">
+                              Знаете ли вы что?
+                            </h3>
                             <TriviaSection trivia={franchiseTrivia} />
                           </div>
                         );
                       }
-                      if (Array.isArray(franchiseTrivia) && franchiseTrivia.length > 0) {
-                         return (
+                      if (
+                        Array.isArray(franchiseTrivia) &&
+                        franchiseTrivia.length > 0
+                      ) {
+                        return (
                           <div className="space-y-4">
-                            <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                            <h3 className="text-2xl font-semibold text-white">
+                              Знаете ли вы что?
+                            </h3>
                             <div className="space-y-4">
                               {franchiseTrivia.map((fact: any, i: number) => {
-                                 const text = typeof fact === 'object' ? fact.value : fact;
-                                 const isSpoiler = typeof fact === 'object' && fact.spoiler;
-                                 if (!text) return null;
-                                 return (
-                                   <div key={i} className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${isSpoiler ? 'opacity-75' : ''}`}>
-                                      {isSpoiler && <span className="text-red-400 text-xs font-bold uppercase mb-1 block">Спойлер</span>}
-                                      <div 
-                                        className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline" 
-                                        dangerouslySetInnerHTML={{ __html: text }} 
-                                      />
-                                   </div>
-                                 );
+                                const text =
+                                  typeof fact === "object" ? fact.value : fact;
+                                const isSpoiler =
+                                  typeof fact === "object" && fact.spoiler;
+                                if (!text) return null;
+                                return (
+                                  <div
+                                    key={i}
+                                    className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${
+                                      isSpoiler ? "opacity-75" : ""
+                                    }`}
+                                  >
+                                    {isSpoiler && (
+                                      <span className="text-red-400 text-xs font-bold uppercase mb-1 block">
+                                        Спойлер
+                                      </span>
+                                    )}
+                                    <div
+                                      className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline"
+                                      dangerouslySetInnerHTML={{ __html: text }}
+                                    />
+                                  </div>
+                                );
                               })}
                             </div>
                           </div>
@@ -1976,23 +2218,36 @@ export default function MoviePage({
                     }
 
                     if (Array.isArray(movieFacts) && movieFacts.length > 0) {
-                       return (
+                      return (
                         <div className="space-y-4">
-                          <h3 className="text-2xl font-semibold text-white">Знаете ли вы что?</h3>
+                          <h3 className="text-2xl font-semibold text-white">
+                            Знаете ли вы что?
+                          </h3>
                           <div className="space-y-4">
                             {movieFacts.map((fact: any, i: number) => {
-                               const text = typeof fact === 'object' ? fact.value : fact;
-                               const isSpoiler = typeof fact === 'object' && fact.spoiler;
-                               if (!text) return null;
-                               return (
-                                 <div key={i} className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${isSpoiler ? 'opacity-75' : ''}`}>
-                                    {isSpoiler && <span className="text-red-400 text-xs font-bold uppercase mb-1 block">Спойлер</span>}
-                                    <div 
-                                      className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline" 
-                                      dangerouslySetInnerHTML={{ __html: text }} 
-                                    />
-                                 </div>
-                               );
+                              const text =
+                                typeof fact === "object" ? fact.value : fact;
+                              const isSpoiler =
+                                typeof fact === "object" && fact.spoiler;
+                              if (!text) return null;
+                              return (
+                                <div
+                                  key={i}
+                                  className={`bg-zinc-900/30 p-4 rounded-lg border border-white/5 ${
+                                    isSpoiler ? "opacity-75" : ""
+                                  }`}
+                                >
+                                  {isSpoiler && (
+                                    <span className="text-red-400 text-xs font-bold uppercase mb-1 block">
+                                      Спойлер
+                                    </span>
+                                  )}
+                                  <div
+                                    className="text-zinc-300 text-base leading-relaxed [&>a]:text-blue-400 [&>a]:underline"
+                                    dangerouslySetInnerHTML={{ __html: text }}
+                                  />
+                                </div>
+                              );
                             })}
                           </div>
                         </div>
@@ -2005,309 +2260,444 @@ export default function MoviePage({
 
                 <div className="space-y-8 text-base md:text-lg text-zinc-400">
                   <div>
-                    <span className="block text-zinc-500 mb-3 uppercase text-sm font-bold tracking-wider">{detailsTitle}</span>
+                    <span className="block text-zinc-500 mb-3 uppercase text-sm font-bold tracking-wider">
+                      {detailsTitle}
+                    </span>
                     <div className="space-y-3">
-                       <div className="grid grid-cols-[140px_1fr] gap-2">
-                          <span className="text-zinc-500">Режиссер</span>
-                          <span className="text-zinc-200">{Array.isArray(movie.director) ? movie.director.join(", ") : movie.director || "—"}</span>
-                       </div>
-                       {franchise?.screenwriter && Array.isArray(franchise.screenwriter) && franchise.screenwriter.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                      <div className="grid grid-cols-[140px_1fr] gap-2">
+                        <span className="text-zinc-500">Режиссер</span>
+                        <span className="text-zinc-200">
+                          {Array.isArray(movie.director)
+                            ? movie.director.join(", ")
+                            : movie.director || "—"}
+                        </span>
+                      </div>
+                      {franchise?.screenwriter &&
+                        Array.isArray(franchise.screenwriter) &&
+                        franchise.screenwriter.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Сценаристы</span>
-                            <span className="text-zinc-200">{franchise.screenwriter.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.producer && Array.isArray(franchise.producer) && franchise.producer.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-200">
+                              {franchise.screenwriter.join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      {franchise?.producer &&
+                        Array.isArray(franchise.producer) &&
+                        franchise.producer.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Продюсеры</span>
-                            <span className="text-zinc-200">{franchise.producer.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.operator && Array.isArray(franchise.operator) && franchise.operator.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-200">
+                              {franchise.producer.join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      {franchise?.operator &&
+                        Array.isArray(franchise.operator) &&
+                        franchise.operator.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Оператор</span>
-                            <span className="text-zinc-200">{franchise.operator.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.editor && Array.isArray(franchise.editor) && franchise.editor.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-200">
+                              {franchise.operator.join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      {franchise?.editor &&
+                        Array.isArray(franchise.editor) &&
+                        franchise.editor.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Монтаж</span>
-                            <span className="text-zinc-200">{franchise.editor.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.design && Array.isArray(franchise.design) && franchise.design.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-200">
+                              {franchise.editor.join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      {franchise?.design &&
+                        Array.isArray(franchise.design) &&
+                        franchise.design.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Художники</span>
-                            <span className="text-zinc-200">{franchise.design.join(", ")}</span>
-                         </div>
-                       )}
-                       <div className="grid grid-cols-[140px_1fr] gap-2">
-                          <span className="text-zinc-500">Жанры</span>
-                          <span className="text-zinc-200">{Array.isArray(movie.genre) ? movie.genre.join(", ") : movie.genre || "—"}</span>
-                       </div>
-                       <div className="grid grid-cols-[140px_1fr] gap-2">
-                          <span className="text-zinc-500">Страна</span>
-                          <span className="text-zinc-200">{Array.isArray(movie.country) ? movie.country.join(", ") : movie.country || "—"}</span>
-                       </div>
-                       <div className="grid grid-cols-[140px_1fr] gap-2">
-                          <span className="text-zinc-500">Премьера</span>
-                          <span className="text-zinc-200">{formatReleaseDate()}</span>
-                       </div>
-                       {/* Дополнительная информация из Franchise API */}
-                       {franchise?.slogan && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Слоган</span>
-                            <span className="text-zinc-200">«{franchise.slogan}»</span>
-                         </div>
-                       )}
-                       {franchise?.premier_rus && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Премьера в РФ</span>
-                            <span className="text-zinc-200">{formatDate(franchise.premier_rus)}</span>
-                         </div>
-                       )}
-                       {franchise?.rate_mpaa && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Рейтинг MPAA</span>
-                            <span className="text-zinc-200">{franchise.rate_mpaa}</span>
-                         </div>
-                       )}
-                       {franchise?.budget && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Бюджет</span>
                             <span className="text-zinc-200">
-                              {formatCurrency(franchise.budget)}
+                              {franchise.design.join(", ")}
                             </span>
-                         </div>
-                       )}
-                       {franchise?.fees_world && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Сборы в мире</span>
+                          </div>
+                        )}
+                      <div className="grid grid-cols-[140px_1fr] gap-2">
+                        <span className="text-zinc-500">Жанры</span>
+                        <span className="text-zinc-200">
+                          {Array.isArray(movie.genre)
+                            ? movie.genre.join(", ")
+                            : movie.genre || "—"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-[140px_1fr] gap-2">
+                        <span className="text-zinc-500">Страна</span>
+                        <span className="text-zinc-200">
+                          {Array.isArray(movie.country)
+                            ? movie.country.join(", ")
+                            : movie.country || "—"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-[140px_1fr] gap-2">
+                        <span className="text-zinc-500">Премьера</span>
+                        <span className="text-zinc-200">
+                          {formatReleaseDate()}
+                        </span>
+                      </div>
+                      {/* Дополнительная информация из Franchise API */}
+                      {franchise?.slogan && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Слоган</span>
+                          <span className="text-zinc-200">
+                            «{franchise.slogan}»
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.premier_rus && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Премьера в РФ</span>
+                          <span className="text-zinc-200">
+                            {formatDate(franchise.premier_rus)}
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.rate_mpaa && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Рейтинг MPAA</span>
+                          <span className="text-zinc-200">
+                            {franchise.rate_mpaa}
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.budget && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Бюджет</span>
+                          <span className="text-zinc-200">
+                            {formatCurrency(franchise.budget)}
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.fees_world && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Сборы в мире</span>
+                          <span className="text-zinc-200">
+                            {formatCurrency(franchise.fees_world)}
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.fees_rus && (
+                        <div className="grid grid-cols-[140px_1fr] gap-2">
+                          <span className="text-zinc-500">Сборы в РФ</span>
+                          <span className="text-zinc-200">
+                            {formatCurrency(franchise.fees_rus)}
+                          </span>
+                        </div>
+                      )}
+                      {franchise?.actors_dubl &&
+                        Array.isArray(franchise.actors_dubl) &&
+                        franchise.actors_dubl.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
+                            <span className="text-zinc-500">
+                              Актёры дубляжа
+                            </span>
                             <span className="text-zinc-200">
-                              {formatCurrency(franchise.fees_world)}
+                              {franchise.actors_dubl.join(", ")}
                             </span>
-                         </div>
-                       )}
-                       {franchise?.fees_rus && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Сборы в РФ</span>
-                            <span className="text-zinc-200">
-                              {formatCurrency(franchise.fees_rus)}
-                            </span>
-                         </div>
-                       )}
-                       {franchise?.actors_dubl && Array.isArray(franchise.actors_dubl) && franchise.actors_dubl.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
-                            <span className="text-zinc-500">Актёры дубляжа</span>
-                            <span className="text-zinc-200">{franchise.actors_dubl.join(", ")}</span>
-                         </div>
-                       )}
-                       {franchise?.voiceActing && Array.isArray(franchise.voiceActing) && franchise.voiceActing.length > 0 && (
-                         <div className="grid grid-cols-[140px_1fr] gap-2">
+                          </div>
+                        )}
+                      {franchise?.voiceActing &&
+                        Array.isArray(franchise.voiceActing) &&
+                        franchise.voiceActing.length > 0 && (
+                          <div className="grid grid-cols-[140px_1fr] gap-2">
                             <span className="text-zinc-500">Озвучка</span>
-                            <span className="text-zinc-200">{franchise.voiceActing.join(", ")}</span>
-                         </div>
-                       )}
+                            <span className="text-zinc-200">
+                              {franchise.voiceActing.join(", ")}
+                            </span>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
               </div>
             </TabsContent>
 
-            {/* Watch Tab */}
-            <TabsContent value="watch" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               <div className="space-y-8">
-                  <div className="w-full bg-zinc-950 rounded-xl overflow-hidden shadow-2xl p-4 md:p-6">
-                      <PlayerSelector
-                        onPlayerSelect={(playerId: number) =>
-                          setSelectedPlayer(playerId)
-                        }
-                        iframeUrl={franchise?.iframe_url || movie.iframe_url}
-                        kpId={kpId}
-                      />
-                  </div>
-               </div>
-            </TabsContent>
-
             {/* Trailers Tab */}
-            <TabsContent value="trailers" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               <div className="space-y-8">
-                  <div>
-                     <h3 className="text-xl font-semibold text-white mb-4">Трейлеры и тизеры</h3>
-                     <TrailerPlayer trailers={rawTrailers} mode="carousel" />
-                  </div>
-               </div>
+            <TabsContent
+              value="trailers"
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none"
+            >
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-4">
+                    Трейлеры и тизеры
+                  </h3>
+                  <TrailerPlayer trailers={rawTrailers} mode="carousel" />
+                </div>
+              </div>
             </TabsContent>
 
             {/* Episodes Tab */}
             {franchise?.seasons && (
-              <TabsContent value="episodes" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-                 <div className="space-y-4">
-                    {franchise.seasons.map((season: FranchiseSeason) => (
-                        <div key={season.season} className="bg-zinc-900/30 border border-white/5 rounded-lg overflow-hidden">
-                           <button 
-                             onClick={() => toggleSeason(season.season)}
-                             className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left group"
-                           >
-                             <div className="flex items-center gap-4">
-                                {season.poster ? (
-                                    <img src={season.poster} alt={`Сезон ${season.season}`} className="w-10 h-14 object-cover rounded shadow-sm hidden sm:block" />
-                                ) : (
-                                   <div className="bg-zinc-800 w-12 h-12 flex items-center justify-center rounded text-xl font-bold text-zinc-400">
-                                     {season.season}
-                                   </div>
-                                )}
-                                <div>
-                                   <span className="text-lg font-bold text-white group-hover:text-primary transition-colors">Сезон {season.season}</span>
-                                   {season.episodes && (
-                                     <span className="block text-sm text-zinc-500">{season.episodes.length} эпизодов</span>
-                                   )}
-                                </div>
-                             </div>
-                             <ChevronDown 
-                               className={`w-5 h-5 text-zinc-500 transition-transform duration-300 ${openSeasons.has(season.season) ? 'rotate-180' : ''}`} 
-                             />
-                           </button>
-                           
-                           {openSeasons.has(season.season) && season.episodes && (
-                             <div className="p-4 pt-0 border-t border-white/5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {season.episodes.map((episode: FranchiseEpisode) => {
-                                   const isAvailable = !!(episode.iframe_url || season.iframe_url) && 
-                                     (!episode.availability || new Date(episode.availability) <= new Date());
-                                   
-                                   return (
-                                   <button 
-                                     key={episode.episode}
-                                     disabled={!isAvailable}
-                                     onClick={() => {
-                                        if (!isAvailable) return;
-                                        if(episode.iframe_url) {
-                                            playEpisode(season.season, episode.iframe_url, `S${season.season} E${episode.episode}`);
-                                        } else if (season.iframe_url) {
-                                            playEpisode(season.season, season.iframe_url, `S${season.season} E${episode.episode}`);
-                                        }
-                                     }}
-                                     className={`flex items-start gap-3 p-3 rounded transition text-left group relative overflow-hidden ${
-                                       isAvailable 
-                                         ? 'hover:bg-white/10' 
-                                         : 'opacity-50 cursor-not-allowed bg-white/5'
-                                     }`}
-                                   >
-                                      <div className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded text-sm font-medium transition-colors ${
-                                        isAvailable 
-                                          ? 'bg-white/5 text-zinc-400 group-hover:bg-primary group-hover:text-white' 
-                                          : 'bg-white/5 text-zinc-600'
-                                      }`}>
-                                         {episode.episode}
-                                      </div>
-                                      <div className="min-w-0 flex-1">
-                                         <span className={`block text-sm font-medium transition-colors truncate ${
-                                           isAvailable 
-                                             ? 'text-zinc-300 group-hover:text-white' 
-                                             : 'text-zinc-500'
-                                         }`}>
-                                            {episode.name || `Эпизод ${episode.episode}`}
-                                         </span>
-                                         <span className="text-xs text-zinc-500 flex items-center gap-2 mt-1">
-                                            {!isAvailable && episode.availability ? (
-                                               <span className="text-yellow-500/80">
-                                                 Ожидается {formatDate(episode.availability)}
-                                               </span>
-                                            ) : (
-                                               <>
-                                                 {episode.release_ru ? formatDate(episode.release_ru) : ''}
-                                                 {episode.voiceActing && episode.voiceActing.length > 0 && (
-                                                     <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-zinc-400">{episode.voiceActing.length} озв.</span>
-                                                 )}
-                                               </>
-                                            )}
-                                         </span>
-                                      </div>
-                                      {/* Play icon on hover (only if available) */}
-                                      {isAvailable && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Play size={24} className="text-white fill-white" />
-                                        </div>
-                                      )}
-                                   </button>
-                                )})}
-                             </div>
-                           )}
+              <TabsContent
+                value="episodes"
+                className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none"
+              >
+                <div className="space-y-4">
+                  {franchise.seasons.map((season: FranchiseSeason) => (
+                    <div
+                      key={season.season}
+                      className="bg-zinc-900/30 border border-white/5 rounded-lg overflow-hidden"
+                    >
+                      <button
+                        onClick={() => toggleSeason(season.season)}
+                        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors text-left group"
+                      >
+                        <div className="flex items-center gap-4">
+                          {season.poster ? (
+                            <img
+                              src={season.poster}
+                              alt={`Сезон ${season.season}`}
+                              className="w-10 h-14 object-cover rounded shadow-sm hidden sm:block"
+                            />
+                          ) : (
+                            <div className="bg-zinc-800 w-12 h-12 flex items-center justify-center rounded text-xl font-bold text-zinc-400">
+                              {season.season}
+                            </div>
+                          )}
+                          <div>
+                            <span className="text-lg font-bold text-white group-hover:text-primary transition-colors">
+                              Сезон {season.season}
+                            </span>
+                            {season.episodes && (
+                              <span className="block text-sm text-zinc-500">
+                                {season.episodes.length} эпизодов
+                              </span>
+                            )}
+                          </div>
                         </div>
-                    ))}
-                 </div>
+                        <ChevronDown
+                          className={`w-5 h-5 text-zinc-500 transition-transform duration-300 ${
+                            openSeasons.has(season.season) ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {openSeasons.has(season.season) && season.episodes && (
+                        <div className="p-4 pt-0 border-t border-white/5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                          {season.episodes.map((episode: FranchiseEpisode) => {
+                            const isAvailable =
+                              !!(episode.iframe_url || season.iframe_url) &&
+                              (!episode.availability ||
+                                new Date(episode.availability) <= new Date());
+
+                            return (
+                              <button
+                                key={episode.episode}
+                                disabled={!isAvailable}
+                                onClick={() => {
+                                  if (!isAvailable) return;
+                                  if (episode.iframe_url) {
+                                    playEpisode(
+                                      season.season,
+                                      episode.iframe_url,
+                                      `S${season.season} E${episode.episode}`
+                                    );
+                                  } else if (season.iframe_url) {
+                                    playEpisode(
+                                      season.season,
+                                      season.iframe_url,
+                                      `S${season.season} E${episode.episode}`
+                                    );
+                                  }
+                                }}
+                                className={`flex items-start gap-3 p-3 rounded transition text-left group relative overflow-hidden ${
+                                  isAvailable
+                                    ? "hover:bg-white/10"
+                                    : "opacity-50 cursor-not-allowed bg-white/5"
+                                }`}
+                              >
+                                <div
+                                  className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded text-sm font-medium transition-colors ${
+                                    isAvailable
+                                      ? "bg-white/5 text-zinc-400 group-hover:bg-primary group-hover:text-white"
+                                      : "bg-white/5 text-zinc-600"
+                                  }`}
+                                >
+                                  {episode.episode}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <span
+                                    className={`block text-sm font-medium transition-colors truncate ${
+                                      isAvailable
+                                        ? "text-zinc-300 group-hover:text-white"
+                                        : "text-zinc-500"
+                                    }`}
+                                  >
+                                    {episode.name ||
+                                      `Эпизод ${episode.episode}`}
+                                  </span>
+                                  <span className="text-xs text-zinc-500 flex items-center gap-2 mt-1">
+                                    {!isAvailable && episode.availability ? (
+                                      <span className="text-yellow-500/80">
+                                        Ожидается{" "}
+                                        {formatDate(episode.availability)}
+                                      </span>
+                                    ) : (
+                                      <>
+                                        {episode.release_ru
+                                          ? formatDate(episode.release_ru)
+                                          : ""}
+                                        {episode.voiceActing &&
+                                          episode.voiceActing.length > 0 && (
+                                            <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-zinc-400">
+                                              {episode.voiceActing.length} озв.
+                                            </span>
+                                          )}
+                                      </>
+                                    )}
+                                  </span>
+                                </div>
+                                {/* Play icon on hover (only if available) */}
+                                {isAvailable && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Play
+                                      size={24}
+                                      className="text-white fill-white"
+                                    />
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </TabsContent>
             )}
 
             {/* Sequels Tab */}
-            <TabsContent value="sequels" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               <SimpleMovieSlider 
-                 movies={seqList.map((item: any) => {
-                   const data = item.details || item;
-                   return {
-                     id: data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident,
-                     title: data.title || data.name || data.original_title || data.en_name || "Без названия",
-                     poster: data.poster || data.cover || data.poster_url,
-                     rating: data.rating || data.rating_kp,
-                     year: data.year || data.released,
-                     genre: data.genre,
-                     quality: data.quality,
-                     country: data.country,
-                   };
-                 }).filter((m: any) => m.id)} 
-                 compactOnMobile 
-               />
+            <TabsContent
+              value="sequels"
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none"
+            >
+              <SimpleMovieSlider
+                movies={seqList
+                  .map((item: any) => {
+                    const data = item.details || item;
+                    return {
+                      id:
+                        data.id ||
+                        data.movieId ||
+                        data.kp_id ||
+                        data.kinopoisk_id ||
+                        data.ident,
+                      title:
+                        data.title ||
+                        data.name ||
+                        data.original_title ||
+                        data.en_name ||
+                        "Без названия",
+                      poster: data.poster || data.cover || data.poster_url,
+                      rating: data.rating || data.rating_kp,
+                      year: data.year || data.released,
+                      genre: data.genre,
+                      quality: data.quality,
+                      country: data.country,
+                    };
+                  })
+                  .filter((m: any) => m.id)}
+                compactOnMobile
+              />
             </TabsContent>
 
             {/* Similar Tab */}
-            <TabsContent value="similar" className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
-               {Array.isArray(similarList) && similarList.length > 0 ? (
-                 <SimpleMovieSlider 
-                   movies={similarList.map((item: any) => {
-                     const data = item.details || item;
-                     return {
-                       id: data.id || data.movieId || data.kp_id || data.kinopoisk_id || data.ident,
-                       title: data.title || data.name || data.original_title || data.en_name || "Без названия",
-                       poster: data.poster || data.cover || data.poster_url,
-                       rating: data.rating || data.rating_kp,
-                       year: data.year || data.released,
-                       genre: data.genre,
-                       quality: data.quality,
-                       country: data.country,
-                     };
-                   }).filter((m: any) => m.id)} 
-                   compactOnMobile 
-                 />
-               ) : (
-                 <div className="text-center text-zinc-500 py-12">Похожих фильмов пока нет</div>
-               )}
+            <TabsContent
+              value="similar"
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none"
+            >
+              {Array.isArray(similarList) && similarList.length > 0 ? (
+                <SimpleMovieSlider
+                  movies={similarList
+                    .map((item: any) => {
+                      const data = item.details || item;
+                      return {
+                        id:
+                          data.id ||
+                          data.movieId ||
+                          data.kp_id ||
+                          data.kinopoisk_id ||
+                          data.ident,
+                        title:
+                          data.title ||
+                          data.name ||
+                          data.original_title ||
+                          data.en_name ||
+                          "Без названия",
+                        poster: data.poster || data.cover || data.poster_url,
+                        rating: data.rating || data.rating_kp,
+                        year: data.year || data.released,
+                        genre: data.genre,
+                        quality: data.quality,
+                        country: data.country,
+                      };
+                    })
+                    .filter((m: any) => m.id)}
+                  compactOnMobile
+                />
+              ) : (
+                <div className="text-center text-zinc-500 py-12">
+                  Похожих фильмов пока нет
+                </div>
+              )}
             </TabsContent>
           </Tabs>
-       </div>
-    </div>
+        </div>
+      </div>
+
+      {showWatchOverlay && (
+        <div className="fixed inset-0 z-[120] bg-black">
+          <div className="absolute inset-0">
+            <div className="absolute top-3 left-3 text-xs md:text-sm text-white/70 font-semibold pointer-events-none select-none">
+              ESC / Backspace — закрыть
+            </div>
+            <PlayerSelector
+              floatingControls
+              className="w-full h-full"
+              videoContainerClassName="w-full h-full bg-black"
+              onPlayerSelect={(playerId: number) => setSelectedPlayer(playerId)}
+              iframeUrl={franchise?.iframe_url || movie.iframe_url}
+              kpId={kpId}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Episode Player Overlay */}
       {playingEpisode && (
         <div className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-300">
-           <div className="relative w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-              <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-start pointer-events-none">
-                  <div className="pointer-events-auto">
-                      <h3 className="text-white font-bold text-lg drop-shadow-md">{playingEpisode.title}</h3>
-                  </div>
-                  <button 
-                    onClick={() => closeEpisode(playingEpisode.seasonNumber)}
-                    className="pointer-events-auto bg-black/50 hover:bg-red-500/80 text-white p-2 rounded-full transition backdrop-blur-md"
-                  >
-                     <X size={24} />
-                  </button>
+          <div className="relative w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+            <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-start pointer-events-none">
+              <div className="pointer-events-auto">
+                <h3 className="text-white font-bold text-lg drop-shadow-md">
+                  {playingEpisode.title}
+                </h3>
               </div>
-              <iframe 
-                src={playingEpisode.url} 
-                className="w-full h-full bg-black" 
-                allowFullScreen 
-                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-              />
-           </div>
+              <button
+                onClick={() => closeEpisode(playingEpisode.seasonNumber)}
+                className="pointer-events-auto bg-black/50 hover:bg-red-500/80 text-white p-2 rounded-full transition backdrop-blur-md"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <iframe
+              src={playingEpisode.url}
+              className="w-full h-full bg-black"
+              allowFullScreen
+              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            />
+          </div>
         </div>
       )}
       {/* Mobile Trailer Modal Player moved back to hero */}
