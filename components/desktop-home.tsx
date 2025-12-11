@@ -7,6 +7,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import { usePathname } from "next/navigation";
 import {
   Search,
   User,
@@ -389,6 +390,12 @@ export function DesktopSidebar({
   favoritesActive?: boolean;
   favoritesCount?: number;
 }) {
+  const pathname = usePathname();
+  const activePath = pathname || "";
+  const isHomeActive = !favoritesActive && activePath === "/";
+  const isFavoritesActive =
+    favoritesActive || activePath.startsWith("/favorites");
+
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[clamp(64px,8vw,96px)] z-50 flex flex-col items-center py-[clamp(24px,4vh,40px)] gap-[clamp(24px,4vh,40px)] bg-transparent">
       <div className="text-orange-500 font-black text-[clamp(18px,2.5vh,24px)] mb-[clamp(8px,1.5vh,16px)] tracking-tighter">
@@ -400,12 +407,13 @@ export function DesktopSidebar({
           icon={<Search className={sidebarIconClass} />}
           label="Поиск"
           href="/search"
+          active={activePath.startsWith("/search")}
         />
         <NavItem
           icon={<IconHomeCustom className={sidebarIconClass} />}
           label="Главная"
           href="/"
-          active={!favoritesActive}
+          active={isHomeActive}
         />
 
         <NavItem
@@ -425,7 +433,7 @@ export function DesktopSidebar({
           }
           label="Избранное"
           href="/favorites"
-          active={favoritesActive}
+          active={isFavoritesActive}
         />
 
         {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
@@ -437,6 +445,7 @@ export function DesktopSidebar({
               }
               label={cat.title}
               href={cat.route || "#"}
+              active={!!cat.route && activePath.startsWith(cat.route)}
             />
           )
         )}

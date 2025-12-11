@@ -593,7 +593,7 @@ export default function HomeClient({
                   <DesktopSidebar />
                 </div>
                 <div className="md:ml-0">
-                  <div className="hidden md:flex items-center gap-2 fixed top-4 left-[clamp(82px,8vw,118px)] right-6 z-50 bg-zinc-950/80 backdrop-blur-lg border border-white/5 px-3 py-2 rounded-lg shadow-lg shadow-black/30">
+                  <div className="hidden md:flex items-center gap-2 fixed top-4 left-[clamp(82px,8vw,118px)] right-6 z-50 px-3 py-2">
                     {UHD_CHANNELS.map((ch, idx) => (
                       <button
                         key={idx}
@@ -604,14 +604,14 @@ export default function HomeClient({
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }
                         }}
-                        className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-full md:rounded-md text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
+                        className={`channel-tab-btn inline-flex items-center gap-2 h-9 px-4 rounded-none text-[13px] lg:text-[14px] xl:text-[15px] font-medium transition-all duration-200 ${
                           uhdActive === idx
-                            ? "text-white h-10 shadow-[0_20px_40px_rgba(0,0,0,0.9)] -my-[2px] scale-[1.08]"
-                            : "text-zinc-300/90 hover:text-white"
+                            ? "text-white border-b-2"
+                            : "text-zinc-300/90 hover:text-white border-b-2 border-transparent"
                         }`}
                         style={
                           uhdActive === idx
-                            ? { backgroundColor: "rgb(var(--ui-accent-rgb))" }
+                            ? { borderBottomColor: "rgb(var(--ui-accent-rgb))" }
                             : undefined
                         }
                       >
