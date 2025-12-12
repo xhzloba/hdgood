@@ -2026,7 +2026,7 @@ export default function MoviePage({
                   <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     {/* Poster (Left) - Desktop Only */}
                     {(movie.poster || (movie as any).poster_url) && (
-                      <div className="hidden md:block flex-shrink-0 w-[240px]">
+                      <div className="hidden md:block flex-shrink-0 w-[280px]">
                         <div className="sticky top-24 rounded-lg overflow-hidden shadow-2xl border border-white/10">
                           <img
                             src={movie.poster || (movie as any).poster_url}
