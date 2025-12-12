@@ -583,7 +583,7 @@ export default function HomeClient({
       <div className={isMainPage ? "md:hidden" : ""}>
         <main className="w-full min-h-screen pb-16 relative z-10">
           <div
-            className={`mx-auto max-w-[1800px] px-4 md:px-12 pt-0 md:pt-8 ${
+            className={`mx-auto max-w-[1800px] px-0 md:px-12 pt-0 md:pt-8 ${
               isUhdMode ? "md:pl-[clamp(78px,8vw,110px)]" : ""
             }`}
           >
@@ -817,7 +817,7 @@ export default function HomeClient({
 
                   <section className="w-full mt-[1vh] md:mt-0">
                     <div className="relative z-20 w-full">
-                      <div className="px-4 md:px-0">
+                      <div className="px-2 md:px-0">
                         <UhdSection
                           hideTabs={!isMobile}
                           active={uhdActive}
@@ -989,7 +989,7 @@ export default function HomeClient({
                 <section className="w-full mt-[1vh] md:mt-4">
                   <div className="relative z-20 w-full">
                     {isMoviesMode ? (
-                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                      <div className="px-0 md:px-12 max-w-[1800px] mx-auto">
                         <MoviesSection
                           onBackdropOverrideChange={(bg, poster) => {
                             setOverrideBg(bg ?? null);
@@ -1004,7 +1004,7 @@ export default function HomeClient({
                         />
                       </div>
                     ) : isSerialsMode ? (
-                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                      <div className="px-0 md:px-12 max-w-[1800px] mx-auto">
                         <SerialsSection
                           onBackdropOverrideChange={(bg, poster) => {
                             setOverrideBg(bg ?? null);
@@ -1019,7 +1019,7 @@ export default function HomeClient({
                         />
                       </div>
                     ) : (
-                      <div className="px-4 md:px-12 max-w-[1800px] mx-auto">
+                      <div className="px-0 md:px-12 max-w-[1800px] mx-auto">
                         <TrendingSection
                           activeBackdropId={currentId ?? undefined}
                         />
