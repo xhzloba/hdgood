@@ -43,5 +43,6 @@ export interface FranchiseData {
   shooting_photos?: string[];
   trivia?: any[] | string;
   facts?: any[] | string;
+  serial_status?: string;
   [key: string]: any; // Allow other properties for flexibility
 }

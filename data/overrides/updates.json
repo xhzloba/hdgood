@@ -3798,5 +3798,25 @@
     "addedPaths": [
       "about"
     ]
+  },
+  {
+    "id": "693b3eedb626e996eeb6c120",
+    "timestamp": "2025-12-12T13:43:21.774Z",
+    "poster": "/movies/baby-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "runtime"
+    ]
+  },
+  {
+    "id": "693b3eedb626e996eeb6c120",
+    "timestamp": "2025-12-12T13:44:04.882Z",
+    "poster": "/movies/baby-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "about"
+    ],
+    "addedPaths": []
   }
 ]
