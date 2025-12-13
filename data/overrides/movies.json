@@ -1591,5 +1591,18 @@
     "bg_poster": {
       "backdrop": "/movies/t.webp"
     }
+  },
+  "65942fae9f578f48cbaeb14b": {
+    "poster_logo": "/movies/logo/136.webp",
+    "bg_poster": {
+      "backdrop": "/movies/soprano.webp"
+    }
+  },
+  "6593f9228914c04deaeafc6c": {
+    "poster_logo": "/movies/logo/137.webp",
+    "bg_poster": {
+      "backdrop": "/movies/5.webp"
+    },
+    "poster": "/movies/5-poster.webp"
   }
 }

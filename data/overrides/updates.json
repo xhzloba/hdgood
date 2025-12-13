@@ -3937,5 +3937,38 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "65942fae9f578f48cbaeb14b",
+    "timestamp": "2025-12-13T16:17:08.890Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f9228914c04deaeafc6c",
+    "timestamp": "2025-12-13T16:21:02.280Z",
+    "poster": "/movies/5-poster",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6593f9228914c04deaeafc6c",
+    "timestamp": "2025-12-13T16:21:51.744Z",
+    "poster": "/movies/5-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "poster"
+    ],
+    "addedPaths": []
   }
 ]
