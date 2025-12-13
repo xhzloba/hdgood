@@ -3818,5 +3818,51 @@
       "about"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "68421363032315e273e25691",
+    "timestamp": "2025-12-13T15:55:09.024Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "693355e90fcc5defac0db153",
+    "timestamp": "2025-12-13T15:59:10.362Z",
+    "poster": "/movies/spartak.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6775c8f1bade455f71d636b7",
+    "timestamp": "2025-12-13T16:02:14.910Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690d1a669cfe849a331636ec",
+    "timestamp": "2025-12-13T16:04:41.283Z",
+    "poster": "/movies/vovsem-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]

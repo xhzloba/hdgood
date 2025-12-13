@@ -1534,5 +1534,31 @@
       " присматривающий за роскошным пентхаусом",
       "сталкивается с неожиданной проблемой: ему приходится заботиться о потерявшемся ребенке."
     ]
+  },
+  "68421363032315e273e25691": {
+    "poster_logo": "/movies/logo/128.webp",
+    "bg_poster": {
+      "backdrop": "/movies/balerina.webp"
+    }
+  },
+  "693355e90fcc5defac0db153": {
+    "poster_logo": "/movies/logo/129.webp",
+    "bg_poster": {
+      "backdrop": "/movies/spartak-backdrop.webp"
+    },
+    "poster": "/movies/spartak.webp"
+  },
+  "6775c8f1bade455f71d636b7": {
+    "poster_logo": "/movies/logo/130.webp",
+    "bg_poster": {
+      "backdrop": "/movies/lands.webp"
+    }
+  },
+  "690d1a669cfe849a331636ec": {
+    "poster_logo": "/movies/logo/131.webp",
+    "poster": "/movies/vovsem-poster.webp",
+    "bg_poster": {
+      "backdrop": "/movies/vovsem.webp"
+    }
   }
 }
