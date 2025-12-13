@@ -1,8 +1,40 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import MovieSlider from "./movie-slider"
 import { APP_SETTINGS } from "@/lib/settings"
+
+// Компонент для отложенной загрузки слайдеров
+function LazySlider({ children, eager = false }: { children: React.ReactNode; eager?: boolean }) {
+  const [isVisible, setIsVisible] = useState(eager)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (eager || isVisible) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "400px" } // Грузим заранее за 400px до появления
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => observer.disconnect()
+  }, [eager, isVisible])
+
+  return (
+    <div ref={ref} className="min-h-[280px]">
+      {isVisible ? children : null}
+    </div>
+  )
+}
 
 interface TrendingItem {
   title: string
@@ -68,54 +100,51 @@ export function TrendingSection({ activeBackdropId }: TrendingSectionProps) {
         
         {/* Mobile Layout (visible on mobile only) */}
         <div className="block md:hidden space-y-8">
-          {MOBILE_SECTIONS.map((section) => (
-            <div key={section.title} className="space-y-4">
-              <MovieSlider
-                url={section.playlist_url}
-                title={section.title}
-                viewAllHref={
-                  section.title === "Фильмы"
-                    ? "/movies?tab=popular"
-                    : section.title === "Сериалы"
-                      ? "/serials?tab=popular"
+          {MOBILE_SECTIONS.map((section, index) => (
+            <LazySlider key={section.title} eager={index < 2}>
+              <div className="space-y-4">
+                <MovieSlider
+                  url={section.playlist_url}
+                  title={section.title}
+                  autoplay={
+                    section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
+                      ? APP_SETTINGS.slider.trending.autoplay
+                      : false
+                  }
+                  autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
+                  hoverPause={APP_SETTINGS.slider.trending.hoverPause}
+                  perPageOverride={APP_SETTINGS.slider.trending.perPage}
+                  loop={false}
+                  activeItemId={
+                    section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
+                      ? activeBackdropId ?? undefined
                       : undefined
-                }
-                autoplay={
-                  section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
-                    ? APP_SETTINGS.slider.trending.autoplay
-                    : false
-                }
-                autoplayIntervalMs={APP_SETTINGS.slider.trending.intervalSeconds * 1000}
-                hoverPause={APP_SETTINGS.slider.trending.hoverPause}
-                perPageOverride={APP_SETTINGS.slider.trending.perPage}
-                loop={false}
-                activeItemId={
-                  section.title === "В тренде" && APP_SETTINGS.slider.trending.syncWithBackdrop
-                    ? activeBackdropId ?? undefined
-                    : undefined
-                }
-                viewAllHref={
-                  section.title === "В тренде"
-                    ? "/trending"
-                    : section.title === "Фильмы"
-                      ? "/movies?tab=popular"
-                      : section.title === "Сериалы"
-                        ? "/serials?tab=popular"
-                        : undefined
-                }
+                  }
+                  viewAllHref={
+                    section.title === "В тренде"
+                      ? "/trending"
+                      : section.title === "Фильмы"
+                        ? "/movies?tab=popular"
+                        : section.title === "Сериалы"
+                          ? "/serials?tab=popular"
+                          : undefined
+                  }
+                  compactOnMobile
+                />
+              </div>
+            </LazySlider>
+          ))}
+          {/* Отдельный блок: Топ 250 фильмов — только для мобильных */}
+          <LazySlider>
+            <div className="space-y-4">
+              <MovieSlider
+                url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
+                title="Топ 250 фильмов"
+                viewAllHref="/top250"
                 compactOnMobile
               />
             </div>
-          ))}
-          {/* Отдельный блок: Топ 250 фильмов — только для мобильных */}
-          <div className="space-y-4">
-            <MovieSlider
-              url="https://api.vokino.pro/v2/compilations/content/66fa5fc9dd606aae9ea0a9dc?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352"
-              title="Топ 250 фильмов"
-              viewAllHref="/top250"
-              compactOnMobile
-            />
-          </div>
+          </LazySlider>
         </div>
 
         {/* Desktop Layout (visible on desktop only) */}

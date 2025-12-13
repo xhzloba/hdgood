@@ -839,7 +839,7 @@ export default function MovieSlider({
                       posterEl.style.setProperty("--my", "0");
                     }}
                     onMouseMove={(e) => {
-                      if (movie.isViewAll) return;
+                      if (movie.isViewAll || compactOnMobile) return;
                       onMovieHover?.(movie);
                       const posterEl = e.currentTarget.querySelector(
                         ".poster-card"
@@ -1119,6 +1119,9 @@ export default function MovieSlider({
                             const posterSrc = known
                               ? ovEntry?.poster ?? movie.poster ?? null
                               : null;
+                            // На мобильных отключаем тяжелые эффекты свечения
+                            if (compactOnMobile) return null;
+
                             return posterSrc &&
                               loadedImages.has(String(movie.id)) ? (
                               <>
