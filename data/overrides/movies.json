@@ -1560,5 +1560,36 @@
     "bg_poster": {
       "backdrop": "/movies/vovsem.webp"
     }
+  },
+  "6593fd89e264662a2fc5d5fc": {
+    "poster_logo": "/movies/logo/132.webp",
+    "bg_poster": {
+      "backdrop": "/movies/kl.webp"
+    }
+  },
+  "692e10010fcc5defacd33838": {
+    "about": [
+      "Два хоккеиста на пике карьеры",
+      " будучи заклятыми соперниками",
+      " начинают испытывать друг к другу романтические чувства. Неожиданный поворот идёт вразрез с устоями в мире спорта",
+      " поэтому обоим героям придётся столкнуться с предрассудками и пройти сквозь огонь и воду."
+    ],
+    "poster_logo": "/movies/logo/133.webp",
+    "bg_poster": {
+      "backdrop": "/movies/sop.webp"
+    },
+    "poster": "/movies/sop-poster.webp"
+  },
+  "690bc9129cfe849a3307e77d": {
+    "poster_logo": "/movies/logo/134.webp",
+    "bg_poster": {
+      "backdrop": "/movies/poker.webp"
+    }
+  },
+  "65942fc8f9adc4da8a109d34": {
+    "poster_logo": "/movies/logo/135.webp",
+    "bg_poster": {
+      "backdrop": "/movies/t.webp"
+    }
   }
 }

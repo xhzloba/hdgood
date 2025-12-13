@@ -3864,5 +3864,78 @@
       "poster",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593fd89e264662a2fc5d5fc",
+    "timestamp": "2025-12-13T16:07:07.993Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "692e10010fcc5defacd33838",
+    "timestamp": "2025-12-13T16:09:15.803Z",
+    "poster": "/movies/sop-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "692e10010fcc5defacd33838",
+    "timestamp": "2025-12-13T16:09:52.968Z",
+    "poster": "/movies/sop-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "about"
+    ]
+  },
+  {
+    "id": "692e10010fcc5defacd33838",
+    "timestamp": "2025-12-13T16:10:20.468Z",
+    "poster": "/movies/sop-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "about"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "690bc9129cfe849a3307e77d",
+    "timestamp": "2025-12-13T16:11:58.754Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "690bc9129cfe849a3307e77d",
+    "timestamp": "2025-12-13T16:12:24.125Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "65942fc8f9adc4da8a109d34",
+    "timestamp": "2025-12-13T16:14:37.899Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]
