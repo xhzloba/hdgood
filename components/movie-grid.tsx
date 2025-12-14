@@ -277,6 +277,8 @@ export function MovieGrid({
   }
 
   // Restore paging state on mount/url change (не трогаем loadedImages, чтобы не ломать fade-in при возврате)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
   useEffect(() => {
     setPage(1);
     setPagesData([]);
@@ -2541,15 +2543,32 @@ export function MovieGrid({
                     posterEl.style.setProperty("--mx", "0");
                     posterEl.style.setProperty("--my", "0");
                   }}
+                  onTouchStart={(e) => {
+                    touchStartRef.current = {
+                      x: e.touches[0].clientX,
+                      y: e.touches[0].clientY,
+                    };
+                  }}
+                  onTouchEnd={(e) => {
+                    if (!touchStartRef.current) return;
+                    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+                    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+                    touchStartRef.current = null;
+
+                    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+                      if (!isDesktop) {
+                        e.preventDefault(); // Prevent click event
+                        setDrawerMovie(movie);
+                        requestAnimationFrame(() => {
+                          setDrawerOpen(true);
+                        });
+                      }
+                    }
+                  }}
                   onClick={(e) => {
                     if (!isDesktop) {
                       e.preventDefault();
                       e.stopPropagation();
-                      setDrawerMovie(movie);
-                      // Use requestAnimationFrame to prevent event conflicts with vaul
-                      requestAnimationFrame(() => {
-                        setDrawerOpen(true);
-                      });
                       return;
                     }
                     if (navigateOnClick || isLoadMoreMode) {
