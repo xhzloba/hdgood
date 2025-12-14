@@ -1542,7 +1542,7 @@ export default function MoviePage({
 
           <button
             onClick={toggleFullscreen}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto"
+            className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto"
             title={
               isFullscreen
                 ? "Выйти из полноэкранного режима"
