@@ -22,6 +22,16 @@ import { savePosterTransition } from "@/lib/poster-transition";
 import { PlayerSelector } from "@/components/player-selector";
 import { VideoPoster } from "@/components/video-poster";
 import { useFavorites } from "@/hooks/use-favorites";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 interface Movie {
   id: string;
@@ -245,6 +255,9 @@ export function MovieGrid({
   const keyboardIndexRef = useRef<number>(0);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
   const { toggleFavorite, isFavorite } = useFavorites();
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMovie, setDrawerMovie] = useState<any>(null);
 
   const perPage = 15;
   const aspectClass = cardType === "backdrop" ? "aspect-video" : "aspect-[2/3]";
@@ -2529,7 +2542,13 @@ export function MovieGrid({
                     posterEl.style.setProperty("--my", "0");
                   }}
                   onClick={(e) => {
-                    if (navigateOnClick || !isDesktop || isLoadMoreMode) {
+                    if (!isDesktop) {
+                      e.preventDefault();
+                      setDrawerMovie(movie);
+                      setDrawerOpen(true);
+                      return;
+                    }
+                    if (navigateOnClick || isLoadMoreMode) {
                       if (resetOverridesOnNavigate) {
                         try {
                           onBackdropOverrideChange?.(null, null);
@@ -3479,6 +3498,61 @@ export function MovieGrid({
           </div>,
           document.body
         )}
+
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="bg-zinc-950 border-zinc-800 text-zinc-100 max-h-[85vh]">
+          <DrawerHeader className="text-left">
+            <DrawerTitle className="text-2xl font-bold text-white">
+              {drawerMovie?.title}
+            </DrawerTitle>
+            <div className="flex gap-2 text-xs text-zinc-400 mt-1">
+              {drawerMovie?.year && <span>{drawerMovie.year}</span>}
+              {drawerMovie?.country && (
+                <span>
+                  {Array.isArray(drawerMovie.country)
+                    ? drawerMovie.country[0]
+                    : drawerMovie.country}
+                </span>
+              )}
+              {drawerMovie?.rating && (
+                <span
+                  className={`px-1.5 py-0.5 rounded ${ratingBgColor(
+                    Number(drawerMovie.rating)
+                  )} text-white text-[10px] font-bold`}
+                >
+                  {formatRatingLabel(drawerMovie.rating)}
+                </span>
+              )}
+            </div>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto">
+            <div className="flex flex-col gap-4">
+              <div className="text-sm text-zinc-300 leading-relaxed">
+                {drawerMovie?.description || "Описание отсутствует"}
+              </div>
+
+              <Link
+                href={`/movie/${drawerMovie?.id}`}
+                className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors"
+                onClick={() => setDrawerOpen(false)}
+              >
+                <IconPlayerPlayFilled size={20} />
+                Смотреть
+              </Link>
+            </div>
+          </div>
+          <DrawerFooter className="pt-2">
+            <DrawerClose asChild>
+              <Button
+                variant="outline"
+                className="w-full bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800"
+              >
+                Закрыть
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
