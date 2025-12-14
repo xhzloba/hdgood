@@ -7,7 +7,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Spinner } from "@/components/ui/spinner";
 import { ratingBgColor, formatRatingLabel } from "@/lib/utils";
 import {
-  IconSearch,
   IconMovie,
   IconDeviceTv,
   IconHeart,
@@ -83,7 +82,6 @@ export default function MobileBottomNav() {
   const [serialsLoading, setSerialsLoading] = useState(false);
 
   const isHome = pathname === "/";
-  const isSearchMode = pathname?.startsWith("/search");
   const isMoviesMode = pathname === "/movies";
   const isSerialsMode = pathname === "/serials";
   const isUhdMode = pathname === "/uhd";
@@ -638,26 +636,6 @@ export default function MobileBottomNav() {
             ].join(" ")}
           >
             <IconHomeCustom className="w-5 h-5" stroke={1.6} />
-          </button>
-          <button
-            type="button"
-            aria-label="Поиск"
-            onClick={() => {
-              const href = "/search";
-              if (pathname !== href) {
-                NProgress.set(0.2);
-                NProgress.start();
-                router.push(href);
-              }
-            }}
-            className={[
-              "inline-flex items-center justify-center h-12 w-12 rounded-none transition-all duration-200",
-              isSearchMode
-                ? "bg-zinc-100 text-zinc-900 shadow-[0_12px_28px_rgba(0,0,0,0.6)] -translate-y-[3px] scale-[1.05]"
-                : "text-zinc-300/90 hover:text-white",
-            ].join(" ")}
-          >
-            <IconSearch className="w-5 h-5" stroke={1.6} />
           </button>
           <button
             type="button"

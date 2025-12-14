@@ -16,7 +16,17 @@ import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { IconLayoutGrid, IconList } from "@tabler/icons-react";
+import {
+  IconLayoutGrid,
+  IconList,
+  IconSearch,
+  IconMenu2,
+  IconMovie,
+  IconDeviceTv,
+  IconHeart,
+} from "@tabler/icons-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { useRouter } from "next/navigation";
 
 type HomeClientProps = {
   initialSelectedTitle?: string;
@@ -24,13 +34,58 @@ type HomeClientProps = {
   initialCardDisplayMode?: "backdrop" | "poster";
 };
 
+function IconHomeCustom({ className, ...props }: any) {
+  const { size, stroke, ...rest } = props;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 48 48"
+      fill="currentColor"
+      className={className}
+      {...rest}
+    >
+      <path
+        clipRule="evenodd"
+        fillRule="evenodd"
+        d="M23.9864 4.00009C24.3242 4.00009 24.6522 4.11294 24.9185 4.32071L45 20V39.636C44.9985 40.4312 44.5623 41.4377 44 42C43.4377 42.5623 42.4311 42.9985 41.6359 43H27V28H21V43H6.5C5.70485 42.9984 4.56226 42.682 4 42.1197C3.43774 41.5575 3.00163 40.7952 3 40V21L23.0544 4.32071C23.3207 4.11294 23.6487 4.00009 23.9864 4.00009ZM30 28V40H42V21.4314L24 7.40726L6 22V40L18 40V28C18.0008 27.2046 18.3171 26.442 18.8796 25.8796C19.442 25.3171 20.2046 25.0008 21 25H27C27.7954 25.0009 28.5579 25.3173 29.1203 25.8797C29.6827 26.4421 29.9991 27.2046 30 28Z"
+      />
+    </svg>
+  );
+}
+
+function Icon4kCustom({ className, ...props }: any) {
+  const { size, stroke, ...rest } = props;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 48 48"
+      fill="currentColor"
+      className={className}
+      {...rest}
+    >
+      <path
+        clipRule="evenodd"
+        fillRule="evenodd"
+        d="M31.0012 13.7598C31.0546 13.3494 30.8569 12.9479 30.4999 12.7417C30.1428 12.5355 29.6963 12.5652 29.3675 12.8166L19.0718 20.6938C18.9639 20.7763 18.8699 20.8853 18.802 21.0031C18.734 21.1207 18.6901 21.2507 18.6725 21.3854L16.9985 34.2402C16.9452 34.6508 17.1428 35.0522 17.4999 35.2584C17.8569 35.4645 18.3035 35.435 18.6323 35.1835L28.928 27.3064C29.0358 27.2238 29.1298 27.1148 29.1977 26.9971C29.2656 26.8794 29.3097 26.7494 29.3273 26.6148L31.0012 13.7598ZM26.1649 25.25C25.4746 26.4458 23.9456 26.8554 22.7499 26.1651C21.5541 25.4747 21.1444 23.9458 21.8348 22.75C22.5252 21.5543 24.0541 21.1446 25.2499 21.835C26.4456 22.5253 26.8553 24.0543 26.1649 25.25Z"
+      />
+      <path
+        clipRule="evenodd"
+        fillRule="evenodd"
+        d="M45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24ZM42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z"
+      />
+    </svg>
+  );
+}
+
 export default function HomeClient({
   initialSelectedTitle,
   initialOverridesMap,
   initialCardDisplayMode = "backdrop",
 }: HomeClientProps) {
+  const router = useRouter();
   const isMobile = useIsMobile();
   const [isMounted, setIsMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -581,6 +636,89 @@ export default function HomeClient({
 
       {/* Mobile/Responsive Layout (Hidden on Desktop Main Page) */}
       <div className={isMainPage ? "md:hidden" : ""}>
+        <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-zinc-950/90 backdrop-blur-md border-b border-white/5 shadow-md">
+             <Link href="/" className="text-zinc-300 hover:text-white transition-colors">
+                <IconHomeCustom className="w-6 h-6" stroke={1.5} />
+             </Link>
+             <div className="font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                HD Good
+             </div>
+             <div className="flex items-center gap-4">
+               <Link href="/search" className="text-zinc-300 hover:text-white transition-colors">
+                  <IconSearch className="w-6 h-6" stroke={1.5} />
+               </Link>
+               <button onClick={() => setMobileMenuOpen(true)} className="text-zinc-300 hover:text-white transition-colors">
+                  <IconMenu2 className="w-6 h-6" stroke={1.5} />
+               </button>
+             </div>
+        </header>
+
+        <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Меню</DrawerTitle>
+            </DrawerHeader>
+            <div className="p-4 grid grid-cols-1 gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/search");
+                }}
+                className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all active:scale-[0.98]"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-800 text-zinc-400">
+                  <IconSearch className="w-5 h-5" stroke={1.5} />
+                </div>
+                <div className="font-medium text-lg">Поиск</div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  router.push("/favorites");
+                }}
+                className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all active:scale-[0.98]"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-800 text-zinc-400">
+                  <IconHeart className="w-5 h-5" stroke={1.5} />
+                </div>
+                <div className="font-medium text-lg">Избранное</div>
+              </button>
+
+              <div className="h-px bg-zinc-800 my-2" />
+
+              {CATEGORIES.filter(
+                (cat) => cat.route && cat.title !== "Последние обновления"
+              ).map((cat, idx) => {
+                let Icon: any = IconMovie;
+                if (cat.title === "Сериалы") Icon = IconDeviceTv;
+                if (cat.title === "4K UHD") Icon = Icon4kCustom;
+
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (cat.route) {
+                        setMobileMenuOpen(false);
+                        router.push(cat.route);
+                      } else {
+                        setMobileMenuOpen(false);
+                        setSelected(cat);
+                      }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all active:scale-[0.98]"
+                  >
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-800 text-zinc-400">
+                      <Icon className="w-5 h-5" stroke={1.5} />
+                    </div>
+                    <div className="font-medium text-lg">{cat.title}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </DrawerContent>
+        </Drawer>
+
         <main className="w-full min-h-screen pb-16 relative z-10">
           <div
             className={`mx-auto max-w-[1800px] px-0 md:px-12 pt-0 md:pt-8 ${
