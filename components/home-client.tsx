@@ -641,7 +641,7 @@ export default function HomeClient({
                 <IconHomeCustom className="w-6 h-6" stroke={1.5} />
              </Link>
              <div className="font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                HD Good
+                HD GOOD
              </div>
              <div className="flex items-center gap-4">
                <Link href="/search" className="text-zinc-300 hover:text-white transition-colors">
