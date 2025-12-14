@@ -3406,16 +3406,16 @@ export function MovieGrid({
       )}
 
       {showLoadMoreButton && (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-6 pb-12 md:pb-0">
           {isLoading || loadingMore ? (
             // Анимированные синие три точки без обрамления (увеличенный размер)
             <Loader size="lg" />
           ) : (
             <button
               onClick={handleLoadMore}
-              className="w-full md:w-auto px-4 py-2 text-[12px] border border-zinc-700/50 bg-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800 text-zinc-300 rounded-sm transition-all duration-200"
+              className="px-8 py-3 text-sm font-bold text-zinc-950 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-full shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all duration-300"
             >
-              {"Загрузить ещё"}
+              Загрузить ещё
             </button>
           )}
         </div>
