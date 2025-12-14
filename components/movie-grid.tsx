@@ -2544,8 +2544,12 @@ export function MovieGrid({
                   onClick={(e) => {
                     if (!isDesktop) {
                       e.preventDefault();
+                      e.stopPropagation();
                       setDrawerMovie(movie);
-                      setDrawerOpen(true);
+                      // Use requestAnimationFrame to prevent event conflicts with vaul
+                      requestAnimationFrame(() => {
+                        setDrawerOpen(true);
+                      });
                       return;
                     }
                     if (navigateOnClick || isLoadMoreMode) {
@@ -3501,11 +3505,21 @@ export function MovieGrid({
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent className="bg-zinc-950 border-zinc-800 text-zinc-100 max-h-[85vh]">
-          <DrawerHeader className="text-left">
-            <DrawerTitle className="text-2xl font-bold text-white">
-              {drawerMovie?.title}
-            </DrawerTitle>
-            <div className="flex gap-2 text-xs text-zinc-400 mt-1">
+          <DrawerHeader className="text-center">
+            {drawerMovie && (overridesMap[String(drawerMovie.id)]?.logo || drawerMovie.logo) ? (
+              <div className="flex justify-center mb-2">
+                <img
+                  src={overridesMap[String(drawerMovie.id)]?.logo || drawerMovie.logo}
+                  alt={drawerMovie.title}
+                  className="h-12 object-contain"
+                />
+              </div>
+            ) : (
+              <DrawerTitle className="text-2xl font-bold text-white">
+                {drawerMovie?.title}
+              </DrawerTitle>
+            )}
+            <div className="flex gap-2 text-xs text-zinc-400 mt-1 justify-center">
               {drawerMovie?.year && <span>{drawerMovie.year}</span>}
               {drawerMovie?.country && (
                 <span>
