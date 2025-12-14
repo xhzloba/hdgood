@@ -1503,6 +1503,28 @@
     }
   },
   "688be76275a6b2ea17967297": {
+    "poster_colors": {
+      "accentTl": [
+        237,
+        37,
+        144
+      ],
+      "accentTr": [
+        233,
+        37,
+        145
+      ],
+      "accentBr": [
+        40,
+        155,
+        196
+      ],
+      "accentBl": [
+        38,
+        155,
+        195
+      ]
+    },
     "poster_logo": "/movies/logo/124.webp",
     "bg_poster": {
       "backdrop": "/movies/gol.webp"

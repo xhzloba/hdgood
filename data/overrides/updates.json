@@ -3970,5 +3970,31 @@
       "poster"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "688be76275a6b2ea17967297",
+    "timestamp": "2025-12-14T08:34:20.393Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "688be76275a6b2ea17967297",
+    "timestamp": "2025-12-14T08:35:33.505Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": []
   }
 ]
