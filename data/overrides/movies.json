@@ -1683,6 +1683,28 @@
     "poster": "/movies/potter2-poster.webp"
   },
   "6593f89c8914c04deae9e275": {
+    "poster_colors": {
+      "accentBr": [
+        226,
+        155,
+        42
+      ],
+      "accentBl": [
+        181,
+        120,
+        12
+      ],
+      "accentTl": [
+        187,
+        97,
+        8
+      ],
+      "accentTr": [
+        200,
+        113,
+        13
+      ]
+    },
     "poster_logo": "/movies/logo/143.webp",
     "poster": "/movies/potter3-poster.webp",
     "bg_poster": {

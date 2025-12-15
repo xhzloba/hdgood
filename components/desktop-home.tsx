@@ -1036,6 +1036,7 @@ export function DesktopHome({
 
   const activeSlide = slides[slideIndex] ?? slides[0];
   const showNetflixTopLogo = activeSlide?.id === "netflix_serials";
+  const showWarnersTopLogo = activeSlide?.id === "harry_potter_universe";
 
   useEffect(() => {
     setProfileAvatar(
@@ -1336,8 +1337,8 @@ export function DesktopHome({
     ? "h-[clamp(120px,18vh,200px)]"
     : "h-[clamp(60px,12vh,110px)]";
   const netflixTopLogoHeightClass = isFullscreen
-    ? "h-[clamp(22px,3.2vh,44px)]"
-    : "h-[clamp(18px,2.6vh,34px)]";
+    ? "h-[clamp(26px,3.8vh,50px)]"
+    : "h-[clamp(20px,3vh,40px)]";
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
@@ -1517,14 +1518,14 @@ export function DesktopHome({
         favoritesCount={favoritesCount}
       />
 
-      {/* Top bar: centered Netflix logo (when active) + right controls */}
+      {/* Top bar: centered brand logo (when active) + right controls */}
       <div className="hidden md:flex absolute top-4 left-0 right-0 z-40 items-center px-6">
-        {showNetflixTopLogo && (
+        {(showNetflixTopLogo || showWarnersTopLogo) && (
           <div className="flex-1 flex items-center justify-center pointer-events-none select-none">
             <img
-              src="/movies/logo/netflix.svg"
-              alt="Netflix"
-              className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)]`}
+              src={showNetflixTopLogo ? "/movies/logo/netflix.svg" : "/movies/warners.svg"}
+              alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
+              className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)] translate-x-[16px]`}
             />
           </div>
         )}

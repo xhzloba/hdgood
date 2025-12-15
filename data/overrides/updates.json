@@ -4101,5 +4101,30 @@
       "poster",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f89c8914c04deae9e275",
+    "timestamp": "2025-12-15T12:28:10.303Z",
+    "poster": "/movies/potter3-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "6593f89c8914c04deae9e275",
+    "timestamp": "2025-12-15T12:28:54.363Z",
+    "poster": "/movies/potter3-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ],
+    "addedPaths": [
+      "poster_colors.accentTl",
+      "poster_colors.accentTr"
+    ]
   }
 ]
