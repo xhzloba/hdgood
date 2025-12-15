@@ -88,7 +88,36 @@ export function PlayerSelector({
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
   return floatingControls ? (
     <div className={`relative w-full h-full ${className}`}>
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
+      <div className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 flex-col gap-2">
+        {[1, 2, 3].map((playerId) => {
+          const disabled =
+            (playerId === 1 && !player1Available) ||
+            (playerId === 2 && !player2Available) ||
+            (playerId === 3 && !player3Available);
+          const isActive = selectedPlayer === playerId;
+
+          return (
+            <button
+              key={playerId}
+              type="button"
+              onClick={() => {
+                if (!disabled) handlePlayerSelect(playerId);
+              }}
+              disabled={disabled}
+              className={`relative flex items-center justify-center w-11 h-11 rounded-full border text-[11px] font-semibold transition-all duration-200 ${
+                disabled
+                  ? "border-white/15 bg-black/40 text-white/30 cursor-not-allowed opacity-60"
+                  : isActive
+                  ? "bg-white text-black border-white shadow-[0_12px_30px_rgba(0,0,0,0.75)] scale-105"
+                  : "bg-black/60 text-white/80 border-white/25 hover:bg-white/10 hover:border-white/50 hover:text-white"
+              }`}
+            >
+              П{playerId}
+            </button>
+          );
+        })}
+      </div>
+      <div className="md:hidden absolute top-3 left-1/2 -translate-x-1/2 z-30">
         <Select
           value={selectedPlayer ? String(selectedPlayer) : undefined}
           onValueChange={(val) => handlePlayerSelect(Number(val))}
