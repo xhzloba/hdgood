@@ -1745,5 +1745,11 @@
       "backdrop": "/movies/potter7-2.webp"
     },
     "poster": "/movies/potter7-2-poster.webp"
+  },
+  "65942ee69f578f48cbae7f01": {
+    "poster_logo": "/movies/logo/149.webp",
+    "bg_poster": {
+      "backdrop": "/movies/elita.webp"
+    }
   }
 }
