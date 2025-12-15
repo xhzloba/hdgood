@@ -1525,7 +1525,7 @@ export function DesktopHome({
             <img
               src={showNetflixTopLogo ? "/movies/logo/netflix.svg" : "/movies/warners.svg"}
               alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
-              className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)] translate-x-[16px]`}
+              className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
             />
           </div>
         )}
