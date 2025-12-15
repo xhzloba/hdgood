@@ -155,6 +155,13 @@ const SLIDES: Slide[] = [
     viewAllHref: "/dolbyv/all",
   },
   {
+    id: "harry_potter_universe",
+    title: "Вселенная Гарри Поттер",
+    navTitle: "Поттер",
+    url: "https://api.vokino.pro/v2/compilations/content/65a69c828e6a3e812467507d",
+    fetchAll: true,
+  },
+  {
     id: "fast_furious",
     title: "Франшиза: Форсаж",
     navTitle: "Форсаж",
@@ -1510,34 +1517,65 @@ export function DesktopHome({
         favoritesCount={favoritesCount}
       />
 
-      {/* Netflix logo in top bar (only for Netflix slide) */}
-      {showNetflixTopLogo && (
-        <div className="hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none select-none items-center justify-center">
-          <img
-            src="/movies/logo/netflix.svg"
-            alt="Netflix"
-            className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)]`}
-          />
-        </div>
-      )}
-
-      {/* Fullscreen toggle + clock (desktop only) */}
-      <div className="hidden md:flex absolute top-4 right-6 z-40 items-center gap-2">
-        {!isStandalone && (
+      {/* Top bar: centered Netflix logo (when active) + right controls */}
+      <div className="hidden md:flex absolute top-4 left-0 right-0 z-40 items-center px-6">
+        {showNetflixTopLogo && (
+          <div className="flex-1 flex items-center justify-center pointer-events-none select-none">
+            <img
+              src="/movies/logo/netflix.svg"
+              alt="Netflix"
+              className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)]`}
+            />
+          </div>
+        )}
+        <div className="flex items-center gap-2 ml-auto">
+          {!isStandalone && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleInstallClick}
+                    disabled={!installPrompt}
+                    className={`h-11 w-11 inline-flex items-center justify-center rounded-[10px] text-white/90 transition-all ${
+                      installPrompt
+                        ? "hover:text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/30"
+                        : "text-white/40 cursor-not-allowed"
+                    }`}
+                  >
+                    <Download className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  sideOffset={8}
+                  className="bg-white text-black border-0 shadow-xl"
+                >
+                  <p className="text-xs font-semibold">
+                    {installPrompt
+                      ? "Установить как приложение"
+                      : "Установка недоступна в этом браузере"}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  onClick={handleInstallClick}
-                  disabled={!installPrompt}
-                  className={`h-11 w-11 inline-flex items-center justify-center rounded-[10px] text-white/90 transition-all ${
-                    installPrompt
-                      ? "hover:text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/30"
-                      : "text-white/40 cursor-not-allowed"
-                  }`}
+                  aria-label={
+                    isFullscreen ? "Обычный режим" : "Полноэкранный режим"
+                  }
+                  onClick={toggleFullscreen}
+                  className="h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all flex"
                 >
-                  <Download className="w-5 h-5" />
+                  {isFullscreen ? (
+                    <Minimize2 className="w-5 h-5" />
+                  ) : (
+                    <Maximize2 className="w-5 h-5" />
+                  )}
                 </button>
               </TooltipTrigger>
               <TooltipContent
@@ -1546,45 +1584,14 @@ export function DesktopHome({
                 className="bg-white text-black border-0 shadow-xl"
               >
                 <p className="text-xs font-semibold">
-                  {installPrompt
-                    ? "Установить как приложение"
-                    : "Установка недоступна в этом браузере"}
+                  {isFullscreen
+                    ? "Выйти из полноэкранного"
+                    : "Полноэкранный режим"}
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                aria-label={
-                  isFullscreen ? "Обычный режим" : "Полноэкранный режим"
-                }
-                onClick={toggleFullscreen}
-                className="h-11 w-11 items-center justify-center rounded-[10px] text-white/90 hover:text-white hover:bg-white/10 transition-all flex"
-              >
-                {isFullscreen ? (
-                  <Minimize2 className="w-5 h-5" />
-                ) : (
-                  <Maximize2 className="w-5 h-5" />
-                )}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              sideOffset={8}
-              className="bg-white text-black border-0 shadow-xl"
-            >
-              <p className="text-xs font-semibold">
-                {isFullscreen
-                  ? "Выйти из полноэкранного"
-                  : "Полноэкранный режим"}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        </div>
       </div>
 
       {/* Main Content Area */}
