@@ -1028,6 +1028,7 @@ export function DesktopHome({
   }, [initialSlideId, slides]);
 
   const activeSlide = slides[slideIndex] ?? slides[0];
+  const showNetflixTopLogo = activeSlide?.id === "netflix_serials";
 
   useEffect(() => {
     setProfileAvatar(
@@ -1327,6 +1328,9 @@ export function DesktopHome({
   const logoHeightClass = isFullscreen
     ? "h-[clamp(120px,18vh,200px)]"
     : "h-[clamp(60px,12vh,110px)]";
+  const netflixTopLogoHeightClass = isFullscreen
+    ? "h-[clamp(22px,3.2vh,44px)]"
+    : "h-[clamp(18px,2.6vh,34px)]";
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
@@ -1505,6 +1509,17 @@ export function DesktopHome({
         favoritesActive={favoritesActiveOverride}
         favoritesCount={favoritesCount}
       />
+
+      {/* Netflix logo in top bar (only for Netflix slide) */}
+      {showNetflixTopLogo && (
+        <div className="hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none select-none items-center justify-center">
+          <img
+            src="/movies/logo/netflix.svg"
+            alt="Netflix"
+            className={`${netflixTopLogoHeightClass} w-auto opacity-90 drop-shadow-[0_10px_30px_rgba(0,0,0,0.65)]`}
+          />
+        </div>
+      )}
 
       {/* Fullscreen toggle + clock (desktop only) */}
       <div className="hidden md:flex absolute top-4 right-6 z-40 items-center gap-2">
