@@ -1710,5 +1710,40 @@
     "bg_poster": {
       "backdrop": "/movies/potter3-backdrop.webp"
     }
+  },
+  "6593f84f8914c04deae94a50": {
+    "poster_logo": "/movies/logo/144.png",
+    "poster": "/movies/potter4-poster.webp",
+    "bg_poster": {
+      "backdrop": "/movies/potter4-backdrop.webp"
+    }
+  },
+  "6593f8538914c04deae952dd": {
+    "poster_logo": "/movies/logo/145.webp",
+    "bg_poster": {
+      "backdrop": "/movies/potter5-backdrop.webp"
+    },
+    "poster": "/movies/potter5-poster.webp"
+  },
+  "6593f8838914c04deae9b250": {
+    "poster_logo": "/movies/logo/146.webp",
+    "bg_poster": {
+      "backdrop": "/movies/potter6-backdrop.webp"
+    },
+    "poster": "/movies/potter6-poster.webp"
+  },
+  "6593f88e8914c04deae9c7a2": {
+    "poster_logo": "/movies/logo/147.webp",
+    "bg_poster": {
+      "backdrop": "/movies/potter7-backdrop.webp"
+    },
+    "poster": "/movies/potter7-poster.webp"
+  },
+  "6593f8528914c04deae950cb": {
+    "poster_logo": "/movies/logo/148.webp",
+    "bg_poster": {
+      "backdrop": "/movies/potter7-2.webp"
+    },
+    "poster": "/movies/potter7-2-poster.webp"
   }
 }

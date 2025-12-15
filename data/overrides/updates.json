@@ -4126,5 +4126,65 @@
       "poster_colors.accentTl",
       "poster_colors.accentTr"
     ]
+  },
+  {
+    "id": "6593f84f8914c04deae94a50",
+    "timestamp": "2025-12-15T12:43:54.097Z",
+    "poster": "/movies/potter4-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f8538914c04deae952dd",
+    "timestamp": "2025-12-15T12:47:05.968Z",
+    "poster": "/movies/potter5-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6593f8838914c04deae9b250",
+    "timestamp": "2025-12-15T12:54:16.974Z",
+    "poster": "/movies/potter6-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6593f88e8914c04deae9c7a2",
+    "timestamp": "2025-12-15T12:56:53.920Z",
+    "poster": "/movies/potter7-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
+  },
+  {
+    "id": "6593f8528914c04deae950cb",
+    "timestamp": "2025-12-15T12:59:54.944Z",
+    "poster": "/movies/potter7-2-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster"
+    ]
   }
 ]
