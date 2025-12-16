@@ -1483,6 +1483,13 @@ export default function MoviePage({
   const backdropUrl =
     (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
 
+  const studioLogoSrc = (() => {
+    const raw = (movie as any).studio_logo;
+    if (!raw) return null;
+    const s = String(raw).trim();
+    return s.length > 0 ? s : null;
+  })();
+
   return (
     <>
       {/* Navigation Arrows - Outside animated container to keep position stable */}
@@ -2138,6 +2145,22 @@ export default function MoviePage({
                               : "—"}
                           </span>
                         </div>
+
+                        {studioLogoSrc && (
+                          <>
+                            <div className="w-px h-8 bg-white/10" />
+                            <div className="flex flex-col items-start gap-1 px-2 min-w-[120px]">
+                              <span className="text-zinc-400 text-xs uppercase tracking-wider">
+                                Производство
+                              </span>
+                              <img
+                                src={studioLogoSrc}
+                                alt="Логотип киностудии"
+                                className="h-8 md:h-9 w-auto object-contain opacity-90 drop-shadow-[0_10px_32px_rgba(0,0,0,0.8)]"
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
