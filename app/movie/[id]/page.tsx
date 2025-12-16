@@ -1483,11 +1483,23 @@ export default function MoviePage({
   const backdropUrl =
     (movie as any).backdrop || (movie as any).bg_poster?.backdrop;
 
-  const studioLogoSrc = (() => {
+  const studioLogos: string[] = (() => {
     const raw = (movie as any).studio_logo;
-    if (!raw) return null;
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (v == null ? "" : String(v).trim()))
+        .filter((s) => s.length > 0);
+    }
     const s = String(raw).trim();
-    return s.length > 0 ? s : null;
+    if (!s) return [];
+    if (s.includes(",")) {
+      return s
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
+    }
+    return [s];
   })();
 
   return (
@@ -2146,18 +2158,23 @@ export default function MoviePage({
                           </span>
                         </div>
 
-                        {studioLogoSrc && (
+                        {studioLogos.length > 0 && (
                           <>
                             <div className="w-px h-8 bg-white/10" />
                             <div className="flex flex-col items-start gap-1 px-2 min-w-[120px]">
                               <span className="text-zinc-400 text-xs uppercase tracking-wider">
                                 Производство
                               </span>
-                              <img
-                                src={studioLogoSrc}
-                                alt="Логотип киностудии"
-                                className="h-8 md:h-9 w-auto object-contain opacity-90 drop-shadow-[0_10px_32px_rgba(0,0,0,0.8)]"
-                              />
+                              <div className="flex items-center gap-2">
+                                {studioLogos.map((src, index) => (
+                                  <img
+                                    key={`${src}-${index}`}
+                                    src={src}
+                                    alt="Логотип киностудии"
+                                    className="h-8 md:h-9 w-auto object-contain opacity-90 drop-shadow-[0_10px_32px_rgba(0,0,0,0.8)]"
+                                  />
+                                ))}
+                              </div>
                             </div>
                           </>
                         )}

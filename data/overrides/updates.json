@@ -4247,5 +4247,63 @@
     "addedPaths": [
       "studio_logo"
     ]
+  },
+  {
+    "id": "68fff9779630419905edf2a5",
+    "timestamp": "2025-12-16T07:53:03.496Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6928c9e2888ecf1943e5a97c",
+    "timestamp": "2025-12-16T07:55:47.173Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6928c9e2888ecf1943e5a97c",
+    "timestamp": "2025-12-16T07:56:07.245Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "studio_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "690e6be89cfe849a3323b2de",
+    "timestamp": "2025-12-16T07:57:29.202Z",
+    "poster": "/movies/izmnogix-poster.jpg",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6928c9e2888ecf1943e5a97c",
+    "timestamp": "2025-12-16T08:23:25.250Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "studio_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6928c9e2888ecf1943e5a97c",
+    "timestamp": "2025-12-16T08:23:26.326Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
   }
 ]

@@ -84,7 +84,7 @@ type NormalizedMovie = {
   description?: string | null;
   duration?: any;
   logo?: string | null;
-  studio_logo?: string | null;
+  studio_logo?: string | string[] | null;
   poster_colors?: any;
   type?: string | null;
   quality?: any;
@@ -1322,7 +1322,7 @@ export function DesktopHome({
         tags: m.tags ?? null,
       };
       activeIdRef.current = String(normalized.id);
-      setActiveMovie((prev) => {
+      setActiveMovie((prev: any) => {
         if (prev && String(prev.id) === String(normalized.id)) return prev;
         return normalized;
       });
@@ -1418,11 +1418,26 @@ export function DesktopHome({
     activeMovie?.id ? String(activeMovie.id) : null
   );
 
-  const activeStudioLogo =
-    (activeMovie as any)?.studio_logo && String((activeMovie as any).studio_logo).trim().length > 0
-      ? String((activeMovie as any).studio_logo)
-      : null;
-  const showStudioTopLogo = !!activeStudioLogo;
+  const activeStudioLogos: string[] = (() => {
+    const raw = (activeMovie as any)?.studio_logo;
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (v == null ? "" : String(v).trim()))
+        .filter((s) => s.length > 0);
+    }
+    const s = String(raw).trim();
+    if (!s) return [];
+    if (s.includes(",")) {
+      return s
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
+    }
+    return [s];
+  })();
+  const activeStudioLogo = activeStudioLogos[0] ?? null;
+  const showStudioTopLogo = activeStudioLogos.length > 0;
 
   const headerViewAllSlides = new Set([
     "watching",
@@ -1535,23 +1550,28 @@ export function DesktopHome({
       <div className="hidden md:flex absolute top-4 left-0 right-0 z-40 items-center px-6">
         {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) && (
           <div className="flex-1 flex items-center justify-center pointer-events-none select-none">
-            <img
-              src={
-                showStudioTopLogo
-                  ? activeStudioLogo || ""
-                  : showNetflixTopLogo
-                  ? "/movies/logo/netflix.svg"
-                  : "/movies/warners.svg"
-              }
-              alt={
-                showStudioTopLogo
-                  ? "Логотип студии"
-                  : showNetflixTopLogo
-                  ? "Netflix"
-                  : "Warner Bros"
-              }
-              className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
-            />
+            {showStudioTopLogo ? (
+              <div className="flex items-center gap-2 translate-x-[40px]">
+                {activeStudioLogos.map((src, index) => (
+                  <img
+                    key={`${src}-${index}`}
+                    src={src}
+                    alt="Логотип студии"
+                    className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)]`}
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={
+                  showNetflixTopLogo
+                    ? "/movies/logo/netflix.svg"
+                    : "/movies/warners.svg"
+                }
+                alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
+                className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
+              />
+            )}
           </div>
         )}
         <div className="flex items-center gap-2 ml-auto">

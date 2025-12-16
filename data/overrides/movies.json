@@ -178,6 +178,7 @@
     }
   },
   "690e6be89cfe849a3323b2de": {
+    "studio_logo": "/movies/logo/sony.svg",
     "poster_logo": "/movies/logo/odna-iz-mnogix-logo.webp",
     "poster": "/movies/izmnogix-poster.jpg",
     "trailers": [
@@ -440,6 +441,7 @@
     }
   },
   "68fff9779630419905edf2a5": {
+    "studio_logo": "/movies/logo/hbomax.svg",
     "poster_colors": {
       "accentTr": [
         64,
@@ -812,6 +814,10 @@
     }
   },
   "6928c9e2888ecf1943e5a97c": {
+    "studio_logo": [
+      "/movies/logo/dysney.svg",
+      "/movies/logo/dysney-anim.svg"
+    ],
     "poster_logo": "/movies/logo/96.webp",
     "bg_poster": {
       "backdrop": "/movies/zveropolis-backdrop.webp"
