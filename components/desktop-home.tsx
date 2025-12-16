@@ -84,6 +84,7 @@ type NormalizedMovie = {
   description?: string | null;
   duration?: any;
   logo?: string | null;
+  studio_logo?: string | null;
   poster_colors?: any;
   type?: string | null;
   quality?: any;
@@ -1070,6 +1071,7 @@ export function DesktopHome({
         description: d?.about ?? item.about ?? item.description ?? null,
         duration: d?.duration ?? item.duration,
         logo: item.logo ?? d?.poster_logo ?? null,
+        studio_logo: (d as any)?.studio_logo ?? (item as any)?.studio_logo ?? null,
         poster_colors:
           item.poster_colors ??
           d?.poster_colors ??
@@ -1171,6 +1173,7 @@ export function DesktopHome({
                 // Prioritize override backdrop (bg_poster.backdrop)
                 backdrop: ov.bg_poster?.backdrop || prev.backdrop,
                 poster_colors: ov.poster_colors || prev.poster_colors,
+                studio_logo: (ov as any)?.studio_logo ?? (prev as any)?.studio_logo ?? null,
               };
             });
           }
@@ -1234,6 +1237,8 @@ export function DesktopHome({
       logo: cachedOverride?.poster_logo ?? first.logo ?? null,
       backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
+      studio_logo:
+        (cachedOverride as any)?.studio_logo ?? (first as any)?.studio_logo ?? null,
       quality:
         first.quality ??
         (rawList[0] as any)?.details?.quality ??
@@ -1309,6 +1314,8 @@ export function DesktopHome({
         description: m.description || "",
         duration: m.duration,
         logo: ov?.poster_logo ?? m.logo ?? null,
+        studio_logo:
+          (ov as any)?.studio_logo ?? (m as any)?.studio_logo ?? null,
         poster_colors: ov?.poster_colors,
         type: m.type ?? null,
         quality: m.quality ?? null,
@@ -1410,6 +1417,12 @@ export function DesktopHome({
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
   );
+
+  const activeStudioLogo =
+    (activeMovie as any)?.studio_logo && String((activeMovie as any).studio_logo).trim().length > 0
+      ? String((activeMovie as any).studio_logo)
+      : null;
+  const showStudioTopLogo = !!activeStudioLogo;
 
   const headerViewAllSlides = new Set([
     "watching",
@@ -1518,13 +1531,25 @@ export function DesktopHome({
         favoritesCount={favoritesCount}
       />
 
-      {/* Top bar: centered brand logo (when active) + right controls */}
+      {/* Top bar: centered brand/studio logo (when active) + right controls */}
       <div className="hidden md:flex absolute top-4 left-0 right-0 z-40 items-center px-6">
-        {(showNetflixTopLogo || showWarnersTopLogo) && (
+        {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) && (
           <div className="flex-1 flex items-center justify-center pointer-events-none select-none">
             <img
-              src={showNetflixTopLogo ? "/movies/logo/netflix.svg" : "/movies/warners.svg"}
-              alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
+              src={
+                showStudioTopLogo
+                  ? activeStudioLogo || ""
+                  : showNetflixTopLogo
+                  ? "/movies/logo/netflix.svg"
+                  : "/movies/warners.svg"
+              }
+              alt={
+                showStudioTopLogo
+                  ? "Логотип студии"
+                  : showNetflixTopLogo
+                  ? "Netflix"
+                  : "Warner Bros"
+              }
               className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
             />
           </div>

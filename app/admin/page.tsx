@@ -358,6 +358,8 @@ export default function AdminOverridesPage() {
       next["poster_colors.accentBl"] = asCsv(pc.accentBl);
     const posterLogo = (existingOverride as any)?.poster_logo;
     if (posterLogo != null) next["poster_logo"] = String(posterLogo);
+    const studioLogo = (existingOverride as any)?.studio_logo;
+    if (studioLogo != null) next["studio_logo"] = String(studioLogo);
     const introVideo = (existingOverride as any)?.intro_video;
     if (introVideo != null) next["intro_video"] = String(introVideo);
     setFormValues(next);
@@ -1240,6 +1242,23 @@ export default function AdminOverridesPage() {
                   />
                   <div className="mt-1 text-xs text-zinc-500">
                     Можно указывать путь из public/, например "/logos/movie.png"
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-xs text-zinc-400 mb-1">
+                    Логотип киностудии (studio_logo)
+                  </label>
+                  <input
+                    className="w-full h-8 rounded bg-zinc-800 border border-zinc-700 px-2 text-xs"
+                    placeholder={(() => {
+                      const v = (existingOverride as any)?.studio_logo;
+                      return v == null ? "" : String(v);
+                    })()}
+                    value={formValues["studio_logo"] ?? ""}
+                    onChange={(e) => updateField("studio_logo", e.target.value)}
+                  />
+                  <div className="mt-1 text-xs text-zinc-500">
+                    Путь к логотипу студии из public/, например "/movies/warners.svg"
                   </div>
                 </div>
                 <div className="mt-4">
