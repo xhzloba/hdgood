@@ -1751,5 +1751,18 @@
     "bg_poster": {
       "backdrop": "/movies/elita.webp"
     }
+  },
+  "693f3362b626e996eee20086": {
+    "bg_poster": {
+      "backdrop": "/movies/shurik.jpg"
+    },
+    "poster_colors": {
+      "dominant2": [
+        23,
+        32,
+        70
+      ]
+    },
+    "poster_logo": "/movies/logo/150.png"
   }
 }
