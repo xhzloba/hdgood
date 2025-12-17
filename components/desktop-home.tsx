@@ -18,6 +18,7 @@ import {
   Minimize2,
   Heart,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -1837,21 +1838,26 @@ export function DesktopHome({
                   }
                 }}
                 placeholder="Поиск фильмов и сериалов"
-                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-20 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
+                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-28 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
               />
-              <button
-                type="button"
-                onClick={() => {
-                  setHistoryOpen((v) => {
-                    const next = !v;
-                    if (next) setSearchOpen(true);
-                    return next;
-                  });
-                }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-semibold text-white/60 hover:text-white/85 transition z-10"
-              >
-                История
-              </button>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+                {!historyOpen && searchLoading && (
+                  <Loader2 className="w-4 h-4 text-white/55 animate-spin" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHistoryOpen((v) => {
+                      const next = !v;
+                      if (next) setSearchOpen(true);
+                      return next;
+                    });
+                  }}
+                  className="text-[12px] font-semibold text-white/60 hover:text-white/85 transition"
+                >
+                  История
+                </button>
+              </div>
             </div>
 
             {searchOpen && (
