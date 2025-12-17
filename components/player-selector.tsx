@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -88,7 +87,7 @@ export function PlayerSelector({
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
   return floatingControls ? (
     <div className={`relative w-full h-full ${className}`}>
-      <div className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 flex-col gap-2">
+      <div className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
         {[1, 2, 3].map((playerId) => {
           const disabled =
             (playerId === 1 && !player1Available) ||
@@ -104,7 +103,7 @@ export function PlayerSelector({
                 if (!disabled) handlePlayerSelect(playerId);
               }}
               disabled={disabled}
-              className={`relative flex items-center justify-center w-11 h-11 rounded-full border text-[11px] font-semibold transition-all duration-200 ${
+              className={`relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full border text-[10px] md:text-[11px] font-semibold transition-all duration-200 ${
                 disabled
                   ? "border-white/15 bg-black/40 text-white/30 cursor-not-allowed opacity-60"
                   : isActive
@@ -116,35 +115,6 @@ export function PlayerSelector({
             </button>
           );
         })}
-      </div>
-      <div className="md:hidden absolute top-3 left-1/2 -translate-x-1/2 z-30">
-        <Select
-          value={selectedPlayer ? String(selectedPlayer) : undefined}
-          onValueChange={(val) => handlePlayerSelect(Number(val))}
-        >
-          <SelectTrigger className="min-w-[150px] w-auto bg-black/60 border-white/20 text-zinc-100 backdrop-blur-md relative z-30 px-3">
-            <SelectValue placeholder="Выберите плеер" />
-          </SelectTrigger>
-          <SelectContent className="z-[150]" position="popper" align="center">
-            {[1, 2, 3].map((playerId) => {
-              const disabled =
-                (playerId === 1 && !player1Available) ||
-                (playerId === 2 && !player2Available) ||
-                (playerId === 3 && !player3Available);
-
-              return (
-                <SelectItem
-                  key={playerId}
-                  value={String(playerId)}
-                  disabled={disabled}
-                  className="cursor-pointer"
-                >
-                  Плеер {playerId}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
       </div>
       <div
         className={`group relative w-full h-full rounded-xl overflow-hidden ${
