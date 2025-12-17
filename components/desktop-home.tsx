@@ -52,7 +52,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFavorites } from "@/hooks/use-favorites";
-import { formatRatingLabel, ratingBgColor } from "@/lib/utils";
+import { formatRatingLabel, ratingBgColor, ratingColor } from "@/lib/utils";
 
 const DEFAULT_UB_COLORS = {
   tl: "#10212f",
@@ -520,6 +520,10 @@ export function DesktopHome({
       title: string;
       poster?: string | null;
       year?: string | number | null;
+      rating?: any;
+      country?: any;
+      genre?: any;
+      tags?: any;
       quality?: string | null;
       type?: string | null;
     }>
@@ -636,15 +640,27 @@ export function DesktopHome({
           return [];
         };
 
+        const cleanUrl = (val: any): string | null => {
+          if (val == null) return null;
+          const s = String(val).trim();
+          if (!s) return null;
+          return s.replace(/^[`'"]+|[`'"]+$/g, "").trim() || null;
+        };
+
         const items = extract(data)
           .map((item: any) => {
             const d = item?.details ?? item;
             const id = d?.id ?? item?.id;
             const title =
               d?.name ?? d?.title ?? item?.title ?? "";
-            const poster = d?.poster ?? item?.poster ?? null;
+            const poster = cleanUrl(d?.poster ?? item?.poster ?? null);
             const year =
               d?.released ?? d?.year ?? item?.year ?? null;
+            const rating =
+              d?.rating_kp ?? d?.rating ?? d?.rating_imdb ?? item?.rating ?? null;
+            const country = d?.country ?? item?.country ?? null;
+            const genre = d?.genre ?? item?.genre ?? null;
+            const tags = d?.tags ?? item?.tags ?? null;
             const quality =
               d?.quality ?? item?.quality ?? null;
             const type = d?.type ?? item?.type ?? null;
@@ -653,6 +669,10 @@ export function DesktopHome({
               title: String(title || "").trim(),
               poster,
               year,
+              rating,
+              country,
+              genre,
+              tags,
               quality,
               type: type ? String(type) : null,
             };
@@ -1792,11 +1812,24 @@ export function DesktopHome({
                           return items.slice(0, 2);
                         })();
 
-                        const metaParts = [
-                          year,
-                          country,
-                          genres.join(", "),
-                        ].filter((v) => String(v || "").trim().length > 0);
+                        const metaNodes = [
+                          ratingValue != null ? (
+                            <span
+                              key="rating"
+                              className={[
+                                "font-semibold tabular-nums",
+                                ratingColor(ratingValue),
+                              ].join(" ")}
+                            >
+                              {formatRatingLabel(ratingValue)}
+                            </span>
+                          ) : null,
+                          country ? <span key="country">{country}</span> : null,
+                          year ? <span key="year">{year}</span> : null,
+                          genres.length > 0 ? (
+                            <span key="genres">{genres.join(" ")}</span>
+                          ) : null,
+                        ].filter(Boolean);
 
                         return (
                           <Link
@@ -1818,24 +1851,17 @@ export function DesktopHome({
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="text-[13px] font-semibold text-white truncate">
-                                  {it.title}
-                                </div>
-                                {ratingValue != null && (
-                                  <span
-                                    className={[
-                                      "shrink-0 inline-flex items-center rounded-full px-2 py-[3px] text-[11px] text-white font-bold",
-                                      ratingBgColor(ratingValue),
-                                    ].join(" ")}
-                                  >
-                                    {formatRatingLabel(ratingValue)}
-                                  </span>
-                                )}
+                              <div className="text-[13px] font-semibold text-white truncate">
+                                {it.title}
                               </div>
-                              {metaParts.length > 0 && (
+                              {metaNodes.length > 0 && (
                                 <div className="mt-0.5 text-[11px] text-white/55 truncate">
-                                  {metaParts.join(" • ")}
+                                  {metaNodes.map((node, idx) => (
+                                    <React.Fragment key={idx}>
+                                      {idx > 0 ? " " : null}
+                                      {node}
+                                    </React.Fragment>
+                                  ))}
                                 </div>
                               )}
                             </div>
