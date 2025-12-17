@@ -7,7 +7,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   User,
@@ -18,7 +18,6 @@ import {
   Minimize2,
   Heart,
   ChevronRight,
-  Download,
 } from "lucide-react";
 import {
   Tooltip,
@@ -495,6 +494,7 @@ export function DesktopHome({
   favoritesActiveOverride?: boolean;
   forceShowFavoritesNav?: boolean;
 }) {
+  const router = useRouter();
   const [activeMovie, setActiveMovie] = useState<any>(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState<
@@ -510,6 +510,23 @@ export function DesktopHome({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWideClock, setShowWideClock] = useState(false);
   const [clockText, setClockText] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchItems, setSearchItems] = useState<
+    Array<{
+      id: string | number;
+      title: string;
+      poster?: string | null;
+      year?: string | number | null;
+      quality?: string | null;
+      type?: string | null;
+    }>
+  >([]);
+  const searchWrapRef = useRef<HTMLDivElement | null>(null);
+  const searchAbortRef = useRef<AbortController | null>(null);
+  const searchSeqRef = useRef(0);
   const {
     favorites,
     ready: favoritesReady,
@@ -568,6 +585,123 @@ export function DesktopHome({
       setPaletteReady(false);
     }
   }, []);
+
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      try {
+        searchAbortRef.current?.abort();
+      } catch {}
+      setSearchLoading(false);
+      setSearchError(null);
+      setSearchItems([]);
+      setSearchOpen(false);
+      return;
+    }
+
+    const seq = ++searchSeqRef.current;
+    setSearchLoading(true);
+    setSearchError(null);
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        try {
+          searchAbortRef.current?.abort();
+        } catch {}
+        const controller = new AbortController();
+        searchAbortRef.current = controller;
+
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(q)}&page=1`,
+          {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (seq !== searchSeqRef.current) return;
+
+        const extract = (src: any): any[] => {
+          if (src?.type === "list" && Array.isArray(src?.channels)) {
+            return src.channels;
+          }
+          if (Array.isArray(src?.channels)) return src.channels;
+          if (Array.isArray(src)) return src;
+          return [];
+        };
+
+        const items = extract(data)
+          .map((item: any) => {
+            const d = item?.details ?? item;
+            const id = d?.id ?? item?.id;
+            const title =
+              d?.name ?? d?.title ?? item?.title ?? "";
+            const poster = d?.poster ?? item?.poster ?? null;
+            const year =
+              d?.released ?? d?.year ?? item?.year ?? null;
+            const quality =
+              d?.quality ?? item?.quality ?? null;
+            const type = d?.type ?? item?.type ?? null;
+            return {
+              id,
+              title: String(title || "").trim(),
+              poster,
+              year,
+              quality,
+              type: type ? String(type) : null,
+            };
+          })
+          .filter((it: any) => it?.id != null && it?.title)
+          .slice(0, 10);
+
+        setSearchItems(items);
+        setSearchOpen(true);
+      } catch (e: any) {
+        const aborted =
+          e?.name === "AbortError" ||
+          searchAbortRef.current?.signal?.aborted;
+        if (aborted) return;
+        if (seq !== searchSeqRef.current) return;
+        setSearchItems([]);
+        setSearchError("Не удалось загрузить результаты");
+        setSearchOpen(true);
+      } finally {
+        if (seq === searchSeqRef.current) {
+          setSearchLoading(false);
+        }
+      }
+    }, 220);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onPointerDown = (ev: MouseEvent) => {
+      const wrap = searchWrapRef.current;
+      if (!wrap) return;
+      if (!wrap.contains(ev.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+    const onKeyDown = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") setSearchOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [searchOpen]);
 
   useEffect(() => {
     const syncFullscreen = () => {
@@ -1546,11 +1680,12 @@ export function DesktopHome({
         favoritesCount={favoritesCount}
       />
 
-      {/* Top bar: centered brand/studio logo (when active) + right controls */}
-      <div className="hidden md:flex absolute top-4 left-0 right-0 z-40 items-center px-6">
-        {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) && (
-          <div className="flex-1 flex items-center justify-center pointer-events-none select-none">
-            {showStudioTopLogo ? (
+      <div className="hidden md:grid absolute top-4 left-0 right-0 z-40 items-center px-6 gap-4 grid-cols-[1fr_auto_1fr]">
+        <div />
+
+        <div className="flex items-center justify-center pointer-events-none select-none">
+          {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) &&
+            (showStudioTopLogo ? (
               <div className="flex items-center gap-2 translate-x-[40px]">
                 {activeStudioLogos.map((src, index) => (
                   <img
@@ -1571,41 +1706,165 @@ export function DesktopHome({
                 alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
                 className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
               />
-            )}
-          </div>
-        )}
-        <div className="flex items-center gap-2 ml-auto">
-          {!isStandalone && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
+            ))}
+        </div>
+
+        <div className="flex items-center justify-end gap-2">
+          <div ref={searchWrapRef} className="relative w-[min(520px,30vw)]">
+            <div className="relative">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none z-10"
+              />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => {
+                  const q = searchQuery.trim();
+                  if (q.length >= 2) setSearchOpen(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const q = searchQuery.trim();
+                    if (q) {
+                      setSearchOpen(false);
+                      router.push(`/search?q=${encodeURIComponent(q)}`);
+                    }
+                  }
+                }}
+                placeholder="Поиск фильмов и сериалов"
+                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-4 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
+              />
+            </div>
+
+            {searchOpen && (
+              <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-[14px] border border-white/10 bg-zinc-950/90 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.55)] overflow-hidden">
+                <div className="p-2">
+                  {searchLoading && (
+                    <div className="px-3 py-2 text-xs text-white/60">
+                      Ищем…
+                    </div>
+                  )}
+                  {!searchLoading && searchError && (
+                    <div className="px-3 py-2 text-xs text-white/60">
+                      {searchError}
+                    </div>
+                  )}
+                  {!searchLoading && !searchError && searchItems.length === 0 && (
+                    <div className="px-3 py-2 text-xs text-white/60">
+                      Ничего не найдено
+                    </div>
+                  )}
+                  {!searchError && searchItems.length > 0 && (
+                    <div
+                      className="max-h-[420px] overflow-auto overscroll-contain"
+                      onWheelCapture={(e) => {
+                        e.stopPropagation();
+                      }}
+                      onTouchMoveCapture={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {searchItems.map((it) => {
+                        const ratingValue = (() => {
+                          const raw = (it as any)?.rating;
+                          if (raw == null) return null;
+                          const s = String(raw).trim();
+                          if (!s || s === "0" || s === "0.0") return null;
+                          const n = parseFloat(s);
+                          if (Number.isNaN(n) || n === 0) return null;
+                          return n;
+                        })();
+
+                        const year = it.year != null ? String(it.year) : "";
+                        const country = getPrimaryCountry((it as any)?.country) || "";
+                        const genres = (() => {
+                          const raw = (it as any)?.genre ?? (it as any)?.tags;
+                          const items: string[] = Array.isArray(raw)
+                            ? raw
+                                .map((v: any) => String(v || "").trim())
+                                .filter((v: string) => v.length > 0)
+                            : typeof raw === "string"
+                              ? raw
+                                  .split(/[,/|]/)
+                                  .map((p) => p.trim())
+                                  .filter(Boolean)
+                              : [];
+                          return items.slice(0, 2);
+                        })();
+
+                        const metaParts = [
+                          year,
+                          country,
+                          genres.join(", "),
+                        ].filter((v) => String(v || "").trim().length > 0);
+
+                        return (
+                          <Link
+                            key={String(it.id)}
+                            href={`/movie/${it.id}`}
+                            onClick={() => setSearchOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2 rounded-[10px] hover:bg-white/7 transition"
+                          >
+                            <div className="w-10 h-14 rounded-md bg-white/5 border border-white/10 overflow-hidden shrink-0">
+                              {it.poster ? (
+                                <img
+                                  src={it.poster}
+                                  alt={it.title}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-linear-to-b from-white/10 to-white/0" />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="text-[13px] font-semibold text-white truncate">
+                                  {it.title}
+                                </div>
+                                {ratingValue != null && (
+                                  <span
+                                    className={[
+                                      "shrink-0 inline-flex items-center rounded-full px-2 py-[3px] text-[11px] text-white font-bold",
+                                      ratingBgColor(ratingValue),
+                                    ].join(" ")}
+                                  >
+                                    {formatRatingLabel(ratingValue)}
+                                  </span>
+                                )}
+                              </div>
+                              {metaParts.length > 0 && (
+                                <div className="mt-0.5 text-[11px] text-white/55 truncate">
+                                  {metaParts.join(" • ")}
+                                </div>
+                              )}
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-white/40" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t border-white/10 p-2">
                   <button
                     type="button"
-                    onClick={handleInstallClick}
-                    disabled={!installPrompt}
-                    className={`h-11 w-11 inline-flex items-center justify-center rounded-[10px] text-white/90 transition-all ${
-                      installPrompt
-                        ? "hover:text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/30"
-                        : "text-white/40 cursor-not-allowed"
-                    }`}
+                    onClick={() => {
+                      const q = searchQuery.trim();
+                      if (!q) return;
+                      setSearchOpen(false);
+                      router.push(`/search?q=${encodeURIComponent(q)}`);
+                    }}
+                    className="w-full h-10 rounded-[10px] bg-white/6 hover:bg-white/10 text-[12px] font-semibold text-white/85 transition"
                   >
-                    <Download className="w-5 h-5" />
+                    Показать все результаты
                   </button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  sideOffset={8}
-                  className="bg-white text-black border-0 shadow-xl"
-                >
-                  <p className="text-xs font-semibold">
-                    {installPrompt
-                      ? "Установить как приложение"
-                      : "Установка недоступна в этом браузере"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+                </div>
+              </div>
+            )}
+          </div>
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
