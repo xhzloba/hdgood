@@ -35,7 +35,7 @@ const normalizeMovie = (movie: FavoriteMovie): FavoriteMovie => {
 
 export function useFavorites() {
   const readStorage = () => {
-    if (typeof window === "undefined") return null;
+    if (typeof window === "undefined") return [];
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
@@ -47,9 +47,7 @@ export function useFavorites() {
     return [];
   };
 
-  const [favorites, setFavorites] = useState<FavoriteMovie[]>(
-    () => readStorage() ?? []
-  );
+  const [favorites, setFavorites] = useState<FavoriteMovie[]>(() => readStorage());
   const [ready, setReady] = useState<boolean>(true);
 
   const loadFromStorage = useCallback(() => {
@@ -136,4 +134,3 @@ export function useFavorites() {
     isFavorite,
   };
 }
-

@@ -512,6 +512,7 @@ export function DesktopHome({
   const [clockText, setClockText] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searchItems, setSearchItems] = useState<
@@ -528,6 +529,14 @@ export function DesktopHome({
       type?: string | null;
     }>
   >([]);
+  type SearchHistoryMovie = {
+    id: string | number;
+    title: string;
+    poster?: string | null;
+    year?: string | number | null;
+  };
+
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryMovie[]>([]);
   const searchWrapRef = useRef<HTMLDivElement | null>(null);
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchSeqRef = useRef(0);
@@ -590,8 +599,72 @@ export function DesktopHome({
     }
   }, []);
 
+  const pushSearchHistoryMovie = useCallback(
+    (movie: SearchHistoryMovie) => {
+      const id = movie?.id;
+      const title = String(movie?.title || "").trim();
+      if (id == null || !title) return;
+      try {
+        setSearchHistory((prev) => {
+          const next = [
+            {
+              id,
+              title,
+              poster: movie?.poster ?? null,
+              year: movie?.year ?? null,
+            },
+            ...prev.filter((v) => String(v.id) !== String(id)),
+          ].slice(0, 10);
+          try {
+            localStorage.setItem(
+              "desktop_search_history",
+              JSON.stringify(next)
+            );
+          } catch {}
+          return next;
+        });
+      } catch {}
+    },
+    []
+  );
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("desktop_search_history");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return;
+      const next = parsed
+        .map((v: any) => {
+          if (!v || typeof v !== "object") return null;
+          const id = (v as any).id;
+          const title = String((v as any).title || "").trim();
+          if (id == null || !title) return null;
+          return {
+            id,
+            title,
+            poster: (v as any).poster ?? null,
+            year: (v as any).year ?? null,
+          };
+        })
+        .filter(Boolean)
+        .slice(0, 10) as SearchHistoryMovie[];
+      setSearchHistory(next);
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const q = searchQuery.trim();
+    if (historyOpen) {
+      try {
+        searchAbortRef.current?.abort();
+      } catch {}
+      setSearchLoading(false);
+      setSearchError(null);
+      setSearchItems([]);
+      setSearchOpen(true);
+      return;
+    }
     if (q.length < 2) {
       try {
         searchAbortRef.current?.abort();
@@ -701,7 +774,7 @@ export function DesktopHome({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [searchQuery]);
+  }, [searchQuery, historyOpen]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -710,10 +783,14 @@ export function DesktopHome({
       if (!wrap) return;
       if (!wrap.contains(ev.target as Node)) {
         setSearchOpen(false);
+        setHistoryOpen(false);
       }
     };
     const onKeyDown = (ev: KeyboardEvent) => {
-      if (ev.key === "Escape") setSearchOpen(false);
+      if (ev.key === "Escape") {
+        setSearchOpen(false);
+        setHistoryOpen(false);
+      }
     };
     document.addEventListener("mousedown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -1737,156 +1814,235 @@ export function DesktopHome({
               />
               <input
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (historyOpen) setHistoryOpen(false);
+                }}
                 onFocus={() => {
                   const q = searchQuery.trim();
+                  if (historyOpen) {
+                    setSearchOpen(true);
+                    return;
+                  }
                   if (q.length >= 2) setSearchOpen(true);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const q = searchQuery.trim();
                     if (q) {
+                      setHistoryOpen(false);
                       setSearchOpen(false);
                       router.push(`/search?q=${encodeURIComponent(q)}`);
                     }
                   }
                 }}
                 placeholder="Поиск фильмов и сериалов"
-                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-4 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
+                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-20 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
               />
+              <button
+                type="button"
+                onClick={() => {
+                  setHistoryOpen((v) => {
+                    const next = !v;
+                    if (next) setSearchOpen(true);
+                    return next;
+                  });
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-semibold text-white/60 hover:text-white/85 transition z-10"
+              >
+                История
+              </button>
             </div>
 
             {searchOpen && (
               <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-[14px] border border-white/10 bg-zinc-950/90 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.55)] overflow-hidden">
                 <div className="p-2">
-                  {searchLoading && (
-                    <div className="px-3 py-2 text-xs text-white/60">
-                      Ищем…
-                    </div>
-                  )}
-                  {!searchLoading && searchError && (
-                    <div className="px-3 py-2 text-xs text-white/60">
-                      {searchError}
-                    </div>
-                  )}
-                  {!searchLoading && !searchError && searchItems.length === 0 && (
-                    <div className="px-3 py-2 text-xs text-white/60">
-                      Ничего не найдено
-                    </div>
-                  )}
-                  {!searchError && searchItems.length > 0 && (
-                    <div
-                      className="max-h-[420px] overflow-auto overscroll-contain"
-                      onWheelCapture={(e) => {
-                        e.stopPropagation();
-                      }}
-                      onTouchMoveCapture={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      {searchItems.map((it) => {
-                        const ratingValue = (() => {
-                          const raw = (it as any)?.rating;
-                          if (raw == null) return null;
-                          const s = String(raw).trim();
-                          if (!s || s === "0" || s === "0.0") return null;
-                          const n = parseFloat(s);
-                          if (Number.isNaN(n) || n === 0) return null;
-                          return n;
-                        })();
-
-                        const year = it.year != null ? String(it.year) : "";
-                        const country = getPrimaryCountry((it as any)?.country) || "";
-                        const genres = (() => {
-                          const raw = (it as any)?.genre ?? (it as any)?.tags;
-                          const items: string[] = Array.isArray(raw)
-                            ? raw
-                                .map((v: any) => String(v || "").trim())
-                                .filter((v: string) => v.length > 0)
-                            : typeof raw === "string"
-                              ? raw
-                                  .split(/[,/|]/)
-                                  .map((p) => p.trim())
-                                  .filter(Boolean)
-                              : [];
-                          return items.slice(0, 2);
-                        })();
-
-                        const metaNodes = [
-                          ratingValue != null ? (
-                            <span
-                              key="rating"
-                              className={[
-                                "font-semibold tabular-nums",
-                                ratingColor(ratingValue),
-                              ].join(" ")}
-                            >
-                              {formatRatingLabel(ratingValue)}
-                            </span>
-                          ) : null,
-                          country ? <span key="country">{country}</span> : null,
-                          year ? <span key="year">{year}</span> : null,
-                          genres.length > 0 ? (
-                            <span key="genres">{genres.join(" ")}</span>
-                          ) : null,
-                        ].filter(Boolean);
-
-                        return (
-                          <Link
-                            key={String(it.id)}
-                            href={`/movie/${it.id}`}
-                            onClick={() => setSearchOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-[10px] hover:bg-white/7 transition"
+                  {historyOpen ? (
+                    searchHistory.length === 0 ? (
+                      <div className="px-3 py-2 text-xs text-white/60">
+                        История пуста
+                      </div>
+                    ) : (
+                      <div
+                        className="max-h-[420px] overflow-auto overscroll-contain"
+                        onWheelCapture={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onTouchMoveCapture={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        {searchHistory.slice(0, 10).map((m) => (
+                          <button
+                            key={String(m.id)}
+                            type="button"
+                            onClick={() => {
+                              setHistoryOpen(false);
+                              setSearchOpen(false);
+                              setSearchQuery(String(m.title));
+                              router.push(`/movie/${m.id}`);
+                            }}
+                            className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-[10px] hover:bg-white/7 transition text-left"
                           >
-                            <div className="w-10 h-14 rounded-md bg-white/5 border border-white/10 overflow-hidden shrink-0">
-                              {it.poster ? (
-                                <img
-                                  src={it.poster}
-                                  alt={it.title}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-linear-to-b from-white/10 to-white/0" />
-                              )}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="text-[13px] font-semibold text-white truncate">
-                                {it.title}
-                              </div>
-                              {metaNodes.length > 0 && (
-                                <div className="mt-0.5 text-[11px] text-white/55 truncate">
-                                  {metaNodes.map((node, idx) => (
-                                    <React.Fragment key={idx}>
-                                      {idx > 0 ? " " : null}
-                                      {node}
-                                    </React.Fragment>
-                                  ))}
+                            <span className="min-w-0 flex-1 text-[13px] font-semibold text-white truncate">
+                              {m.title}
+                            </span>
+                            <ChevronRight className="w-4 h-4 text-white/40 shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    )
+                  ) : (
+                    <>
+                      {searchLoading && (
+                        <div className="px-3 py-2 text-xs text-white/60">
+                          Ищем…
+                        </div>
+                      )}
+                      {!searchLoading && searchError && (
+                        <div className="px-3 py-2 text-xs text-white/60">
+                          {searchError}
+                        </div>
+                      )}
+                      {!searchLoading &&
+                        !searchError &&
+                        searchItems.length === 0 && (
+                          <div className="px-3 py-2 text-xs text-white/60">
+                            Ничего не найдено
+                          </div>
+                        )}
+                      {!searchError && searchItems.length > 0 && (
+                        <div
+                          className="max-h-[420px] overflow-auto overscroll-contain"
+                          onWheelCapture={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onTouchMoveCapture={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          {searchItems.map((it) => {
+                            const ratingValue = (() => {
+                              const raw = (it as any)?.rating;
+                              if (raw == null) return null;
+                              const s = String(raw).trim();
+                              if (!s || s === "0" || s === "0.0")
+                                return null;
+                              const n = parseFloat(s);
+                              if (Number.isNaN(n) || n === 0) return null;
+                              return n;
+                            })();
+
+                            const year = it.year != null ? String(it.year) : "";
+                            const country =
+                              getPrimaryCountry((it as any)?.country) || "";
+                            const genres = (() => {
+                              const raw =
+                                (it as any)?.genre ?? (it as any)?.tags;
+                              const items: string[] = Array.isArray(raw)
+                                ? raw
+                                    .map((v: any) => String(v || "").trim())
+                                    .filter((v: string) => v.length > 0)
+                                : typeof raw === "string"
+                                  ? raw
+                                      .split(/[,/|]/)
+                                      .map((p) => p.trim())
+                                      .filter(Boolean)
+                                  : [];
+                              return items.slice(0, 2);
+                            })();
+
+                            const metaNodes = [
+                              ratingValue != null ? (
+                                <span
+                                  key="rating"
+                                  className={[
+                                    "font-semibold tabular-nums",
+                                    ratingColor(ratingValue),
+                                  ].join(" ")}
+                                >
+                                  {formatRatingLabel(ratingValue)}
+                                </span>
+                              ) : null,
+                              country ? (
+                                <span key="country">{country}</span>
+                              ) : null,
+                              year ? <span key="year">{year}</span> : null,
+                              genres.length > 0 ? (
+                                <span key="genres">{genres.join(" ")}</span>
+                              ) : null,
+                            ].filter(Boolean);
+
+                            return (
+                              <Link
+                                key={String(it.id)}
+                                href={`/movie/${it.id}`}
+                                onClick={() => {
+                                  pushSearchHistoryMovie({
+                                    id: it.id,
+                                    title: String(it.title || "").trim(),
+                                    poster: it.poster ?? null,
+                                    year: it.year ?? null,
+                                  });
+                                  setHistoryOpen(false);
+                                  setSearchOpen(false);
+                                }}
+                                className="flex items-center gap-3 px-3 py-2 rounded-[10px] hover:bg-white/7 transition"
+                              >
+                                <div className="w-10 h-14 rounded-md bg-white/5 border border-white/10 overflow-hidden shrink-0">
+                                  {it.poster ? (
+                                    <img
+                                      src={it.poster}
+                                      alt={it.title}
+                                      className="w-full h-full object-cover"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-linear-to-b from-white/10 to-white/0" />
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-white/40" />
-                          </Link>
-                        );
-                      })}
-                    </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-[13px] font-semibold text-white truncate">
+                                    {it.title}
+                                  </div>
+                                  {metaNodes.length > 0 && (
+                                    <div className="mt-0.5 text-[11px] text-white/55 truncate">
+                                      {metaNodes.map((node, idx) => (
+                                        <React.Fragment key={idx}>
+                                          {idx > 0 ? " " : null}
+                                          {node}
+                                        </React.Fragment>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-white/40" />
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
-                <div className="border-t border-white/10 p-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const q = searchQuery.trim();
-                      if (!q) return;
-                      setSearchOpen(false);
-                      router.push(`/search?q=${encodeURIComponent(q)}`);
-                    }}
-                    className="w-full h-10 rounded-[10px] bg-white/6 hover:bg-white/10 text-[12px] font-semibold text-white/85 transition"
-                  >
-                    Показать все результаты
-                  </button>
-                </div>
+                {!historyOpen && (
+                  <div className="border-t border-white/10 p-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const q = searchQuery.trim();
+                        if (!q) return;
+                        setHistoryOpen(false);
+                        setSearchOpen(false);
+                        router.push(`/search?q=${encodeURIComponent(q)}`);
+                      }}
+                      className="w-full h-10 rounded-[10px] bg-white/6 hover:bg-white/10 text-[12px] font-semibold text-white/85 transition"
+                    >
+                      Показать все результаты
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

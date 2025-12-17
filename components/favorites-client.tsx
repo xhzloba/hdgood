@@ -143,6 +143,7 @@ export default function FavoritesClient({
             {slides.map((slide) => (
               <MovieSlider
                 key={slide.id}
+                url="/favorites"
                 title={slide.title}
                 items={slide.items}
                 compactOnMobile
