@@ -1861,7 +1861,7 @@ export function DesktopHome({
             </div>
 
             {searchOpen && (
-              <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-[14px] border border-white/10 bg-zinc-950/90 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.55)] overflow-hidden">
+              <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-[12px] bg-black/55 border border-white/10 backdrop-blur-md shadow-[0_18px_60px_rgba(0,0,0,0.55)] overflow-hidden">
                 <div className="p-2">
                   {historyOpen ? (
                     searchHistory.length === 0 ? (
