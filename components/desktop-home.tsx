@@ -513,6 +513,7 @@ export function DesktopHome({
   const [showWideClock, setShowWideClock] = useState(false);
   const [clockText, setClockText] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -1801,12 +1802,40 @@ export function DesktopHome({
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <div ref={searchWrapRef} className="relative w-[min(520px,30vw)]">
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none z-10"
-              />
+          <div
+            ref={searchWrapRef}
+            className={`relative transition-all duration-300 ease-out z-50 ${
+              searchExpanded ? "w-[400px]" : "w-9"
+            }`}
+          >
+            <div
+              className={`relative flex items-center h-9 overflow-hidden transition-all duration-300 ${
+                searchExpanded
+                  ? "bg-[#161616]/95 border border-white/10 w-full backdrop-blur-md focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/40 shadow-xl"
+                  : "bg-transparent border border-transparent w-9 justify-center"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchExpanded((prev) => !prev);
+                  if (!searchExpanded) {
+                    setTimeout(
+                      () =>
+                        document.getElementById("netflix-search-input")?.focus(),
+                      50
+                    );
+                  }
+                }}
+                className={`z-10 p-1.5 text-white cursor-pointer hover:scale-110 transition-transform flex-shrink-0 ${
+                  searchExpanded ? "absolute left-1" : "relative"
+                }`}
+              >
+                <Search className="w-5 h-5" />
+              </button>
+
               <input
+                id="netflix-search-input"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -1820,6 +1849,12 @@ export function DesktopHome({
                   }
                   if (q.length >= 2) setSearchOpen(true);
                 }}
+                onBlur={() => {
+                  if (!searchQuery && !historyOpen) {
+                    setSearchExpanded(false);
+                    setSearchOpen(false);
+                  }
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const q = searchQuery.trim();
@@ -1831,26 +1866,36 @@ export function DesktopHome({
                   }
                 }}
                 placeholder="Поиск фильмов и сериалов"
-                className="relative z-0 h-11 w-full rounded-[12px] bg-black/40 border border-white/10 pl-11 pr-28 text-[14px] text-white placeholder:text-white/45 outline-none focus:border-white/20 focus:ring-2 focus:ring-white/10 backdrop-blur-md"
+                className={`w-full h-full bg-transparent text-white text-[13px] outline-none pl-9 pr-9 placeholder:text-zinc-500 transition-opacity duration-200 absolute inset-0 ${
+                  searchExpanded
+                    ? "opacity-100"
+                    : "opacity-0 pointer-events-none"
+                }`}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
-                {!historyOpen && searchLoading && (
-                  <Loader2 className="w-4 h-4 text-white/55 animate-spin" />
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setHistoryOpen((v) => {
-                      const next = !v;
-                      if (next) setSearchOpen(true);
-                      return next;
-                    });
-                  }}
-                  className="text-[12px] font-semibold text-white/60 hover:text-white/85 transition"
-                >
-                  История
-                </button>
-              </div>
+
+              {/* Правая часть (лоадер / история) */}
+              {searchExpanded && (
+                <div className="absolute right-2 flex items-center gap-2 z-10">
+                  {!historyOpen && searchLoading && (
+                    <Loader2 className="w-3.5 h-3.5 text-white/60 animate-spin" />
+                  )}
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()} // prevent blur
+                    onClick={() => {
+                      setHistoryOpen((v) => {
+                        const next = !v;
+                        if (next) setSearchOpen(true);
+                        return next;
+                      });
+                    }}
+                    className="text-white/60 hover:text-white transition"
+                    title="История поиска"
+                  >
+                    <IconClock className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {searchOpen && (
