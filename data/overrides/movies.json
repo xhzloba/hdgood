@@ -1772,5 +1772,12 @@
       ]
     },
     "poster_logo": "/movies/logo/150.png"
+  },
+  "65b7eaea13d1c1cdd032d05a": {
+    "studio_logo": "/movies/logo/amazon.svg",
+    "poster_logo": "/movies/logo/151.webp",
+    "bg_poster": {
+      "backdrop": "/movies/fallout.webp"
+    }
   }
 }

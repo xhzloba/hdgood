@@ -4305,5 +4305,17 @@
     "title": null,
     "changedPaths": [],
     "addedPaths": []
+  },
+  {
+    "id": "65b7eaea13d1c1cdd032d05a",
+    "timestamp": "2025-12-18T09:33:50.794Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo",
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]

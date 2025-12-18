@@ -1559,8 +1559,19 @@ export default function MoviePage({
             <span className="font-medium">Назад</span>
           </Link>
 
-          <button
-            onClick={toggleFullscreen}
+          {studioLogos.length > 0 && (
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+              <img
+                src={studioLogos[0]}
+                alt="Studio Logo"
+                className="h-8 md:h-10 w-auto object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFullscreen}
             className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 hover:text-white transition-colors pointer-events-auto"
             title={
               isFullscreen
@@ -1580,6 +1591,7 @@ export default function MoviePage({
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </button>
           )}
+          </div>
         </header>
 
         {/* Hero Background */}
