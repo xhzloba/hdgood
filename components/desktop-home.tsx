@@ -2306,26 +2306,40 @@ export function DesktopHome({
                       />
                       <span className={primaryButtonTextClass}>Смотреть</span>
                     </Link>
-                    <button
-                      onClick={handleFavoriteToggle}
-                      className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.5)] ${
-                        isFavoriteActiveMovie
-                          ? "border-white bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)]"
-                          : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]"
-                      }`}
-                      title={
-                        isFavoriteActiveMovie
-                          ? "Убрать из избранного"
-                          : "Добавить в избранное"
-                      }
-                      aria-pressed={isFavoriteActiveMovie}
-                    >
-                      {isFavoriteActiveMovie ? (
-                        <Heart size={favoriteIconSize} fill="currentColor" />
-                      ) : (
-                        <Plus size={favoriteIconSize} />
-                      )}
-                    </button>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={handleFavoriteToggle}
+                            className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.5)] ${
+                              isFavoriteActiveMovie
+                                ? "border-white bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                                : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                            }`}
+                            aria-pressed={isFavoriteActiveMovie}
+                          >
+                            {isFavoriteActiveMovie ? (
+                              <Heart
+                                size={favoriteIconSize}
+                                fill="currentColor"
+                              />
+                            ) : (
+                              <Plus size={favoriteIconSize} />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="top"
+                          className="font-bold bg-white text-black border-0 shadow-xl mb-2"
+                        >
+                          <p>
+                            {isFavoriteActiveMovie
+                              ? "Убрать из избранного"
+                              : "Добавить в избранное"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
 
