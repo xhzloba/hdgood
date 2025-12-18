@@ -513,6 +513,7 @@ export function DesktopHome({
   const [showWideClock, setShowWideClock] = useState(false);
   const [clockText, setClockText] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchYear, setSearchYear] = useState<string>("");
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -723,7 +724,7 @@ export function DesktopHome({
           return s.replace(/^[`'"]+|[`'"]+$/g, "").trim() || null;
         };
 
-        const items = extract(data)
+        let items = extract(data)
           .map((item: any) => {
             const d = item?.details ?? item;
             const id = d?.id ?? item?.id;
@@ -753,10 +754,21 @@ export function DesktopHome({
               type: type ? String(type) : null,
             };
           })
-          .filter((it: any) => it?.id != null && it?.title)
-          .slice(0, 10);
+          .filter((it: any) => it?.id != null && it?.title);
 
-        setSearchItems(items);
+        if (searchYear && searchYear.length === 4) {
+          items.sort((a, b) => {
+            const yearA = String(a.year || "");
+            const yearB = String(b.year || "");
+            const matchA = yearA === searchYear;
+            const matchB = yearB === searchYear;
+            if (matchA && !matchB) return -1;
+            if (!matchA && matchB) return 1;
+            return 0;
+          });
+        }
+
+        setSearchItems(items.slice(0, 10));
         setSearchOpen(true);
       } catch (e: any) {
         const aborted =
@@ -777,7 +789,7 @@ export function DesktopHome({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [searchQuery, historyOpen]);
+  }, [searchQuery, historyOpen, searchYear]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -1834,6 +1846,41 @@ export function DesktopHome({
                 <Search className="w-5 h-5" />
               </button>
 
+              {searchExpanded && (
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={searchYear}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "");
+                    setSearchYear(val);
+                  }}
+                  onBlur={(e) => {
+                    // Используем setTimeout, чтобы дать время событию click/focus сработать в другом месте
+                    setTimeout(() => {
+                      const active = document.activeElement;
+                      const mainInput = document.getElementById(
+                        "netflix-search-input"
+                      );
+                      // Если фокус перешел не на основное поле и не на инпут года, и всё пусто -> закрываем
+                      const isFocusInside =
+                        active === e.target || active === mainInput;
+                      if (
+                        !isFocusInside &&
+                        !searchQuery &&
+                        !historyOpen &&
+                        !searchYear
+                      ) {
+                        setSearchExpanded(false);
+                        setSearchOpen(false);
+                      }
+                    }, 100);
+                  }}
+                  placeholder="Год"
+                  className="absolute left-9 top-1/2 -translate-y-1/2 w-11 h-full bg-transparent text-white/80 text-[13px] text-center outline-none placeholder:text-zinc-600 border-r border-white/10 z-20"
+                />
+              )}
+
               <input
                 id="netflix-search-input"
                 value={searchQuery}
@@ -1849,11 +1896,30 @@ export function DesktopHome({
                   }
                   if (q.length >= 2) setSearchOpen(true);
                 }}
-                onBlur={() => {
-                  if (!searchQuery && !historyOpen) {
-                    setSearchExpanded(false);
-                    setSearchOpen(false);
-                  }
+                onBlur={(e) => {
+                  // Используем setTimeout, чтобы проверить, куда ушел фокус
+                  setTimeout(() => {
+                    // Если ввели год, то не закрываем
+                    if (searchYear) return;
+
+                    const active = document.activeElement;
+                    // Если фокус ушел на инпут года (предыдущий элемент по DOM, но мы проверим по типу/классу или просто не закроем если есть year)
+                    // Но year может быть пуст.
+                    // Проще: если ничего нет в обоих полях и кликнули вовне -> закрываем.
+                    if (!searchQuery && !historyOpen) {
+                      // Важно: если мы кликнули на инпут года, он станет activeElement
+                      // Но так как он рендерится условно, он есть в DOM.
+                      // Проверяем:
+                      const isYearInput =
+                        active instanceof HTMLInputElement &&
+                        active.placeholder === "Год";
+
+                      if (!isYearInput) {
+                        setSearchExpanded(false);
+                        setSearchOpen(false);
+                      }
+                    }
+                  }, 100);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -1861,15 +1927,19 @@ export function DesktopHome({
                     if (q) {
                       setHistoryOpen(false);
                       setSearchOpen(false);
-                      router.push(`/search?q=${encodeURIComponent(q)}`);
+                      router.push(
+                        `/search?q=${encodeURIComponent(q)}${
+                          searchYear ? `&year=${searchYear}` : ""
+                        }`
+                      );
                     }
                   }
                 }}
                 placeholder="Поиск фильмов и сериалов"
-                className={`w-full h-full bg-transparent text-white text-[13px] outline-none pl-9 pr-9 placeholder:text-zinc-500 transition-opacity duration-200 absolute inset-0 ${
+                className={`w-full h-full bg-transparent text-white text-[13px] outline-none pr-9 placeholder:text-zinc-500 transition-opacity duration-200 absolute inset-0 ${
                   searchExpanded
-                    ? "opacity-100"
-                    : "opacity-0 pointer-events-none"
+                    ? "opacity-100 pl-[5.5rem]"
+                    : "opacity-0 pointer-events-none pl-9"
                 }`}
               />
 
