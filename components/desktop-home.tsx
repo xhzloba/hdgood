@@ -1600,14 +1600,6 @@ export function DesktopHome({
     ? cardDisplayMode === "backdrop"
       ? "mt-[clamp(16px,3vh,32px)]"
       : "mt-[clamp(12px,2vh,24px)]"
-    : isFullscreen && isWideAndTall
-    ? cardDisplayMode === "backdrop"
-      ? "mt-[clamp(140px,17vh,260px)]"
-      : "mt-[clamp(90px,10vh,170px)]"
-    : isFullscreen
-    ? cardDisplayMode === "backdrop"
-      ? "mt-[clamp(90px,12vh,180px)]"
-      : "mt-[clamp(48px,6vh,110px)]"
     : isWideAndTall
     ? cardDisplayMode === "backdrop"
       ? "mt-[clamp(120px,15vh,230px)]"
@@ -1644,7 +1636,7 @@ export function DesktopHome({
 
   // Динамические паддинги main
   const mainPaddingClass =
-    "pt-[clamp(36px,5vh,64px)] pb-[clamp(10px,3vh,48px)] gap-[clamp(12px,2vh,32px)] overflow-hidden";
+    "pt-[clamp(48px,9vh,192px)] pb-[clamp(10px,3vh,48px)] gap-[clamp(12px,2vh,32px)] overflow-hidden";
 
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
