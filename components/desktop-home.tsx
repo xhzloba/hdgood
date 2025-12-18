@@ -89,6 +89,7 @@ type NormalizedMovie = {
   type?: string | null;
   quality?: any;
   tags?: any;
+  age?: any;
 };
 
 const TRENDING_URL =
@@ -2236,6 +2237,7 @@ export function DesktopHome({
                       fetchAllPages={(activeSlide as any).fetchAll}
                       fullscreenMode={isFullscreen}
                       hideFavoriteBadge
+                      showAge
                     />
                   </div>
                 </div>

@@ -49,6 +49,7 @@ type MovieSliderProps = {
   fullscreenMode?: boolean;
   items?: any[];
   hideFavoriteBadge?: boolean;
+  showAge?: boolean;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -118,6 +119,7 @@ function extractMoviesFromData(data: any): any[] {
         item.colors,
       logo: item.details?.poster_logo || item.poster_logo || item.logo || null,
       type: item.details?.type || item.type || null,
+      age: item.details?.age || item.age || null,
     }));
   } else if (Array.isArray(data)) {
     movies = data;
@@ -169,6 +171,7 @@ export default function MovieSlider({
   fullscreenMode = false,
   items,
   hideFavoriteBadge = false,
+  showAge = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [pagesData, setPagesData] = useState<
@@ -1014,6 +1017,11 @@ export default function MovieSlider({
                             </g>
                           </svg>
                         </button>
+                      )}
+                      {showAge && movie.age != null && !movie.isViewAll && (
+                        <div className="absolute bottom-2.5 left-3 z-[15] text-white/60 text-sm font-bold tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hidden md:block">
+                          {String(movie.age).replace(/\D/g, "")}+
+                        </div>
                       )}
                       {movie.isViewAll ? (
                         <div className="absolute inset-0 flex items-center justify-center text-center px-3">
