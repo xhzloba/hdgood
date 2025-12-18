@@ -4317,5 +4317,146 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "691654e274e3057d2efdfb0f",
+    "timestamp": "2025-12-18T11:39:50.781Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6655026bba8fb8ecf93ad138",
+    "timestamp": "2025-12-18T11:40:57.503Z",
+    "poster": "/movies/dostat-nozi.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "675f5f77a8ed59ebe2f34712",
+    "timestamp": "2025-12-18T11:43:46.085Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "68d5bcbdc8c62006017914a8",
+    "timestamp": "2025-12-18T11:49:00.482Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "691654e074e3057d2efdfad7",
+    "timestamp": "2025-12-18T11:51:04.720Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "673a7571d72224a87100acb0",
+    "timestamp": "2025-12-18T11:52:49.451Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6593f9238914c04deaeafe0d",
+    "timestamp": "2025-12-18T11:55:14.576Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6593f9238914c04deaeafe0d",
+    "timestamp": "2025-12-18T11:56:49.086Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6934a7600fcc5defac1c3e1c",
+    "timestamp": "2025-12-18T12:00:24.329Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "65941dfa4d4ca001a2279e2c",
+    "timestamp": "2025-12-18T12:03:10.278Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6593f8b68914c04deaea15df",
+    "timestamp": "2025-12-18T12:06:17.552Z",
+    "poster": "/movies/things-5.webp",
+    "title": null,
+    "changedPaths": [
+      "studio_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68f40de099eeea9f94b2a80a",
+    "timestamp": "2025-12-18T12:14:55.379Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "68f40de099eeea9f94b2a80a",
+    "timestamp": "2025-12-18T12:15:17.382Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68f40de099eeea9f94b2a80a",
+    "timestamp": "2025-12-18T12:15:49.177Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]

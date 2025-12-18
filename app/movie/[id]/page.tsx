@@ -1560,12 +1560,15 @@ export default function MoviePage({
           </Link>
 
           {studioLogos.length > 0 && (
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-              <img
-                src={studioLogos[0]}
-                alt="Studio Logo"
-                className="h-8 md:h-10 w-auto object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-              />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto flex items-center gap-4">
+              {studioLogos.map((logo, idx) => (
+                <img
+                  key={idx}
+                  src={logo}
+                  alt={`Studio Logo ${idx + 1}`}
+                  className="h-8 md:h-10 w-auto object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                />
+              ))}
             </div>
           )}
 

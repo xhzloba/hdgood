@@ -210,12 +210,14 @@
     "poster_logo": "https://images.kinorium.com/movie/plogo/11046576/w1500_55390653.png"
   },
   "68d5bcbdc8c62006017914a8": {
+    "studio_logo": "/movies/logo/direction.svg",
     "poster_logo": "/movies/logo/1.png",
     "bg_poster": {
       "backdrop": "/movies/1.jpg"
     }
   },
   "691654e274e3057d2efdfb0f": {
+    "studio_logo": "/movies/logo/summit.svg",
     "poster_colors": {
       "dominant1": [
         50,
@@ -381,7 +383,10 @@
     }
   },
   "6593f8b68914c04deaea15df": {
-    "studio_logo": "/movies/logo/netflix.svg",
+    "studio_logo": [
+      "/movies/logo/netflix.svg",
+      "/movies/logo/2jl.svg"
+    ],
     "poster_colors": {
       "accentTl": [
         205,
@@ -603,6 +608,13 @@
     "poster_logo": "/movies/logo/9.webp"
   },
   "6593f9238914c04deaeafe0d": {
+    "bg_poster": {
+      "backdrop": "/movies/vol.jpg"
+    },
+    "studio_logo": [
+      "/movies/logo/okko.svg",
+      "/movies/logo/mc.svg"
+    ],
     "poster_logo": "/movies/logo/10.webp"
   },
   "68dda4849906b3f36b6f0bf6": {
@@ -842,6 +854,7 @@
     "poster_logo": "/movies/logo/32.webp"
   },
   "6655026bba8fb8ecf93ad138": {
+    "studio_logo": "/movies/logo/netflix.svg",
     "bg_poster": {
       "backdrop": "/movies/dostat-nozi-backdrop.webp"
     },
@@ -934,6 +947,7 @@
     }
   },
   "691654e074e3057d2efdfad7": {
+    "studio_logo": "/movies/logo/par.svg",
     "poster_logo": "/movies/logo/46.webp",
     "bg_poster": {
       "backdrop": "/movies/beg.webp"
@@ -1167,6 +1181,11 @@
     }
   },
   "675f5f77a8ed59ebe2f34712": {
+    "studio_logo": [
+      "/movies/logo/20.svg",
+      "/movies/logo/tsg.svg",
+      "/movies/logo/light.svg"
+    ],
     "poster_logo": "/movies/logo/87.webp",
     "bg_poster": {
       "backdrop": "/movies/avatar-pepel.webp"
@@ -1207,6 +1226,11 @@
     }
   },
   "65941dfa4d4ca001a2279e2c": {
+    "studio_logo": [
+      "/movies/logo/kit.svg",
+      "/movies/logo/premier.svg",
+      "/movies/logo/23.svg"
+    ],
     "poster_logo": "/movies/logo/90.webp"
   },
   "65942a26f9adc4da8a0ec592": {
@@ -1225,6 +1249,7 @@
     "poster_logo": "/movies/logo/94.png"
   },
   "6934a7600fcc5defac1c3e1c": {
+    "studio_logo": "/movies/logo/me.svg",
     "poster_colors": {
       "accentBr": [
         33,
@@ -1504,6 +1529,11 @@
     "poster_logo": "/movies/logo/122.png"
   },
   "673a7571d72224a87100acb0": {
+    "studio_logo": [
+      "/movies/logo/par.svg",
+      "/movies/logo/MTV.svg",
+      "/movies/logo/101.svg"
+    ],
     "poster_logo": "/movies/logo/123.webp",
     "bg_poster": {
       "backdrop": "/movies/land.webp"
@@ -1779,5 +1809,15 @@
     "bg_poster": {
       "backdrop": "/movies/fallout.webp"
     }
+  },
+  "68f40de099eeea9f94b2a80a": {
+    "bg_poster": {
+      "backdrop": "/movies/olimp.jpg"
+    },
+    "poster_logo": "/movies/logo/152.png",
+    "studio_logo": [
+      "/movies/logo/central.svg",
+      "/movies/logo/star.svg"
+    ]
   }
 }
