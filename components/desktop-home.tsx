@@ -134,7 +134,7 @@ const SLIDES: Slide[] = [
     id: "movies",
     title: "Фильмы",
     url: MOVIES_URL,
-    viewAllHref: "/movies/all",
+    viewAllHref: "/movies/all?tab=popular",
   },
   {
     id: "serials",
@@ -468,7 +468,9 @@ export function DesktopSidebar({
                 !!cat.route &&
                 (activePath.startsWith(cat.route) ||
                   (cat.route === "/serials/all" &&
-                    activePath.startsWith("/serials")))
+                    activePath.startsWith("/serials")) ||
+                  (cat.route === "/movies/all" &&
+                    activePath.startsWith("/movies")))
               }
             />
           )

@@ -27,7 +27,7 @@ export const CATEGORIES: Category[] = [
     title: "Фильмы",
     ico: "movie",
     playlist_url: "https://api.vokino.pro/v2/category?type=movie",
-    route: "/movies",
+    route: "/movies/all",
   },
   {
     title: "Сериалы",
@@ -92,5 +92,28 @@ export const SERIAL_CHANNELS: Category[] = [
     title: "Лучшее",
     ico: "viewing",
     playlist_url: "https://api.vokino.pro/v2/list?sort=rating&type=serial",
+  },
+]
+
+export const MOVIE_CHANNELS: Category[] = [
+  {
+    title: "Обновления",
+    ico: "updated",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=updatings&type=movie",
+  },
+  {
+    title: "Новинки",
+    ico: "newyear",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=new&type=movie",
+  },
+  {
+    title: "Популярное",
+    ico: "popular",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=popular&type=movie",
+  },
+  {
+    title: "Лучшее",
+    ico: "viewing",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=rating&type=movie",
   },
 ]

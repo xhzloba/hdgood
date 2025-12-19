@@ -150,7 +150,8 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
     (c) =>
       c.route &&
       (pathname.startsWith(c.route) ||
-        (c.route === "/serials/all" && pathname.startsWith("/serials")))
+        (c.route === "/serials/all" && pathname.startsWith("/serials")) ||
+        (c.route === "/movies/all" && pathname.startsWith("/movies")))
   );
   const [stateActiveIndex, setStateActiveIndex] = useState<number | null>(() => {
     if (pathname === "/") return null
