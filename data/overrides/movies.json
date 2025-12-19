@@ -1880,5 +1880,19 @@
     "bg_poster": {
       "backdrop": "/movies/celebrity.webp"
     }
+  },
+  "6593f8888914c04deae9bbff": {
+    "studio_logo": "/movies/logo/mrc.svg",
+    "poster_logo": "/movies/logo/155.webp",
+    "bg_poster": {
+      "backdrop": "/movies/dostat.webp"
+    }
+  },
+  "6593f90d8914c04deaeac705": {
+    "poster_logo": "/movies/logo/156.webp",
+    "studio_logo": "/movies/logo/netflix.svg",
+    "bg_poster": {
+      "backdrop": "/movies/dostat-2.webp"
+    }
   }
 }

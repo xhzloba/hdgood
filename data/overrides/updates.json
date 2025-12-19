@@ -4558,5 +4558,29 @@
     "addedPaths": [
       "studio_logo"
     ]
+  },
+  {
+    "id": "6593f8888914c04deae9bbff",
+    "timestamp": "2025-12-19T16:08:36.474Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo",
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f90d8914c04deaeac705",
+    "timestamp": "2025-12-19T16:14:52.666Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]

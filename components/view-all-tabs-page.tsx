@@ -16,9 +16,10 @@ type Tab = {
 type ViewAllTabsPageProps = {
   title: string;
   tabs: Tab[];
+  hideBackLink?: boolean;
 };
 
-export function ViewAllTabsPage({ title, tabs }: ViewAllTabsPageProps) {
+export function ViewAllTabsPage({ title, tabs, hideBackLink }: ViewAllTabsPageProps) {
   const { favorites } = useFavorites();
   const favoritesCount = (favorites || []).length;
   const searchParams = useSearchParams();
@@ -95,12 +96,14 @@ export function ViewAllTabsPage({ title, tabs }: ViewAllTabsPageProps) {
             </div>
           </div>
 
-          <Link
-            href="/"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            ← На главную
-          </Link>
+          {!hideBackLink && (
+            <Link
+              href="/"
+              className="text-sm text-zinc-400 hover:text-white transition-colors"
+            >
+              ← На главную
+            </Link>
+          )}
         </div>
 
         <div className="overflow-hidden min-h-[50vh]">

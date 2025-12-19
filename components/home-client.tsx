@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { HeaderCategories } from "./header-categories";
 import { TrendingSection } from "./trending-section";
-import { UhdSection, UHD_CHANNELS } from "./uhd-section";
+import { UhdSection } from "./uhd-section";
 import { MoviesSection } from "./movies-section";
 import { SerialsSection } from "./serials-section";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, UHD_CHANNELS } from "@/lib/categories";
 import type { Category } from "@/lib/categories";
 import Link from "next/link";
 import { PosterBackground } from "@/components/poster-background";

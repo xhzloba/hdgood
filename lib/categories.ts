@@ -117,3 +117,26 @@ export const MOVIE_CHANNELS: Category[] = [
     playlist_url: "https://api.vokino.pro/v2/list?sort=rating&type=movie",
   },
 ]
+
+export const UHD_CHANNELS: Category[] = [
+  {
+    title: "4K HDR",
+    ico: "cathdr",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=4K%20HDR&page=1",
+  },
+  {
+    title: "4K",
+    ico: "cat4k",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=4K&page=1",
+  },
+  {
+    title: "4K DolbyVision",
+    ico: "catdolby",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=4K%20DolbyV&page=1",
+  },
+  {
+    title: "60 FPS",
+    ico: "catdolby",
+    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=60FPS&page=1",
+  },
+]

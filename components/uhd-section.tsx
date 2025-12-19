@@ -10,35 +10,13 @@ import {
 import { IconLayoutGrid, IconList } from "@tabler/icons-react";
 import { MovieGrid } from "./movie-grid";
 
+import { UHD_CHANNELS } from "@/lib/categories";
+
 export interface Channel {
   title: string;
   ico: string;
   playlist_url: string;
 }
-
-export const UHD_CHANNELS: Channel[] = [
-  {
-    title: "4K HDR",
-    ico: "cathdr",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=4K%20HDR&page=1",
-  },
-  {
-    title: "4K",
-    ico: "cat4k",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=4K&page=1",
-  },
-  {
-    title: "4K DolbyVision",
-    ico: "catdolby",
-    playlist_url:
-      "https://api.vokino.pro/v2/list?sort=new&tag=4K%20DolbyV&page=1",
-  },
-  {
-    title: "60 FPS",
-    ico: "catdolby",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=new&tag=60FPS&page=1",
-  },
-];
 
 export function UhdSection({
   onBackdropOverrideChange,
