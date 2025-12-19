@@ -82,8 +82,8 @@ export default function MobileBottomNav() {
   const [serialsLoading, setSerialsLoading] = useState(false);
 
   const isHome = pathname === "/";
-  const isMoviesMode = pathname === "/movies";
-  const isSerialsMode = pathname === "/serials";
+  const isMoviesMode = pathname === "/movies" || pathname === "/movies/all";
+  const isSerialsMode = pathname === "/serials" || pathname === "/serials/all";
   const isUhdMode = pathname === "/uhd";
   const isFavoritesMode = pathname === "/favorites";
 

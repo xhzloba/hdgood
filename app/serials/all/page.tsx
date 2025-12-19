@@ -26,7 +26,7 @@ export default function SerialsAllPage() {
         </div>
       }
     >
-      <ViewAllTabsPage title="Сериалы" tabs={TABS} />
+      <ViewAllTabsPage title="Сериалы" tabs={TABS} hideBackLink />
     </Suspense>
   );
 }

@@ -26,7 +26,7 @@ export default function MoviesAllPage() {
         </div>
       }
     >
-      <ViewAllTabsPage title="Фильмы" tabs={TABS} />
+      <ViewAllTabsPage title="Фильмы" tabs={TABS} hideBackLink />
     </Suspense>
   );
 }
