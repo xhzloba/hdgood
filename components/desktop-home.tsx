@@ -409,9 +409,17 @@ export function DesktopSidebar({
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[clamp(64px,8vw,96px)] z-50 flex flex-col items-center py-[clamp(24px,4vh,40px)] gap-[clamp(24px,4vh,40px)] bg-transparent">
-      <div className="text-orange-500 font-black text-[clamp(18px,2.5vh,24px)] mb-[clamp(8px,1.5vh,16px)] tracking-tighter">
-        HD
-      </div>
+      <Link
+        href="/"
+        className="relative group flex flex-col items-center justify-center mb-[clamp(8px,1.5vh,16px)] py-2 transition-transform duration-300 group-hover:scale-105"
+      >
+        <span className="font-[900] text-[28px] leading-none tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+          HD
+        </span>
+        <span className="font-[900] italic text-[10px] leading-none tracking-[0.3em] text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] ml-1">
+          GOOD
+        </span>
+      </Link>
 
       <nav className="flex flex-col gap-[clamp(12px,2vh,24px)] flex-1 justify-center w-full items-center">
         <NavItem
@@ -514,6 +522,8 @@ export function DesktopHome({
   const [clockText, setClockText] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchYear, setSearchYear] = useState<string>("");
+  const [searchPage, setSearchPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -542,6 +552,7 @@ export function DesktopHome({
 
   const [searchHistory, setSearchHistory] = useState<SearchHistoryMovie[]>([]);
   const searchWrapRef = useRef<HTMLDivElement | null>(null);
+  const observerTarget = useRef<HTMLDivElement | null>(null);
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchSeqRef = useRef(0);
   const {
@@ -683,6 +694,9 @@ export function DesktopHome({
     const seq = ++searchSeqRef.current;
     setSearchLoading(true);
     setSearchError(null);
+
+    const timeoutMs = searchPage > 1 ? 50 : 220;
+
     const timeoutId = window.setTimeout(async () => {
       try {
         try {
@@ -692,7 +706,9 @@ export function DesktopHome({
         searchAbortRef.current = controller;
 
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(q)}&page=1`,
+          `/api/search?q=${encodeURIComponent(q)}&page=${searchPage}${
+            searchYear ? `&year=${searchYear}` : ""
+          }`,
           {
             signal: controller.signal,
             headers: { Accept: "application/json" },
@@ -768,7 +784,17 @@ export function DesktopHome({
           });
         }
 
-        setSearchItems(items.slice(0, 10));
+        if (searchPage === 1) {
+          setSearchItems(items);
+        } else {
+          setSearchItems((prev) => {
+            const newItems = items.filter(
+              (n: any) => !prev.some((p) => String(p.id) === String(n.id))
+            );
+            return [...prev, ...newItems];
+          });
+        }
+        setHasMore(items.length > 0);
         setSearchOpen(true);
       } catch (e: any) {
         const aborted =
@@ -776,20 +802,40 @@ export function DesktopHome({
           searchAbortRef.current?.signal?.aborted;
         if (aborted) return;
         if (seq !== searchSeqRef.current) return;
-        setSearchItems([]);
-        setSearchError("Не удалось загрузить результаты");
+        if (searchPage === 1) {
+          setSearchItems([]);
+          setSearchError("Не удалось загрузить результаты");
+        }
         setSearchOpen(true);
       } finally {
         if (seq === searchSeqRef.current) {
           setSearchLoading(false);
         }
       }
-    }, 220);
+    }, timeoutMs);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [searchQuery, historyOpen, searchYear]);
+  }, [searchQuery, historyOpen, searchYear, searchPage]);
+
+  // Infinite Scroll Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !searchLoading) {
+          setSearchPage((p) => p + 1);
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, searchLoading]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -1854,6 +1900,7 @@ export function DesktopHome({
                   onChange={(e) => {
                     const val = e.target.value.replace(/\D/g, "");
                     setSearchYear(val);
+                    setSearchPage(1);
                   }}
                   onBlur={(e) => {
                     // Используем setTimeout, чтобы дать время событию click/focus сработать в другом месте
@@ -1886,6 +1933,7 @@ export function DesktopHome({
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
+                  setSearchPage(1);
                   if (historyOpen) setHistoryOpen(false);
                 }}
                 onFocus={() => {
@@ -2134,29 +2182,21 @@ export function DesktopHome({
                               </Link>
                             );
                           })}
+                          {hasMore && (
+                            <div
+                              ref={observerTarget}
+                              className="w-full py-4 flex items-center justify-center"
+                            >
+                              {searchLoading && (
+                                <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
                     </>
                   )}
                 </div>
-
-                {!historyOpen && (
-                  <div className="border-t border-white/10 p-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const q = searchQuery.trim();
-                        if (!q) return;
-                        setHistoryOpen(false);
-                        setSearchOpen(false);
-                        router.push(`/search?q=${encodeURIComponent(q)}`);
-                      }}
-                      className="w-full h-10 rounded-[10px] bg-white/6 hover:bg-white/10 text-[12px] font-semibold text-white/85 transition"
-                    >
-                      Показать все результаты
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>
