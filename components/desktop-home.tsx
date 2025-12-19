@@ -140,7 +140,7 @@ const SLIDES: Slide[] = [
     id: "serials",
     title: "Сериалы",
     url: SERIALS_URL,
-    viewAllHref: "/serials/all",
+    viewAllHref: "/serials/all?tab=popular",
   },
   {
     id: "netflix_serials",

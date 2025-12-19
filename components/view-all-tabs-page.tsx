@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { DesktopSidebar } from "@/components/desktop-home";
 import { MovieGrid } from "@/components/movie-grid";
 import Link from "next/link";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useSearchParams } from "next/navigation";
 
 type Tab = {
   title: string;
@@ -20,7 +21,24 @@ type ViewAllTabsPageProps = {
 export function ViewAllTabsPage({ title, tabs }: ViewAllTabsPageProps) {
   const { favorites } = useFavorites();
   const favoritesCount = (favorites || []).length;
-  const [activeTab, setActiveTab] = useState(0);
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  
+  const [activeTab, setActiveTab] = useState(() => {
+    if (tabParam === "popular") {
+      const idx = tabs.findIndex(t => t.title === "Популярное");
+      if (idx !== -1) return idx;
+    }
+    return 0;
+  });
+
+  // Sync with URL param changes if they happen while mounted
+  useEffect(() => {
+    if (tabParam === "popular") {
+      const idx = tabs.findIndex(t => t.title === "Популярное");
+      if (idx !== -1) setActiveTab(idx);
+    }
+  }, [tabParam, tabs]);
   
   const prevYRef = useRef<number | null>(null);
   
