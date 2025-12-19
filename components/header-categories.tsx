@@ -146,7 +146,12 @@ export function HeaderCategories({ variant = "horizontal", className, onSelect, 
   }, [pathname])
 
   // Универсальная инициализация активной вкладки по route категории
-  const indexFromRoute = CATEGORIES.findIndex((c) => c.route && pathname.startsWith(c.route))
+  const indexFromRoute = CATEGORIES.findIndex(
+    (c) =>
+      c.route &&
+      (pathname.startsWith(c.route) ||
+        (c.route === "/serials/all" && pathname.startsWith("/serials")))
+  );
   const [stateActiveIndex, setStateActiveIndex] = useState<number | null>(() => {
     if (pathname === "/") return null
     if (indexFromRoute !== -1) return indexFromRoute

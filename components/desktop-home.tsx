@@ -464,7 +464,12 @@ export function DesktopSidebar({
               }
               label={cat.title}
               href={cat.route || "#"}
-              active={!!cat.route && activePath.startsWith(cat.route)}
+              active={
+                !!cat.route &&
+                (activePath.startsWith(cat.route) ||
+                  (cat.route === "/serials/all" &&
+                    activePath.startsWith("/serials")))
+              }
             />
           )
         )}

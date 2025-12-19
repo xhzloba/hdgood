@@ -4,35 +4,7 @@ import { useState, useRef, useLayoutEffect, useCallback, useEffect } from "react
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { MovieGrid } from "./movie-grid"
 import { IconLayoutGrid, IconList } from "@tabler/icons-react"
-
-interface Channel {
-  title: string
-  ico: string
-  playlist_url: string
-}
-
-const SERIAL_CHANNELS: Channel[] = [
-  {
-    title: "Обновления",
-    ico: "updated",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=updatings&type=serial",
-  },
-  {
-    title: "Новинки",
-    ico: "newyear",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=new&type=serial",
-  },
-  {
-    title: "Популярное",
-    ico: "popular",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=popular&type=serial",
-  },
-  {
-    title: "Лучшее",
-    ico: "viewing",
-    playlist_url: "https://api.vokino.pro/v2/list?sort=rating&type=serial",
-  },
-]
+import { SERIAL_CHANNELS } from "@/lib/categories"
 
 export function SerialsSection({ onBackdropOverrideChange, onHeroInfoOverrideChange }: { onBackdropOverrideChange?: (bg: string | null, poster?: string | null) => void; onHeroInfoOverrideChange?: (info: { title?: string | null; logo?: string | null; logoId?: string | null; meta?: { ratingKP?: number | null; ratingIMDb?: number | null; year?: string | null; country?: string | null; genre?: string | null; duration?: string | null } | null } | null) => void }) {
   const sp = useSearchParams()
