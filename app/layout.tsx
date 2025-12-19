@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   },
   applicationName: "HDGood",
   manifest: "/manifest.webmanifest",
-  themeColor: "#0f172a",
   description: "Смотреть фильмы и сериалы онлайн в хорошем качестве",
   openGraph: {
     title: "HDGood",
@@ -40,6 +39,7 @@ export const metadata: Metadata = {
 
 // Вынесенный viewport экспорт согласно Next.js App Router API
 export const viewport = {
+  themeColor: "#0f172a",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

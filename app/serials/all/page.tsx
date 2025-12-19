@@ -1,5 +1,7 @@
 import { ViewAllTabsPage } from "@/components/view-all-tabs-page";
 import { SERIAL_CHANNELS } from "@/lib/categories";
+import { Suspense } from "react";
+import { Loader } from "@/components/loader";
 
 const TOKEN = "mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352";
 
@@ -16,5 +18,15 @@ const TABS = SERIAL_CHANNELS.map((ch, idx) => ({
 }));
 
 export default function SerialsAllPage() {
-  return <ViewAllTabsPage title="Сериалы" tabs={TABS} />;
+  return (
+    <Suspense 
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-zinc-950">
+          <Loader />
+        </div>
+      }
+    >
+      <ViewAllTabsPage title="Сериалы" tabs={TABS} />
+    </Suspense>
+  );
 }

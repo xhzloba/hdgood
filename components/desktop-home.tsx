@@ -148,6 +148,7 @@ const SLIDES: Slide[] = [
     navTitle: "Netflix",
     url: "https://api.vokino.pro/v2/compilations/content/65a6b9dabce57d552a34b40d?token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352",
     fetchAll: true,
+    viewAllHref: "/serials/netflix/all",
   },
   {
     id: "dolbyv",
@@ -1737,6 +1738,7 @@ export function DesktopHome({
     "serials",
     "new_year",
     "dolbyv",
+    "netflix_serials",
   ]);
 
   const computeThemeColor = useCallback(() => {
