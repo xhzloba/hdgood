@@ -630,6 +630,7 @@
     }
   },
   "65942f9bf9adc4da8a10925c": {
+    "studio_logo": "/movies/logo/sreda.svg",
     "poster_logo": "/movies/logo/13.webp",
     "bg_poster": {
       "backdrop": "/series/method.webp"
@@ -1819,5 +1820,65 @@
       "/movies/logo/central.svg",
       "/movies/logo/star.svg"
     ]
+  },
+  "6883fe64b81c8024208f9b81": {
+    "poster_colors": {
+      "accentTr": [
+        30,
+        104,
+        196
+      ],
+      "accentTl": [
+        38,
+        119,
+        208
+      ],
+      "accentBr": [
+        10,
+        103,
+        123
+      ],
+      "accentBl": [
+        6,
+        95,
+        107
+      ]
+    },
+    "studio_logo": [
+      "/movies/logo/netflix.svg",
+      "/movies/logo/happy.svg"
+    ],
+    "poster_logo": "/movies/logo/153.webp",
+    "poster": "/movies/happygilmor-poster.webp",
+    "bg_poster": {
+      "backdrop": "/movies/happygilmor-backdrop.webp"
+    }
+  },
+  "6593fa08e264662a2fc46233": {
+    "poster_colors": {
+      "dominant2": [
+        190,
+        136,
+        64
+      ],
+      "accentTr": [
+        160,
+        114,
+        62
+      ],
+      "accentTl": [
+        106,
+        72,
+        33
+      ]
+    },
+    "studio_logo": [
+      "/movies/logo/goodstory.svg",
+      "/movies/logo/23.svg"
+    ],
+    "poster_logo": "/movies/logo/154.png",
+    "bg_poster": {
+      "backdrop": "/movies/celebrity.webp"
+    }
   }
 }

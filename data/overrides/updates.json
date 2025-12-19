@@ -4458,5 +4458,105 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6883fe64b81c8024208f9b81",
+    "timestamp": "2025-12-19T09:20:35.761Z",
+    "poster": "/movies/happygilmor-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6883fe64b81c8024208f9b81",
+    "timestamp": "2025-12-19T09:22:03.556Z",
+    "poster": "/movies/happygilmor-poster.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_logo",
+      "studio_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6883fe64b81c8024208f9b81",
+    "timestamp": "2025-12-19T09:23:13.363Z",
+    "poster": "/movies/happygilmor-poster.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl"
+    ]
+  },
+  {
+    "id": "6593fa08e264662a2fc46233",
+    "timestamp": "2025-12-19T09:31:02.123Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593fa08e264662a2fc46233",
+    "timestamp": "2025-12-19T09:31:49.529Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593fa08e264662a2fc46233",
+    "timestamp": "2025-12-19T09:33:36.466Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "studio_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593fa08e264662a2fc46233",
+    "timestamp": "2025-12-19T09:34:17.448Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "6593fa08e264662a2fc46233",
+    "timestamp": "2025-12-19T09:34:43.779Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "65942f9bf9adc4da8a10925c",
+    "timestamp": "2025-12-19T09:36:13.726Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
   }
 ]

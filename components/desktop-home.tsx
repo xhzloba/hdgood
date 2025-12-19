@@ -2297,7 +2297,7 @@ export function DesktopHome({
                   <div className={`flex items-center ${ctaGapClass}`}>
                     <Link
                       href={`/movie/${activeMovie.id}`}
-                      className={`bg-white text-black rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none shadow-[0_4px_12px_rgba(0,0,0,0.5),0_0_20px_rgba(255,255,255,0.4)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.6),0_0_30px_rgba(255,255,255,0.6)] ${primaryButtonSizeClass}`}
+                      className={`bg-white text-black rounded-[4px] font-bold flex items-center justify-center gap-2 hover:bg-white/90 transition active:scale-95 flex-1 md:flex-none shadow-[0_4px_12px_rgba(0,0,0,0.5)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.6)] ${primaryButtonSizeClass}`}
                     >
                       <Play
                         size={playIconSize}
