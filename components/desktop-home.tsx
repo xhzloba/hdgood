@@ -20,6 +20,8 @@ import {
   ChevronRight,
   Loader2,
   Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   Tooltip,
@@ -63,6 +65,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useWatched } from "@/hooks/use-watched";
 import { formatRatingLabel, ratingBgColor, ratingColor } from "@/lib/utils";
 
 const DEFAULT_UB_COLORS = {
@@ -403,6 +406,8 @@ export function DesktopSidebar({
   showFavorites = true,
   favoritesActive = false,
   favoritesCount = 0,
+  watchedActive = false,
+  watchedCount = 0,
   activeRoute,
   enablePosterColors = true,
   onTogglePosterColors,
@@ -412,15 +417,19 @@ export function DesktopSidebar({
   showFavorites?: boolean;
   favoritesActive?: boolean;
   favoritesCount?: number;
+  watchedActive?: boolean;
+  watchedCount?: number;
   activeRoute?: string;
   enablePosterColors?: boolean;
   onTogglePosterColors?: (val: boolean) => void;
 }) {
   const pathname = usePathname();
   const activePath = activeRoute ?? pathname ?? "";
-  const isHomeActive = !favoritesActive && activePath === "/";
+  const isHomeActive = !favoritesActive && !watchedActive && activePath === "/";
   const isFavoritesActive =
     favoritesActive || activePath.startsWith("/favorites");
+  const isWatchedActive =
+    watchedActive || activePath.startsWith("/watched");
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[clamp(64px,8vw,96px)] z-50 flex flex-col items-center py-[clamp(24px,4vh,40px)] gap-[clamp(24px,4vh,40px)] bg-transparent">
@@ -468,6 +477,25 @@ export function DesktopSidebar({
           label="Избранное"
           href="/favorites"
           active={isFavoritesActive}
+        />
+
+        <NavItem
+          icon={
+            <div className="relative">
+              <Eye
+                className={`${sidebarIconClass} ${
+                  isWatchedActive ? "text-white" : ""
+                }`}
+                strokeWidth={1.6}
+              />
+              {watchedCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-blue-500" />
+              )}
+            </div>
+          }
+          label="Просмотренное"
+          href="/watched"
+          active={isWatchedActive}
         />
 
         {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
@@ -546,12 +574,14 @@ export function DesktopHome({
   customSlides,
   initialSlideId,
   favoritesActiveOverride = false,
+  watchedActiveOverride = false,
   forceShowFavoritesNav = false,
 }: {
   initialDisplayMode?: "backdrop" | "poster";
   customSlides?: Slide[];
   initialSlideId?: string;
   favoritesActiveOverride?: boolean;
+  watchedActiveOverride?: boolean;
   forceShowFavoritesNav?: boolean;
 }) {
   const router = useRouter();
@@ -612,6 +642,12 @@ export function DesktopHome({
     isFavorite,
   } = useFavorites();
   const favoritesCount = (favorites || []).length;
+  const {
+    watched,
+    toggleWatched,
+    isWatched,
+  } = useWatched();
+  const watchedCount = (watched || []).length;
   const showFavoritesNav = true;
   const [viewportHeight, setViewportHeight] = useState<number>(
     typeof window !== "undefined" ? window.innerHeight : 1080
@@ -661,6 +697,16 @@ export function DesktopHome({
     } else {
       setEnablePosterColors(true);
       setPaletteReady(false);
+    }
+    
+    // Sync display mode from cookies on mount if possible, or just trust initialDisplayMode
+    // However, if we want to be sure, we can check document.cookie
+    const match = document.cookie.match(/desktop_home_card_display_mode=([^;]+)/);
+    if (match) {
+      const mode = match[1] as "backdrop" | "poster";
+      if (mode === "backdrop" || mode === "poster") {
+        setCardDisplayMode(mode);
+      }
     }
   }, []);
 
@@ -1758,6 +1804,9 @@ export function DesktopHome({
   const isFavoriteActiveMovie = isFavorite(
     activeMovie?.id ? String(activeMovie.id) : null
   );
+  const isWatchedActiveMovie = isWatched(
+    activeMovie?.id ? String(activeMovie.id) : null
+  );
 
   const activeStudioLogos: string[] = (() => {
     const raw = (activeMovie as any)?.studio_logo;
@@ -1831,6 +1880,25 @@ export function DesktopHome({
     });
   };
 
+  const handleWatchedToggle = () => {
+    if (!activeMovie) return;
+    toggleWatched({
+      id: String(activeMovie.id),
+      title: activeMovie.title,
+      poster: activeMovie.poster,
+      backdrop: activeMovie.backdrop,
+      year: activeMovie.year,
+      rating: activeMovie.rating,
+      country: activeMovie.country,
+      genre: activeMovie.genre,
+      description: activeMovie.description,
+      duration: activeMovie.duration,
+      logo: activeMovie.logo,
+      poster_colors: (activeMovie as any).poster_colors,
+      type: (activeMovie as any).type ?? null,
+    });
+  };
+
   const handleInstallClick = async () => {
     if (!installPrompt) return;
     try {
@@ -1888,6 +1956,8 @@ export function DesktopHome({
         showFavorites={showFavoritesNav}
         favoritesActive={favoritesActiveOverride}
         favoritesCount={favoritesCount}
+        watchedActive={watchedActiveOverride}
+        watchedCount={watchedCount}
         enablePosterColors={enablePosterColors}
         onTogglePosterColors={handlePosterColorsChange}
       />
@@ -2472,6 +2542,37 @@ export function DesktopHome({
                             {isFavoriteActiveMovie
                               ? "Убрать из избранного"
                               : "Добавить в избранное"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={handleWatchedToggle}
+                            className={`${favoriteButtonPaddingClass} rounded-full border-2 transition active:scale-95 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.5)] ${
+                              isWatchedActiveMovie
+                                ? "border-white bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                                : "border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                            }`}
+                            aria-pressed={isWatchedActiveMovie}
+                          >
+                            {isWatchedActiveMovie ? (
+                              <EyeOff size={favoriteIconSize} fill="currentColor" />
+                            ) : (
+                              <Eye size={favoriteIconSize} />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="top"
+                          className="font-bold bg-white text-black border-0 shadow-xl mb-2"
+                        >
+                          <p>
+                            {isWatchedActiveMovie
+                              ? "Убрать из просмотренного"
+                              : "В просмотренное"}
                           </p>
                         </TooltipContent>
                       </Tooltip>
