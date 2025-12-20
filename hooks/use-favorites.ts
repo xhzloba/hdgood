@@ -47,8 +47,8 @@ export function useFavorites() {
     return [];
   };
 
-  const [favorites, setFavorites] = useState<FavoriteMovie[]>(() => readStorage());
-  const [ready, setReady] = useState<boolean>(true);
+  const [favorites, setFavorites] = useState<FavoriteMovie[]>([]);
+  const [ready, setReady] = useState<boolean>(false);
 
   const loadFromStorage = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -58,16 +58,14 @@ export function useFavorites() {
   }, []);
 
   useEffect(() => {
-    if (!ready && typeof window !== "undefined") {
-      setReady(true);
-    }
+    loadFromStorage();
     const handler = (e: StorageEvent) => {
       if (e.key && e.key !== STORAGE_KEY) return;
       loadFromStorage();
     };
     window.addEventListener("storage", handler);
     return () => window.removeEventListener("storage", handler);
-  }, [loadFromStorage, ready]);
+  }, [loadFromStorage]);
 
   const persist = useCallback((list: FavoriteMovie[]) => {
     setFavorites(list);

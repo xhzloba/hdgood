@@ -22,7 +22,6 @@ import {
   Sparkles,
   Eye,
   EyeOff,
-  Activity,
 } from "lucide-react";
 import {
   Tooltip,
@@ -412,7 +411,6 @@ export function DesktopSidebar({
   activeRoute,
   enablePosterColors = true,
   onTogglePosterColors,
-  onShowStats,
 }: {
   profileAvatar?: string;
   onSettingsClick?: () => void;
@@ -424,7 +422,6 @@ export function DesktopSidebar({
   activeRoute?: string;
   enablePosterColors?: boolean;
   onTogglePosterColors?: (val: boolean) => void;
-  onShowStats?: () => void;
 }) {
   const pathname = usePathname();
   const activePath = activeRoute ?? pathname ?? "";
@@ -547,15 +544,6 @@ export function DesktopSidebar({
               Мой профиль
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-zinc-800 my-2" />
-            {onShowStats && (
-              <DropdownMenuItem
-                onClick={onShowStats}
-                className="cursor-pointer focus:bg-zinc-900 focus:text-white rounded-md py-2"
-              >
-                <Activity className="mr-3 h-4 w-4" />
-                <span>Статистика</span>
-              </DropdownMenuItem>
-            )}
             <DropdownMenuItem
               onClick={onSettingsClick}
               className="cursor-pointer focus:bg-zinc-900 focus:text-white rounded-md py-2"
@@ -588,7 +576,6 @@ export function DesktopHome({
   favoritesActiveOverride = false,
   watchedActiveOverride = false,
   forceShowFavoritesNav = false,
-  onShowStats,
 }: {
   initialDisplayMode?: "backdrop" | "poster";
   customSlides?: Slide[];
@@ -596,7 +583,6 @@ export function DesktopHome({
   favoritesActiveOverride?: boolean;
   watchedActiveOverride?: boolean;
   forceShowFavoritesNav?: boolean;
-  onShowStats?: () => void;
 }) {
   const router = useRouter();
   const [activeMovie, setActiveMovie] = useState<any>(null);
@@ -1974,7 +1960,6 @@ export function DesktopHome({
         watchedCount={watchedCount}
         enablePosterColors={enablePosterColors}
         onTogglePosterColors={handlePosterColorsChange}
-        onShowStats={onShowStats}
       />
 
       <div className="hidden md:grid absolute top-4 left-0 right-0 z-40 items-center px-6 gap-4 grid-cols-[1fr_auto_1fr]">

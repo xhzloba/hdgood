@@ -7,7 +7,6 @@ import { useWatched } from "@/hooks/use-watched";
 import { useFavorites } from "@/hooks/use-favorites";
 import MovieSlider from "@/components/movie-slider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { WatchedStatsDialog } from "@/components/watched-stats-dialog";
 
 type WatchedClientProps = {
   initialDisplayMode?: "backdrop" | "poster";
@@ -21,11 +20,11 @@ export default function WatchedClient({
   const favoritesCount = (favorites || []).length;
   const [hydrated, setHydrated] = useState(false);
   const isMobile = useIsMobile();
-  const [statsOpen, setStatsOpen] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
   }, []);
+
 
   const loading = !hydrated || !ready || watched === null;
   const watchedList = watched ?? [];
@@ -183,12 +182,6 @@ export default function WatchedClient({
           watchedActive
           watchedCount={0}
           favoritesCount={favoritesCount}
-          onShowStats={() => setStatsOpen(true)}
-        />
-        <WatchedStatsDialog
-          watched={watchedList}
-          open={statsOpen}
-          onOpenChange={setStatsOpen}
         />
         <div className="ml-24 min-h-screen flex items-center justify-center px-6">
           <div className="max-w-md space-y-4 text-center">
@@ -210,18 +203,12 @@ export default function WatchedClient({
 
   return (
     <>
-      <WatchedStatsDialog
-        watched={watchedList}
-        open={statsOpen}
-        onOpenChange={setStatsOpen}
-      />
       <DesktopHome
         customSlides={slides}
         watchedActiveOverride
         initialSlideId="watched"
         forceShowFavoritesNav={false}
         initialDisplayMode={initialDisplayMode}
-        onShowStats={() => setStatsOpen(true)}
       />
     </>
   );
