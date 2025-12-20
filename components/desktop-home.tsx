@@ -1482,6 +1482,7 @@ export function DesktopHome({
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
+    let cancelled = false;
     if (!activeMovie) return;
 
     // If we already have a logo, no need to fetch
@@ -1523,11 +1524,15 @@ export function DesktopHome({
       } catch (e) {
         console.error("Failed to fetch override", e);
       } finally {
-        setIsFetchingOverride(false);
+        if (!cancelled) setIsFetchingOverride(false);
       }
     };
 
     fetchOverride();
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeMovie?.id, activeSlide?.id, overrideRefresh]); // Re-run if ID changes, slide changes, or override invalidated
 
   useEffect(() => {
@@ -1643,6 +1648,7 @@ export function DesktopHome({
       // Применяем override из кеша, если есть (включая poster_colors)
       const overridesCache = (globalThis as any).__movieOverridesCache || {};
       const ov = overridesCache[String(m.id)];
+      setIsFetchingOverride(!ov);
 
       const normalized = {
         id: m.id,
@@ -1673,6 +1679,7 @@ export function DesktopHome({
 
   // Helper to get high-res image if possible, or fallback
   const getBackdrop = (movie: any) => {
+    if (isFetchingOverride) return "";
     if (!movie) return "";
     return movie.backdrop || movie.poster || "";
   };
