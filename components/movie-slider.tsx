@@ -1019,7 +1019,7 @@ export default function MovieSlider({
                         </button>
                       )}
                       {showAge && movie.age != null && !movie.isViewAll && (
-                        <div className="absolute bottom-2.5 left-3 z-[15] text-white/60 text-sm font-bold tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] hidden md:block">
+                        <div className="absolute bottom-2.5 left-3 z-[15] hidden md:block px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
                           {String(movie.age).replace(/\D/g, "")}+
                         </div>
                       )}
@@ -1186,13 +1186,13 @@ export default function MovieSlider({
                                   </div>
                                 )}
                                 {movie.quality && (
-                                  <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                                  <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[11px] md:text-[12px] text-black font-black tracking-tight bg-white border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
                                     {String(movie.quality)}
                                   </div>
                                 )}
                                 {tagLabel && (
                                   <div
-                                    className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
+                                    className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200"
                                     title={tagLabel}
                                   >
                                     {tagLabel}
