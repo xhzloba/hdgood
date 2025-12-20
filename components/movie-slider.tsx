@@ -922,7 +922,7 @@ export default function MovieSlider({
                         cardType === "backdrop"
                           ? "aspect-video"
                           : "aspect-[2/3]"
-                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}
+                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200 ring-2 ring-transparent group-hover:ring-white`}
                     >
                       {!hideFavoriteBadge && !movie.isViewAll && movie.id && (
                         <button
@@ -1133,31 +1133,11 @@ export default function MovieSlider({
                             return posterSrc &&
                               loadedImages.has(String(movie.id)) ? (
                               <>
-                                {/* Эффект свечения по курсору (только hover) */}
-                                <div
-                                  className="pointer-events-none absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                  style={{
-                                    background:
-                                      "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                                  }}
-                                />
-                                {/* Эффект индикатора снизу при навигации стрелками (только is-focused без hover) */}
-                                <div className="pointer-events-none absolute inset-0 z-10 opacity-0 group-[.is-focused]:opacity-100 group-hover:!opacity-0 transition-opacity duration-300 overflow-visible">
-                                  {/* Мягкое обволакивающее свечение по всей карточке */}
-                                  <div
-                                    className="absolute inset-0 animate-[glow-pulse_2s_ease-in-out_infinite]"
-                                    style={{
-                                      background:
-                                        "radial-gradient(140% 130% at 50% 50%, rgba(var(--ui-accent-rgb),0.32) 0%, rgba(var(--ui-accent-rgb),0.18) 45%, rgba(var(--ui-accent-rgb),0.08) 70%, transparent 88%)",
-                                      boxShadow:
-                                        "0 0 40px 14px rgba(var(--ui-accent-rgb),0.3), 0 0 82px 28px rgba(var(--ui-accent-rgb),0.16)",
-                                      filter: "blur(3px)",
-                                    }}
-                                  />
-                                </div>
+                                {/* Эффект свечения по курсору убран по просьбе */}
                               </>
                             ) : null;
-                          })()}
+                          })()
+}
 
                           {(() => {
                             const rawTags = (movie as any)?.tags;

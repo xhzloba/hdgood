@@ -2934,12 +2934,8 @@ export function MovieGrid({
                           className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${
                             isKeyboardNav
                               ? ""
-                              : "group-hover:opacity-100 group-focus-visible:opacity-100"
+                              : "" // removed hover glow
                           } transition-opacity duration-300`}
-                          style={{
-                            background:
-                              "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                          }}
                         />
                       ) : null;
                     })()}
@@ -2948,12 +2944,8 @@ export function MovieGrid({
                         className={`pointer-events-none absolute inset-0 z-10 opacity-0 ${
                           isKeyboardNav
                             ? ""
-                            : "group-hover:opacity-100 group-focus-visible:opacity-100"
+                            : "" // removed hover glow
                         } transition-opacity duration-300`}
-                        style={{
-                          background:
-                            "radial-gradient(140px circle at var(--x) var(--y), rgba(var(--ui-accent-rgb),0.35), rgba(0,0,0,0) 60%)",
-                        }}
                       />
                     )}
                     {!movie.isViewAll && isWatched(String(movie.id)) && (
