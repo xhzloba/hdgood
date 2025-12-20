@@ -624,7 +624,15 @@
     "poster_logo": "/movies/logo/11.webp"
   },
   "6593f8ed8914c04deaea81f0": {
-    "poster_logo": "/movies/logo/12.webp",
+    "poster_logo": "/movies/logo/159.png",
+    "studio_logo": "/movies/logo/start.svg",
+    "poster_colors": {
+      "dominant2": [
+        86,
+        207,
+        216
+      ]
+    },
     "bg_poster": {
       "backdrop": "/series/vampire-middle.webp"
     }
@@ -1949,5 +1957,11 @@
       "backdrop": "/movies/gresh.webp"
     },
     "poster_logo": "/movies/logo/158.webp"
+  },
+  "65942f49f9adc4da8a107dca": {
+    "poster_logo": "/movies/logo/160.webp",
+    "bg_poster": {
+      "backdrop": "/movies/karatel.webp"
+    }
   }
 }

@@ -174,6 +174,22 @@ export default function MovieSlider({
   showAge = false,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
+  const [isKeyboardNav, setIsKeyboardNav] = useState(false);
+  
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleKeyDown = () => setIsKeyboardNav(true);
+    const reset = () => setIsKeyboardNav(false);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("mousemove", reset, { passive: true });
+    window.addEventListener("mousedown", reset, { passive: true });
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("mousemove", reset);
+      window.removeEventListener("mousedown", reset);
+    };
+  }, []);
+
   const [pagesData, setPagesData] = useState<
     Array<{ page: number; data: any }>
   >([]);
@@ -922,7 +938,7 @@ export default function MovieSlider({
                         cardType === "backdrop"
                           ? "aspect-video"
                           : "aspect-[2/3]"
-                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200 ring-2 ring-transparent group-hover:ring-white`}
+                      } bg-zinc-950 flex items-center justify-center relative overflow-hidden rounded-[10px] poster-card isolate transform-gpu transition-all duration-200`}
                     >
                       {!hideFavoriteBadge && !movie.isViewAll && movie.id && (
                         <button
@@ -1077,7 +1093,7 @@ export default function MovieSlider({
                                     }`}
                                     style={{
                                       transition:
-                                        "opacity 300ms ease-out, filter 600ms ease-out, transform 600ms ease-out",
+                                        "opacity 300ms ease-out, filter 500ms ease-out, transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
                                       willChange: "opacity, filter, transform",
                                     }}
                                     onLoad={() => {
