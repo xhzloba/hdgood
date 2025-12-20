@@ -16,6 +16,8 @@ import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useWatched } from "@/hooks/use-watched";
 import {
   IconLayoutGrid,
   IconList,
@@ -84,6 +86,10 @@ export default function HomeClient({
 }: HomeClientProps) {
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { favorites } = useFavorites();
+  const favoritesCount = (favorites || []).length;
+  const { watched } = useWatched();
+  const watchedCount = (watched || []).length;
   const [isMounted, setIsMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
@@ -623,7 +629,10 @@ export default function HomeClient({
       {isMainPage && (
         <div className="hidden md:block fixed inset-0 z-50 bg-zinc-950">
           {/* Sidebar Skeleton */}
-          <DesktopSidebar />
+          <DesktopSidebar
+            favoritesCount={favoritesCount}
+            watchedCount={watchedCount}
+          />
 
           {/* Content Skeleton */}
           <main className="relative z-10 ml-24 h-full flex flex-col px-0 overflow-hidden">
@@ -728,7 +737,10 @@ export default function HomeClient({
             {isUhdMode ? (
               <div className="md:grid md:grid-cols-[1fr] items-start">
                 <div className="hidden md:block fixed left-0 top-0 bottom-0 z-40">
-                  <DesktopSidebar />
+                  <DesktopSidebar
+                    favoritesCount={favoritesCount}
+                    watchedCount={watchedCount}
+                  />
                 </div>
                 <div className="md:ml-0">
                   <div className="hidden md:flex items-center gap-2 fixed top-4 left-[clamp(82px,8vw,118px)] right-6 z-50 px-3 py-2">

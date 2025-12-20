@@ -5,6 +5,7 @@ import { DesktopSidebar } from "@/components/desktop-home";
 import { MovieGrid } from "@/components/movie-grid";
 import Link from "next/link";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useWatched } from "@/hooks/use-watched";
 import { useSearchParams } from "next/navigation";
 
 type Tab = {
@@ -22,6 +23,8 @@ type ViewAllTabsPageProps = {
 export function ViewAllTabsPage({ title, tabs, hideBackLink }: ViewAllTabsPageProps) {
   const { favorites } = useFavorites();
   const favoritesCount = (favorites || []).length;
+  const { watched } = useWatched();
+  const watchedCount = (watched || []).length;
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   
@@ -65,6 +68,7 @@ export function ViewAllTabsPage({ title, tabs, hideBackLink }: ViewAllTabsPagePr
           showFavorites={true}
           favoritesCount={favoritesCount}
           favoritesActive={false}
+          watchedCount={watchedCount}
         />
       </div>
       <main className="relative z-10 ml-0 md:ml-[clamp(64px,8vw,96px)] flex flex-col px-3 md:px-6 lg:px-8 py-8 gap-6">

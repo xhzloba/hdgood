@@ -22,6 +22,8 @@ import { savePosterTransition } from "@/lib/poster-transition";
 import { PlayerSelector } from "@/components/player-selector";
 import { VideoPoster } from "@/components/video-poster";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useWatched } from "@/hooks/use-watched";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -255,6 +257,7 @@ export function MovieGrid({
   const keyboardIndexRef = useRef<number>(0);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { isWatched, toggleWatched } = useWatched();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMovie, setDrawerMovie] = useState<any>(null);
@@ -2953,99 +2956,192 @@ export function MovieGrid({
                         }}
                       />
                     )}
+                    {!movie.isViewAll && isWatched(String(movie.id)) && (
+                      <div className="absolute inset-0 bg-black/60 z-[13] pointer-events-none transition-opacity duration-300" />
+                    )}
                     {!movie.isViewAll && movie.id && (
-                      <button
-                        type="button"
-                        aria-pressed={isFavorite(String(movie.id))}
-                        aria-label={
-                          isFavorite(String(movie.id))
-                            ? "Убрать из избранного"
-                            : "Добавить в избранное"
-                        }
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onTouchStart={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClickCapture={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const ne = e.nativeEvent as any;
-                          ne?.stopImmediatePropagation?.();
-                          toggleFavorite({
-                            id: String(movie.id),
-                            title: movie.title,
-                            poster: movie.poster,
-                            backdrop: movie.backdrop,
-                            year: movie.year,
-                            rating: movie.rating,
-                            country: (movie as any).country,
-                            genre: movie.genre,
-                            description: (movie as any).description,
-                            duration: (movie as any).duration,
-                            logo: (movie as any).logo,
-                            poster_colors: (movie as any).poster_colors,
-                            type: (movie as any).type ?? null,
-                          });
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
-                      >
-                        <svg
-                          className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"
-                          width="32"
-                          height="46"
-                          viewBox="0 0 24 34"
-                          xmlns="http://www.w3.org/2000/svg"
-                          role="presentation"
+                      <>
+                        <button
+                          type="button"
+                          aria-pressed={isFavorite(String(movie.id))}
+                          aria-label={
+                            isFavorite(String(movie.id))
+                              ? "Убрать из избранного"
+                              : "Добавить в избранное"
+                          }
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClickCapture={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const ne = e.nativeEvent as any;
+                            ne?.stopImmediatePropagation?.();
+                            toggleFavorite({
+                              id: String(movie.id),
+                              title: movie.title,
+                              poster: movie.poster,
+                              backdrop: movie.backdrop,
+                              year: movie.year,
+                              rating: movie.rating,
+                              country: (movie as any).country,
+                              genre: movie.genre,
+                              description: (movie as any).description,
+                              duration: (movie as any).duration,
+                              logo: (movie as any).logo,
+                              poster_colors: (movie as any).poster_colors,
+                              type: (movie as any).type ?? null,
+                            });
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
                         >
-                          <polygon
-                            className="ipc-watchlist-ribbon__bg-ribbon"
-                            fill={
-                              isFavorite(String(movie.id))
-                                ? "#f97316"
-                                : "#000000"
-                            }
-                            fillOpacity={0.9}
-                            points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
-                          ></polygon>
-                          <polygon
-                            className="ipc-watchlist-ribbon__bg-hover"
-                            fill={
-                              isFavorite(String(movie.id))
-                                ? "rgba(249,115,22,0.2)"
-                                : "rgba(255,255,255,0.22)"
-                            }
-                            points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
-                          ></polygon>
-                          <polygon
-                            className="ipc-watchlist-ribbon__bg-shadow"
-                            fill="rgba(0,0,0,0.45)"
-                            points="24 31.7728343 24 33.7728343 12.2436611 28.2926049 0 34 0 32 12.2436611 26.2926049"
-                          ></polygon>
-                          <g transform="translate(12 15) scale(0.7) translate(-12 -12)">
-                            {isFavorite(String(movie.id)) ? (
-                              <path
-                                d="M20.285 6.709 18.871 5.295 9 15.166 5.129 11.295 3.715 12.709 9 18 20.285 6.709Z"
-                                fill="white"
-                                fillOpacity={0.95}
+                          <svg
+                            className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"
+                            width="32"
+                            height="46"
+                            viewBox="0 0 24 34"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="presentation"
+                          >
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-ribbon"
+                              fill={
+                                isFavorite(String(movie.id))
+                                  ? "#f97316"
+                                  : "#000000"
+                              }
+                              fillOpacity={0.9}
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-hover"
+                              fill={
+                                isFavorite(String(movie.id))
+                                  ? "rgba(249,115,22,0.2)"
+                                  : "rgba(255,255,255,0.22)"
+                              }
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-shadow"
+                              fill="rgba(0,0,0,0.45)"
+                              points="24 31.7728343 24 33.7728343 12.2436611 28.2926049 0 34 0 32 12.2436611 26.2926049"
+                            ></polygon>
+                            <g transform="translate(12 15) scale(0.7) translate(-12 -12)">
+                              {isFavorite(String(movie.id)) ? (
+                                <path
+                                  d="M20.285 6.709 18.871 5.295 9 15.166 5.129 11.295 3.715 12.709 9 18 20.285 6.709Z"
+                                  fill="white"
+                                  fillOpacity={0.95}
+                                />
+                              ) : (
+                                <path
+                                  d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"
+                                  fill="white"
+                                  fillOpacity={0.95}
+                                />
+                              )}
+                            </g>
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={isWatched(String(movie.id))}
+                          aria-label={
+                            isWatched(String(movie.id))
+                              ? "Убрать из просмотренного"
+                              : "Добавить в просмотренное"
+                          }
+                          onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClickCapture={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const ne = e.nativeEvent as any;
+                            ne?.stopImmediatePropagation?.();
+                            toggleWatched({
+                              id: String(movie.id),
+                              title: movie.title,
+                              poster: movie.poster,
+                              backdrop: movie.backdrop,
+                              year: movie.year,
+                              rating: movie.rating,
+                              country: (movie as any).country,
+                              genre: movie.genre,
+                              description: (movie as any).description,
+                              duration: (movie as any).duration,
+                              logo: (movie as any).logo,
+                              poster_colors: (movie as any).poster_colors,
+                              type: (movie as any).type ?? null,
+                            });
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          className="absolute top-1 left-9 md:top-2 md:left-12 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
+                        >
+                          <svg
+                            className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"
+                            width="32"
+                            height="46"
+                            viewBox="0 0 24 34"
+                            xmlns="http://www.w3.org/2000/svg"
+                            role="presentation"
+                          >
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-ribbon"
+                              fill={
+                                isWatched(String(movie.id))
+                                  ? "#3b82f6"
+                                  : "#000000"
+                              }
+                              fillOpacity={0.9}
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-hover"
+                              fill={
+                                isWatched(String(movie.id))
+                                  ? "rgba(59,130,246,0.2)"
+                                  : "rgba(255,255,255,0.22)"
+                              }
+                              points="24 0 0 0 0 32 12.2436611 26.2926049 24 31.7728343"
+                            ></polygon>
+                            <polygon
+                              className="ipc-watchlist-ribbon__bg-shadow"
+                              fill="rgba(0,0,0,0.45)"
+                              points="24 31.7728343 24 33.7728343 12.2436611 28.2926049 0 34 0 32 12.2436611 26.2926049"
+                            ></polygon>
+                            <g transform="translate(12 14) scale(0.65) translate(-12 -12)">
+                              <Eye
+                                size={24}
+                                color="white"
+                                fill={
+                                  isWatched(String(movie.id)) ? "white" : "none"
+                                }
+                                fillOpacity={isWatched(String(movie.id)) ? 0.3 : 0}
+                                strokeWidth={2}
                               />
-                            ) : (
-                              <path
-                                d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"
-                                fill="white"
-                                fillOpacity={0.95}
-                              />
-                            )}
-                          </g>
-                        </svg>
-                      </button>
+                            </g>
+                          </svg>
+                        </button>
+                      </>
                     )}
                     {(() => {
                       const rawTags = (movie as any)?.tags;

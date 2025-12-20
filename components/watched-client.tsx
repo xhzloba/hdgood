@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
 import { useWatched } from "@/hooks/use-watched";
+import { useFavorites } from "@/hooks/use-favorites";
 import MovieSlider from "@/components/movie-slider";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -15,6 +16,8 @@ export default function WatchedClient({
   initialDisplayMode = "backdrop",
 }: WatchedClientProps) {
   const { watched, ready } = useWatched();
+  const { favorites } = useFavorites();
+  const favoritesCount = (favorites || []).length;
   const [hydrated, setHydrated] = useState(false);
   const isMobile = useIsMobile();
 
@@ -174,7 +177,11 @@ export default function WatchedClient({
   if (slides.length === 0) {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 relative">
-        <DesktopSidebar watchedActive watchedCount={0} />
+        <DesktopSidebar
+          watchedActive
+          watchedCount={0}
+          favoritesCount={favoritesCount}
+        />
         <div className="ml-24 min-h-screen flex items-center justify-center px-6">
           <div className="max-w-md space-y-4 text-center">
             <h1 className="text-3xl font-black">Просмотренное пусто</h1>
