@@ -19,6 +19,7 @@ import {
   Heart,
   ChevronRight,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import {
   Tooltip,
@@ -50,6 +51,15 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -394,6 +404,8 @@ export function DesktopSidebar({
   favoritesActive = false,
   favoritesCount = 0,
   activeRoute,
+  enablePosterColors = true,
+  onTogglePosterColors,
 }: {
   profileAvatar?: string;
   onSettingsClick?: () => void;
@@ -401,6 +413,8 @@ export function DesktopSidebar({
   favoritesActive?: boolean;
   favoritesCount?: number;
   activeRoute?: string;
+  enablePosterColors?: boolean;
+  onTogglePosterColors?: (val: boolean) => void;
 }) {
   const pathname = usePathname();
   const activePath = activeRoute ?? pathname ?? "";
@@ -479,21 +493,49 @@ export function DesktopSidebar({
       </nav>
 
       <div className="mt-auto">
-        <NavItem
-          icon={
-            <div
-              className={`${sidebarIconClass} rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all`}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-[clamp(8px,1.2vh,12px)] rounded-xl transition-all group relative flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/5 outline-none">
+              <div
+                className={`${sidebarIconClass} rounded-full overflow-hidden ring-2 ring-white/10 group-hover:ring-white/30 transition-all`}
+              >
+                <img
+                  src={profileAvatar}
+                  className="w-full h-full object-cover"
+                  alt="Профиль"
+                />
+              </div>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="right"
+            align="end"
+            className="w-64 bg-zinc-950 border-zinc-800 text-zinc-200 ml-4 p-2"
+          >
+            <DropdownMenuLabel className="text-zinc-400 font-medium">
+              Мой профиль
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-zinc-800 my-2" />
+            <DropdownMenuItem
+              onClick={onSettingsClick}
+              className="cursor-pointer focus:bg-zinc-900 focus:text-white rounded-md py-2"
             >
-              <img
-                src={profileAvatar}
-                className="w-full h-full object-cover"
-                alt="Профиль"
-              />
-            </div>
-          }
-          label="Профиль"
-          onClick={onSettingsClick}
-        />
+              <Settings className="mr-3 h-4 w-4" />
+              <span>Настройки интерфейса</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-zinc-800 my-2" />
+            <DropdownMenuLabel className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest px-2 py-1">
+              Внешний вид
+            </DropdownMenuLabel>
+            <DropdownMenuCheckboxItem
+              checked={enablePosterColors}
+              onCheckedChange={onTogglePosterColors}
+              className="focus:bg-zinc-900 focus:text-white rounded-md py-2 cursor-pointer"
+            >
+              Извлекать цвета от фона
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   );
@@ -1837,6 +1879,8 @@ export function DesktopHome({
         showFavorites={showFavoritesNav}
         favoritesActive={favoritesActiveOverride}
         favoritesCount={favoritesCount}
+        enablePosterColors={enablePosterColors}
+        onTogglePosterColors={handlePosterColorsChange}
       />
 
       <div className="hidden md:grid absolute top-4 left-0 right-0 z-40 items-center px-6 gap-4 grid-cols-[1fr_auto_1fr]">
@@ -1871,15 +1915,15 @@ export function DesktopHome({
         <div className="flex items-center justify-end gap-2">
           <div
             ref={searchWrapRef}
-            className={`relative transition-all duration-300 ease-out z-50 ${
-              searchExpanded ? "w-[400px]" : "w-9"
+            className={`relative transition-all duration-300 ease-out z-50 group ${
+              searchExpanded ? "w-[400px]" : "w-11"
             }`}
           >
             <div
-              className={`relative flex items-center h-9 overflow-hidden transition-all duration-300 ${
+              className={`relative flex items-center h-11 overflow-hidden transition-all duration-300 rounded-[10px] ${
                 searchExpanded
                   ? "bg-[#161616]/95 border border-white/10 w-full backdrop-blur-md focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/40 shadow-xl"
-                  : "bg-transparent border border-transparent w-9 justify-center"
+                  : "bg-transparent border border-transparent w-11 justify-center hover:bg-white/10"
               }`}
             >
               <button
@@ -1894,8 +1938,10 @@ export function DesktopHome({
                     );
                   }
                 }}
-                className={`z-10 p-1.5 text-white cursor-pointer hover:scale-110 transition-transform flex-shrink-0 ${
-                  searchExpanded ? "absolute left-1" : "relative"
+                className={`z-10 p-1.5 cursor-pointer transition-colors flex-shrink-0 flex items-center justify-center ${
+                  searchExpanded
+                    ? "absolute left-1 text-white"
+                    : "relative text-white/60 group-hover:text-white"
                 }`}
               >
                 <Search className="w-5 h-5" />
@@ -2209,6 +2255,38 @@ export function DesktopHome({
               </div>
             )}
           </div>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={
+                    enablePosterColors ? "Отключить цвета" : "Включить цвета"
+                  }
+                  onClick={() => handlePosterColorsChange(!enablePosterColors)}
+                  className={`h-11 w-11 items-center justify-center rounded-[10px] transition-all flex ${
+                    enablePosterColors
+                      ? "text-white bg-white/10"
+                      : "text-white/60 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Sparkles className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={8}
+                className="bg-white text-black border-0 shadow-xl"
+              >
+                <p className="text-xs font-semibold">
+                  {enablePosterColors
+                    ? "Цвета от фона (Вкл)"
+                    : "Цвета от фона (Выкл)"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <TooltipProvider>
             <Tooltip>
