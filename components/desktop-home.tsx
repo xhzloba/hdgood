@@ -1744,7 +1744,7 @@ export function DesktopHome({
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
   const descriptionHeightClass = isFullscreen
-    ? "line-clamp-3 min-h-[clamp(60px,8vh,78px)]"
+    ? "line-clamp-2 min-h-[clamp(40px,6vh,52px)]"
     : "line-clamp-2 min-h-[clamp(40px,6vh,52px)]";
 
   const sliderAnimClass = !isMounted
