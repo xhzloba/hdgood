@@ -4582,5 +4582,56 @@
       "studio_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68114c2321ed524826d1e36a",
+    "timestamp": "2025-12-20T10:36:42.304Z",
+    "poster": "/movies/dirty-game.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68114c2321ed524826d1e36a",
+    "timestamp": "2025-12-20T10:38:40.085Z",
+    "poster": "/movies/dirty-game.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68114c2321ed524826d1e36a",
+    "timestamp": "2025-12-20T10:39:16.343Z",
+    "poster": "/movies/dirty-game.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68114c2321ed524826d1e36a",
+    "timestamp": "2025-12-20T10:39:53.869Z",
+    "poster": "/movies/dirty-game.webp",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68114c2321ed524826d1e36a",
+    "timestamp": "2025-12-20T10:40:18.890Z",
+    "poster": "/movies/dirty-game.webp",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
   }
 ]
