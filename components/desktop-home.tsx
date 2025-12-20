@@ -1678,8 +1678,8 @@ export function DesktopHome({
   };
 
   const isMobile = false;
-  const colorLayerEnabled = enablePosterColors && !isMobile;
-  const layerOpacity = colorLayerEnabled && paletteReady ? 0.6 : 0;
+  const showColorLayer = !isMobile;
+  const layerOpacity = enablePosterColors && paletteReady ? 0.6 : 0;
 
   // Динамические размеры через clamp() + vh для автоматического масштабирования
   const logoHeightClass = isFullscreen
@@ -1847,6 +1847,8 @@ export function DesktopHome({
     meta.content = color;
   }, [enablePosterColors, paletteReady, ubColors, computeThemeColor]);
 
+
+
   return (
     <div
       className={`relative min-h-screen min-h-[100dvh] w-full bg-zinc-950 text-zinc-100 overflow-hidden font-sans selection:bg-orange-500/30 ${
@@ -1856,7 +1858,7 @@ export function DesktopHome({
       {/* Background Backdrop */}
       <BackdropImage src={getBackdrop(activeMovie)} />
       {/* Цветовой слой из постера (отключен) */}
-      {colorLayerEnabled && (
+      {showColorLayer && (
         <div
           className="ub-color-layer"
           style={
@@ -1915,12 +1917,12 @@ export function DesktopHome({
         <div className="flex items-center justify-end gap-2">
           <div
             ref={searchWrapRef}
-            className={`relative transition-all duration-300 ease-out z-50 group ${
+            className={`relative transition-all duration-200 ease-out z-50 group ${
               searchExpanded ? "w-[400px]" : "w-11"
             }`}
           >
             <div
-              className={`relative flex items-center h-11 overflow-hidden transition-all duration-300 rounded-[10px] ${
+              className={`relative flex items-center h-11 overflow-hidden transition-all duration-200 rounded-[10px] ${
                 searchExpanded
                   ? "bg-[#161616]/95 border border-white/10 w-full backdrop-blur-md focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/40 shadow-xl"
                   : "bg-transparent border border-transparent w-11 justify-center hover:bg-white/10"
@@ -2062,7 +2064,7 @@ export function DesktopHome({
                         return next;
                       });
                     }}
-                    className="text-white/60 hover:text-white transition"
+                    className="h-8 w-8 flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all"
                     title="История поиска"
                   >
                     <IconClock className="w-4 h-4" />
