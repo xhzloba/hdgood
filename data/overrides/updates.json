@@ -4740,5 +4740,47 @@
       "poster_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "68a6456507cc76df04b68f96",
+    "timestamp": "2025-12-21T20:41:25.139Z",
+    "poster": "/movies/sverxy.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "68a6456507cc76df04b68f96",
+    "timestamp": "2025-12-21T20:42:05.027Z",
+    "poster": "/movies/sverxy.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68a6456507cc76df04b68f96",
+    "timestamp": "2025-12-21T20:44:07.263Z",
+    "poster": "/movies/sverxy.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "68a6456507cc76df04b68f96",
+    "timestamp": "2025-12-21T20:44:55.568Z",
+    "poster": "/movies/sverxy.webp",
+    "title": null,
+    "changedPaths": [
+      "studio_logo"
+    ],
+    "addedPaths": []
   }
 ]

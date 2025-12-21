@@ -1963,5 +1963,16 @@
     "bg_poster": {
       "backdrop": "/movies/karatel.webp"
     }
+  },
+  "68a6456507cc76df04b68f96": {
+    "studio_logo": [
+      "/movies/logo/a24.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "poster_logo": "/movies/logo/161.webp",
+    "poster": "/movies/sverxy.webp",
+    "bg_poster": {
+      "backdrop": "/movies/s-backdrop.webp"
+    }
   }
 }
