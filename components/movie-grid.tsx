@@ -2533,27 +2533,10 @@ export function MovieGrid({
                   tabIndex={0}
                   className={`group block bg-transparent hover:bg-transparent outline-none ${hoverOutlineClass} transition-all duration-200 cursor-pointer overflow-hidden rounded-sm`}
                   onMouseMove={(e) => {
-                    const posterEl = e.currentTarget.querySelector(
-                      ".poster-card"
-                    ) as HTMLElement;
-                    if (!posterEl) return;
-                    const rect = posterEl.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const mx = (x / rect.width) * 2 - 1;
-                    const my = (y / rect.height) * 2 - 1;
-                    posterEl.style.setProperty("--x", `${x}px`);
-                    posterEl.style.setProperty("--y", `${y}px`);
-                    posterEl.style.setProperty("--mx", `${mx}`);
-                    posterEl.style.setProperty("--my", `${my}`);
+                    // Removed glow effect logic
                   }}
                   onMouseLeave={(e) => {
-                    const posterEl = e.currentTarget.querySelector(
-                      ".poster-card"
-                    ) as HTMLElement;
-                    if (!posterEl) return;
-                    posterEl.style.setProperty("--mx", "0");
-                    posterEl.style.setProperty("--my", "0");
+                    // Removed glow effect logic
                   }}
                   onTouchStart={(e) => {
                     touchStartRef.current = {
