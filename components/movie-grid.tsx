@@ -6,7 +6,7 @@ import NProgress from "nprogress";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -234,6 +234,13 @@ export function MovieGrid({
     null
   );
   const router = useRouter();
+  const pathname = usePathname();
+  const isRestrictedBadgesRoute = useMemo(() => {
+    if (!pathname) return false;
+    // Normalize path by removing trailing slash if present
+    const p = pathname.endsWith("/") && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+    return ["/movies/all", "/serials/all", "/uhd", "/dolbyv/all"].includes(p);
+  }, [pathname]);
   const [watchOpen, setWatchOpen] = useState<boolean>(false);
   const [inlineKpId, setInlineKpId] = useState<string | null>(null);
   const [inlineIframeUrl, setInlineIframeUrl] = useState<string | null>(null);
@@ -2994,7 +3001,11 @@ export function MovieGrid({
                             e.preventDefault();
                             e.stopPropagation();
                           }}
-                          className="absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
+                          className={`absolute top-1 left-1 md:top-2 md:left-2 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95 ${
+                            isRestrictedBadgesRoute
+                              ? "md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100 transition-opacity duration-200"
+                              : ""
+                          }`}
                         >
                           <svg
                             className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"
@@ -3086,7 +3097,11 @@ export function MovieGrid({
                             e.preventDefault();
                             e.stopPropagation();
                           }}
-                          className="absolute top-1 left-9 md:top-2 md:left-12 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95"
+                          className={`absolute top-1 left-9 md:top-2 md:left-12 z-[14] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70 transition-transform active:scale-95 ${
+                            isRestrictedBadgesRoute
+                              ? "md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100 transition-opacity duration-200"
+                              : ""
+                          }`}
                         >
                           <svg
                             className="w-7 h-11 md:w-8 md:h-12 drop-shadow-sm"

@@ -843,7 +843,11 @@ export default function MovieSlider({
                         ? movie.href
                         : `/movie/${movie.id}`
                     }
-                    className="group block bg-transparent hover:bg-transparent outline-none focus-visible:outline-none transition-all duration-200 overflow-hidden rounded-sm focus:ring-0 hover:outline hover:outline-[1.5px] hover:outline-zinc-700 [&.is-focused]:outline [&.is-focused]:outline-[1.5px] [&.is-focused]:outline-zinc-700"
+                    className={`group block bg-transparent hover:bg-transparent outline-none focus-visible:outline-none transition-all duration-200 overflow-hidden rounded-[10px] focus:ring-0 [&.is-focused]:outline [&.is-focused]:outline-[1.5px] [&.is-focused]:outline-zinc-700 ${
+                      !isKeyboardNav
+                        ? "hover:outline hover:outline-[1.5px] hover:outline-zinc-700"
+                        : ""
+                    }`}
                     onFocus={(e) => {
                       if (!movie.isViewAll) onMovieHover?.(movie);
                       e.currentTarget.classList.add("is-focused");
