@@ -97,7 +97,15 @@ export async function GET(request: NextRequest) {
     if (isDash) {
         const text = bufferedBody || await response.text();
         const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-        const proxyBase = `/api/proxy?url=${encodeURIComponent(baseUrl)}`;
+        
+        // Encode baseUrl to Base64URL safe for path
+        const b64 = Buffer.from(baseUrl).toString('base64')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+            
+        // Use the dedicated dash-proxy route which handles path-based segments
+        const proxyBase = `${new URL(request.url).origin}/api/dash-proxy/${b64}/`;
         
         // Simple injection of BaseURL into the first Period
         // This handles relative URLs in the manifest by rebasing them to the proxy

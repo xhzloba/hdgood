@@ -142,9 +142,9 @@ export function TvClient() {
             // Error handling for DASH
             player.on("error", (e: any) => {
                 console.warn("DASH Error", e);
-                // Check if it's a download error (likely CORS or network)
-                if (e.error === "download" && !isProxy) {
-                    console.warn("DASH Download Error, switching to proxy...");
+                // Switch to proxy on ANY error if not already using proxy
+                if (!isProxy) {
+                    console.warn("DASH Error detected, switching to proxy...");
                     player.reset();
                     loadStream(`/api/proxy?url=${encodeURIComponent(activeChannel.url)}`, true);
                 }
