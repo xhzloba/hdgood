@@ -241,7 +241,7 @@ export function MovieGrid({
     if (!pathname) return false;
     // Normalize path by removing trailing slash if present
     const p = pathname.endsWith("/") && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
-    return ["/movies/all", "/serials/all", "/uhd", "/dolbyv/all"].includes(p);
+    return ["/movies/all", "/serials/all", "/uhd", "/dolbyv/all", "/watching/all", "/trending/all"].includes(p);
   }, [pathname]);
   const [watchOpen, setWatchOpen] = useState<boolean>(false);
   const [inlineKpId, setInlineKpId] = useState<string | null>(null);
