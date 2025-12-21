@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import { DesktopSidebar } from "./desktop-home";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useWatched } from "@/hooks/use-watched";
-import { Loader2, Play, Info, X, ChevronRight, Heart } from "lucide-react";
+import { Loader2, Play, Info, X, ChevronRight, Heart, Search } from "lucide-react";
 import Script from "next/script";
 
 interface Channel {
@@ -22,6 +22,7 @@ export function TvClient() {
   const [activeChannel, setActiveChannel] = useState<Channel | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Все каналы");
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Video refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -95,12 +96,23 @@ export function TvClient() {
 
   // --- Filtered Channels ---
   const filteredChannels = useMemo(() => {
-    if (selectedCategory === "Все каналы") return channels;
-    if (selectedCategory === "Избранное") {
-        return channels.filter(c => favorites.some(f => f.id === c.id));
+    let filtered = channels;
+
+    if (selectedCategory !== "Все каналы") {
+        if (selectedCategory === "Избранное") {
+            filtered = filtered.filter(c => favorites.some(f => f.id === c.id));
+        } else {
+            filtered = filtered.filter((c) => c.group === selectedCategory);
+        }
     }
-    return channels.filter((c) => c.group === selectedCategory);
-  }, [channels, selectedCategory, favorites]);
+
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(c => c.title.toLowerCase().includes(query));
+    }
+
+    return filtered;
+  }, [channels, selectedCategory, favorites, searchQuery]);
 
   // --- Player Logic ---
   useEffect(() => {
@@ -225,9 +237,23 @@ export function TvClient() {
           <div className="max-w-[1920px] mx-auto space-y-8">
             {/* Header */}
             <div className="space-y-4">
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-                Смотреть каналы
-              </h1>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+                    Смотреть каналы
+                </h1>
+
+                {/* Search Input */}
+                <div className="relative w-full md:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <input 
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Поиск каналов..."
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all placeholder:text-zinc-600"
+                    />
+                </div>
+              </div>
               
               {/* Category Tabs */}
               <div className="relative group">
