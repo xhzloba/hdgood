@@ -275,7 +275,7 @@ export function MovieGrid({
   const aspectClass = cardType === "backdrop" ? "aspect-video" : "aspect-[2/3]";
   const hoverOutlineClass = isKeyboardNav
     ? "outline-none focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700"
-    : "hover:outline hover:outline-[1.5px] hover:outline-zinc-700 focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700";
+    : "outline-none focus-visible:outline focus-visible:outline-[2px] focus-visible:outline-zinc-700";
 
   // Для страниц франшиз хотим более точное количество скелетонов
   // до получения данных, чтобы не было ощущения "лишних" карточек.

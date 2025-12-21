@@ -1400,10 +1400,8 @@ html[data-toploader="silent"] #nprogress .peg {
     z-index: 1;
   }
 
-  .group:hover .poster-card::after,
-  .group:focus-visible .poster-card::after {
-    opacity: 1;
-  }
+  /* Removed glow for keyboard nav as well */
+
 
   .poster-card::before {
     content: "";
@@ -1417,8 +1415,11 @@ html[data-toploader="silent"] #nprogress .peg {
     z-index: 2;
   }
 
-  .group:hover .poster-card::before,
   .group:focus-visible .poster-card::before {
+    opacity: 1;
+  }
+
+  .group:hover .poster-card::before {
     opacity: 1;
   }
 
