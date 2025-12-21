@@ -16,6 +16,7 @@ export type WatchedMovie = {
   logo?: string | null;
   poster_colors?: any;
   type?: string | null;
+  addedAt?: number;
 };
 
 const STORAGE_KEY = "watched:list";
@@ -93,7 +94,7 @@ export function useWatched() {
   const addWatched = useCallback(
     (movie: WatchedMovie) => {
       if (!movie?.id) return;
-      const normalized = normalizeMovie(movie);
+      const normalized = normalizeMovie({ ...movie, addedAt: Date.now() });
       const exists = (watched || []).some((m) => String(m.id) === normalized.id);
       if (exists) return;
       persist([normalized, ...(watched || [])]);

@@ -66,6 +66,33 @@ export default function WatchedClient({
     return { movies, serials };
   }, [watchedList]);
 
+  const splitByTime = useMemo(() => {
+    const groups: Record<string, typeof watchedList> = {};
+    
+    // Sort by addedAt descending (newest first)
+    const sorted = [...watchedList].sort((a, b) => {
+      return (b.addedAt || 0) - (a.addedAt || 0);
+    });
+
+    for (const item of sorted) {
+      if (!item.addedAt) continue;
+      const date = new Date(item.addedAt);
+      const year = date.getFullYear();
+      const month = date.toLocaleString('ru', { month: 'long' });
+      const key = `${month} ${year}`; // e.g. "декабрь 2023"
+      
+      // Capitalize month
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      
+      if (!groups[capitalizedKey]) {
+        groups[capitalizedKey] = [];
+      }
+      groups[capitalizedKey].push(item);
+    }
+    
+    return groups;
+  }, [watchedList]);
+
   const slides = useMemo(
     () =>
       watchedList.length > 0
@@ -73,7 +100,7 @@ export default function WatchedClient({
             {
               id: "watched",
               title: "Просмотренное",
-              navTitle: "Просмотренное",
+              navTitle: "Все",
               items: watchedList,
             },
             ...(splitByType.movies.length > 0
@@ -96,9 +123,24 @@ export default function WatchedClient({
                   },
                 ]
               : []),
+            ...Object.entries(splitByTime).map(([title, items], index) => {
+              // Try to parse month and year from title "Декабрь 2023"
+              const parts = title.split(" ");
+              const monthName = parts[0];
+              const year = parts[1];
+              const shortYear = year ? `'${year.slice(-2)}` : "";
+              const navTitle = `${monthName} ${shortYear}`.trim();
+
+              return {
+                id: `watched_time_${index}`,
+                title: title,
+                navTitle: navTitle,
+                items: items,
+              };
+            }),
           ]
         : [],
-    [watchedList, splitByType.movies, splitByType.serials]
+    [watchedList, splitByType.movies, splitByType.serials, splitByTime]
   );
 
   // Show loading while isMobile is being determined
