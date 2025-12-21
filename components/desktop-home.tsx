@@ -133,6 +133,12 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
+const appleOriginalFilmsSorted = [...appleOriginalFilms].sort((a, b) => {
+  const yearA = a.year ? Number(a.year) : 0;
+  const yearB = b.year ? Number(b.year) : 0;
+  return yearB - yearA;
+});
+
 const SLIDES: Slide[] = [
   {
     id: "watching",
@@ -203,7 +209,7 @@ const SLIDES: Slide[] = [
       </div>
     ) as any,
     navTitle: "Apple Films",
-    items: appleOriginalFilms,
+    items: appleOriginalFilmsSorted,
   },
 ];
 
