@@ -196,7 +196,12 @@ const SLIDES: Slide[] = [
   },
   {
     id: "apple_original",
-    title: "Apple Original Films",
+    title: (
+      <div className="flex items-center gap-3">
+        <span className="text-white">Популярное</span>
+        <span className="text-white">Apple Original Films</span>
+      </div>
+    ) as any,
     navTitle: "Apple Films",
     items: appleOriginalFilms,
   },
@@ -1465,6 +1470,7 @@ export function DesktopHome({
 
   const activeSlide = slides[slideIndex] ?? slides[0];
   const showNetflixTopLogo = activeSlide?.id === "netflix_serials";
+  const showAppleTopLogo = activeSlide?.id === "apple_original";
   const showWarnersTopLogo = activeSlide?.id === "harry_potter_universe";
 
   useEffect(() => {
