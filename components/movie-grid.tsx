@@ -23,7 +23,7 @@ import { PlayerSelector } from "@/components/player-selector";
 import { VideoPoster } from "@/components/video-poster";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useWatched } from "@/hooks/use-watched";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Heart } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -2959,6 +2959,17 @@ export function MovieGrid({
                       </div>
                     </div>
 
+                    {!movie.isViewAll && isFavorite(String(movie.id)) && !isWatched(String(movie.id)) && (
+                      <div className="absolute inset-0 bg-black/60 z-[13] pointer-events-none transition-opacity duration-300 flex flex-col items-center justify-center gap-1.5 backdrop-blur-[1px]">
+                        <Heart
+                          className="w-8 h-8 md:w-10 md:h-10 text-white/90 drop-shadow-md fill-current"
+                          strokeWidth={1.5}
+                        />
+                        <span className="text-white/90 text-[10px] md:text-xs font-bold uppercase tracking-widest drop-shadow-md">
+                          В избранном
+                        </span>
+                      </div>
+                    )}
                     {!movie.isViewAll && isWatched(String(movie.id)) && (
                       <div className="absolute inset-0 bg-black/60 z-[13] pointer-events-none transition-opacity duration-300 flex flex-col items-center justify-center gap-1.5 backdrop-blur-[1px]">
                         <EyeOff
