@@ -502,6 +502,13 @@ export function DesktopSidebar({
           active={isWatchedActive}
         />
 
+        <NavItem
+          icon={<IconDeviceTv className={sidebarIconClass} />}
+          label="ТВ Каналы"
+          href="/tv"
+          active={activePath.startsWith("/tv")}
+        />
+
         {CATEGORIES.filter((cat) => cat.route && cat.route !== "/updates").map(
           (cat, i) => (
             <NavItem
