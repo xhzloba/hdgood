@@ -59,12 +59,23 @@ export function useFavorites() {
 
   useEffect(() => {
     loadFromStorage();
-    const handler = (e: StorageEvent) => {
+
+    const handleStorage = (e: StorageEvent) => {
       if (e.key && e.key !== STORAGE_KEY) return;
       loadFromStorage();
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+
+    const handleCustom = () => {
+      loadFromStorage();
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("favorites:updated", handleCustom);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("favorites:updated", handleCustom);
+    };
   }, [loadFromStorage]);
 
   const persist = useCallback((list: FavoriteMovie[]) => {
