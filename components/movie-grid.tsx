@@ -44,6 +44,7 @@ interface Movie {
   country?: string | string[];
   quality?: string;
   tags?: string[] | string;
+  age?: string | number | null;
 }
 
 interface MovieGridProps {
@@ -159,6 +160,7 @@ function extractMoviesFromData(data: any): any[] {
         item.poster_colors ||
         item.colors,
       type: item.details?.type || item.type || null,
+      age: item.details?.age || item.age || null,
     }));
   } else if (data?.type === "category" && data?.channels) {
     movies = data.channels.map((item: any, index: number) => ({
@@ -3178,18 +3180,37 @@ export function MovieGrid({
                             </div>
                           )}
                           {movie.quality && (
-                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[10px] md:text-[12px] bg-white text-black border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] font-black tracking-tight">
+                            <div
+                              className={`px-2 md:px-2 py-[3px] md:py-1 rounded-full text-[10px] md:text-[12px] bg-white text-black border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] font-black tracking-tight ${
+                                isRestrictedBadgesRoute
+                                  ? "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                                  : ""
+                              }`}
+                            >
                               {String(movie.quality)}
                             </div>
                           )}
                           {tagLabel && (
-                            <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[10px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                            <div
+                              className={`px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[10px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] ${
+                                isRestrictedBadgesRoute
+                                  ? "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                                  : ""
+                              }`}
+                            >
                               {tagLabel}
                             </div>
                           )}
                         </div>
                       ) : null;
                     })()}
+                    <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 hidden md:flex flex-col items-start gap-1 z-[12] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      {movie.age != null && (
+                        <div className="px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[10px] md:text-[12px] bg-white text-black border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] font-black tracking-tight">
+                          {String(movie.age).replace(/\D/g, "")}+
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {/* Под постером оставляем текст (название, год, 1 жанр) с анимацией частиц */}
                   <div className="relative p-2 md:p-3 min-h-[48px] md:min-h-[56px] overflow-hidden text-left md:text-left">
