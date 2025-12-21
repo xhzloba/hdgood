@@ -69,6 +69,7 @@ import { Label } from "@/components/ui/label";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useWatched } from "@/hooks/use-watched";
 import { formatRatingLabel, ratingBgColor, ratingColor } from "@/lib/utils";
+import appleOriginalFilms from "@/data/appleoriginal/films.json";
 
 const DEFAULT_UB_COLORS = {
   tl: "#10212f",
@@ -192,6 +193,12 @@ const SLIDES: Slide[] = [
     navTitle: "Новогодние",
     url: "https://api.vokino.pro/v2/compilations/content/675e9a26b453dd0c4a47bee3",
     fetchAll: true,
+  },
+  {
+    id: "apple_original",
+    title: "Apple Original Films",
+    navTitle: "Apple Films",
+    items: appleOriginalFilms,
   },
 ];
 
