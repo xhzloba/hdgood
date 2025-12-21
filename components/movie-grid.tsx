@@ -2940,6 +2940,25 @@ export function MovieGrid({
                         } transition-opacity duration-300`}
                       />
                     )}
+
+                    {/* Overlay with Play Button */}
+                    <div className="absolute inset-0 z-[11] flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-all duration-300 pointer-events-none">
+                      <div className="w-[20%] h-[20%] min-w-[40px] min-h-[40px] max-w-[80px] max-h-[80px] flex items-center justify-center transform scale-75 group-hover:scale-110 group-focus-visible:scale-110 transition-transform duration-300 drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-full h-full text-white filter drop-shadow-md"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
                     {!movie.isViewAll && isWatched(String(movie.id)) && (
                       <div className="absolute inset-0 bg-black/60 z-[13] pointer-events-none transition-opacity duration-300" />
                     )}
