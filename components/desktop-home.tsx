@@ -470,7 +470,7 @@ export function DesktopSidebar({
                 fill={isFavoritesActive ? "currentColor" : "none"}
               />
               {favoritesCount > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-red-600 text-[9px] font-bold text-white px-1 shadow-sm ring-1 ring-black/20">
+                <span className="absolute -top-3 -right-3 min-w-[22px] h-[22px] flex items-center justify-center rounded-full bg-red-600 text-[11px] font-bold text-white px-1 shadow-sm ring-1 ring-black/20">
                   {favoritesCount > 99 ? "99+" : favoritesCount}
                 </span>
               )}
@@ -491,7 +491,7 @@ export function DesktopSidebar({
                 strokeWidth={1.6}
               />
               {watchedCount > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white px-1 shadow-sm ring-1 ring-black/20">
+                <span className="absolute -top-3 -right-3 min-w-[22px] h-[22px] flex items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white px-1 shadow-sm ring-1 ring-black/20">
                   {watchedCount > 99 ? "99+" : watchedCount}
                 </span>
               )}
