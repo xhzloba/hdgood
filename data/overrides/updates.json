@@ -5006,5 +5006,52 @@
     "addedPaths": [
       "poster_colors.dominant2"
     ]
+  },
+  {
+    "id": "66f1e4fa4f7f09cbc55bbc64",
+    "timestamp": "2025-12-22T13:56:49.892Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "66f1e4fa4f7f09cbc55bbc64",
+    "timestamp": "2025-12-22T13:58:03.763Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "66f1e4fa4f7f09cbc55bbc64",
+    "timestamp": "2025-12-22T13:59:52.018Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "66f1e4fa4f7f09cbc55bbc64",
+    "timestamp": "2025-12-22T13:59:52.662Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "66f1e4fa4f7f09cbc55bbc64",
+    "timestamp": "2025-12-22T14:00:41.060Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "studio_logo",
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
   }
 ]

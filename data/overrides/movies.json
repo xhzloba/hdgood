@@ -2062,5 +2062,15 @@
       "/movies/logo/applestudios.svg"
     ],
     "poster": "/movies/источник.webp"
+  },
+  "66f1e4fa4f7f09cbc55bbc64": {
+    "poster_logo": "/movies/logo/164.webp",
+    "studio_logo": [
+      "/movies/logo/newlinecinema.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "bg_poster": {
+      "backdrop": "/movies/одинокие.webp"
+    }
   }
 }
