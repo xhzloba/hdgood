@@ -4821,5 +4821,190 @@
       "studio_logo"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-22T13:01:42.179Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-22T13:16:30.320Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-22T13:20:22.529Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:28:37.164Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:29:11.340Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:30:49.734Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ]
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:32:01.515Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": [
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:32:40.481Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:33:43.828Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTr",
+      "poster_colors.accentBr",
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:36:11.144Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentBl",
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:36:18.848Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "684c9f61032315e2734cee62",
+    "timestamp": "2025-12-22T13:36:55.092Z",
+    "poster": "/movies/dolina.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.accentTl"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-22T13:37:37.852Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_colors.dominant1"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-22T13:38:04.036Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [
+      "poster_colors.accentBr"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6830eff8743490e12f6c5ed2",
+    "timestamp": "2025-12-22T13:47:51.955Z",
+    "poster": "/movies/источник.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster_colors.dominant1",
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6830eff8743490e12f6c5ed2",
+    "timestamp": "2025-12-22T13:48:32.603Z",
+    "poster": "/movies/источник.webp",
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6830eff8743490e12f6c5ed2",
+    "timestamp": "2025-12-22T13:51:11.366Z",
+    "poster": "/movies/источник.webp",
+    "title": null,
+    "changedPaths": [
+      "poster_colors.dominant1"
+    ],
+    "addedPaths": [
+      "poster_colors.dominant2"
+    ]
   }
 ]

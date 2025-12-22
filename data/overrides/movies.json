@@ -488,6 +488,32 @@
     "poster_logo": "https://images.kinorium.com/movie/logo/384511/original_51856637.png"
   },
   "6920e0e1f807186f77141862": {
+    "poster_colors": {
+      "accentTl": [
+        64,
+        99,
+        165
+      ],
+      "accentBr": [
+        23,
+        74,
+        66
+      ],
+      "accentBl": [
+        43,
+        47,
+        81
+      ],
+      "dominant1": [
+        7,
+        83,
+        78
+      ]
+    },
+    "studio_logo": [
+      "/movies/logo/skydance.svg",
+      "/movies/logo/apple.svg"
+    ],
     "released": "2025",
     "name": "Семейный план 2",
     "bg_poster": {
@@ -503,23 +529,6 @@
       "что у его дочери свои планы",
       "он заказывает семейную поездку в Лондон — ставит их всех под прицел неожиданного врага."
     ],
-    "poster_colors": {
-      "accentTl": [
-        64,
-        99,
-        165
-      ],
-      "accentBr": [
-        234,
-        180,
-        143
-      ],
-      "accentBl": [
-        43,
-        47,
-        81
-      ]
-    },
     "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
     "poster_logo": "https://images-s.kinorium.com/movie/plogo/11998275/w1500_55390667.png"
   },
@@ -897,6 +906,10 @@
     }
   },
   "68cf23e124be021e936077bc": {
+    "studio_logo": [
+      "/movies/logo/blumhouse.svg",
+      "/movies/logo/apple.svg"
+    ],
     "poster_logo": "/movies/logo/38.webp",
     "poster": "/movies/bus.webp",
     "bg_poster": {
@@ -1981,5 +1994,73 @@
     "bg_poster": {
       "backdrop": "/movies/s-backdrop.webp"
     }
+  },
+  "684c9f61032315e2734cee62": {
+    "poster_colors": {
+      "accentTr": [
+        19,
+        93,
+        158
+      ],
+      "accentBr": [
+        57,
+        118,
+        190
+      ],
+      "accentBl": [
+        255,
+        3,
+        1
+      ],
+      "accentTl": [
+        20,
+        20,
+        23
+      ],
+      "dominant1": [
+        211,
+        51,
+        65
+      ],
+      "dominant2": [
+        10,
+        96,
+        160
+      ]
+    },
+    "poster_logo": "/movies/logo/162.webp",
+    "studio_logo": [
+      "/movies/logo/applestudios.svg",
+      "/movies/logo/scottfree.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "poster": "/movies/dolina.webp",
+    "bg_poster": {
+      "backdrop": "/movies/dolina-backdrop.webp"
+    }
+  },
+  "6830eff8743490e12f6c5ed2": {
+    "poster_colors": {
+      "dominant1": [
+        168,
+        127,
+        92
+      ],
+      "dominant2": [
+        9,
+        24,
+        48
+      ]
+    },
+    "bg_poster": {
+      "backdrop": "/movies/источник-backdrop.webp"
+    },
+    "poster_logo": "/movies/logo/163.webp",
+    "studio_logo": [
+      "/movies/logo/skydance.svg",
+      "/movies/logo/apple.svg",
+      "/movies/logo/applestudios.svg"
+    ],
+    "poster": "/movies/источник.webp"
   }
 }
