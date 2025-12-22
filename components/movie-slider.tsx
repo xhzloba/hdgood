@@ -175,6 +175,7 @@ export default function MovieSlider({
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -851,10 +852,31 @@ export default function MovieSlider({
                         : ""
                     }`}
                     onFocus={(e) => {
-                      if (!movie.isViewAll) onMovieHover?.(movie);
                       e.currentTarget.classList.add("is-focused");
+
+                      if (hoverTimeoutRef.current) {
+                        clearTimeout(hoverTimeoutRef.current);
+                      }
+
+                      if (isKeyboardNav) {
+                        hoverTimeoutRef.current = setTimeout(() => {
+                          if (!movie.isViewAll) onMovieHover?.(movie);
+                        }, 300);
+                      } else {
+                        if (!movie.isViewAll) onMovieHover?.(movie);
+                      }
+
+                      if (isKeyboardNav && carouselApi) {
+                        const slidesInView = carouselApi.slidesInView();
+                        if (!slidesInView.includes(index)) {
+                          carouselApi.scrollTo(index);
+                        }
+                      }
                     }}
                     onBlur={(e) => {
+                      if (hoverTimeoutRef.current) {
+                        clearTimeout(hoverTimeoutRef.current);
+                      }
                       e.currentTarget.classList.remove("is-focused");
                       const posterEl = e.currentTarget.querySelector(
                         ".poster-card"
@@ -896,7 +918,6 @@ export default function MovieSlider({
                         const nextLink = nextSlide?.querySelector("a");
                         if (nextLink instanceof HTMLElement) {
                           nextLink.focus();
-                          carouselApi?.scrollNext();
                         }
                       } else if (e.key === "ArrowLeft") {
                         e.preventDefault();
@@ -905,7 +926,6 @@ export default function MovieSlider({
                         const prevLink = prevSlide?.querySelector("a");
                         if (prevLink instanceof HTMLElement) {
                           prevLink.focus();
-                          carouselApi?.scrollPrev();
                         }
                       }
                     }}
@@ -1238,8 +1258,8 @@ export default function MovieSlider({
                               <div className="absolute bottom-0.5 right-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none">
                                 <div
                                   className={`relative flex ${
-                                    hasAge ? "flex-col-reverse" : "flex-row"
-                                  } items-center justify-center gap-1.5 p-2`}
+                                    hasAge ? "flex-col-reverse items-end" : "flex-row items-center"
+                                  } justify-center gap-1.5 p-2`}
                                 >
                                   {/* Soft dark background glow for better visibility */}
                                   <div
