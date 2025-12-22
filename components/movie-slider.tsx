@@ -1062,7 +1062,7 @@ export default function MovieSlider({
                         </button>
                       )}
                       {showAge && movie.age != null && !movie.isViewAll && (
-                        <div className="absolute bottom-2.5 left-3 z-[15] hidden md:block px-2 md:px-2 py-[3px] md:py-1 rounded-md text-[11px] md:text-[12px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
+                        <div className="absolute bottom-2.5 left-3 z-[15] hidden md:block px-1.5 py-[1px] md:py-[2px] rounded-md text-[10px] md:text-[11px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-200">
                           {String(movie.age).replace(/\D/g, "")}+
                         </div>
                       )}
@@ -1234,15 +1234,19 @@ export default function MovieSlider({
                             const displayLogos = logoList.slice(0, 1);
 
                             return (
-                              <div className="absolute bottom-3 right-3 flex items-center justify-end gap-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none px-2">
-                                {displayLogos.map((logo: string, i: number) => (
-                                  <img
-                                    key={i}
-                                    src={logo}
-                                    alt="Studio"
-                                    className="h-[18px] md:h-[22px] object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
-                                  />
-                                ))}
+                              <div className="absolute bottom-0.5 right-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                <div className="relative flex items-center justify-center p-2">
+                                  {/* Soft dark background glow for better visibility */}
+                                  <div className="absolute inset-0 bg-black/60 blur-md rounded-full scale-110" />
+                                  {displayLogos.map((logo: string, i: number) => (
+                                    <img
+                                      key={i}
+                                      src={logo}
+                                      alt="Studio"
+                                      className="relative h-[18px] md:h-[22px] object-contain drop-shadow-sm z-10"
+                                    />
+                                  ))}
+                                </div>
                               </div>
                             );
                           })()}
