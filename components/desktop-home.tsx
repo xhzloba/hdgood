@@ -1680,6 +1680,7 @@ export function DesktopHome({
     const normalized = {
       ...first,
       logo: cachedOverride?.poster_logo ?? first.logo ?? null,
+      description: cachedOverride?.about || first.description,
       backdrop: cachedOverride?.bg_poster?.backdrop ?? first.backdrop,
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
       studio_logo:
@@ -1757,7 +1758,7 @@ export function DesktopHome({
         rating: m.rating,
         country: m.country,
         genre: m.genre,
-        description: m.description || "",
+        description: ov?.about || m.description || "",
         duration: m.duration,
         logo: ov?.poster_logo ?? m.logo ?? null,
         studio_logo:
