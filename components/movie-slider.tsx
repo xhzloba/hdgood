@@ -1231,13 +1231,22 @@ export default function MovieSlider({
                             if (!logos) return null;
                             const logoList = Array.isArray(logos) ? logos : [logos];
                             if (logoList.length === 0) return null;
-                            const displayLogos = logoList.slice(0, 1);
+                            const displayLogos = logoList.slice(0, 3);
+                            const hasAge = showAge && movie.age != null;
 
                             return (
                               <div className="absolute bottom-0.5 right-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                <div className="relative flex items-center justify-center p-2">
+                                <div
+                                  className={`relative flex ${
+                                    hasAge ? "flex-col-reverse" : "flex-row"
+                                  } items-center justify-center gap-1.5 p-2`}
+                                >
                                   {/* Soft dark background glow for better visibility */}
-                                  <div className="absolute inset-0 bg-black/60 blur-md rounded-full scale-110" />
+                                  <div
+                                    className={`absolute inset-0 bg-black/60 blur-md scale-110 ${
+                                      hasAge ? "rounded-2xl" : "rounded-full"
+                                    }`}
+                                  />
                                   {displayLogos.map((logo: string, i: number) => (
                                     <img
                                       key={i}
