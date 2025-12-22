@@ -575,6 +575,7 @@ export default function MovieSlider({
       const patchedTitle =
         ov && (ov.name || ov.title) ? ov.name || ov.title : m.title;
       const patchedLogo = ov && ov.poster_logo ? ov.poster_logo : m.logo;
+      const patchedStudioLogo = ov && ov.studio_logo ? ov.studio_logo : m.studio_logo;
       const patchedBackdrop =
         ov && ov.bg_poster && ov.bg_poster.backdrop
           ? ov.bg_poster.backdrop
@@ -584,6 +585,7 @@ export default function MovieSlider({
         poster: patchedPoster,
         title: patchedTitle,
         logo: patchedLogo,
+        studio_logo: patchedStudioLogo,
         backdrop: patchedBackdrop,
       };
     });
@@ -885,6 +887,27 @@ export default function MovieSlider({
                       if (!posterEl) return;
                       posterEl.style.setProperty("--mx", "0");
                       posterEl.style.setProperty("--my", "0");
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowRight") {
+                        e.preventDefault();
+                        const nextSlide =
+                          e.currentTarget.parentElement?.nextElementSibling;
+                        const nextLink = nextSlide?.querySelector("a");
+                        if (nextLink instanceof HTMLElement) {
+                          nextLink.focus();
+                          carouselApi?.scrollNext();
+                        }
+                      } else if (e.key === "ArrowLeft") {
+                        e.preventDefault();
+                        const prevSlide =
+                          e.currentTarget.parentElement?.previousElementSibling;
+                        const prevLink = prevSlide?.querySelector("a");
+                        if (prevLink instanceof HTMLElement) {
+                          prevLink.focus();
+                          carouselApi?.scrollPrev();
+                        }
+                      }
                     }}
                     onClick={(e) => {
                       const api = carouselApi as unknown as {
@@ -1201,7 +1224,28 @@ export default function MovieSlider({
                               </div>
                             ) : null;
                           })()}
-                          {/* убрали бейдж качества */}
+                          {/* Studio Logos */}
+                          {(() => {
+                            if (movie.isViewAll) return null;
+                            const logos = movie.studio_logo;
+                            if (!logos) return null;
+                            const logoList = Array.isArray(logos) ? logos : [logos];
+                            if (logoList.length === 0) return null;
+                            const displayLogos = logoList.slice(0, 1);
+
+                            return (
+                              <div className="absolute bottom-3 right-3 flex items-center justify-end gap-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none px-2">
+                                {displayLogos.map((logo: string, i: number) => (
+                                  <img
+                                    key={i}
+                                    src={logo}
+                                    alt="Studio"
+                                    className="h-[18px] md:h-[22px] object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                                  />
+                                ))}
+                              </div>
+                            );
+                          })()}
                         </>
                       )}
                     </div>
