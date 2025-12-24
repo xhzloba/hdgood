@@ -647,6 +647,7 @@ export function DesktopHome({
   const [profileAvatar, setProfileAvatar] = useState(PROFILE_AVATARS[0]);
   const lastUrlRef = useRef<string | null>(null);
   const lastInputTimeRef = useRef(0);
+  const lastNavSourceRef = useRef<"keyboard" | "mouse">("mouse");
   const [overrideRefresh, setOverrideRefresh] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWideClock, setShowWideClock] = useState(false);
@@ -1553,6 +1554,7 @@ export function DesktopHome({
     };
 
     const handleWheel = (e: WheelEvent) => {
+      lastNavSourceRef.current = "mouse";
       // Down scroll -> Next Slide
       if (e.deltaY > 0) handleInput("next");
       // Up scroll -> Prev Slide
@@ -1562,9 +1564,11 @@ export function DesktopHome({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
+        lastNavSourceRef.current = "keyboard";
         handleInput("next");
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
+        lastNavSourceRef.current = "keyboard";
         handleInput("prev");
       }
     };
@@ -2657,6 +2661,7 @@ export function DesktopHome({
                       fullscreenMode={isFullscreen}
                       hideFavoriteBadge
                       showAge
+                      autoFocusFirst={lastNavSourceRef.current === "keyboard"}
                     />
                   </div>
                 </div>

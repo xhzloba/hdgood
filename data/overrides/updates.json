@@ -5053,5 +5053,28 @@
       "bg_poster.backdrop"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6593f90e8914c04deaeacaaa",
+    "timestamp": "2025-12-24T09:49:47.150Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f90e8914c04deaeacaaa",
+    "timestamp": "2025-12-24T09:50:32.589Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
   }
 ]

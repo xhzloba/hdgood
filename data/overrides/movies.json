@@ -2072,5 +2072,15 @@
     "bg_poster": {
       "backdrop": "/movies/одинокие.webp"
     }
+  },
+  "6593f90e8914c04deaeacaaa": {
+    "poster_logo": "/movies/logo/165.png",
+    "studio_logo": [
+      "/movies/logo/escape.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "bg_poster": {
+      "backdrop": "/movies/освобождение.jpg"
+    }
   }
 }
