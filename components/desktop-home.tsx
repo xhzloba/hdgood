@@ -3084,12 +3084,12 @@ export function DesktopHome({
               {onboardingNavDone && onboardingSliderDone && onboardingPersonalizationDone && (
                 <>
                   {/* Fullscreen Hint */}
-                  <div className={`absolute right-6 top-[60px] flex flex-col items-center gap-1 transition-all duration-500 z-[70] ${onboardingFullscreenDone ? "opacity-100" : "animate-bounce delay-100"}`}>
+                  <div className={`absolute right-6 top-[60px] flex flex-col items-center gap-1 transition-all duration-700 z-[70] animate-in fade-in slide-in-from-top-2 fill-mode-both delay-300 ${onboardingFullscreenDone ? "opacity-100" : "animate-bounce"}`}>
                     <div className={`w-1.5 h-3 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] ${onboardingFullscreenDone ? "bg-green-500 shadow-[0_0_15px_#22c55e]" : "bg-blue-500 shadow-[0_0_15px_#3b82f6]"}`} />
                     <span className={`px-2 py-0.5 text-white text-[8px] font-black rounded-md shadow-2xl uppercase transition-colors ${onboardingFullscreenDone ? "bg-green-500" : "bg-blue-500"}`}>{onboardingFullscreenDone ? "Ок" : "Экран"}</span>
                   </div>
                   {/* Search Hint */}
-                  <div className={`absolute right-[128px] top-[60px] flex flex-col items-center gap-1 transition-all duration-500 z-[70] ${onboardingSearchDone ? "opacity-100" : "animate-bounce delay-200"}`}>
+                  <div className={`absolute right-[128px] top-[60px] flex flex-col items-center gap-1 transition-all duration-700 z-[70] animate-in fade-in slide-in-from-top-2 fill-mode-both delay-500 ${onboardingSearchDone ? "opacity-100" : "animate-bounce"}`}>
                     <div className={`w-1.5 h-3 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.6)] ${onboardingSearchDone ? "bg-green-500 shadow-[0_0_15px_#22c55e]" : "bg-sky-500 shadow-[0_0_15px_#0ea5e9]"}`} />
                     <span className={`px-2 py-0.5 text-white text-[8px] font-black rounded-md shadow-2xl uppercase transition-colors ${onboardingSearchDone ? "bg-green-500" : "bg-sky-500"}`}>{onboardingSearchDone ? "Ок" : "Поиск"}</span>
                   </div>
