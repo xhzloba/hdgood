@@ -25,6 +25,7 @@ import {
   Clapperboard,
   Film,
   Check,
+  Zap,
 } from "lucide-react";
 import {
   Tooltip,
@@ -728,6 +729,7 @@ export function DesktopHome({
   const [isStandalone, setIsStandalone] = useState(false);
   const [canInstall, setCanInstall] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingExiting, setOnboardingExiting] = useState(false);
   const [onboardingNavDone, setOnboardingNavDone] = useState(false);
   const [onboardingNavDownDone, setOnboardingNavDownDone] = useState(false);
   const [onboardingNavUpDone, setOnboardingNavUpDone] = useState(false);
@@ -740,6 +742,7 @@ export function DesktopHome({
 
   const [onboardingFullscreenDone, setOnboardingFullscreenDone] = useState(false);
   const [onboardingSearchDone, setOnboardingSearchDone] = useState(false);
+  const [onboardingPersonalizationDone, setOnboardingPersonalizationDone] = useState(false);
 
   // Track horizontal interaction first (Sequential Right then Left)
   useEffect(() => {
@@ -808,16 +811,12 @@ export function DesktopHome({
     if (showOnboarding && searchExpanded) setOnboardingSearchDone(true);
   }, [searchExpanded, showOnboarding]);
 
-  // Auto-close onboarding when all tasks are done
+  // Onboarding completion logic is now handled via a manual button in the celebration screen
   useEffect(() => {
-    if (onboardingNavDone && onboardingSliderDone && onboardingFullscreenDone && onboardingSearchDone) {
-      const timer = setTimeout(() => {
-        localStorage.setItem("desktop_onboarding_done", "true");
-        setShowOnboarding(false);
-      }, 1500);
-      return () => clearTimeout(timer);
+    if (onboardingNavDone && onboardingSliderDone && onboardingFullscreenDone && onboardingSearchDone && onboardingPersonalizationDone) {
+      // Logic moved to "Start Watching" button
     }
-  }, [onboardingNavDone, onboardingSliderDone, onboardingFullscreenDone, onboardingSearchDone]);
+  }, [onboardingNavDone, onboardingSliderDone, onboardingFullscreenDone, onboardingSearchDone, onboardingPersonalizationDone]);
 
   const paletteCacheRef = useRef<
     Record<string, { tl: string; tr: string; br: string; bl: string }>
@@ -2738,9 +2737,9 @@ export function DesktopHome({
                 </div>
 
                 {/* Trending Slider */}
-                <div className={`w-full ${sliderMarginClass} relative transition-all duration-700 ${showOnboarding && !onboardingNavDone ? "scale-[1.01] z-[60]" : "z-10"}`}>
-                  {/* Neon highlight for movie slider during onboarding (Steps 1 & 2) */}
-                  {showOnboarding && !onboardingNavDone && (
+                <div className={`w-full ${sliderMarginClass} relative transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "scale-[1.01] z-[60]" : "z-10"}`}>
+                  {/* Neon highlight for movie slider during onboarding (Steps 1, 2 & 3) */}
+                  {showOnboarding && !onboardingPersonalizationDone && (
                     <div className="absolute -inset-x-8 -inset-y-6 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-2xl animate-pulse -z-10 shadow-[0_0_80px_rgba(59,130,246,0.3)]" />
                   )}
                   <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
@@ -2944,33 +2943,28 @@ export function DesktopHome({
 
         {/* Onboarding Overlay - Interactive Tasks */}
         {showOnboarding && (
-          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm animate-in fade-in duration-1000 pointer-events-auto overflow-hidden">
-            <div className="relative w-full h-full p-10 flex flex-col items-center justify-start pt-[20vh] z-[70]">
+          <div className={`fixed inset-0 z-50 bg-black/95 backdrop-blur-md pointer-events-auto overflow-hidden ${onboardingExiting ? "animate-out fade-out duration-1000 fill-mode-forwards" : "animate-in fade-in duration-1000"}`}>
+            <div className={`relative w-full h-full p-10 flex flex-col items-center justify-start pt-[12vh] z-[70] ${onboardingExiting ? "animate-out zoom-out-95 duration-1000 fill-mode-forwards" : ""}`}>
               
               {/* Central Sequential Kvests Container */}
-              <div className="flex items-start gap-16 scale-110">
+              {/* Central Sequential Kvests Container */}
+              <div className="relative w-full max-w-4xl h-[400px] flex items-center justify-center scale-110">
                 {/* Horizontal Slider Hint (Step 1) */}
                 <div 
-                  className={`flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
-                    onboardingSliderDone ? "opacity-60 grayscale-[0.4]" : "animate-in zoom-in-95 duration-500"
+                  className={`absolute flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
+                    !onboardingSliderDone 
+                      ? "opacity-100 scale-100 translate-y-0" 
+                      : "opacity-0 scale-90 -translate-y-10"
                   }`}
                 >
                   <div className="flex flex-col items-center text-center">
                     <div className="flex items-center gap-3 mb-2">
-                      {onboardingSliderDone && (
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500 text-black text-[11px] font-black uppercase animate-in zoom-in shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-                          <Check className="w-3 h-3 stroke-[4px]" />
-                          Успешно
-                        </div>
-                      )}
-                      <h3 className={`text-3xl font-black drop-shadow-2xl tracking-tighter italic uppercase transition-colors ${onboardingSliderDone ? "text-green-500" : "text-white"}`}>Листать подборки</h3>
+                       <h3 className="text-3xl font-black text-white drop-shadow-2xl tracking-tighter italic uppercase transition-colors">Листать подборки</h3>
                     </div>
-                    <p className={`text-base max-w-[320px] leading-relaxed drop-shadow-md transition-colors ${onboardingSliderDone ? "text-zinc-500" : "text-white"}`}>
-                      {onboardingSliderDone 
-                        ? "Ряды успешно пролистаны!"
-                        : !onboardingSliderRightDone
-                          ? <>Нажмите <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_10px_#3b82f6]">ВПРАВО →</span></>
-                          : <>Теперь <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_10px_#3b82f6]">ВЛЕВО ←</span></>
+                    <p className="text-base max-w-[320px] leading-relaxed drop-shadow-md text-white">
+                      {!onboardingSliderRightDone
+                        ? <>Нажмите <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_10px_#3b82f6]">ВПРАВО →</span></>
+                        : <>Теперь <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_10px_#3b82f6]">ВЛЕВО ←</span></>
                       }
                     </p>
                   </div>
@@ -2985,68 +2979,109 @@ export function DesktopHome({
                   </div>
                 </div>
 
-                {/* Vertical Categories Hint (Step 2 - Only after Step 1 is done) */}
-                {onboardingSliderDone && (
-                  <div 
-                    className={`flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
-                      onboardingNavDone ? "opacity-60 translate-x-4 grayscale-[0.4]" : "animate-in slide-in-from-left-10 duration-700"
-                    }`}
-                  >
-                    <div className="flex flex-col items-center text-center">
-                      <div className="flex items-center gap-3 mb-2">
-                        {onboardingNavDone && (
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500 text-black text-[11px] font-black uppercase animate-in zoom-in shadow-[0_0_20px_rgba(34,197,94,0.4)]">
-                            <Check className="w-3 h-3 stroke-[4px]" />
-                            Успешно
-                          </div>
-                        )}
-                      <h3 className={`text-3xl font-black drop-shadow-2xl tracking-tighter italic uppercase transition-colors ${onboardingNavDone ? "text-green-500" : "text-white"}`}>Разделы кино</h3>
-                      </div>
-                      <p className={`text-base max-w-[320px] leading-relaxed drop-shadow-md transition-colors ${onboardingNavDone ? "text-zinc-400" : "text-zinc-300"}`}>
-                        {onboardingNavDone 
-                          ? "Навигация полностью освоена!"
-                          : !onboardingNavDownDone 
-                            ? <>Нажми <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_8px_#3b82f6]">ВНИЗ ↓</span></>
-                            : !onboardingNavUpDone
-                              ? <>Теперь <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_8px_#3b82f6]">ВВЕРХ ↑</span></>
-                              : !onboardingNavWheelDownDone
-                                ? <>Теперь <span className="text-indigo-400 font-black animate-pulse drop-shadow-[0_0_8px_#6366f1]">КОЛЕСИКОМ ↓</span></>
-                                : <>И напоследок <span className="text-indigo-400 font-black animate-pulse drop-shadow-[0_0_8px_#6366f1]">КОЛЕСИКОМ ↑</span></>
-                        }
-                      </p>
+                {/* Vertical Categories Hint (Step 2) */}
+                <div 
+                  className={`absolute flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
+                    onboardingSliderDone && !onboardingNavDone 
+                      ? "opacity-100 scale-100 translate-y-0" 
+                      : onboardingNavDone ? "opacity-0 scale-90 -translate-y-10" : "opacity-0 scale-110 translate-y-10"
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="flex items-center gap-3 mb-2">
+                       <h3 className="text-3xl font-black text-white drop-shadow-2xl tracking-tighter italic uppercase transition-colors">Разделы кино</h3>
                     </div>
-                    
-                    <div className="flex items-center gap-10">
-                        <div className="flex flex-col items-center gap-2">
-                           <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-300 ${onboardingNavUpDone ? "bg-green-500/20 border-green-500/50" : (onboardingNavDownDone ? "bg-blue-500/40 border-blue-400 animate-pulse shadow-[0_0_15px_#3b82f6]" : "bg-white/5 border-white/10 opacity-20")}`}>
-                              <span className={`text-lg font-black ${onboardingNavUpDone ? "text-green-500" : (onboardingNavDownDone ? "text-white" : "text-white/20")}`}>↑</span>
-                           </div>
-                           <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-300 ${onboardingNavDownDone ? (onboardingNavUpDone ? "bg-green-500/20 border-green-500/50" : "bg-green-500/20 border-green-500/50") : "bg-blue-500/40 border-blue-400 animate-pulse shadow-[0_0_15px_#3b82f6]"}`}>
-                              <span className={`text-lg font-black ${onboardingNavDownDone ? "text-green-500" : "text-white"}`}>↓</span>
-                           </div>
-                        </div>
-
-                        <div className={`w-14 h-20 rounded-[28px] border-2 transition-all duration-500 flex items-center justify-center relative shadow-[0_0_30px_rgba(255,255,255,0.05)] ${onboardingNavDone ? "border-green-500/50 bg-green-500/5" : "border-white/20 bg-white/5"}`}>
-                          <div className={`w-1.5 h-4 rounded-full transition-all duration-500 absolute ${
-                            onboardingNavDone 
-                              ? "bg-green-500 shadow-[0_0_15px_#22c55e] top-4" 
-                              : (onboardingNavWheelDownDone && !onboardingNavWheelUpDone)
-                                ? "bg-indigo-400 animate-[bounce_1s_infinite] shadow-[0_0_10px_#6366f1] top-10"
-                                : (onboardingNavUpDone && !onboardingNavWheelDownDone)
-                                  ? "bg-indigo-400 animate-[bounce_1s_infinite] shadow-[0_0_10px_#6366f1] top-4"
-                                  : onboardingNavDownDone
-                                    ? "bg-white/10 top-10"
-                                    : "bg-white/10 top-4"
-                          }`} />
-                          <div className={`w-0.5 h-10 bg-white/10 rounded-full绝对 transition-opacity ${onboardingNavDone ? "opacity-0" : "opacity-100"}`} />
-                        </div>
-                    </div>
+                    <p className="text-base max-w-[320px] leading-relaxed drop-shadow-md text-zinc-300">
+                      {!onboardingNavDownDone 
+                        ? <>Нажми <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_8px_#3b82f6]">ВНИЗ ↓</span></>
+                        : !onboardingNavUpDone
+                          ? <>Теперь <span className="text-blue-400 font-black animate-pulse drop-shadow-[0_0_8px_#3b82f6]">ВВЕРХ ↑</span></>
+                          : !onboardingNavWheelDownDone
+                            ? <>Теперь <span className="text-indigo-400 font-black animate-pulse drop-shadow-[0_0_8px_#6366f1]">КОЛЕСИКОМ ↓</span></>
+                            : <>И напоследок <span className="text-indigo-400 font-black animate-pulse drop-shadow-[0_0_8px_#6366f1]">КОЛЕСИКОМ ↑</span></>
+                      }
+                    </p>
                   </div>
-                )}
+                  
+                  <div className="flex items-center gap-10">
+                      <div className="flex flex-col items-center gap-2">
+                         <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-300 ${onboardingNavUpDone ? "bg-green-500/20 border-green-500/50" : (onboardingNavDownDone ? "bg-blue-500/40 border-blue-400 animate-pulse shadow-[0_0_15px_#3b82f6]" : "bg-white/5 border-white/10 opacity-20")}`}>
+                            <span className={`text-lg font-black ${onboardingNavUpDone ? "text-green-500" : (onboardingNavDownDone ? "text-white" : "text-white/20")}`}>↑</span>
+                         </div>
+                         <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-300 ${onboardingNavDownDone ? (onboardingNavUpDone ? "bg-green-500/20 border-green-500/50" : "bg-green-500/20 border-green-500/50") : "bg-blue-500/40 border-blue-400 animate-pulse shadow-[0_0_15px_#3b82f6]"}`}>
+                            <span className={`text-lg font-black ${onboardingNavDownDone ? "text-green-500" : "text-white"}`}>↓</span>
+                         </div>
+                      </div>
+
+                      <div className={`w-14 h-20 rounded-[28px] border-2 transition-all duration-500 flex items-center justify-center relative shadow-[0_0_30px_rgba(255,255,255,0.05)] border-white/20 bg-white/5`}>
+                        <div className={`w-1.5 h-4 rounded-full transition-all duration-500 absolute ${
+                          (onboardingNavWheelDownDone && !onboardingNavWheelUpDone)
+                            ? "bg-indigo-400 animate-[bounce_1s_infinite] shadow-[0_0_10px_#6366f1] top-10"
+                            : (onboardingNavUpDone && !onboardingNavWheelDownDone)
+                              ? "bg-indigo-400 animate-[bounce_1s_infinite] shadow-[0_0_10px_#6366f1] top-4"
+                              : onboardingNavDownDone
+                                ? "bg-white/10 top-10"
+                                : "bg-white/10 top-4"
+                        }`} />
+                        <div className={`w-0.5 h-10 bg-white/10 rounded-full绝对 transition-opacity opacity-100`} />
+                      </div>
+                  </div>
+                </div>
+
+                {/* Step 3: Personalization */}
+                <div 
+                  className={`absolute flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
+                    onboardingNavDone && !onboardingPersonalizationDone 
+                      ? "opacity-100 scale-100 translate-y-0" 
+                      : onboardingPersonalizationDone ? "opacity-0 scale-90 -translate-y-10" : "opacity-0 scale-110 translate-y-10"
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <h3 className="text-3xl font-black text-white drop-shadow-2xl tracking-tighter italic uppercase mb-2">Внешний вид</h3>
+                    <p className="text-base max-w-[320px] leading-relaxed drop-shadow-md text-zinc-300">
+                      Настройте интерфейс под себя
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col gap-4 w-[320px] pointer-events-auto">
+                      <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-bold text-white">Широкие карточки</span>
+                          <span className="text-[10px] text-zinc-500">Backdrop режим</span>
+                        </div>
+                        <Switch 
+                          checked={cardDisplayMode === "backdrop"}
+                          onCheckedChange={(checked) => {
+                            handleDisplayModeChange(checked);
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-bold text-white">Инфо под постером</span>
+                          <span className="text-[10px] text-zinc-500">Названия и метаданные</span>
+                        </div>
+                        <Switch 
+                          checked={showPosterMetadata}
+                          onCheckedChange={(show) => {
+                            handleMetadataChange(show);
+                          }}
+                        />
+                      </div>
+
+                      <button 
+                        onClick={() => setOnboardingPersonalizationDone(true)}
+                        className="w-full py-3 rounded-xl bg-blue-500 text-white font-black uppercase text-sm shadow-[0_10px_30px_rgba(59,130,246,0.3)] hover:bg-blue-400 transition-colors"
+                      >
+                        Продолжить
+                      </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Step 3: Top UI Hints (Only after basic nav is done) */}
-              {onboardingNavDone && onboardingSliderDone && (
+              {/* Step 4: Top UI Hints (Only after basic nav & personalization is done) */}
+              {onboardingNavDone && onboardingSliderDone && onboardingPersonalizationDone && (
                 <>
                   {/* Fullscreen Hint */}
                   <div className={`absolute right-6 top-[60px] flex flex-col items-center gap-1 transition-all duration-500 z-[70] ${onboardingFullscreenDone ? "opacity-100" : "animate-bounce delay-100"}`}>
@@ -3062,30 +3097,99 @@ export function DesktopHome({
               )}
 
               {/* Status Indicator */}
-              <div className="absolute top-10 left-1/2 -translate-x-1/2 animate-in fade-in duration-500 delay-1000">
-                <div className="flex flex-col items-center gap-4">
-                  <span className="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white text-sm font-black backdrop-blur-md uppercase tracking-[0.2em] shadow-2xl">
-                    Интерактивный квест
-                  </span>
-                  <div className="flex gap-2">
+              <div className="absolute top-10 left-1/2 -translate-x-1/2 animate-in fade-in duration-500 delay-700">
+                  <div className="flex gap-2 p-3 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
                     <div className={`w-8 h-1.5 rounded-full transition-all duration-500 ${onboardingSliderDone ? "bg-green-500 shadow-[0_0_10px_#22c55e]" : "bg-white/20"}`} />
                     <div className={`w-8 h-1.5 rounded-full transition-all duration-500 ${onboardingNavDone ? "bg-green-500 shadow-[0_0_10px_#22c55e]" : "bg-white/20"}`} />
+                    <div className={`w-8 h-1.5 rounded-full transition-all duration-500 ${onboardingPersonalizationDone ? "bg-green-500 shadow-[0_0_10px_#22c55e]" : "bg-white/20"}`} />
                     <div className={`w-8 h-1.5 rounded-full transition-all duration-500 ${onboardingFullscreenDone ? "bg-green-500 shadow-[0_0_10px_#22c55e]" : "bg-white/20"}`} />
                     <div className={`w-8 h-1.5 rounded-full transition-all duration-500 ${onboardingSearchDone ? "bg-green-500 shadow-[0_0_10px_#22c55e]" : "bg-white/20"}`} />
                   </div>
-                </div>
               </div>
 
               {/* Success Message - Solid Background & Interactive */}
-              {onboardingNavDone && onboardingSliderDone && onboardingFullscreenDone && onboardingSearchDone && (
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/95 backdrop-blur-3xl animate-in fade-in zoom-in duration-500 pointer-events-auto z-[110]">
-                   <div className="text-center space-y-8 animate-in slide-in-from-bottom-5 duration-700 delay-100 fill-mode-both">
-                      <div className="w-28 h-28 rounded-full bg-green-500 mx-auto flex items-center justify-center shadow-[0_0_80px_rgba(34,197,94,0.6)]">
-                        <Check className="w-14 h-14 text-black stroke-[4px]" />
+              {onboardingNavDone && onboardingSliderDone && onboardingFullscreenDone && onboardingSearchDone && onboardingPersonalizationDone && (
+                <div className={`absolute inset-0 flex items-center justify-center bg-zinc-950/98 backdrop-blur-[50px] pointer-events-auto z-[110] ${onboardingExiting ? "animate-out fade-out duration-1000" : "animate-in fade-in zoom-in duration-700"}`}>
+                   <Confetti />
+                   <div className="max-w-5xl w-full text-center space-y-16 px-6 relative z-10">
+                      <div className="space-y-6">
+                        <div className="relative inline-block group">
+                          <div className="w-24 h-24 rounded-[32px] bg-green-500 mx-auto flex items-center justify-center shadow-[0_0_80px_rgba(34,197,94,0.5)] transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
+                            <Check className="w-12 h-12 text-black stroke-[4px]" />
+                          </div>
+                          <div className="absolute -top-2 -right-6 bg-white text-black text-[10px] font-black px-2 py-1 rounded-[4px] shadow-xl uppercase tracking-tighter animate-pulse">
+                            Ок
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <h2 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-tight drop-shadow-2xl">
+                            Всё настроено!
+                          </h2>
+                          <p className="text-zinc-500 text-xl font-medium max-w-xl mx-auto leading-relaxed">
+                            Обучение завершено. Теперь вы готовы к комфортному просмотру любимых фильмов.
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <h2 className="text-6xl font-black text-white italic tracking-tighter uppercase leading-none">Превосходно!</h2>
-                        <p className="text-zinc-400 text-2xl font-medium leading-relaxed">Обучениe успешно завершено</p>
+
+                      {/* Feature Row - Cleaner, No blocks */}
+                      <div className="flex flex-wrap items-start justify-center gap-x-16 gap-y-10 max-w-4xl mx-auto">
+                         <div className="flex flex-col items-center gap-3 w-40 group">
+                            <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500/20 transition-all duration-300">
+                               <IconDeviceTv className="w-7 h-7" />
+                            </div>
+                            <div className="space-y-1">
+                               <h4 className="font-black text-white text-xs uppercase tracking-widest">4K качество</h4>
+                               <p className="text-[10px] text-zinc-500 leading-tight">UHD & HDR на любом экране</p>
+                            </div>
+                         </div>
+
+                         <div className="flex flex-col items-center gap-3 w-40 group">
+                            <div className="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 group-hover:bg-rose-500/20 transition-all duration-300">
+                               <Heart className="w-7 h-7" />
+                            </div>
+                            <div className="space-y-1 text-center">
+                               <h4 className="font-black text-white text-xs uppercase tracking-widest">Избранное</h4>
+                               <p className="text-[10px] text-zinc-500 leading-tight">Собирайте свою коллекцию одним нажатием</p>
+                            </div>
+                         </div>
+
+                         <div className="flex flex-col items-center gap-3 w-40 group">
+                            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500/20 transition-all duration-300">
+                               <Eye className="w-7 h-7" />
+                            </div>
+                            <div className="space-y-1 text-center">
+                               <h4 className="font-black text-white text-xs uppercase tracking-widest">Просмотрено</h4>
+                               <p className="text-[10px] text-zinc-500 leading-tight">История ваших просмотров всегда под рукой</p>
+                            </div>
+                         </div>
+
+                         <div className="flex flex-col items-center gap-3 w-40 group">
+                            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20 transition-all duration-300">
+                               <Zap className="w-7 h-7" />
+                            </div>
+                            <div className="space-y-1 text-center">
+                               <h4 className="font-black text-white text-xs uppercase tracking-widest">Хоткеи</h4>
+                               <p className="text-[10px] text-zinc-500 leading-tight">Управляйте интерфейсом как профи</p>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="pt-8">
+                        <button 
+                           onClick={() => {
+                              setOnboardingExiting(true);
+                              setTimeout(() => {
+                                localStorage.setItem("desktop_onboarding_done", "true");
+                                setShowOnboarding(false);
+                              }, 1100);
+                           }}
+                           className="group relative px-14 py-5 overflow-hidden rounded-[20px] bg-white text-black text-xl font-black uppercase transition-all hover:scale-105 active:scale-95 shadow-[0_20px_60px_rgba(255,255,255,0.15)]"
+                        >
+                           <span className="relative z-10 flex items-center gap-3">
+                              Начать <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                           </span>
+                           <div className="absolute inset-0 bg-linear-to-r from-white via-zinc-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
                       </div>
                    </div>
                 </div>
@@ -3094,10 +3198,13 @@ export function DesktopHome({
               {/* Skip Button - Always Interactive */}
               <button 
                 onClick={() => {
-                  localStorage.setItem("desktop_onboarding_done", "true");
-                  setShowOnboarding(false);
+                  setOnboardingExiting(true);
+                  setTimeout(() => {
+                    localStorage.setItem("desktop_onboarding_done", "true");
+                    setShowOnboarding(false);
+                  }, 1100);
                 }}
-                className="absolute bottom-10 right-10 px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-bold hover:bg-white/10 hover:text-white transition-all pointer-events-auto"
+                className={`absolute bottom-10 right-10 px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-bold hover:bg-white/10 hover:text-white transition-all pointer-events-auto ${onboardingExiting ? "opacity-0 scale-95 duration-500" : ""}`}
               >
                 Пропустить обучение
               </button>
@@ -3110,3 +3217,33 @@ export function DesktopHome({
   );
 }
 
+
+function Confetti() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[105]">
+      {Array.from({ length: 40 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-2 h-2 rounded-sm"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `-20px`,
+            backgroundColor: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"][
+              Math.floor(Math.random() * 5)
+            ],
+            animation: `confetti-fall ${2.5 + Math.random() * 2}s linear infinite`,
+            animationDelay: `${Math.random() * 5}s`,
+            transform: `rotate(${Math.random() * 360}deg)`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes confetti-fall {
+          0% { transform: translateY(-10vh) rotate(0deg) scale(1); opacity: 1; }
+          50% { opacity: 1; }
+          100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
