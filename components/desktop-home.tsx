@@ -2661,7 +2661,6 @@ export function DesktopHome({
                       fullscreenMode={isFullscreen}
                       hideFavoriteBadge
                       showAge
-                      autoFocusFirst={lastNavSourceRef.current === "keyboard"}
                     />
                   </div>
                 </div>

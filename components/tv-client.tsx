@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { DesktopSidebar } from "./desktop-home";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useTvFavorites } from "@/hooks/use-tv-favorites";
 import { useWatched } from "@/hooks/use-watched";
 import { Loader2, Play, Info, X, ChevronRight, Heart, Search } from "lucide-react";
 import Script from "next/script";
@@ -29,7 +30,8 @@ export function TvClient() {
   const hlsRef = useRef<any>(null);
   const dashRef = useRef<any>(null);
 
-  const { favorites, addFavorite, toggleFavorite } = useFavorites();
+  const { favorites: mainFavorites } = useFavorites();
+  const { favorites, toggleFavorite } = useTvFavorites();
   const { watched } = useWatched();
 
   // Load Dash.js & HLS.js
@@ -61,20 +63,23 @@ export function TvClient() {
             };
           } else if (line.startsWith("http")) {
             if (currentChannel.title) {
-              // Generate a simple hash from the URL for a stable ID
+              // Generate a simple hash from title + URL for better uniqueness
+              const seed = (currentChannel.title || "") + line;
               let hash = 0;
-              for (let i = 0; i < line.length; i++) {
-                const char = line.charCodeAt(i);
+              for (let i = 0; i < seed.length; i++) {
+                const char = seed.charCodeAt(i);
                 hash = (hash << 5) - hash + char;
-                hash = hash & hash; // Convert to 32bit integer
+                hash = hash & hash;
               }
               const stableId = "tv-" + Math.abs(hash).toString(36);
 
-              parsedChannels.push({
-                id: stableId,
-                ...currentChannel,
-                url: line,
-              } as Channel);
+              if (!parsedChannels.some(c => c.id === stableId)) {
+                parsedChannels.push({
+                  id: stableId,
+                  ...currentChannel,
+                  url: line,
+                } as Channel);
+              }
               currentChannel = {};
             }
           }
@@ -224,7 +229,7 @@ export function TvClient() {
       
       <DesktopSidebar
         activeRoute="/tv"
-        favoritesCount={favorites?.length || 0}
+        favoritesCount={mainFavorites?.length || 0}
         watchedCount={watched?.length || 0}
       />
 
