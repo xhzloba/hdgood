@@ -2147,7 +2147,7 @@ export function DesktopHome({
             ))}
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        <div className={`flex items-center justify-end gap-2 transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
           <div
             ref={searchWrapRef}
             className={`relative transition-all duration-200 ease-out z-50 group ${
