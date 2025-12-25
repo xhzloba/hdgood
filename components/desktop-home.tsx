@@ -2560,14 +2560,14 @@ export function DesktopHome({
 
       {/* Main Content Area */}
       <main
-        className={`relative z-10 ml-[clamp(64px,8vw,96px)] h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
+        className={`relative ${showOnboarding ? "" : "z-10"} ml-[clamp(64px,8vw,96px)] h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
       >
-        <div className="flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
-          <div className="w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] overflow-hidden">
+        <div className={`flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] ${showOnboarding ? "overflow-visible" : "overflow-hidden"}`}>
+          <div className={`w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] ${showOnboarding ? "overflow-visible" : "overflow-hidden"}`}>
             {/* Movie Info */}
             {activeMovie ? (
               <>
-                <div className="max-w-5xl w-full transition-[margin] duration-500 ease-out">
+                <div className={`max-w-5xl w-full transition-[margin] duration-500 ease-out ${showOnboarding ? "relative overflow-visible" : ""}`}>
                   <div
                     className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out ${logoBlockMarginClass}`}
                   >
@@ -2738,7 +2738,11 @@ export function DesktopHome({
                 </div>
 
                 {/* Trending Slider */}
-                <div className={`w-full ${sliderMarginClass}`}>
+                <div className={`w-full ${sliderMarginClass} relative transition-all duration-700 ${showOnboarding && !onboardingNavDone ? "scale-[1.01] z-[60]" : "z-10"}`}>
+                  {/* Neon highlight for movie slider during onboarding (Steps 1 & 2) */}
+                  {showOnboarding && !onboardingNavDone && (
+                    <div className="absolute -inset-x-8 -inset-y-6 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-2xl animate-pulse -z-10 shadow-[0_0_80px_rgba(59,130,246,0.3)]" />
+                  )}
                   <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
                     <MovieSlider
                       key={activeSlide.id}
@@ -2774,13 +2778,13 @@ export function DesktopHome({
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div
-          className={`absolute right-0 top-[clamp(200px,28vh,350px)] w-[clamp(160px,16vw,256px)] z-40 pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-all duration-700 ${
+          className={`absolute right-0 top-[clamp(200px,28vh,350px)] w-[clamp(160px,16vw,256px)] pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-all duration-700 ${
             activeMovie ? "opacity-100" : "opacity-0"
-          } ${showOnboarding && !onboardingNavDone ? "scale-105" : ""}`}
+          } ${showOnboarding && onboardingSliderDone && !onboardingNavDone ? "scale-105 z-[60]" : "z-40"}`}
         >
-          {/* Neon highlight for sidebar during onboarding */}
-          {showOnboarding && !onboardingNavDone && (
-            <div className="absolute inset-0 -m-4 bg-blue-500/5 border border-blue-500/20 rounded-[40px] blur-xl animate-pulse -z-10 shadow-[0_0_40px_rgba(59,130,246,0.15)]" />
+          {/* Neon highlight for sidebar during onboarding Step 2 */}
+          {showOnboarding && onboardingSliderDone && !onboardingNavDone && (
+            <div className="absolute inset-0 -m-4 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-xl animate-pulse -z-10 shadow-[0_0_60px_rgba(59,130,246,0.3)]" />
           )}
           {/* 
             Container height = 3 * Stride. 
@@ -2941,10 +2945,10 @@ export function DesktopHome({
         {/* Onboarding Overlay - Interactive Tasks */}
         {showOnboarding && (
           <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm animate-in fade-in duration-1000 pointer-events-auto overflow-hidden">
-            <div className="relative w-full h-full p-10 flex flex-col items-center justify-center">
+            <div className="relative w-full h-full p-10 flex flex-col items-center justify-start pt-[20vh] z-[70]">
               
               {/* Central Sequential Kvests Container */}
-              <div className="flex items-start gap-12 scale-110">
+              <div className="flex items-start gap-16 scale-110">
                 {/* Horizontal Slider Hint (Step 1) */}
                 <div 
                   className={`flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
