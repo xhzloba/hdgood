@@ -2674,21 +2674,21 @@ export function DesktopHome({
         </div>
         {/* Vertical Slider Indicators - Scrollable & Compact */}
         <div
-          className={`absolute right-0 top-[clamp(120px,18vh,180px)] w-[clamp(160px,16vw,256px)] z-40 pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-opacity duration-700 ${
+          className={`absolute right-0 top-[clamp(200px,28vh,350px)] w-[clamp(160px,16vw,256px)] z-40 pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-opacity duration-700 ${
             activeMovie ? "opacity-100" : "opacity-0"
           }`}
         >
           {/* 
             Container height = 3 * Stride. 
-            Stride = clamp(36px, 5vh, 50px).
+            Stride = clamp(28px, 4vh, 36px).
             We want to show 3 items, centered.
           */}
-          <div className="h-[calc(3*clamp(36px,5vh,50px))] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
+          <div className="h-[calc(3*clamp(28px,4vh,36px))] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
             <div
-              className="absolute top-0 right-0 flex flex-col gap-[clamp(8px,1.2vh,12px)] items-end transition-transform duration-500 ease-out w-full"
+              className="absolute top-0 right-0 flex flex-col gap-[clamp(4px,0.6vh,8px)] items-end transition-transform duration-500 ease-out w-full"
               style={{
                 // Stride * (1 - index) centers the active item (index) in the 2nd slot (1)
-                transform: `translateY(calc(clamp(36px,5vh,50px) * (1 - ${slideIndex})))`,
+                transform: `translateY(calc(clamp(28px,4vh,36px) * (1 - ${slideIndex})))`,
               }}
             >
               {slides.map((slide, i) => (
@@ -2699,20 +2699,25 @@ export function DesktopHome({
                     setSlideDirection(i > slideIndex ? "next" : "prev");
                     setSlideIndex(i);
                   }}
-                  className="group flex items-center gap-[clamp(8px,1vh,12px)] focus:outline-none pointer-events-auto h-[calc(clamp(36px,5vh,50px)-clamp(8px,1.2vh,12px))] px-2 rounded-lg transition-all duration-300"
+                  className="group flex items-center gap-[clamp(8px,1vh,12px)] focus:outline-none pointer-events-auto h-[calc(clamp(28px,4vh,36px)-clamp(4px,0.6vh,8px))] px-2 rounded-lg transition-all duration-300"
                 >
-                  <div
-                    className={`h-px transition-all duration-500 ${
-                      slideIndex === i
-                        ? "w-[clamp(24px,3vw,40px)] bg-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]"
-                        : "w-[clamp(16px,2vw,24px)] bg-white/30 group-hover:bg-white/70"
-                    }`}
-                  />
+                  <div className="relative flex items-center justify-center w-[clamp(24px,3vw,32px)]">
+                    <div
+                      className={`rounded-full transition-all duration-500 ${
+                        slideIndex === i
+                          ? "w-1 h-4 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)]"
+                          : "w-1 h-1 bg-white/20 group-hover:bg-white/50"
+                      }`}
+                    />
+                    {slideIndex === i && (
+                      <div className="absolute inset-0 bg-white/20 blur-md rounded-full animate-pulse" />
+                    )}
+                  </div>
                   <span
-                    className={`font-semibold uppercase tracking-[0.25em] transition-all duration-500 text-right whitespace-nowrap ${
+                    className={`font-semibold uppercase tracking-[0.2em] transition-all duration-500 text-right whitespace-nowrap ${
                       slideIndex === i
-                        ? "text-white text-[clamp(12px,1.4vh,16px)]"
-                        : "text-zinc-400 text-[clamp(10px,1.1vh,12px)] group-hover:text-zinc-200"
+                        ? "text-white text-[clamp(11px,1.3vh,14px)]"
+                        : "text-zinc-500 text-[clamp(9px,1vh,11px)] group-hover:text-zinc-300"
                     }`}
                   >
                     {(slide as any).navTitle || slide.title}
