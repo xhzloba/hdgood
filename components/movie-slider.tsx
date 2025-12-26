@@ -1181,7 +1181,7 @@ export default function MovieSlider({
                                       <img
                                         src={movie.logo}
                                         alt={movie.title}
-                                        className="max-w-[70%] max-h-[50%] object-contain drop-shadow-lg transition-transform duration-300 translate-y-8 group-hover:scale-110"
+                                        className="max-w-[70%] max-h-[50%] object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 translate-y-8 group-hover:scale-110"
                                       />
                                     </div>
                                   )}

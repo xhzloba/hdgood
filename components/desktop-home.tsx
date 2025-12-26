@@ -2603,7 +2603,11 @@ export function DesktopHome({
                       <img
                         src={activeMovie.logo}
                         alt={activeMovie.title}
-                        className="h-full w-auto object-contain drop-shadow-2xl transition-all duration-500 ease-out max-w-[min(52vw,520px)]"
+                        className={`h-full w-auto object-contain transition-all duration-500 ease-out max-w-[min(52vw,520px)] ${
+                          cardDisplayMode === "backdrop" 
+                            ? "drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" 
+                            : "drop-shadow-2xl"
+                        }`}
                       />
                     ) : isFetchingOverride ? (
                       // Show nothing or skeleton while checking for logo
