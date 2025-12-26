@@ -1260,7 +1260,7 @@ export default function MovieSlider({
                           })()}
                           {/* Studio Logos */}
                           {(() => {
-                            if (movie.isViewAll) return null;
+                            if (movie.isViewAll || cardType !== "backdrop") return null;
                             const logos = movie.studio_logo;
                             if (!logos) return null;
                             const logoList = Array.isArray(logos) ? logos : [logos];
@@ -1269,24 +1269,20 @@ export default function MovieSlider({
                             const hasAge = showAge && movie.age != null;
 
                             return (
-                              <div className="absolute bottom-0.5 right-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none">
+                              <div className="absolute top-3 left-3 z-[16] opacity-0 group-hover:opacity-100 group-[.is-focused]:opacity-100 transition-opacity duration-300 pointer-events-none">
                                 <div
-                                  className={`relative flex ${
-                                    hasAge ? "flex-col-reverse items-end" : "flex-row items-center"
-                                  } justify-center gap-1.5 p-2`}
+                                  className={`relative flex flex-row items-center justify-start gap-1 p-0`}
                                 >
                                   {/* Soft dark background glow for better visibility */}
                                   <div
-                                    className={`absolute inset-0 bg-black/60 blur-md scale-110 ${
-                                      hasAge ? "rounded-2xl" : "rounded-full"
-                                    }`}
+                                    className={`absolute inset-0 bg-black/40 blur-md scale-110 rounded-full`}
                                   />
                                   {displayLogos.map((logo: string, i: number) => (
                                     <img
                                       key={i}
                                       src={logo}
                                       alt="Studio"
-                                      className="relative h-[18px] md:h-[22px] object-contain drop-shadow-sm z-10"
+                                      className="relative h-[16px] md:h-[18px] object-contain drop-shadow-sm z-10"
                                     />
                                   ))}
                                 </div>
