@@ -27,6 +27,8 @@ import {
   Film,
   Check,
   Zap,
+  Layers,
+  ChevronDown,
 } from "lucide-react";
 import {
   Tooltip,
@@ -744,6 +746,9 @@ export function DesktopHome({
   const [onboardingFullscreenDone, setOnboardingFullscreenDone] = useState(false);
   const [onboardingSearchDone, setOnboardingSearchDone] = useState(false);
   const [onboardingPersonalizationDone, setOnboardingPersonalizationDone] = useState(false);
+
+  // New state to track if nav dropdown is open
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Track horizontal interaction first (Sequential Right then Left)
   useEffect(() => {
@@ -1654,6 +1659,9 @@ export function DesktopHome({
     };
 
     const handleWheel = (e: WheelEvent) => {
+      // If dropdown is open, don't hijack scroll
+      if (isDropdownOpen) return;
+
       lastNavSourceRef.current = "mouse";
       // Down scroll -> Next Slide
       if (e.deltaY > 0) handleInput("next");
@@ -1662,6 +1670,9 @@ export function DesktopHome({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // If dropdown is open, let default behavior happen (e.g. arrow keys in menu)
+      if (isDropdownOpen) return;
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
         lastNavSourceRef.current = "keyboard";
@@ -1680,7 +1691,7 @@ export function DesktopHome({
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [slideIndex, slides]);
+  }, [slideIndex, slides, isDropdownOpen]);
 
   // Fetch override for the initial movie or when activeMovie changes
   useEffect(() => {
@@ -2080,6 +2091,23 @@ export function DesktopHome({
   }, [enablePosterColors, paletteReady, ubColors, computeThemeColor]);
 
 
+
+
+
+  const dropdownSlides = useMemo(() => 
+    slides.map(s => ({
+      id: s.id,
+      title: String((typeof s.title === 'string' ? s.title : s.navTitle) || "Раздел")
+    })), 
+  [slides]);
+
+  const handleDropdownSlideChange = useCallback((id: string) => {
+    const idx = slides.findIndex(s => s.id === id);
+    if (idx !== -1 && idx !== slideIndex) {
+      setSlideDirection(idx > slideIndex ? "next" : "prev");
+      setSlideIndex(idx);
+    }
+  }, [slides, slideIndex]);
 
   return (
     <div
@@ -2765,6 +2793,9 @@ export function DesktopHome({
                       fullscreenMode={isFullscreen}
                       hideFavoriteBadge
                       showAge
+                      availableSlides={dropdownSlides}
+                      onSlideChange={handleDropdownSlideChange}
+                      currentSlideId={activeSlide.id}
                     />
                   </div>
                 </div>
@@ -2782,6 +2813,39 @@ export function DesktopHome({
             activeMovie ? "opacity-100" : "opacity-0"
           } ${showOnboarding && onboardingSliderDone && !onboardingNavDone ? "scale-105 z-[60]" : "z-40"}`}
         >
+          {/* Controls: See All & Categories Dropdown */}
+          <div className="pointer-events-auto flex flex-col items-end gap-3 mb-6">
+
+
+             <DropdownMenu onOpenChange={setIsDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 text-[11px] md:text-[13px] font-bold text-white/70 hover:text-white transition-colors uppercase tracking-widest outline-none group opacity-0 md:opacity-100">
+                  <span className="hidden md:inline">Категории</span>
+                  <Layers className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-zinc-950/95 border-zinc-800 text-zinc-200 backdrop-blur-md max-h-[400px] overflow-y-auto min-w-[200px] shadow-2xl">
+                <DropdownMenuLabel className="text-xs text-zinc-500 uppercase tracking-widest ml-1">
+                  Навигация
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10" />
+                {dropdownSlides.map((slide) => (
+                    <DropdownMenuItem
+                      key={slide.id}
+                      onClick={() => handleDropdownSlideChange(slide.id)}
+                      className={`cursor-pointer focus:bg-white/10 focus:text-white py-2.5 ${
+                        activeSlide.id === slide.id ? "bg-white/10 text-white font-bold" : ""
+                      }`}
+                    >
+                      <span className="truncate">{slide.title}</span>
+                      {activeSlide.id === slide.id && <Check className="w-3 h-3 ml-auto text-white/50" />}
+                    </DropdownMenuItem>
+                  ))
+                }
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           {/* Neon highlight for sidebar during onboarding Step 2 */}
           {showOnboarding && onboardingSliderDone && !onboardingNavDone && (
             <div className="absolute inset-0 -m-4 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-xl animate-pulse -z-10 shadow-[0_0_60px_rgba(59,130,246,0.3)]" />

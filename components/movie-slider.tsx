@@ -17,8 +17,16 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import movieOverrides from "@/data/overrides/movies.json";
 import { useFavorites } from "@/hooks/use-favorites";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CATEGORIES } from "@/lib/categories";
+import { ChevronDown, Layers } from "lucide-react";
+import movieOverrides from "@/data/overrides/movies.json";
 
 type MovieSliderProps = {
   url: string;
@@ -50,6 +58,9 @@ type MovieSliderProps = {
   items?: any[];
   hideFavoriteBadge?: boolean;
   showAge?: boolean;
+  availableSlides?: Array<{ id: string; title: string }>;
+  onSlideChange?: (id: string) => void;
+  currentSlideId?: string;
 };
 
 const fetcher = async (url: string, timeout: number = 10000) => {
@@ -172,6 +183,9 @@ export default function MovieSlider({
   items,
   hideFavoriteBadge = false,
   showAge = false,
+  availableSlides,
+  onSlideChange,
+  currentSlideId,
 }: MovieSliderProps) {
   const [page, setPage] = useState<number>(1);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
