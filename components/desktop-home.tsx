@@ -7,6 +7,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
@@ -2559,14 +2560,14 @@ export function DesktopHome({
 
       {/* Main Content Area */}
       <main
-        className={`relative ${showOnboarding ? "" : "z-10"} ml-[clamp(64px,8vw,96px)] h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
+        className={`relative ${showOnboarding && !onboardingExiting ? "" : "z-10"} ml-[clamp(64px,8vw,96px)] h-[100dvh] max-h-[100dvh] flex flex-col px-0 ${mainPaddingClass} transition-[padding] duration-500 ease-out`}
       >
         <div className={`flex-1 w-full flex flex-col gap-[clamp(12px,2vh,28px)] ${showOnboarding ? "overflow-visible" : "overflow-hidden"}`}>
           <div className={`w-full px-3 lg:px-4 2xl:px-6 max-w-none flex flex-col gap-[clamp(12px,2vh,28px)] ${showOnboarding ? "overflow-visible" : "overflow-hidden"}`}>
             {/* Movie Info */}
             {activeMovie ? (
               <>
-                <div className={`max-w-5xl w-full transition-[margin] duration-500 ease-out ${showOnboarding ? "relative overflow-visible" : ""}`}>
+                <div className={`max-w-5xl w-full transition-[margin] duration-500 ease-out ${showOnboarding ? "relative overflow-visible" : ""} ${onboardingExiting ? "z-[60]" : ""}`}>
                   <div
                     className={`${logoHeightClass} mb-[clamp(10px,1.5vh,22px)] flex items-center transition-[height] duration-500 ease-out ${logoBlockMarginClass}`}
                   >

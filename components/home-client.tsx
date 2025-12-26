@@ -15,6 +15,7 @@ import { getCountryLabel } from "@/lib/country-flags";
 import { ratingColor, formatRatingLabel } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DesktopHome, DesktopSidebar } from "@/components/desktop-home";
+import { SplashScreen } from "@/components/home/splash-screen";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useWatched } from "@/hooks/use-watched";
@@ -92,7 +93,22 @@ export default function HomeClient({
   const watchedCount = (watched || []).length;
   const [isMounted, setIsMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true);
+  const [isOnboardingPending, setIsOnboardingPending] = useState(false);
   useEffect(() => {
+    // Check if we should show the splash screen before mounting
+    const splashShown = sessionStorage.getItem("splash_shown");
+    if (!splashShown) {
+      setShowSplash(true);
+      sessionStorage.setItem("splash_shown", "true");
+    }
+    
+    const onboardingDone = localStorage.getItem("desktop_onboarding_done");
+    if (!onboardingDone) {
+      setIsOnboardingPending(true);
+    }
+
     setIsMounted(true);
   }, []);
 
@@ -404,6 +420,7 @@ export default function HomeClient({
           } catch {}
           setBgIndex(idx);
         }
+        setIsAppLoading(false);
         const idsToPrefetch = finalPairs
           .map((p) => p.id)
           .filter((v): v is string => !!v);
@@ -610,12 +627,26 @@ export default function HomeClient({
 
   const isMainPage = !selected;
 
-  if (isMounted && isMobile === false && !initialSelectedTitle) {
-    return <DesktopHome initialDisplayMode={initialCardDisplayMode} />;
-  }
-
   return (
-    <PosterBackground
+    <>
+      {/* Absolute priority: Black screen until mounted */}
+      {!isMounted && <div className="fixed inset-0 bg-black z-[9999]" />}
+
+      {isMounted && isMobile === false && !initialSelectedTitle && (
+        <>
+          {showSplash && (
+            <SplashScreen 
+              isLoading={isAppLoading} 
+              isOnboardingPending={isOnboardingPending}
+              onComplete={() => setShowSplash(false)} 
+            />
+          )}
+          <DesktopHome initialDisplayMode={initialCardDisplayMode} />
+        </>
+      )}
+
+      {isMounted && (isMobile !== false || !!initialSelectedTitle) && (
+        <PosterBackground
       posterUrl={overridePoster ?? currentPoster}
       bgPosterUrl={overrideBg ?? currentBg}
       disableMobileBackdrop
@@ -1183,5 +1214,7 @@ export default function HomeClient({
         </main>
       </div>
     </PosterBackground>
+      )}
+    </>
   );
 }
