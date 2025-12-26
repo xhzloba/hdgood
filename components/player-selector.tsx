@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { motion, AnimatePresence } from "framer-motion";
+import { Tv, Sparkles, Zap, Activity, Info } from "lucide-react";
 
 interface PlayerSelectorProps {
   onPlayerSelect?: (playerId: number) => void;
@@ -31,6 +33,7 @@ export function PlayerSelector({
   floatingControls = false,
 }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
 
   const handlePlayerSelect = (playerId: number) => {
     setSelectedPlayer(playerId);
@@ -91,55 +94,102 @@ export function PlayerSelector({
     return null;
   };
 
+  const getPlayerLabel = (playerId: number) => {
+    switch (playerId) {
+      case 1: return "Основной";
+      case 2: return "Резерв";
+      case 3: return "Балансировщик";
+      case 4: return "RSTPRG (4K)";
+      default: return "";
+    }
+  };
+
+  const getPlayerIcon = (playerId: number) => {
+    switch (playerId) {
+      case 1: return <Tv size={16} />;
+      case 2: return <Activity size={16} />;
+      case 3: return <Zap size={16} />;
+      case 4: return <Sparkles size={16} />;
+      default: return null;
+    }
+  };
+
   const selectedUrl = getPlayerUrl(selectedPlayer);
 
   const hasFixedStyle =
     !!videoContainerStyle &&
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
-  return floatingControls ? (
-    <div className={`relative w-full h-full ${className}`}>
-      <div className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
-        {[1, 2, 3, 4].map((playerId) => {
-          const disabled =
-            (playerId === 1 && !player1Available) ||
-            (playerId === 2 && !player2Available) ||
-            (playerId === 3 && !player3Available) ||
-            (playerId === 4 && !player4Available);
-          const isActive = selectedPlayer === playerId;
 
-          return (
-            <button
-              key={playerId}
-              type="button"
-              onClick={() => {
-                if (!disabled) handlePlayerSelect(playerId);
-              }}
-              disabled={disabled}
-              className={`relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full border text-[10px] md:text-[11px] font-semibold transition-all duration-200 ${
-                disabled
-                  ? "border-white/15 bg-black/40 text-white/30 cursor-not-allowed opacity-60"
-                  : isActive
-                  ? "bg-white text-black border-white shadow-[0_12px_30px_rgba(0,0,0,0.75)] scale-105"
-                  : "bg-black/60 text-white/80 border-white/25 hover:bg-white/10 hover:border-white/50 hover:text-white"
-              }`}
-            >
-              П{playerId}
-              {playerId === 4 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500 text-[6px] items-center justify-center text-white font-black">
-                    NEW
-                  </span>
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+  return floatingControls ? (
+    <div className={`relative w-full h-full ${className} group/container`}>
+      {/* Minimalist Vertical Player Dock */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-2.5 p-1.5 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl"
+      >
+        <div className="flex flex-col gap-2">
+          {[1, 2, 3, 4].map((playerId) => {
+            const disabled =
+              (playerId === 1 && !player1Available) ||
+              (playerId === 2 && !player2Available) ||
+              (playerId === 3 && !player3Available) ||
+              (playerId === 4 && !player4Available);
+            const isActive = selectedPlayer === playerId;
+            const isHovered = hoveredPlayer === playerId;
+
+            return (
+              <div key={playerId} className="relative flex items-center justify-end">
+                {/* Minimal Tooltip */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: -8 }}
+                      exit={{ opacity: 0, x: -5 }}
+                      className="absolute right-full whitespace-nowrap px-2 py-1 rounded-lg bg-white text-black text-[10px] font-black uppercase tracking-tighter shadow-xl pointer-events-none z-50 mr-1"
+                    >
+                      {getPlayerLabel(playerId)}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <button
+                  type="button"
+                  onMouseEnter={() => setHoveredPlayer(playerId)}
+                  onMouseLeave={() => setHoveredPlayer(null)}
+                  onClick={() => {
+                    if (!disabled) handlePlayerSelect(playerId);
+                  }}
+                  disabled={disabled}
+                  className={`group relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-xl border transition-all duration-300 ${
+                    disabled
+                      ? "border-white/5 bg-white/5 text-white/20 cursor-not-allowed opacity-40"
+                      : isActive
+                      ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105 z-10"
+                      : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white"
+                  }`}
+                >
+                  <span className="text-[11px] font-black uppercase">П{playerId}</span>
+
+                  {/* NEW Badge refinement */}
+                  {playerId === 4 && !disabled && (
+                    <div className="absolute -top-1 -right-1 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 border border-black/20 shadow-[0_0_8px_#3b82f6]"></span>
+                    </div>
+                  )}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </motion.div>
+
       <div
-        className={`group relative w-full h-full rounded-xl overflow-hidden ${
+        className={`group relative w-full h-full rounded-[24px] overflow-hidden ${
           videoContainerClassName || "bg-black"
-        } shadow-2xl ring-1 ring-white/10 z-0`}
+        } shadow-[0_30px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 z-0 transition-all duration-700`}
         style={videoContainerStyle}
       >
         {selectedUrl ? (
