@@ -49,10 +49,17 @@ export function PlayerSelector({
     return `https://looking.as.newplayjj.com:9443/?kp=${kpId}&token=5af6e7af5ffb19f2ddb300d28d90f8&season=1&episode=1`;
   };
 
+  // Формируем URL для четвертого плеера (RSTPRG)
+  const getPlayer4Url = () => {
+    if (!kpId) return null;
+    return `https://api.rstprgapipt.com/balancer-api/iframe?kp=${kpId}&token=eyJhbGciOiJIUzI1NiJ9.eyJ3ZWJTaXRlIjoiNTM5IiwiaXNzIjoiYXBpLXdlYm1hc3RlciIsInN1YiI6IjYwNiIsImlhdCI6MTc2Njc1MjU0OCwianRpIjoiOGQ1MDhjMTQtNjRlZS00NGM0LWFjYjUtNjg2NjA1MmNiMDMwIiwic2NvcGUiOiJETEUifQ.n43myxCQ1dV_5_UpJA_7pThO-AYy0irAAQco0TE9hd0`;
+  };
+
   // Доступность плееров
   const player1Available = Boolean(iframeUrl);
   const player2Available = Boolean(kpId);
   const player3Available = Boolean(kpId);
+  const player4Available = Boolean(kpId);
 
   useEffect(() => {
     if (selectedPlayer == null) {
@@ -62,12 +69,15 @@ export function PlayerSelector({
         handlePlayerSelect(1);
       } else if (player3Available) {
         handlePlayerSelect(3);
+      } else if (player4Available) {
+        handlePlayerSelect(4);
       }
     }
   }, [
     player2Available,
     player1Available,
     player3Available,
+    player4Available,
     kpId,
     iframeUrl,
     selectedPlayer,
@@ -77,6 +87,7 @@ export function PlayerSelector({
     if (playerId === 1) return iframeUrl ?? null;
     if (playerId === 2) return getPlayer2Url();
     if (playerId === 3) return getPlayer3Url();
+    if (playerId === 4) return getPlayer4Url();
     return null;
   };
 
@@ -88,11 +99,12 @@ export function PlayerSelector({
   return floatingControls ? (
     <div className={`relative w-full h-full ${className}`}>
       <div className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
-        {[1, 2, 3].map((playerId) => {
+        {[1, 2, 3, 4].map((playerId) => {
           const disabled =
             (playerId === 1 && !player1Available) ||
             (playerId === 2 && !player2Available) ||
-            (playerId === 3 && !player3Available);
+            (playerId === 3 && !player3Available) ||
+            (playerId === 4 && !player4Available);
           const isActive = selectedPlayer === playerId;
 
           return (
@@ -150,11 +162,12 @@ export function PlayerSelector({
             <SelectValue placeholder="Выберите плеер" />
           </SelectTrigger>
           <SelectContent className="z-[150]" position="popper">
-            {[1, 2, 3].map((playerId) => {
+            {[1, 2, 3, 4].map((playerId) => {
               const disabled =
                 (playerId === 1 && !player1Available) ||
                 (playerId === 2 && !player2Available) ||
-                (playerId === 3 && !player3Available);
+                (playerId === 3 && !player3Available) ||
+                (playerId === 4 && !player4Available);
 
               return (
                 <SelectItem
