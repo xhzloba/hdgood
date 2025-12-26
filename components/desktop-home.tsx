@@ -487,7 +487,7 @@ export function DesktopSidebar({
         </span>
       </Link>
 
-      <nav className="flex flex-col gap-[clamp(12px,2vh,24px)] flex-1 justify-center w-full items-center">
+      <nav className="flex flex-col gap-[clamp(8px,1.2vh,16px)] flex-1 justify-center w-full items-center">
         <NavItem
           icon={<Search className={sidebarIconClass} />}
           label="Поиск"
