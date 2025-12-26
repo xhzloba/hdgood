@@ -2824,24 +2824,39 @@ export function DesktopHome({
                   <Layers className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-zinc-950/95 border-zinc-800 text-zinc-200 backdrop-blur-md max-h-[400px] overflow-y-auto min-w-[200px] shadow-2xl">
-                <DropdownMenuLabel className="text-xs text-zinc-500 uppercase tracking-widest ml-1">
-                  Навигация
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/10" />
-                {dropdownSlides.map((slide) => (
-                    <DropdownMenuItem
-                      key={slide.id}
-                      onClick={() => handleDropdownSlideChange(slide.id)}
-                      className={`cursor-pointer focus:bg-white/10 focus:text-white py-2.5 ${
-                        activeSlide.id === slide.id ? "bg-white/10 text-white font-bold" : ""
-                      }`}
-                    >
-                      <span className="truncate">{slide.title}</span>
-                      {activeSlide.id === slide.id && <Check className="w-3 h-3 ml-auto text-white/50" />}
-                    </DropdownMenuItem>
-                  ))
-                }
+              <DropdownMenuContent 
+                align="end" 
+                sideOffset={10}
+                className="w-[240px] bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] p-1.5 z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 duration-200"
+              >
+                <div className="px-2 py-2 mb-1">
+                  <span className="text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">
+                    Навигация
+                  </span>
+                </div>
+                
+                <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1 customize-scrollbar">
+                  {dropdownSlides.map((slide) => {
+                    const isActive = activeSlide.id === slide.id;
+                    return (
+                      <DropdownMenuItem
+                        key={slide.id}
+                        onClick={() => handleDropdownSlideChange(slide.id)}
+                        className={`group relative flex items-center justify-between px-4 py-3 rounded-lg outline-none cursor-pointer border border-transparent transition-all duration-300 ease-out hover:bg-black focus:bg-black ${
+                          isActive ? "bg-zinc-50" : ""
+                        }`}
+                      >
+                        <span className="text-[13px] uppercase tracking-widest font-extrabold text-black group-hover:text-white group-focus:text-white transition-all duration-300 ease-out group-hover:translate-x-1 group-focus:translate-x-1">
+                          {slide.title}
+                        </span>
+
+                        {isActive && (
+                          <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
+                        )}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
