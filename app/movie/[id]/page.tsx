@@ -2733,6 +2733,8 @@ export default function MoviePage({
               onPlayerSelect={(playerId: number) => setSelectedPlayer(playerId)}
               iframeUrl={franchise?.iframe_url || movie.iframe_url}
               kpId={kpId}
+              movieLogo={movie?.poster_logo || movie?.logo}
+              onClose={() => setShowWatchOverlay(false)}
             />
           </div>
         </div>

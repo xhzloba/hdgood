@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tv, Sparkles, Zap, Activity, Info } from "lucide-react";
+import { Tv, Sparkles, Zap, Activity, Info, X } from "lucide-react";
 
 interface PlayerSelectorProps {
   onPlayerSelect?: (playerId: number) => void;
@@ -20,6 +20,7 @@ interface PlayerSelectorProps {
   videoContainerClassName?: string;
   videoContainerStyle?: React.CSSProperties;
   floatingControls?: boolean;
+  movieLogo?: string;
 }
 
 export function PlayerSelector({
@@ -31,6 +32,7 @@ export function PlayerSelector({
   videoContainerClassName = "",
   videoContainerStyle,
   floatingControls = false,
+  movieLogo,
 }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
@@ -95,13 +97,7 @@ export function PlayerSelector({
   };
 
   const getPlayerLabel = (playerId: number) => {
-    switch (playerId) {
-      case 1: return "Основной";
-      case 2: return "Резерв";
-      case 3: return "Балансировщик";
-      case 4: return "RSTPRG (4K)";
-      default: return "";
-    }
+    return `Плеер ${playerId}`;
   };
 
   const getPlayerIcon = (playerId: number) => {
@@ -184,6 +180,18 @@ export function PlayerSelector({
             );
           })}
         </div>
+
+        {/* Separator */}
+        <div className="w-8 h-[1px] bg-white/10" />
+
+        {/* Close button */}
+        <button 
+          onClick={onClose}
+          className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
+          title="Закрыть плеер"
+        >
+          <X size={18} />
+        </button>
       </motion.div>
 
       <div
@@ -193,14 +201,29 @@ export function PlayerSelector({
         style={videoContainerStyle}
       >
         {selectedUrl ? (
-          <iframe
-            src={selectedUrl}
-            className="w-full h-full border-0"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            title="Movie Player"
-            style={{ zIndex: 1 }}
-          />
+          <>
+            {movieLogo && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 0.7, y: 0 }}
+                className="hidden md:flex absolute top-28 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none"
+              >
+                <img 
+                  src={movieLogo} 
+                  alt="Logo" 
+                  className="h-[clamp(40px,6vh,60px)] w-auto object-contain"
+                />
+              </motion.div>
+            )}
+            <iframe
+              src={selectedUrl}
+              className="w-full h-full border-0"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              title="Movie Player"
+              style={{ zIndex: 1 }}
+            />
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-500">
             <span className="text-sm">Плеер недоступен</span>
@@ -251,14 +274,29 @@ export function PlayerSelector({
         style={videoContainerStyle}
       >
         {selectedUrl ? (
-          <iframe
-            src={selectedUrl}
-            className="w-full h-full border-0"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            title="Movie Player"
-            style={{ zIndex: 1 }}
-          />
+          <>
+            {movieLogo && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 0.7, y: 0 }}
+                className="hidden md:flex absolute top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none"
+              >
+                <img 
+                  src={movieLogo} 
+                  alt="Logo" 
+                  className="h-[45px] w-auto object-contain"
+                />
+              </motion.div>
+            )}
+            <iframe
+              src={selectedUrl}
+              className="w-full h-full border-0"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              title="Movie Player"
+              style={{ zIndex: 1 }}
+            />
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-500">
             <span className="text-sm">Плеер недоступен</span>
