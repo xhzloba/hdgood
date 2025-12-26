@@ -98,10 +98,11 @@ export default function HomeClient({
   const [isOnboardingPending, setIsOnboardingPending] = useState(false);
   useEffect(() => {
     // Check if we should show the splash screen before mounting
-    const splashShown = sessionStorage.getItem("splash_shown");
+    // Reverted to sessionStorage: shows on new tab entry, but skipped on back navigation
+    const splashShown = sessionStorage.getItem("hd_splash_session_shown");
     if (!splashShown) {
       setShowSplash(true);
-      sessionStorage.setItem("splash_shown", "true");
+      sessionStorage.setItem("hd_splash_session_shown", "true");
     }
     
     const onboardingDone = localStorage.getItem("desktop_onboarding_done");

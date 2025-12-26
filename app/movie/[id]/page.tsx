@@ -53,13 +53,9 @@ const fetcher = async (
     try {
       const response = await fetch(url, {
         signal: controller.signal,
-        // Keep-alive для переиспользования соединений (ускоряет запросы)
-        keepalive: true,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          // Указываем что можем принимать сжатые ответы
-          "Accept-Encoding": "gzip, deflate, br",
         },
       });
 
@@ -113,19 +109,13 @@ const fetchMovieFullData = async (id: string) => {
     `https://api.vokino.pro/v2/view/${id}`,
     5000,
     2
-  ).catch((e) => {
-    console.error(
-      `❌ View API error: ${Date.now() - viewStart}ms -`,
-      e instanceof Error ? e.message : String(e)
-    );
-    throw e;
-  });
+  );
 
   const timelineStart = Date.now();
   const timelinePromise = fetcher(
     `https://api.vokino.tv/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
-    3000,
-    2
+    2000, // Reduced timeout for timeline
+    1    // Fewer retries for timeline
   ).catch((e) => {
     console.warn(
       `⚠️ Timeline API error: ${Date.now() - timelineStart}ms -`,
@@ -134,9 +124,19 @@ const fetchMovieFullData = async (id: string) => {
     return null;
   });
 
-  const [movieData, timelineData] = await Promise.all([
-    viewPromise,
+  // Wait for the main movie data first
+  const movieData = await viewPromise.catch((e) => {
+    console.error(
+      `❌ View API error: ${Date.now() - viewStart}ms -`,
+      e instanceof Error ? e.message : String(e)
+    );
+    throw e;
+  });
+
+  // Try to get timeline data but don't block for more than 500ms if movieData is already here
+  const timelineData = await Promise.race([
     timelinePromise,
+    new Promise((resolve) => setTimeout(() => resolve(null), 500)),
   ]);
 
   if (!movieData || typeof movieData !== "object") {
