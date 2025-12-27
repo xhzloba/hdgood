@@ -5097,5 +5097,15 @@
     "addedPaths": [
       "studio_logo"
     ]
+  },
+  {
+    "id": "694084e0a8fc02c79facb588",
+    "timestamp": "2025-12-27T09:45:14.510Z",
+    "poster": "/movies/пойматьмонстра.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "bg_poster.backdrop"
+    ]
   }
 ]
