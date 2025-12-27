@@ -2819,32 +2819,34 @@ export function DesktopHome({
                   {showOnboarding && !onboardingPersonalizationDone && (
                     <div className="absolute -inset-x-8 -inset-y-6 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-2xl animate-pulse -z-10 shadow-[0_0_80px_rgba(59,130,246,0.3)]" />
                   )}
-                  <div key={slideIndex} className={`w-full ${sliderAnimClass}`}>
-                    <MovieSlider
-                      key={activeSlide.id}
-                      url={activeSlide.url || "/favorites"}
-                      title={activeSlide.title}
-                      items={activeSlide.items}
-                      viewAllHref={activeSlide.viewAllHref}
-                      viewAllInHeader={
-                        !!activeSlide.id &&
-                        headerViewAllSlides.has(activeSlide.id)
-                      }
-                      onMovieHover={handleMovieHover}
-                      compactOnMobile={false}
-                      perPageOverride={15}
-                      hideIndicators
-                      hideMetadata={!showPosterMetadata}
-                      enableGlobalKeyNavigation
-                      cardType={cardDisplayMode}
-                      fetchAllPages={(activeSlide as any).fetchAll}
-                      fullscreenMode={isFullscreen}
-                      hideFavoriteBadge
-                      showAge
-                      availableSlides={dropdownSlides}
-                      onSlideChange={handleDropdownSlideChange}
-                      currentSlideId={activeSlide.id}
-                    />
+                  <div className="w-full relative">
+                    <div className="slider-fade-in">
+                      <MovieSlider
+                        key={activeSlide.id}
+                        url={activeSlide.url || "/favorites"}
+                        title={activeSlide.title}
+                        items={activeSlide.items}
+                        viewAllHref={activeSlide.viewAllHref}
+                        viewAllInHeader={
+                          !!activeSlide.id &&
+                          headerViewAllSlides.has(activeSlide.id)
+                        }
+                        onMovieHover={handleMovieHover}
+                        compactOnMobile={false}
+                        perPageOverride={15}
+                        hideIndicators
+                        hideMetadata={!showPosterMetadata}
+                        enableGlobalKeyNavigation
+                        cardType={cardDisplayMode}
+                        fetchAllPages={(activeSlide as any).fetchAll}
+                        fullscreenMode={isFullscreen}
+                        hideFavoriteBadge
+                        showAge
+                        availableSlides={dropdownSlides}
+                        onSlideChange={handleDropdownSlideChange}
+                        currentSlideId={activeSlide.id}
+                      />
+                    </div>
                   </div>
                 </div>
               </>

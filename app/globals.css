@@ -1457,3 +1457,26 @@ html[data-toploader="silent"] #nprogress .peg {
 [data-keyboard-nav="true"] [data-slot="carousel-item"] {
   pointer-events: none;
 }
+
+/* Плавное появление слайдера при смене слайдов */
+@keyframes sliderFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Плавное появление слайдера */
+.slider-fade-in {
+  animation: sliderFadeIn 0.25s ease-out;
+}
+
+/* Стабилизация позиции стрелок карусели */
+[data-slot="carousel-previous"],
+[data-slot="carousel-next"] {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
