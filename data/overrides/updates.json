@@ -5107,5 +5107,69 @@
     "addedPaths": [
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "694c6261700ccb861b06cf92",
+    "timestamp": "2025-12-27T09:47:58.085Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo"
+    ]
+  },
+  {
+    "id": "694c6261700ccb861b06cf92",
+    "timestamp": "2025-12-27T09:48:21.686Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "poster_logo"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T09:53:24.763Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T09:54:25.889Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T09:56:44.720Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65bd65e2ee1c644577c745a7",
+    "timestamp": "2025-12-27T10:05:22.673Z",
+    "poster": "/movies/аргайл.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]

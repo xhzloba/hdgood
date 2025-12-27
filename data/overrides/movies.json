@@ -2090,5 +2090,28 @@
     "poster_logo": "/movies/logo/166.png",
     "poster": "/movies/пойматьмонстра.webp",
     "studio_logo": "/movies/logo/eone.svg"
+  },
+  "694c6261700ccb861b06cf92": {
+    "poster_logo": "/movies/logo/167.png",
+    "studio_logo": "/movies/logo/bazelevs.svg"
+  },
+  "694db3e0700ccb861b1524d3": {
+    "poster_logo": "/movies/logo/168.png",
+    "studio_logo": [
+      "/movies/logo/columbia.svg",
+      "/movies/logo/tsg.svg"
+    ],
+    "poster": "/movies/анаконда.webp",
+    "bg_poster": {
+      "backdrop": "/movies/анаконда-backdrop.webp"
+    }
+  },
+  "65bd65e2ee1c644577c745a7": {
+    "poster_logo": "/movies/logo/169.webp",
+    "studio_logo": "/movies/logo/apple.svg",
+    "poster": "/movies/аргайл.webp",
+    "bg_poster": {
+      "backdrop": "/movies/аргайл-backdrop.webp"
+    }
   }
 }
