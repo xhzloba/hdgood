@@ -2082,5 +2082,10 @@
     "bg_poster": {
       "backdrop": "/movies/освобождение.jpg"
     }
+  },
+  "694084e0a8fc02c79facb588": {
+    "poster_logo": "/movies/logo/166.png",
+    "poster": "/movies/пойматьмонстра.webp",
+    "studio_logo": "/movies/logo/eone.svg"
   }
 }
