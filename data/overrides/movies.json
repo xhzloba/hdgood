@@ -2096,6 +2096,13 @@
     "studio_logo": "/movies/logo/bazelevs.svg"
   },
   "694db3e0700ccb861b1524d3": {
+    "poster_colors": {
+      "dominant1": [
+        82,
+        111,
+        49
+      ]
+    },
     "poster_logo": "/movies/logo/168.png",
     "studio_logo": [
       "/movies/logo/columbia.svg",

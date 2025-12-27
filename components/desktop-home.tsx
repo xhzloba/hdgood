@@ -1252,7 +1252,11 @@ export function DesktopHome({
       return;
     }
 
+    let cancelled = false;
+    let overrideCheckCancelled = false;
+
     const tryApplyOverrideColors = (ovColors: any) => {
+      if (cancelled) return false;
       const toHex = (arr?: number[]) => {
         if (!Array.isArray(arr) || arr.length < 3) return null;
         const [r, g, b] = arr;
@@ -1273,9 +1277,11 @@ export function DesktopHome({
           br: br || tl || DEFAULT_UB_COLORS.br,
           bl: bl || br || DEFAULT_UB_COLORS.bl,
         };
-        setUbColors(next);
-        if (cacheKey) paletteCacheRef.current[cacheKey] = next;
-        setPaletteReady(true);
+        if (!cancelled) {
+          setUbColors(next);
+          if (cacheKey) paletteCacheRef.current[cacheKey] = next;
+          setPaletteReady(true);
+        }
         return true;
       }
       return false;
@@ -1283,23 +1289,37 @@ export function DesktopHome({
 
     // Если уже есть цвета в активном фильме (из override) — применяем и выходим
     const directOvColors = (activeMovie as any)?.poster_colors;
-    if (directOvColors && tryApplyOverrideColors(directOvColors)) return;
+    if (directOvColors && tryApplyOverrideColors(directOvColors)) {
+      return () => {
+        cancelled = true;
+        overrideCheckCancelled = true;
+      };
+    }
 
     // Если есть кэш — используем без мерцания
     if (cacheKey && paletteCacheRef.current[cacheKey]) {
-      setUbColors(paletteCacheRef.current[cacheKey]);
-      setPaletteReady(true);
-      return;
+      if (!cancelled) {
+        setUbColors(paletteCacheRef.current[cacheKey]);
+        setPaletteReady(true);
+      }
+      return () => {
+        cancelled = true;
+        overrideCheckCancelled = true;
+      };
     }
 
     try {
       const overridesCache = (globalThis as any).__movieOverridesCache || {};
       const ovColors = movieId ? overridesCache[movieId]?.poster_colors : null;
-      if (ovColors && tryApplyOverrideColors(ovColors)) return;
+      if (ovColors && tryApplyOverrideColors(ovColors)) {
+        return () => {
+          cancelled = true;
+          overrideCheckCancelled = true;
+        };
+      }
     } catch {}
 
     // Если overrides не дали цвета — попробуем забрать свежие overrides, затем fallback на автопалитру
-    let overrideApplied = false;
     if (movieId) {
       void (async () => {
         try {
@@ -1307,13 +1327,17 @@ export function DesktopHome({
             headers: { Accept: "application/json" },
             cache: "no-store",
           });
-          if (!res.ok) return;
+          if (overrideCheckCancelled || cancelled) return;
+          if (!res.ok) {
+            // Если запрос не удался, продолжаем с автопалитрой
+            return;
+          }
           const data = await res.json();
+          if (overrideCheckCancelled || cancelled) return;
           const ov = data?.[movieId];
           if (ov?.poster_colors) {
             const ok = tryApplyOverrideColors(ov.poster_colors);
             if (ok) {
-              overrideApplied = true;
               const overridesCache =
                 (globalThis as any).__movieOverridesCache ||
                 ((globalThis as any).__movieOverridesCache = {});
@@ -1321,13 +1345,15 @@ export function DesktopHome({
                 ...(overridesCache[movieId] || {}),
                 poster_colors: ov.poster_colors,
               };
+              return; // Выходим, если override применен
             }
           }
-        } catch {}
+          // Если override не дал цвета, продолжаем с автопалитрой ниже
+        } catch {
+          // При ошибке продолжаем с автопалитрой
+        }
       })();
     }
-
-    if (overrideApplied) return;
 
     const loadImage = (
       source: string
@@ -1453,7 +1479,7 @@ export function DesktopHome({
     };
 
     const applyPalette = (palette: number[][] | null) => {
-      if (cancelled) return;
+      if (cancelled || overrideCheckCancelled) return;
       const colors = (palette || [])
         .map((p) => ({ raw: p, hsl: rgbToHsl(p[0], p[1], p[2]) }))
         .filter((c) => {
@@ -1541,16 +1567,23 @@ export function DesktopHome({
       setPaletteReady(true);
     };
 
-    let cancelled = false;
     let blobUrl: string | null = null;
     const run = async () => {
       try {
         const { img, blobUrl: bu } = await loadImage(src);
+        if (cancelled || overrideCheckCancelled) {
+          if (bu) URL.revokeObjectURL(bu);
+          return;
+        }
         blobUrl = bu || null;
         const palette = getPaletteFromImage(img);
-        if (!cancelled) applyPalette(palette.length > 0 ? palette : null);
+        if (!cancelled && !overrideCheckCancelled) {
+          applyPalette(palette.length > 0 ? palette : null);
+        }
       } catch {
-        if (!cancelled) applyPalette(null);
+        if (!cancelled && !overrideCheckCancelled) {
+          applyPalette(null);
+        }
       }
     };
 
@@ -1558,9 +1591,10 @@ export function DesktopHome({
 
     return () => {
       cancelled = true;
+      overrideCheckCancelled = true;
       if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
-  }, [activeMovie?.poster, activeMovie?.backdrop, enablePosterColors]);
+  }, [activeMovie?.id, activeMovie?.poster, activeMovie?.backdrop, enablePosterColors]);
 
   const slides = useMemo<Slide[]>(() => {
     if (customSlides && customSlides.length > 0) return customSlides;
@@ -1885,7 +1919,17 @@ export function DesktopHome({
       };
       activeIdRef.current = String(normalized.id);
       setActiveMovie((prev: any) => {
-        if (prev && String(prev.id) === String(normalized.id)) return prev;
+        // Всегда обновляем, даже если id совпадает, чтобы триггерить пересчет цветов
+        // если изменились poster, backdrop или другие поля
+        if (prev && String(prev.id) === String(normalized.id)) {
+          // Проверяем, действительно ли что-то изменилось
+          const posterChanged = prev.poster !== normalized.poster;
+          const backdropChanged = prev.backdrop !== normalized.backdrop;
+          const colorsChanged = prev.poster_colors !== normalized.poster_colors;
+          if (!posterChanged && !backdropChanged && !colorsChanged) {
+            return prev; // Ничего не изменилось
+          }
+        }
         return normalized;
       });
     });
@@ -3331,3 +3375,4 @@ function Confetti() {
     </div>
   );
 }
+
