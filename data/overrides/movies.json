@@ -2111,7 +2111,13 @@
     "poster": "/movies/анаконда.webp",
     "bg_poster": {
       "backdrop": "/movies/анаконда-backdrop.webp"
-    }
+    },
+    "trailers": [
+      {
+        "id": "tW2nIOoLVok",
+        "name": "Анаконда 2025"
+      }
+    ]
   },
   "65bd65e2ee1c644577c745a7": {
     "poster_logo": "/movies/logo/169.webp",

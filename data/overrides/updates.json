@@ -5181,5 +5181,49 @@
     "addedPaths": [
       "poster_colors.dominant1"
     ]
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T18:38:14.520Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T18:38:15.418Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T18:38:15.583Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T18:38:15.740Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "694db3e0700ccb861b1524d3",
+    "timestamp": "2025-12-27T18:39:16.152Z",
+    "poster": "/movies/анаконда.webp",
+    "title": null,
+    "changedPaths": [
+      "trailers"
+    ],
+    "addedPaths": []
   }
 ]
