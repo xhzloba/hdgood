@@ -29,6 +29,9 @@ import {
   Zap,
   Layers,
   ChevronDown,
+  Volume2,
+  VolumeX,
+  X,
 } from "lucide-react";
 import {
   Tooltip,
@@ -50,6 +53,10 @@ import {
   IconHeart,
 } from "@tabler/icons-react";
 import { CATEGORIES } from "@/lib/categories";
+import {
+  TrailerPlayer,
+  getEmbedSrcFromTrailer,
+} from "@/components/trailer-player";
 import MovieSlider from "@/components/movie-slider";
 import useSWR from "swr";
 import Link from "next/link";
@@ -111,6 +118,7 @@ type NormalizedMovie = {
   quality?: any;
   tags?: any;
   age?: any;
+  trailers?: any;
 };
 
 const TRENDING_URL =
@@ -402,9 +410,9 @@ function BackdropImage({ src }: { src: string }) {
   return (
     <div className="absolute top-0 right-0 w-[85%] h-[70vh] overflow-hidden pointer-events-none select-none z-0">
       {/* Previous Image Layer */}
-      {prev && (
+      {prev && prev !== current && (
         <img
-          key={prev}
+          key={`prev-${prev}`}
           src={prev}
           className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 blur-xl scale-105 ${
             isLoading ? "opacity-100" : "opacity-0"
@@ -417,7 +425,7 @@ function BackdropImage({ src }: { src: string }) {
       {current && (
         <img
           ref={imgRef}
-          key={current}
+          key={`curr-${current}`}
           src={current}
           className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${
             isLoading
@@ -733,6 +741,13 @@ export function DesktopHome({
   const [canInstall, setCanInstall] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingExiting, setOnboardingExiting] = useState(false);
+  const [showHoverTrailer, setShowHoverTrailer] = useState(false);
+  const [hoverTrailerUrl, setHoverTrailerUrl] = useState<string | null>(null);
+  const [isTrailerMuted, setIsTrailerMuted] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isTrailerDialogOpen, setIsTrailerDialogOpen] = useState(false);
+  const [activeTrailers, setActiveTrailers] = useState<any[]>([]);
+  const hoverTrailerTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [onboardingNavDone, setOnboardingNavDone] = useState(false);
   const [onboardingNavDownDone, setOnboardingNavDownDone] = useState(false);
   const [onboardingNavUpDone, setOnboardingNavUpDone] = useState(false);
@@ -1764,6 +1779,7 @@ export function DesktopHome({
                 backdrop: ov.bg_poster?.backdrop || prev.backdrop,
                 poster_colors: ov.poster_colors || prev.poster_colors,
                 studio_logo: (ov as any)?.studio_logo ?? (prev as any)?.studio_logo ?? null,
+                trailers: ov.trailers || prev.trailers,
               };
             });
           }
@@ -1834,6 +1850,7 @@ export function DesktopHome({
       poster_colors: cachedOverride?.poster_colors ?? first.poster_colors,
       studio_logo:
         (cachedOverride as any)?.studio_logo ?? (first as any)?.studio_logo ?? null,
+      trailers: cachedOverride?.trailers ?? first.trailers ?? null,
       quality:
         first.quality ??
         (rawList[0] as any)?.details?.quality ??
@@ -1874,6 +1891,128 @@ export function DesktopHome({
   useEffect(() => {
     if (activeMovie?.id != null) activeIdRef.current = String(activeMovie.id);
   }, [activeMovie?.id]);
+
+  // Hover Trailer Logic
+  useEffect(() => {
+    // Reset state when movie changes
+    setShowHoverTrailer(false);
+    setHoverTrailerUrl(null);
+    setIsTrailerMuted(true);
+    
+    // Initialize trailers from movie props if available (overrides)
+    const initialTrailers = (activeMovie as any)?.trailers || [];
+    const normalizedInitial = Array.isArray(initialTrailers) ? initialTrailers : [initialTrailers];
+    setActiveTrailers(normalizedInitial);
+    
+    // If we have initial trailers, try to set the URL immediately
+    const initialYoutube = normalizedInitial.find((t: any) => {
+      const src = getEmbedSrcFromTrailer(t);
+      return src && src.includes("youtube.com/embed");
+    });
+    if (initialYoutube) {
+      let src = getEmbedSrcFromTrailer(initialYoutube);
+      if (src) {
+        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        const separator = src.includes("?") ? "&" : "?";
+        src += `${separator}autoplay=1&mute=1&controls=0&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
+        setHoverTrailerUrl(src);
+      }
+    }
+
+    if (hoverTrailerTimerRef.current) {
+      clearTimeout(hoverTrailerTimerRef.current);
+    }
+
+    if (!activeMovie?.id) return;
+
+    const movieId = String(activeMovie.id);
+
+    // Fetch trailer data immediately (or from cache) to show the button ASAP
+    const fetchTrailer = async () => {
+      try {
+        const cache = (globalThis as any).__movieDataCache || ((globalThis as any).__movieDataCache = {});
+        let fullData = cache[movieId];
+
+        if (!fullData) {
+          const res = await fetch(`https://api.vokino.pro/v2/view/${movieId}`);
+          if (res.ok) {
+            const movieData = await res.json();
+            fullData = { movieData };
+            cache[movieId] = fullData;
+          }
+        }
+
+        if (fullData?.movieData) {
+          const apiTrailers = fullData.movieData.details?.trailers || fullData.movieData.trailers || [];
+          const movieTrailers = (activeMovie as any)?.trailers || [];
+          
+          const combined = [
+            ...(Array.isArray(movieTrailers) ? movieTrailers : [movieTrailers]),
+            ...(Array.isArray(apiTrailers) ? apiTrailers : [apiTrailers])
+          ].filter(Boolean);
+
+          const normalizedTrailers = Array.from(new Set(combined.map(t => JSON.stringify(t))))
+            .map(s => JSON.parse(s));
+            
+          setActiveTrailers(normalizedTrailers);
+
+          // Find first valid YouTube trailer
+          const youtubeTrailer = normalizedTrailers.find((t: any) => {
+            const src = getEmbedSrcFromTrailer(t);
+            return src && src.includes("youtube.com/embed");
+          });
+
+          if (youtubeTrailer) {
+            let src = getEmbedSrcFromTrailer(youtubeTrailer);
+            if (src) {
+              const origin = typeof window !== "undefined" ? window.location.origin : "";
+              const separator = src.includes("?") ? "&" : "?";
+              src += `${separator}autoplay=1&mute=1&controls=0&playsinline=1&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&enablejsapi=1&origin=${origin}&widget_referrer=${origin}`;
+              setHoverTrailerUrl(src);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch trailer", e);
+      }
+    };
+
+    // Use a smaller debounce for the actual API call if not in cache
+    const cache = (globalThis as any).__movieDataCache;
+    if (cache && cache[movieId]) {
+      fetchTrailer();
+    } else {
+      hoverTrailerTimerRef.current = setTimeout(fetchTrailer, 300);
+    }
+
+    return () => {
+      if (hoverTrailerTimerRef.current) {
+        clearTimeout(hoverTrailerTimerRef.current);
+      }
+    };
+  }, [activeMovie?.id]);
+
+  // Handle YouTube messages to detect when trailer ends
+  useEffect(() => {
+    if (!showHoverTrailer) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://www.youtube.com" && event.origin !== "https://www.youtube-nocookie.com") return;
+      
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event === "infoDelivery" && data.info && data.info.playerState === 0) {
+          // playerState 0 is ended
+          setShowHoverTrailer(false);
+        }
+      } catch (e) {
+        // Not a JSON or not from YT
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [showHoverTrailer]);
 
   const handleMovieHover = useCallback((movie: any) => {
     if (!movie) return;
@@ -1916,6 +2055,7 @@ export function DesktopHome({
         type: m.type ?? null,
         quality: m.quality ?? null,
         tags: m.tags ?? null,
+        trailers: ov?.trailers ?? m.trailers ?? null,
       };
       activeIdRef.current = String(normalized.id);
       setActiveMovie((prev: any) => {
@@ -2160,7 +2300,25 @@ export function DesktopHome({
       }`}
     >
       {/* Background Backdrop */}
-      <BackdropImage src={getBackdrop(activeMovie)} />
+      {showHoverTrailer && hoverTrailerUrl ? (
+        <div className="absolute top-0 right-0 w-[85%] h-[70vh] overflow-hidden z-0">
+          <iframe
+            ref={iframeRef}
+            src={`${hoverTrailerUrl}${hoverTrailerUrl.includes("?") ? "&" : "?"}autoplay=1&mute=1&enablejsapi=1`}
+            className="w-full h-full object-cover scale-[1.35]"
+            allow="autoplay; encrypted-media"
+            style={{ border: "none" }}
+          />
+
+          {/* Gradients to match BackdropImage */}
+          <div className="absolute inset-0 bg-linear-to-r from-zinc-950 via-zinc-950/30 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-zinc-950 to-transparent pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-b from-zinc-950/80 to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 bottom-0 w-96 bg-linear-to-l from-zinc-950 via-zinc-950/60 to-transparent pointer-events-none" />
+        </div>
+      ) : (
+        <BackdropImage src={getBackdrop(activeMovie)} />
+      )}
       {/* Цветовой слой из постера (отключен) */}
       {showColorLayer && (
         <div
@@ -2745,6 +2903,70 @@ export function DesktopHome({
                       />
                       <span className={primaryButtonTextClass}>Смотреть</span>
                     </Link>
+
+                    {(() => {
+                      const hasTrailers = activeTrailers.length > 0 || (activeMovie as any)?.trailers?.length > 0;
+                      
+                      if (showHoverTrailer) {
+                        return (
+                          <div className="flex items-center gap-2">
+                            {/* Mute Toggle */}
+                            <button
+                              onClick={() => {
+                                const newMute = !isTrailerMuted;
+                                setIsTrailerMuted(newMute);
+                                if (iframeRef.current?.contentWindow) {
+                                  iframeRef.current.contentWindow.postMessage(
+                                    JSON.stringify({
+                                      event: "command",
+                                      func: newMute ? "mute" : "unMute",
+                                    }),
+                                    "*"
+                                  );
+                                }
+                              }}
+                              className={`rounded-full transition active:scale-95 backdrop-blur-md border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 p-2 md:p-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)]`}
+                              title={isTrailerMuted ? "Включить звук" : "Выключить звук"}
+                            >
+                              {isTrailerMuted ? <VolumeX size={playIconSize} /> : <Volume2 size={playIconSize} />}
+                            </button>
+
+                            {/* Close Trailer */}
+                            <button
+                              onClick={() => setShowHoverTrailer(false)}
+                              className={`rounded-full transition active:scale-95 backdrop-blur-md border-2 border-zinc-400/50 text-zinc-200 hover:border-white hover:text-white hover:bg-white/10 p-2 md:p-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)]`}
+                              title="Закрыть трейлер"
+                            >
+                              <X size={playIconSize} />
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <button
+                          disabled={!hasTrailers}
+                          onClick={() => {
+                            if (hoverTrailerUrl) {
+                              setShowHoverTrailer(true);
+                            } else {
+                              setIsTrailerDialogOpen(true);
+                            }
+                          }}
+                          className={`rounded-[4px] font-bold flex items-center justify-center gap-2 transition active:scale-95 flex-1 md:flex-none backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.5)] ${primaryButtonSizeClass} ${
+                            hasTrailers 
+                              ? "bg-zinc-600/40 text-white hover:bg-zinc-600/60" 
+                              : "bg-zinc-800/20 text-zinc-500 cursor-not-allowed opacity-50"
+                          }`}
+                        >
+                          <Clapperboard
+                            size={playIconSize}
+                            className="w-[clamp(18px,2vh,24px)] h-[clamp(18px,2vh,24px)]"
+                          />
+                          <span className={primaryButtonTextClass}>Трейлер</span>
+                        </button>
+                      );
+                    })()}
                     <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -3343,6 +3565,21 @@ export function DesktopHome({
           </div>
         )}
       </main>
+
+      {/* Trailer Dialog */}
+      <Dialog open={isTrailerDialogOpen} onOpenChange={setIsTrailerDialogOpen}>
+        <DialogContent className="max-w-4xl bg-zinc-950 border-zinc-800 p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="p-4 bg-zinc-900/50 border-b border-zinc-800">
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Clapperboard className="w-5 h-5 text-zinc-400" />
+              Трейлеры: {activeMovie?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="p-1">
+            <TrailerPlayer trailers={activeTrailers} mode="carousel" />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
