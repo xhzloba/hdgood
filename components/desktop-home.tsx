@@ -2907,6 +2907,8 @@ export function DesktopHome({
                     {(() => {
                       const hasTrailers = activeTrailers.length > 0 || (activeMovie as any)?.trailers?.length > 0;
                       
+                      if (!hasTrailers && !showHoverTrailer) return null;
+
                       if (showHoverTrailer) {
                         return (
                           <div className="flex items-center gap-2">
