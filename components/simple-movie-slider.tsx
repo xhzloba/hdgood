@@ -196,17 +196,17 @@ export default function SimpleMovieSlider({
       {(title || viewAllHref) && (
         <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
           {title ? (
-            <h2 className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">{title}</h2>
+            <h2 className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-3xl short:text-base short:md:text-lg short:lg:text-xl font-black tracking-wider text-white uppercase relative z-20 drop-shadow-md font-[family-name:var(--font-inter-tight)]">{title}</h2>
           ) : (
             <div />
           )}
           {viewAllHref && (
             <Link
               href={viewAllHref}
-              className="text-xs md:text-sm font-medium text-zinc-400 hover:text-white transition-colors relative z-20 flex items-center gap-1"
+              className="text-[10px] md:text-xs lg:text-sm short:text-[9px] font-medium text-zinc-400 hover:text-white transition-colors relative z-20 flex items-center gap-1"
             >
               {viewAllLabel}
-              <span className="text-[10px]">›</span>
+              <span className="text-[10px] short:text-[8px]">›</span>
             </Link>
           )}
         </div>
@@ -271,7 +271,9 @@ export default function SimpleMovieSlider({
                       <img
                         src={movie.poster}
                         alt={movie.title}
-                        loading="lazy"
+                        decoding="async"
+                        loading={index < 10 ? "eager" : "lazy"}
+                        fetchPriority={index < 10 ? "high" : "low"}
                         onLoad={() => handleImageLoad(movie.id)}
                         className={`w-full h-full object-cover transition-all duration-500 will-change-transform group-hover:scale-105 ${
                           loadedImages.has(String(movie.id)) ? "opacity-100 blur-0" : "opacity-0 blur-md"

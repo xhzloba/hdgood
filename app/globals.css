@@ -3,6 +3,7 @@
 @import "flag-icons/css/flag-icons.min.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant short (@media (max-height: 700px));
 
 :root {
   --background: oklch(0.98 0.02 220);

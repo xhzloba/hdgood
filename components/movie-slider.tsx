@@ -716,21 +716,21 @@ export default function MovieSlider({
   return (
     <div className="space-y-4">
       {title && (
-        <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
-          <div className="text-lg md:text-2xl font-bold text-zinc-100 relative z-20 drop-shadow-md tracking-wide">
-            {title}
+          <div className="flex items-center justify-between relative z-20 mb-4 px-1 md:px-0">
+            <h2 className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-3xl short:text-base short:md:text-lg short:lg:text-xl font-black tracking-wider text-white uppercase font-[family-name:var(--font-inter-tight)]">
+              {title}
+            </h2>
+            {viewAllInHeader && viewAllHref && (
+              <Link
+                href={viewAllHref}
+                className="inline-flex items-center gap-2 text-xs md:text-sm lg:text-base short:text-[10px] short:md:text-xs font-bold text-white hover:text-white/80 transition-colors"
+              >
+                <span>{viewAllLabel || "Смотреть все"}</span>
+                <ChevronRight className="w-4 h-4 md:w-[18px] md:h-[18px] short:w-3 short:h-3" />
+              </Link>
+            )}
           </div>
-          {viewAllInHeader && viewAllHref && (
-            <Link
-              href={viewAllHref}
-              className="inline-flex items-center gap-2 text-sm md:text-base font-bold text-white hover:text-white/80 transition-colors"
-            >
-              <span>{viewAllLabel || "Смотреть все"}</span>
-              <ChevronRight className="w-[18px] h-[18px]" />
-            </Link>
-          )}
-        </div>
-      )}
+        )}
       {error && display.length === 0 ? (
         <div className="text-center py-6">
           <div className="inline-block bg-red-950/50 border border-red-900/50 p-3 text-red-400 rounded backdrop-blur-sm">
@@ -1142,10 +1142,10 @@ export default function MovieSlider({
                                     alt={movie.title || "Постер"}
                                     decoding="async"
                                     loading={
-                                      index < itemsPerView ? "eager" : "lazy"
+                                      index < (itemsPerView + 4) ? "eager" : "lazy"
                                     }
                                     fetchPriority={
-                                      index < itemsPerView ? "high" : "low"
+                                      index < (itemsPerView + 4) ? "high" : "low"
                                     }
                                     className={`w-full h-full object-cover rounded-[10px] transition-all ease-out poster-media ${
                                       loadedImages.has(String(movie.id))
