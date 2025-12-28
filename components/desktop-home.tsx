@@ -2402,11 +2402,13 @@ export function DesktopHome({
             </DropdownMenu>
 
             {/* Active Category Badge */}
-            <div className="hidden xl:flex items-center gap-4 h-full shrink-0">
+            <div className="hidden xl:flex items-center gap-4 h-11 shrink-0">
               <div className="w-px h-4 bg-white/10 hidden sm:block" />
-              <span className="text-[13px] font-black text-white uppercase tracking-widest min-w-[100px]">
-                {activeSlide.title}
-              </span>
+              <div className="flex items-center min-w-[120px] h-full">
+                <span className="text-[14px] font-black uppercase leading-none tracking-wider bg-gradient-to-r from-white via-white/90 to-white/40 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                  {activeSlide.title}
+                </span>
+              </div>
             </div>
           </div>
         </div>
