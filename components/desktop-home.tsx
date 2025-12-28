@@ -2416,13 +2416,13 @@ export function DesktopHome({
         <div className={`flex items-center justify-center h-full pointer-events-none select-none transition-opacity duration-700 ${showOnboarding ? "opacity-0" : "opacity-100"}`}>
           {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) &&
             (showStudioTopLogo ? (
-              <div className="flex items-center gap-2 translate-x-[40px]">
+              <div className="flex items-center gap-2 -translate-x-8 lg:-translate-x-10">
                 {activeStudioLogos.map((src, index) => (
                   <img
                     key={`${src}-${index}`}
                     src={src}
                     alt="Логотип студии"
-                    className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)]`}
+                    className={`${netflixTopLogoHeightClass} w-auto opacity-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]`}
                   />
                 ))}
               </div>
@@ -2434,7 +2434,7 @@ export function DesktopHome({
                     : "/movies/warners.svg"
                 }
                 alt={showNetflixTopLogo ? "Netflix" : "Warner Bros"}
-                className={`${netflixTopLogoHeightClass} w-auto opacity-95 drop-shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_22px_rgba(0,0,0,0.9)] translate-x-[40px]`}
+                className={`${netflixTopLogoHeightClass} w-auto opacity-100 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] -translate-x-8 lg:-translate-x-10`}
               />
             ))}
         </div>
