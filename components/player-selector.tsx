@@ -21,6 +21,8 @@ interface PlayerSelectorProps {
   videoContainerStyle?: React.CSSProperties;
   floatingControls?: boolean;
   movieLogo?: string;
+  season?: number;
+  episode?: number;
 }
 
 export function PlayerSelector({
@@ -33,6 +35,8 @@ export function PlayerSelector({
   videoContainerStyle,
   floatingControls = false,
   movieLogo,
+  season,
+  episode,
 }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
@@ -45,19 +49,33 @@ export function PlayerSelector({
   // Формируем URL для второго плеера
   const getPlayer2Url = () => {
     if (!kpId) return null;
-    return `https://92d73433.obrut.show/embed/MjM/kinopoisk/${kpId}`;
+    let url = `https://92d73433.obrut.show/embed/MjM/kinopoisk/${kpId}`;
+    if (season && episode) {
+      url += `/season/${season}/episode/${episode}`;
+    }
+    return url;
   };
 
   // Формируем URL для третьего плеера
   const getPlayer3Url = () => {
     if (!kpId) return null;
-    return `https://looking.as.newplayjj.com:9443/?kp=${kpId}&token=5af6e7af5ffb19f2ddb300d28d90f8&season=1&episode=1`;
+    let url = `https://looking.as.newplayjj.com:9443/?kp=${kpId}&token=5af6e7af5ffb19f2ddb300d28d90f8`;
+    if (season && episode) {
+      url += `&season=${season}&episode=${episode}`;
+    } else {
+      url += `&season=1&episode=1`;
+    }
+    return url;
   };
 
   // Формируем URL для четвертого плеера (RSTPRG)
   const getPlayer4Url = () => {
     if (!kpId) return null;
-    return `https://api.rstprgapipt.com/balancer-api/iframe?kp=${kpId}&token=eyJhbGciOiJIUzI1NiJ9.eyJ3ZWJTaXRlIjoiNTM5IiwiaXNzIjoiYXBpLXdlYm1hc3RlciIsInN1YiI6IjYwNiIsImlhdCI6MTc2Njc1MjU0OCwianRpIjoiOGQ1MDhjMTQtNjRlZS00NGM0LWFjYjUtNjg2NjA1MmNiMDMwIiwic2NvcGUiOiJETEUifQ.n43myxCQ1dV_5_UpJA_7pThO-AYy0irAAQco0TE9hd0`;
+    let url = `https://api.rstprgapipt.com/balancer-api/iframe?kp=${kpId}&token=eyJhbGciOiJIUzI1NiJ9.eyJ3ZWJTaXRlIjoiNTM5IiwiaXNzIjoiYXBpLXdlYm1hc3RlciIsInN1YiI6IjYwNiIsImlhdCI6MTc2Njc1MjU0OCwianRpIjoiOGQ1MDhjMTQtNjRlZS00NGM0LWFjYjUtNjg2NjA1MmNiMDMwIiwic2NvcGUiOiJETEUifQ.n43myxCQ1dV_5_UpJA_7pThO-AYy0irAAQco0TE9hd0`;
+    if (season && episode) {
+      url += `&s=${season}&e=${episode}`;
+    }
+    return url;
   };
 
   // Доступность плееров
@@ -68,21 +86,21 @@ export function PlayerSelector({
 
   useEffect(() => {
     if (selectedPlayer == null) {
-      if (player4Available) {
+      if (player1Available) {
+        handlePlayerSelect(1);
+      } else if (player4Available) {
         handlePlayerSelect(4);
       } else if (player2Available) {
         handlePlayerSelect(2);
-      } else if (player1Available) {
-        handlePlayerSelect(1);
       } else if (player3Available) {
         handlePlayerSelect(3);
       }
     }
   }, [
-    player2Available,
     player1Available,
-    player3Available,
     player4Available,
+    player2Available,
+    player3Available,
     kpId,
     iframeUrl,
     selectedPlayer,

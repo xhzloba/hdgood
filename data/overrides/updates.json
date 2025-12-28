@@ -5354,5 +5354,25 @@
       "studio_logo",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "6593f9108914c04deaead025",
+    "timestamp": "2025-12-28T12:33:10.835Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "about"
+    ]
+  },
+  {
+    "id": "6593f9108914c04deaead025",
+    "timestamp": "2025-12-28T12:33:26.239Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "about"
+    ],
+    "addedPaths": []
   }
 ]

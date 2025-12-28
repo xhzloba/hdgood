@@ -295,6 +295,7 @@ export default function MoviePage({
   const [openSeasons, setOpenSeasons] = useState<Set<number>>(new Set([1])); // По умолчанию открыт только первый сезон
   const [playingEpisode, setPlayingEpisode] = useState<{
     seasonNumber: number;
+    episodeNumber: number;
     url: string;
     title: string;
   } | null>(null); // Для inline iframe
@@ -869,8 +870,13 @@ export default function MoviePage({
   };
 
   // Функции для управления inline iframe с эпизодом
-  const playEpisode = (seasonNumber: number, url: string, title: string) => {
-    setPlayingEpisode({ seasonNumber, url, title });
+  const playEpisode = (
+    seasonNumber: number,
+    episodeNumber: number,
+    url: string,
+    title: string
+  ) => {
+    setPlayingEpisode({ seasonNumber, episodeNumber, url, title });
   };
 
   const closeEpisode = (seasonNumber: number) => {
@@ -2550,7 +2556,11 @@ export default function MoviePage({
                         <div className="p-4 pt-0 border-t border-white/5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                           {season.episodes.map((episode: FranchiseEpisode) => {
                             const isAvailable =
-                              !!(episode.iframe_url || season.iframe_url) &&
+                              !!(
+                                episode.iframe_url ||
+                                season.iframe_url ||
+                                kpId
+                              ) &&
                               (!episode.availability ||
                                 new Date(episode.availability) <= new Date());
 
@@ -2560,19 +2570,16 @@ export default function MoviePage({
                                 disabled={!isAvailable}
                                 onClick={() => {
                                   if (!isAvailable) return;
-                                  if (episode.iframe_url) {
-                                    playEpisode(
-                                      season.season,
-                                      episode.iframe_url,
-                                      `S${season.season} E${episode.episode}`
-                                    );
-                                  } else if (season.iframe_url) {
-                                    playEpisode(
-                                      season.season,
-                                      season.iframe_url,
-                                      `S${season.season} E${episode.episode}`
-                                    );
-                                  }
+                                  const epUrl =
+                                    episode.iframe_url ||
+                                    season.iframe_url ||
+                                    "";
+                                  playEpisode(
+                                    season.season,
+                                    episode.episode,
+                                    epUrl,
+                                    `S${season.season} E${episode.episode}`
+                                  );
                                 }}
                                 className={`flex items-start gap-3 p-3 rounded transition text-left group relative overflow-hidden ${
                                   isAvailable
@@ -2742,26 +2749,21 @@ export default function MoviePage({
 
       {/* Episode Player Overlay */}
       {playingEpisode && (
-        <div className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="relative w-full max-w-6xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-            <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-start pointer-events-none">
-              <div className="pointer-events-auto">
-                <h3 className="text-white font-bold text-lg drop-shadow-md">
-                  {playingEpisode.title}
-                </h3>
-              </div>
-              <button
-                onClick={() => closeEpisode(playingEpisode.seasonNumber)}
-                className="pointer-events-auto bg-black/50 hover:bg-red-500/80 text-white p-2 rounded-full transition backdrop-blur-md"
-              >
-                <X size={24} />
-              </button>
+        <div className="fixed inset-0 z-[130] bg-black">
+          <div className="absolute inset-0">
+            <div className="absolute top-3 left-3 text-xs md:text-sm text-white/70 font-semibold pointer-events-none select-none z-50">
+              ESC / Backspace — закрыть • {playingEpisode.title}
             </div>
-            <iframe
-              src={playingEpisode.url}
-              className="w-full h-full bg-black"
-              allowFullScreen
-              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            <PlayerSelector
+              floatingControls
+              className="w-full h-full"
+              videoContainerClassName="w-full h-full bg-black"
+              iframeUrl={playingEpisode.url}
+              kpId={kpId}
+              season={playingEpisode.seasonNumber}
+              episode={playingEpisode.episodeNumber}
+              movieLogo={movie?.poster_logo || movie?.logo}
+              onClose={() => setPlayingEpisode(null)}
             />
           </div>
         </div>
