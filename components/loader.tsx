@@ -82,7 +82,7 @@ export function Loader({ size = "md", className }: LoaderProps) {
         </svg>
       </div>
 
-      {size === "lg" && (
+      {/* {size === "lg" && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}
@@ -90,7 +90,7 @@ export function Loader({ size = "md", className }: LoaderProps) {
         >
           Загрузка
         </motion.div>
-      )}
+      )} */}
     </div>
   );
 }
