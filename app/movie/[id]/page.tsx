@@ -17,6 +17,7 @@ import {
   Volume2,
   VolumeX,
   Heart,
+  Loader2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -1102,14 +1103,13 @@ export default function MoviePage({
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] min-h-screen relative bg-zinc-950">
-        {/* Background overlay */}
-        <div className="fixed inset-0 bg-zinc-950/95 backdrop-blur-3xl -z-10" />
-
-        <div className="max-w-6xl mx-auto px-4 pt-0 pb-6 md:py-8 relative z-0">
-          <div className="flex items-center justify-center min-h-[100dvh] min-h-screen">
-            <Loader size="lg" />
-          </div>
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+        <div className="relative">
+          <Loader2 size={40} className="text-white animate-spin opacity-10" />
+          <Loader2 
+            size={40} 
+            className="text-zinc-500 animate-spin absolute inset-0 [animation-duration:1.5s]" 
+          />
         </div>
       </div>
     );

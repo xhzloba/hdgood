@@ -44,17 +44,22 @@ export function PlayerSelector({
   const [isSwitchingPlayer, setIsSwitchingPlayer] = useState(false);
   const [showError, setShowError] = useState(false);
 
-  const handlePlayerSelect = (playerId: number) => {
+  const handlePlayerSelect = (playerId: number, isManual = true) => {
     if (selectedPlayer === playerId) return;
     
-    setIsSwitchingPlayer(true);
+    if (isManual) {
+      setIsSwitchingPlayer(true);
+    }
+    
     setSelectedPlayer(playerId);
     onPlayerSelect?.(playerId);
     
-    // Снимаем лоадер переключения через небольшую паузу
-    setTimeout(() => {
-      setIsSwitchingPlayer(false);
-    }, 800);
+    if (isManual) {
+      // Снимаем лоадер переключения через небольшую паузу
+      setTimeout(() => {
+        setIsSwitchingPlayer(false);
+      }, 800);
+    }
   };
 
   // Формируем URL для второго плеера
@@ -124,13 +129,13 @@ export function PlayerSelector({
     // Логика автоматического выбора плеера
     if (selectedPlayer === null || !isCurrentPlayerAvailable) {
       if (player4Available) {
-        handlePlayerSelect(4);
+        handlePlayerSelect(4, false);
       } else if (player1Available) {
-        handlePlayerSelect(1);
+        handlePlayerSelect(1, false);
       } else if (player2Available) {
-        handlePlayerSelect(2);
+        handlePlayerSelect(2, false);
       } else if (player3Available) {
-        handlePlayerSelect(3);
+        handlePlayerSelect(3, false);
       }
     }
   }, [
@@ -198,7 +203,8 @@ export function PlayerSelector({
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
 
   const renderPlayerContent = () => {
-    if (isInitialLoading || isWaitingForData || isSwitchingPlayer) {
+    // Если идет ручное переключение — показываем только лоадер переключения
+    if (isSwitchingPlayer) {
       return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-md">
           <div className="relative">
@@ -210,7 +216,26 @@ export function PlayerSelector({
             animate={{ opacity: 1, y: 0 }}
             className="text-white/60 text-sm font-medium mt-6 tracking-widest uppercase"
           >
-            {isSwitchingPlayer ? "Переключение плеера..." : isWaitingForData ? "Получение источника..." : "Подготовка плеера..."}
+            Переключение плеера...
+          </motion.p>
+        </div>
+      );
+    }
+
+    // Если это первичная загрузка данных — показываем соответствующий лоадер
+    if (isInitialLoading || isWaitingForData) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-md">
+          <div className="relative">
+            <Loader2 size={48} className="text-white animate-spin opacity-10" />
+            <Loader2 size={48} className="text-zinc-500 animate-spin absolute inset-0 [animation-duration:1.5s]" />
+          </div>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-white/60 text-sm font-medium mt-6 tracking-widest uppercase"
+          >
+            {isWaitingForData ? "Получение источника..." : "Подготовка плеера..."}
           </motion.p>
         </div>
       );
