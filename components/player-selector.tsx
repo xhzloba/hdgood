@@ -114,10 +114,10 @@ export function PlayerSelector({
 
     // Логика автоматического выбора плеера
     if (selectedPlayer === null || !isCurrentPlayerAvailable) {
-      if (player1Available) {
-        handlePlayerSelect(1);
-      } else if (player4Available) {
+      if (player4Available) {
         handlePlayerSelect(4);
+      } else if (player1Available) {
+        handlePlayerSelect(1);
       } else if (player2Available) {
         handlePlayerSelect(2);
       } else if (player3Available) {

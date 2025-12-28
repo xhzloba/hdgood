@@ -98,69 +98,91 @@ const movieDataCache: Record<string, any> =
   (globalThis as any).__movieDataCache ||
   ((globalThis as any).__movieDataCache = {});
 
-const fetchMovieFullData = async (id: string) => {
+const fetchMovieFullData = async (id: string, attempts: number = 2) => {
   // Return cached data if available only if it has kpId
   if (movieDataCache[id] && movieDataCache[id].kpId) {
     console.log(`⚡ Использован кеш для ${id}`);
     return movieDataCache[id];
   }
 
-  const viewStart = Date.now();
-  const viewPromise = fetcher(
-    `https://api.vokino.pro/v2/view/${id}`,
-    5000,
-    2
-  );
-
-  const timelineStart = Date.now();
-  const timelinePromise = fetcher(
-    `https://api.vokino.pro/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
-    2000, // Reduced timeout for timeline
-    1    // Fewer retries for timeline
-  ).catch((e) => {
-    console.warn(
-      `⚠️ Timeline API error: ${Date.now() - timelineStart}ms -`,
-      e instanceof Error ? e.message : String(e)
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    console.log(`🔄 Загрузка данных для ${id} (попытка ${attempt}/${attempts})...`);
+    
+    const viewStart = Date.now();
+    const viewPromise = fetcher(
+      `https://api.vokino.pro/v2/view/${id}`,
+      5000,
+      2
     );
-    return null;
-  });
 
-  // Wait for the main movie data first
-  const movieData = await viewPromise.catch((e) => {
-    console.error(
-      `❌ View API error: ${Date.now() - viewStart}ms -`,
-      e instanceof Error ? e.message : String(e)
-    );
-    throw e;
-  });
+    const timelineStart = Date.now();
+    const timelinePromise = fetcher(
+      `https://api.vokino.pro/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+      2000,
+      1
+    ).catch((e) => {
+      console.warn(
+        `⚠️ Timeline API error (attempt ${attempt}): ${Date.now() - timelineStart}ms -`,
+        e instanceof Error ? e.message : String(e)
+      );
+      return null;
+    });
 
-  // Try to get timeline data but don't block for more than 1500ms if movieData is already here
-  const timelineData = await Promise.race([
-    timelinePromise,
-    new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
-  ]);
+    try {
+      // Wait for the main movie data
+      const movieData = await viewPromise;
 
-  if (!movieData || typeof movieData !== "object") {
-    throw new Error("Invalid data format received from API");
+      // Try to get timeline data with a timeout
+      const timelineData = await Promise.race([
+        timelinePromise,
+        new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
+      ]);
+
+      if (!movieData || typeof movieData !== "object") {
+        throw new Error("Invalid data format received from API");
+      }
+
+      let kpId =
+        timelineData?.kp_id ||
+        timelineData?.data?.kp_id ||
+        timelineData?.details?.kp_id ||
+        movieData?.kp_id ||
+        movieData?.details?.kp_id ||
+        movieData?.details?.kinopoisk_id ||
+        movieData?.kinopoisk_id;
+
+      // Дополнительная проверка: если id числовой, используем его как kpId если ничего другого нет
+      if (!kpId && id && /^\d+$/.test(id)) {
+        kpId = id;
+      }
+
+      // Если kpId найден, кешируем и возвращаем
+      if (kpId) {
+        const result = { movieData, timelineData, kpId };
+        movieDataCache[id] = result;
+        return result;
+      }
+
+      // Если kpId не найден и есть еще попытки - ждем немного и пробуем снова
+      if (attempt < attempts) {
+        console.warn(`⚠️ kpId не найден в попытке ${attempt}, пробуем снова через 500мс...`);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        continue;
+      }
+
+      // Если это была последняя попытка и kpId все еще нет
+      console.error(`❌ kpId не найден для ${id} после ${attempts} попыток`);
+      return { movieData, timelineData, kpId: null };
+
+    } catch (e) {
+      if (attempt === attempts) {
+        console.error(`❌ Ошибка загрузки данных для ${id} после всех попыток:`, e);
+        throw e;
+      }
+      console.warn(`⚠️ Ошибка в попытке ${attempt}, пробуем снова...`, e);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
   }
-
-  const kpId =
-    timelineData?.kp_id ||
-    timelineData?.data?.kp_id ||
-    timelineData?.details?.kp_id ||
-    movieData?.kp_id ||
-    movieData?.details?.kp_id ||
-    movieData?.details?.kinopoisk_id ||
-    movieData?.kinopoisk_id;
-
-  const result = { movieData, timelineData, kpId };
-
-  // Cache the result only if kpId is found
-  if (kpId) {
-    movieDataCache[id] = result;
-  }
-
-  return result;
 };
 
 // Функция для franchise API с retry логикой для надежности
@@ -963,10 +985,11 @@ export default function MoviePage({
       setPlayingEpisode(null);
       setIsTrailerPlaying(false);
 
-      // Check cache first for instant transition
+      // Check cache first for instant transition - but only if it has kpId
+      // because without kpId players P2-P4 won't work
       const cached = movieDataCache[id];
-      if (cached) {
-        console.log(`⚡ Использован кеш для ${id}`);
+      if (cached && cached.kpId) {
+        console.log(`⚡ Использован полный кеш (с kpId) для ${id}`);
         setData(cached.movieData);
         setLoading(false);
         // Reset backdrop to trigger animation
@@ -982,7 +1005,8 @@ export default function MoviePage({
       setFranchiseData(null);
 
       try {
-        let result = cached;
+        // We only use cached result if it has kpId
+        let result = (cached && cached.kpId) ? cached : null;
 
         if (!result) {
           result = await fetchMovieFullData(id);
@@ -991,24 +1015,12 @@ export default function MoviePage({
         if (isCancelled) return;
 
         // Если данные не из кеша, обновляем стейт
-        if (!cached) {
+        if (!cached || !cached.kpId) {
           setData(result.movieData);
           setLoading(false);
         }
 
-        let { kpId } = result;
-
-        // Если kpId нет в данных, но id из URL числовой - используем его как fallback
-        if (!kpId && id && /^\d+$/.test(id)) {
-          kpId = id;
-          console.log(`💡 Используем id из URL как fallback для kpId: ${kpId}`);
-        }
-
-        // Пытаемся получить kp_id из movieData, если он там есть
-        if (!kpId && result.movieData?.details?.kp_id) {
-          kpId = String(result.movieData.details.kp_id);
-          console.log(`💡 Используем kp_id из movieData.details: ${kpId}`);
-        }
+        const { kpId } = result;
 
         // Загружаем franchise асинхронно (не блокируем отображение страницы)
         if (kpId) {

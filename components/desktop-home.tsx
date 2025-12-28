@@ -1938,7 +1938,14 @@ export function DesktopHome({
           const res = await fetch(`https://api.vokino.pro/v2/view/${movieId}`);
           if (res.ok) {
             const movieData = await res.json();
-            fullData = { movieData };
+            // Try to extract kpId even here to make cache more useful
+            const kpId = 
+              movieData?.kp_id || 
+              movieData?.details?.kp_id || 
+              movieData?.details?.kinopoisk_id || 
+              movieData?.kinopoisk_id;
+              
+            fullData = { movieData, kpId };
             cache[movieId] = fullData;
           }
         }
