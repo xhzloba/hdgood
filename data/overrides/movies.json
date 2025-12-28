@@ -906,6 +906,10 @@
     }
   },
   "68cf23e124be021e936077bc": {
+    "trailers": {
+      "id": "s8jYWYUlpWE",
+      "name": "Школьный автобус"
+    },
     "studio_logo": [
       "/movies/logo/blumhouse.svg",
       "/movies/logo/apple.svg"

@@ -2092,7 +2092,7 @@ export function DesktopHome({
     ? "h-[clamp(120px,18vh,200px)]"
     : "h-[clamp(60px,12vh,110px)]";
   const netflixTopLogoHeightClass = isFullscreen
-    ? "h-[clamp(26px,3.8vh,50px)]"
+    ? "h-[clamp(26px,3.8vh,44px)]"
     : "h-[clamp(20px,3vh,40px)]";
 
   // Ограничиваем количество строк описания через line-clamp + min-height для стабильности
@@ -2350,7 +2350,7 @@ export function DesktopHome({
         onTogglePosterColors={handlePosterColorsChange}
       />
 
-      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] h-11 items-center px-10 gap-4 grid-cols-[1fr_auto_1fr] ml-16 lg:ml-20">
+      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] h-11 max-h-11 overflow-hidden items-center px-10 gap-4 grid-cols-[1fr_auto_1fr] ml-16 lg:ml-20">
         <div className={`flex items-center justify-start gap-4 h-full transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
           {/* Categories Dropdown moved to the left */}
           <div className="flex items-center gap-1.5 h-full">
@@ -2404,8 +2404,8 @@ export function DesktopHome({
             {/* Active Category Badge */}
             <div className="hidden xl:flex items-center gap-4 h-11 shrink-0">
               <div className="w-px h-4 bg-white/10 hidden sm:block" />
-              <div className="flex items-center min-w-[120px] h-full">
-                <span className="text-[14px] font-black uppercase leading-none tracking-wider bg-gradient-to-r from-white via-white/90 to-white/40 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+              <div className="flex items-center min-w-[150px] h-full overflow-hidden">
+                <span className="text-[14px] font-black uppercase leading-none tracking-wider bg-gradient-to-r from-white via-white/90 to-white/40 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] truncate py-1">
                   {activeSlide.title}
                 </span>
               </div>

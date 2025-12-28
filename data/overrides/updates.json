@@ -5225,5 +5225,57 @@
       "trailers"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-28T08:36:59.059Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers"
+    ]
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-28T08:37:49.995Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [
+      "trailers"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-28T08:38:17.525Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [
+      "trailers"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-28T08:39:29.259Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers.id",
+      "trailers.name"
+    ]
+  },
+  {
+    "id": "68cf23e124be021e936077bc",
+    "timestamp": "2025-12-28T08:40:07.835Z",
+    "poster": "/movies/bus.webp",
+    "title": null,
+    "changedPaths": [
+      "trailers.id",
+      "trailers.name"
+    ],
+    "addedPaths": []
   }
 ]
