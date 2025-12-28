@@ -93,6 +93,7 @@ export function PlayerSelector({
       setIsInitialLoading(false);
     }, 3000);
 
+    // Если есть хотя бы ОДИН из источников, выключаем лоадер
     if (kpId || iframeUrl) {
       setIsInitialLoading(false);
     }
@@ -111,6 +112,7 @@ export function PlayerSelector({
       (selectedPlayer === 3 && player3Available) ||
       (selectedPlayer === 4 && player4Available);
 
+    // Логика автоматического выбора плеера
     if (selectedPlayer === null || !isCurrentPlayerAvailable) {
       if (player1Available) {
         handlePlayerSelect(1);
@@ -160,6 +162,7 @@ export function PlayerSelector({
   // Важный фикс: если URL еще нет (например, kpId не пришел), 
   // но мы уже выключили isInitialLoading, это вызовет мерцание кнопок ошибки.
   // Поэтому принудительно показываем загрузку, если выбранный плеер требует kpId, а его нет.
+  // ИСПРАВЛЕНИЕ: Ждем только если выбран плеер П2-П4. Для П1 (iframeUrl) ждать kpId НЕ НУЖНО.
   const isWaitingForData = 
     !isInitialLoading && 
     selectedPlayer !== null && 

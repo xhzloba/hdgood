@@ -113,7 +113,7 @@ const fetchMovieFullData = async (id: string) => {
 
   const timelineStart = Date.now();
   const timelinePromise = fetcher(
-    `https://api.vokino.tv/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+    `https://api.vokino.pro/v2/timeline/watch?ident=${id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
     2000, // Reduced timeout for timeline
     1    // Fewer retries for timeline
   ).catch((e) => {

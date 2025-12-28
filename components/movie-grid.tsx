@@ -1167,7 +1167,7 @@ export function MovieGrid({
     (async () => {
       try {
         const tRes = await fetch(
-          `https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+          `https://api.vokino.pro/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
           {
             signal: controller.signal,
             headers: { Accept: "application/json" },
@@ -1240,7 +1240,7 @@ export function MovieGrid({
     (async () => {
       try {
         const tRes = await fetch(
-          `https://api.vokino.tv/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
+          `https://api.vokino.pro/v2/timeline/watch?ident=${selectedMovie.id}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`,
           {
             signal: controller.signal,
             headers: { Accept: "application/json" },

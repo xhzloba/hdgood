@@ -17,7 +17,7 @@ export async function getKpIdFromTimeline(
   movieId: string
 ): Promise<number | null> {
   try {
-    const timelineUrl = `https://api.vokino.tv/v2/timeline/watch?ident=${movieId}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`;
+    const timelineUrl = `https://api.vokino.pro/v2/timeline/watch?ident=${movieId}&current=100&time=100&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`;
     console.log("Запрос к timeline:", timelineUrl);
 
     const response = await fetch(timelineUrl);
