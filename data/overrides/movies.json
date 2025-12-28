@@ -488,6 +488,10 @@
     "poster_logo": "https://images.kinorium.com/movie/logo/384511/original_51856637.png"
   },
   "6920e0e1f807186f77141862": {
+    "trailers": {
+      "id": "dqolYtJGuf4",
+      "name": "Семейный план 2"
+    },
     "poster_colors": {
       "accentTl": [
         64,
@@ -2129,6 +2133,33 @@
     "poster": "/movies/аргайл.webp",
     "bg_poster": {
       "backdrop": "/movies/аргайл-backdrop.webp"
+    }
+  },
+  "6593f9188914c04deaeae288": {
+    "poster_logo": "/movies/logo/170.webp",
+    "studio_logo": [
+      "/movies/logo/skydance.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "bg_poster": {
+      "backdrop": "/movies/безответа.webp"
+    }
+  },
+  "6593f9248914c04deaeb016a": {
+    "poster_logo": "/movies/logo/171.webp",
+    "studio_logo": [
+      "/movies/logo/skydance.svg",
+      "/movies/logo/apple.svg"
+    ],
+    "bg_poster": {
+      "backdrop": "/movies/семейныйплан.webp"
+    }
+  },
+  "6593f9108914c04deaead025": {
+    "poster_logo": "/movies/logo/172.webp",
+    "studio_logo": "/movies/logo/apple.svg",
+    "bg_poster": {
+      "backdrop": "/movies/вдухерождества.webp"
     }
   }
 }

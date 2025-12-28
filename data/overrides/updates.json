@@ -5277,5 +5277,82 @@
       "trailers.name"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-28T08:54:41.009Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers.id",
+      "trailers.name"
+    ]
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-28T08:55:23.557Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-28T08:56:08.416Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6920e0e1f807186f77141862",
+    "timestamp": "2025-12-28T08:57:05.755Z",
+    "poster": "https://ru-images-s.kinorium.com/movie/1080/11998275.jpg?1760198839",
+    "title": "Семейный план 2",
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6593f9188914c04deaeae288",
+    "timestamp": "2025-12-28T12:17:49.769Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f9248914c04deaeb016a",
+    "timestamp": "2025-12-28T12:27:02.131Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6593f9108914c04deaead025",
+    "timestamp": "2025-12-28T12:30:08.322Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
   }
 ]
