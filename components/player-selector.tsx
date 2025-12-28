@@ -41,11 +41,20 @@ export function PlayerSelector({
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isSwitchingPlayer, setIsSwitchingPlayer] = useState(false);
   const [showError, setShowError] = useState(false);
 
   const handlePlayerSelect = (playerId: number) => {
+    if (selectedPlayer === playerId) return;
+    
+    setIsSwitchingPlayer(true);
     setSelectedPlayer(playerId);
     onPlayerSelect?.(playerId);
+    
+    // Снимаем лоадер переключения через небольшую паузу
+    setTimeout(() => {
+      setIsSwitchingPlayer(false);
+    }, 800);
   };
 
   // Формируем URL для второго плеера
@@ -189,8 +198,22 @@ export function PlayerSelector({
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
 
   const renderPlayerContent = () => {
-    if (isInitialLoading || isWaitingForData) {
-      return <div className="w-full h-full bg-black" />;
+    if (isInitialLoading || isWaitingForData || isSwitchingPlayer) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-md">
+          <div className="relative">
+            <Loader2 size={48} className="text-white animate-spin opacity-10" />
+            <Loader2 size={48} className="text-zinc-500 animate-spin absolute inset-0 [animation-duration:1.5s]" />
+          </div>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-white/60 text-sm font-medium mt-6 tracking-widest uppercase"
+          >
+            {isSwitchingPlayer ? "Переключение плеера..." : isWaitingForData ? "Получение источника..." : "Подготовка плеера..."}
+          </motion.p>
+        </div>
+      );
     }
 
     if (selectedUrl) {
