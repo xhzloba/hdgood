@@ -722,6 +722,7 @@ export function DesktopHome({
   );
   const isVeryTinyHeight = viewportHeight > 0 && viewportHeight < 700;
   const isTinyHeight = viewportHeight > 0 && viewportHeight <= 787;
+  const isSmallHeight = viewportHeight > 0 && viewportHeight < 800;
   const isShortHeight = viewportHeight > 0 && viewportHeight < 900;
   const isMediumHeight = viewportHeight >= 900 && viewportHeight <= 1200;
   const isWideAndTall = viewportWidth >= 1800 && viewportHeight >= 950;
@@ -3384,9 +3385,11 @@ export function DesktopHome({
 
                 {/* Step 3: Personalization */}
                 <div 
-                  className={`absolute flex flex-col items-center gap-8 transition-all duration-700 pointer-events-none ${
+                  className={`absolute flex flex-col items-center transition-all duration-700 pointer-events-none ${
+                    isSmallHeight ? "gap-4" : "gap-8"
+                  } ${
                     onboardingNavDone && !onboardingPersonalizationDone 
-                      ? "opacity-100 scale-100 translate-y-0" 
+                      ? `opacity-100 ${isSmallHeight ? "-translate-y-12 scale-[0.85]" : "translate-y-0 scale-100"}` 
                       : onboardingPersonalizationDone ? "opacity-0 scale-90 -translate-y-10" : "opacity-0 scale-110 translate-y-10"
                   }`}
                 >
@@ -3558,7 +3561,7 @@ export function DesktopHome({
                     setShowOnboarding(false);
                   }, 1100);
                 }}
-                className={`absolute bottom-10 right-10 px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-bold hover:bg-white/10 hover:text-white transition-all pointer-events-auto ${onboardingExiting ? "opacity-0 scale-95 duration-500" : ""}`}
+                className={`absolute top-32 right-10 px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-bold hover:bg-white/10 hover:text-white transition-all pointer-events-auto ${onboardingExiting ? "opacity-0 scale-95 duration-500" : ""}`}
               >
                 Пропустить обучение
               </button>
