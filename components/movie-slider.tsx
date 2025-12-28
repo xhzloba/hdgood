@@ -605,7 +605,7 @@ export default function MovieSlider({
       };
     });
 
-    if (viewAllHref && !hideViewAllCard) {
+    if (viewAllHref && !hideViewAllCard && !viewAllInHeader) {
       base.push({
         id: `view-all-${viewAllHref}`,
         title: viewAllLabel || "Смотреть все",
@@ -723,7 +723,7 @@ export default function MovieSlider({
             {viewAllInHeader && viewAllHref && (
               <Link
                 href={viewAllHref}
-                className="inline-flex items-center gap-2 text-xs md:text-sm lg:text-base short:text-[10px] short:md:text-xs font-bold text-white hover:text-white/80 transition-colors"
+                className="inline-flex items-center gap-2 text-xs md:text-sm lg:text-base short:text-[10px] short:md:text-xs font-black text-white hover:text-white/80 transition-colors uppercase tracking-[0.2em]"
               >
                 <span>{viewAllLabel || "Смотреть все"}</span>
                 <ChevronRight className="w-4 h-4 md:w-[18px] md:h-[18px] short:w-3 short:h-3" />

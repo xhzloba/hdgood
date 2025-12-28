@@ -2350,8 +2350,56 @@ export function DesktopHome({
         onTogglePosterColors={handlePosterColorsChange}
       />
 
-      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] items-center px-6 gap-4 grid-cols-[1fr_auto_1fr]">
-        <div />
+      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] items-center px-10 gap-4 grid-cols-[1fr_auto_1fr] ml-16 lg:ml-20">
+        <div className={`flex items-center justify-start transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
+          {/* Categories Dropdown moved to the left */}
+          <DropdownMenu onOpenChange={setIsDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <button className={`h-11 px-3 flex items-center gap-2 text-[13px] font-black transition-all uppercase tracking-widest outline-none group rounded-[10px] ${
+                isDropdownOpen 
+                  ? "bg-white/10 text-white border border-white/10" 
+                  : "text-white/50 hover:text-white"
+              }`}>
+                <Layers className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span className="hidden lg:inline">Категории</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="start" 
+              sideOffset={10}
+              className="w-[240px] bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] p-1.5 z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 duration-200"
+            >
+              <div className="px-2 py-2 mb-1">
+                <span className="text-[10px] font-black tracking-[0.2em] text-zinc-500 uppercase">
+                  Навигация
+                </span>
+              </div>
+              
+              <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1 customize-scrollbar">
+                {dropdownSlides.map((slide) => {
+                  const isActive = activeSlide.id === slide.id;
+                  return (
+                    <DropdownMenuItem
+                      key={slide.id}
+                      onClick={() => handleDropdownSlideChange(slide.id)}
+                      className={`group relative flex items-center justify-between px-4 py-3 rounded-lg outline-none cursor-pointer border border-transparent transition-all duration-300 ease-out hover:bg-white focus:bg-white ${
+                        isActive ? "bg-white/10" : ""
+                      }`}
+                    >
+                      <span className={`text-[13px] uppercase tracking-widest font-black transition-all duration-300 ease-out group-hover:translate-x-1 group-focus:translate-x-1 ${isActive ? "text-white" : "text-zinc-400 group-hover:text-black group-focus:text-black"}`}>
+                        {slide.title}
+                      </span>
+
+                      {isActive && (
+                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                      )}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         <div className={`flex items-center justify-center pointer-events-none select-none transition-opacity duration-700 ${showOnboarding ? "opacity-0" : "opacity-100"}`}>
           {(showStudioTopLogo || showNetflixTopLogo || showWarnersTopLogo) &&
@@ -2379,7 +2427,7 @@ export function DesktopHome({
             ))}
         </div>
 
-        <div className={`flex items-center justify-end gap-2 transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
+        <div className={`flex items-center justify-end gap-3 transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
           <div
             ref={searchWrapRef}
             className={`relative transition-all duration-200 ease-out z-50 group ${
@@ -3088,54 +3136,6 @@ export function DesktopHome({
             activeMovie ? "opacity-100" : "opacity-0"
           } ${showOnboarding && onboardingSliderDone && !onboardingNavDone ? "scale-105 z-[60]" : "z-40"}`}
         >
-          {/* Controls: See All & Categories Dropdown */}
-          <div className="pointer-events-auto flex flex-col items-end gap-3 mb-6">
-
-
-             <DropdownMenu onOpenChange={setIsDropdownOpen}>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 text-[11px] md:text-[13px] font-bold text-white/70 hover:text-white transition-colors uppercase tracking-widest outline-none group opacity-0 md:opacity-100">
-                  <span className="hidden md:inline">Категории</span>
-                  <Layers className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                sideOffset={10}
-                className="w-[240px] bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] p-1.5 z-[100] animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 duration-200"
-              >
-                <div className="px-2 py-2 mb-1">
-                  <span className="text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">
-                    Навигация
-                  </span>
-                </div>
-                
-                <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1 customize-scrollbar">
-                  {dropdownSlides.map((slide) => {
-                    const isActive = activeSlide.id === slide.id;
-                    return (
-                      <DropdownMenuItem
-                        key={slide.id}
-                        onClick={() => handleDropdownSlideChange(slide.id)}
-                        className={`group relative flex items-center justify-between px-4 py-3 rounded-lg outline-none cursor-pointer border border-transparent transition-all duration-300 ease-out hover:bg-black focus:bg-black ${
-                          isActive ? "bg-zinc-50" : ""
-                        }`}
-                      >
-                        <span className="text-[13px] uppercase tracking-widest font-extrabold text-black group-hover:text-white group-focus:text-white transition-all duration-300 ease-out group-hover:translate-x-1 group-focus:translate-x-1">
-                          {slide.title}
-                        </span>
-
-                        {isActive && (
-                          <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
-                        )}
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
           {/* Neon highlight for sidebar during onboarding Step 2 */}
           {showOnboarding && onboardingSliderDone && !onboardingNavDone && (
             <div className="absolute inset-0 -m-4 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-xl animate-pulse -z-10 shadow-[0_0_60px_rgba(59,130,246,0.3)]" />
