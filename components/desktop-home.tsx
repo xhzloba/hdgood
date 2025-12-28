@@ -3703,8 +3703,20 @@ export function DesktopHome({
           </DialogDescription>
           
           <div className="relative w-full flex items-center justify-center min-h-[240px] pt-16">
-            {/* Background Blur Fill - Clipped inside the modal */}
-            <div className="absolute inset-0 overflow-hidden rounded-t-[32px] pointer-events-none">
+            {/* Backdrop background layer */}
+            {randomMovie?.backdrop && (
+              <div className="absolute inset-0 z-0 overflow-hidden rounded-t-[32px]">
+                <img 
+                  src={randomMovie.backdrop} 
+                  alt="" 
+                  className="w-full h-full object-cover opacity-40 brightness-50"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+              </div>
+            )}
+
+            {/* Background Blur Fill - Extra layer for depth */}
+            <div className="absolute inset-0 overflow-hidden rounded-t-[32px] pointer-events-none z-[1]">
               {(randomMovie?.backdrop || randomMovie?.poster) && (
                 <img 
                   src={randomMovie?.backdrop || randomMovie?.poster || ""} 
