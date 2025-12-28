@@ -714,19 +714,19 @@ export default function MovieSlider({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {title && (
-          <div className="flex items-center justify-between relative z-20 mb-4 px-1 md:px-0">
-            <h2 className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-3xl short:text-base short:md:text-lg short:lg:text-xl font-black tracking-wider text-white uppercase font-[family-name:var(--font-inter-tight)]">
+          <div className="flex items-center justify-between relative z-20 mb-2 px-1 md:px-0">
+            <h2 className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-xl short:text-sm short:md:text-base short:lg:text-lg font-black tracking-wider text-white uppercase font-[family-name:var(--font-inter-tight)]">
               {title}
             </h2>
             {viewAllInHeader && viewAllHref && (
               <Link
                 href={viewAllHref}
-                className="inline-flex items-center gap-2 text-xs md:text-sm lg:text-base short:text-[10px] short:md:text-xs font-black text-white hover:text-white/80 transition-colors uppercase tracking-[0.2em]"
+                className="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] lg:text-xs font-black text-white/40 hover:text-white transition-colors uppercase tracking-wider"
               >
                 <span>{viewAllLabel || "Смотреть все"}</span>
-                <ChevronRight className="w-4 h-4 md:w-[18px] md:h-[18px] short:w-3 short:h-3" />
+                <ChevronRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
               </Link>
             )}
           </div>
