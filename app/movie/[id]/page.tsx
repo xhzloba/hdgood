@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Loader } from "@/components/loader";
 import {
   ArrowLeft,
   Play,
@@ -1101,7 +1100,7 @@ export default function MoviePage({
 
   // Убрали эффект прокрутки для хедера: чистый, без blur и границы
 
-  if (loading) {
+  if (loading || isOverrideLoading) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
         <div className="relative">
