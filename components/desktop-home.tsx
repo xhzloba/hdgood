@@ -41,6 +41,9 @@ import {
 } from "@/components/ui/tooltip";
 import {
   IconClock,
+  IconDice,
+  IconX,
+  IconPlayerPlayFilled,
   IconMovie,
   IconDeviceTv,
   IconMoodKid,
@@ -763,6 +766,12 @@ export function DesktopHome({
   const [onboardingSearchDone, setOnboardingSearchDone] = useState(false);
   const [onboardingPersonalizationDone, setOnboardingPersonalizationDone] = useState(false);
 
+  // Randomizer state
+  const [isRandomizerLoading, setIsRandomizerLoading] = useState(false);
+  const [randomMovie, setRandomMovie] = useState<NormalizedMovie | null>(null);
+  const [isRandomizerModalOpen, setIsRandomizerModalOpen] = useState(false);
+  const [isRandomPosterLoaded, setIsRandomPosterLoaded] = useState(false);
+
   // New state to track if nav dropdown is open
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -1105,6 +1114,69 @@ export function DesktopHome({
 
     return () => observer.disconnect();
   }, [hasMore, searchLoading]);
+
+  const handleRandomizer = useCallback(async () => {
+    setIsRandomizerLoading(true);
+    try {
+      const randomPage = Math.floor(Math.random() * 42) + 1;
+      const res = await fetch(
+        `https://api.vokino.pro/v2/list?sort=popular&page=${randomPage}&token=mac_23602515ddd41e2f1a3eba4d4c8a949a_1225352`
+      );
+      if (!res.ok) throw new Error("Failed to fetch random page");
+      const data = await res.json();
+      
+      const channels = data?.channels || [];
+      if (channels.length > 0) {
+        const randomIndex = Math.floor(Math.random() * channels.length);
+        const item = channels[randomIndex];
+        const d = item?.details ?? item;
+        const id = d?.id ?? item?.id;
+        
+        // Fetch override data for this specific ID
+        let ov = null;
+        try {
+          const ovRes = await fetch(`/api/overrides/movies?ids=${id}`, {
+            cache: "no-store",
+          });
+          if (ovRes.ok) {
+            const overrides = await ovRes.json();
+            ov = overrides[String(id)];
+            
+            // Update global cache if we found an override
+            if (ov) {
+              const cache = (globalThis as any).__movieOverridesCache || ((globalThis as any).__movieOverridesCache = {});
+              cache[String(id)] = ov;
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch override for randomizer", e);
+        }
+        
+        const movie: NormalizedMovie = {
+          id: id,
+          title: ov?.title || d?.name || d?.title || item?.title || "Без названия",
+          poster: ov?.poster || d?.poster || item?.poster,
+          backdrop: ov?.bg_poster?.backdrop || d?.backdrop || item?.backdrop || d?.poster || item?.poster,
+          year: ov?.year || d?.released || d?.year || item?.year,
+          rating: ov?.rating || d?.rating_kp || d?.rating || d?.rating_imdb || item?.rating,
+          country: ov?.country || d?.country || item?.country,
+          genre: ov?.genre || d?.genre || item?.genre,
+          description: d?.description || item?.description || "",
+          duration: ov?.duration || d?.duration || item?.duration,
+          logo: ov?.poster_logo || d?.logo || item?.logo || null,
+          type: ov?.type || d?.type || item?.type || null,
+        };
+        
+        setRandomMovie(movie);
+        setIsRandomPosterLoaded(false); // Reset loading state
+        setIsRandomizerModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Randomizer error:", error);
+    } finally {
+      setIsRandomizerLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -2447,6 +2519,16 @@ export function DesktopHome({
         </div>
 
         <div className={`flex items-center justify-end gap-3 transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
+          <button
+            type="button"
+            onClick={handleRandomizer}
+            disabled={isRandomizerLoading}
+            className="w-11 h-11 flex items-center justify-center rounded-[10px] bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition-all group/rand"
+            title="Случайный фильм"
+          >
+            <IconDice className={`w-5 h-5 transition-transform duration-500 group-hover/rand:rotate-180 ${isRandomizerLoading ? "animate-spin" : ""}`} />
+          </button>
+
           <div
             ref={searchWrapRef}
             className={`relative transition-all duration-200 ease-out z-50 group ${
@@ -3605,6 +3687,107 @@ export function DesktopHome({
           </DialogHeader>
           <div className="p-1">
             <TrailerPlayer trailers={activeTrailers} mode="carousel" />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Randomizer Modal */}
+      <Dialog open={isRandomizerModalOpen} onOpenChange={setIsRandomizerModalOpen}>
+        <DialogContent 
+          showCloseButton={false}
+          className="max-w-[480px] bg-[#0a0a0a] border border-white/10 p-0 overflow-visible shadow-[0_0_100px_rgba(0,0,0,0.8)] rounded-[32px]"
+        >
+          <DialogTitle className="sr-only">Случайный выбор фильма</DialogTitle>
+          <DialogDescription className="sr-only">
+            Просмотрите случайно выбранный фильм или сериал
+          </DialogDescription>
+          
+          <div className="relative w-full flex items-center justify-center min-h-[240px] pt-16">
+            {/* Background Blur Fill - Clipped inside the modal */}
+            <div className="absolute inset-0 overflow-hidden rounded-t-[32px] pointer-events-none">
+              {(randomMovie?.backdrop || randomMovie?.poster) && (
+                <img 
+                  src={randomMovie?.backdrop || randomMovie?.poster || ""} 
+                  alt="" 
+                  className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-150"
+                />
+              )}
+            </div>
+
+            {randomMovie?.poster || randomMovie?.backdrop ? (
+              <div className={`relative w-[240px] aspect-[2/3] z-10 -mt-40 transition-all duration-700 ${isRandomPosterLoaded ? "scale-100 blur-0 opacity-100" : "scale-95 blur-xl opacity-0"}`}>
+                <img 
+                  src={randomMovie.poster || randomMovie.backdrop || ""} 
+                  alt="" 
+                  onLoad={() => setIsRandomPosterLoaded(true)}
+                  className="w-full h-full object-cover rounded-[24px] shadow-[0_30px_60px_rgba(0,0,0,0.8)] border border-white/10"
+                />
+              </div>
+            ) : (
+              <div className="w-[240px] aspect-[2/3] bg-zinc-900 rounded-[24px] -mt-40 border border-white/5 shadow-2xl" />
+            )}
+
+            <button 
+              onClick={() => setIsRandomizerModalOpen(false)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-black/60 transition-all z-30"
+            >
+              <IconX className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="p-8 pt-4 space-y-6 bg-gradient-to-b from-[#0a0a0a]/0 to-[#0a0a0a] relative z-20">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="px-2 py-[3px] rounded-md text-[11px] bg-white text-black font-black tracking-tight border border-white/70 shadow-[0_4px_12px_rgba(0,0,0,0.35)] uppercase">
+                  Случайный выбор
+                </div>
+                {randomMovie?.year && (
+                  <div className="text-zinc-300 text-sm font-medium">
+                    {randomMovie.year}
+                  </div>
+                )}
+                {randomMovie?.genre && (
+                  <div className="text-zinc-400 text-sm font-medium hidden md:block">
+                    • {randomMovie.genre.split(',')[0]}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="text-2xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                  {randomMovie?.title}
+                </h3>
+                {randomMovie?.rating && (
+                  <div className={`shrink-0 px-2 py-1 rounded text-xs font-bold text-white shadow-lg ${ratingBgColor(randomMovie.rating)}`}>
+                    {formatRatingLabel(randomMovie.rating)}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {randomMovie?.description && (
+              <p className="text-zinc-300 text-base font-light leading-relaxed line-clamp-3 drop-shadow-sm">
+                {randomMovie.description}
+              </p>
+            )}
+
+            <div className="flex items-center gap-3 pt-2">
+              <Link
+                href={`/movie/${randomMovie?.id}`}
+                className="flex-1 h-12 bg-white text-black rounded-[4px] flex items-center justify-center gap-2 font-bold uppercase text-sm hover:bg-white/90 transition-all active:scale-95 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                onClick={() => setIsRandomizerModalOpen(false)}
+              >
+                <IconPlayerPlayFilled className="w-5 h-5" />
+                Смотреть
+              </Link>
+              <button
+                onClick={handleRandomizer}
+                disabled={isRandomizerLoading}
+                className="w-12 h-12 bg-zinc-600/40 text-white rounded-[4px] flex items-center justify-center hover:bg-zinc-600/60 transition-all active:scale-95 disabled:opacity-50 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                title="Другой фильм"
+              >
+                <IconDice className={`w-6 h-6 ${isRandomizerLoading ? "animate-spin" : ""}`} />
+              </button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
