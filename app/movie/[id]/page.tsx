@@ -99,8 +99,9 @@ const movieDataCache: Record<string, any> =
   ((globalThis as any).__movieDataCache = {});
 
 const fetchMovieFullData = async (id: string) => {
-  // Return cached data if available
-  if (movieDataCache[id]) {
+  // Return cached data if available only if it has kpId
+  if (movieDataCache[id] && movieDataCache[id].kpId) {
+    console.log(`⚡ Использован кеш для ${id}`);
     return movieDataCache[id];
   }
 
@@ -154,8 +155,10 @@ const fetchMovieFullData = async (id: string) => {
 
   const result = { movieData, timelineData, kpId };
 
-  // Cache the result
-  movieDataCache[id] = result;
+  // Cache the result only if kpId is found
+  if (kpId) {
+    movieDataCache[id] = result;
+  }
 
   return result;
 };
