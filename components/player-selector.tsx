@@ -41,6 +41,7 @@ export function PlayerSelector({
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [showError, setShowError] = useState(false);
 
   const handlePlayerSelect = (playerId: number) => {
     setSelectedPlayer(playerId);
@@ -156,8 +157,6 @@ export function PlayerSelector({
     window.location.reload();
   };
 
-  const selectedUrl = getPlayerUrl(selectedPlayer);
-
   // Важный фикс: если URL еще нет (например, kpId не пришел), 
   // но мы уже выключили isInitialLoading, это вызовет мерцание кнопок ошибки.
   // Поэтому принудительно показываем загрузку, если выбранный плеер требует kpId, а его нет.
@@ -166,6 +165,21 @@ export function PlayerSelector({
     selectedPlayer !== null && 
     selectedPlayer !== 1 && 
     !kpId;
+
+  const selectedUrl = getPlayerUrl(selectedPlayer);
+
+  // Добавляем задержку перед показом ошибки, чтобы избежать фликанья при переключении
+  useEffect(() => {
+    if (selectedUrl || isInitialLoading || isWaitingForData) {
+      setShowError(false);
+    } else {
+      // Если URL нет, ждем 500мс прежде чем показать блок "недоступен"
+      const timer = setTimeout(() => {
+        setShowError(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedUrl, isInitialLoading, isWaitingForData]);
 
   const hasFixedStyle =
     !!videoContainerStyle &&
@@ -202,6 +216,10 @@ export function PlayerSelector({
           />
         </>
       );
+    }
+
+    if (!showError) {
+      return <div className="w-full h-full bg-black" />;
     }
 
     return (
@@ -387,7 +405,7 @@ export function PlayerSelector({
               style={{ zIndex: 1 }}
             />
           </>
-        ) : (
+        ) : showError ? (
           <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-4 bg-zinc-950/50 backdrop-blur-sm">
             <div className="p-4 rounded-full bg-white/5 ring-1 ring-white/10">
               <Info size={32} className="text-zinc-400" />
@@ -404,6 +422,8 @@ export function PlayerSelector({
               Перезагрузить плеер (обновить страницу)
             </button>
           </div>
+        ) : (
+          <div className="w-full h-full bg-black" />
         )}
       </div>
     </div>
