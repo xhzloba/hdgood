@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tv, Sparkles, Zap, Activity, Info, X } from "lucide-react";
+import { Tv, Sparkles, Zap, Activity, Info, X, Loader2 } from "lucide-react";
 
 interface PlayerSelectorProps {
   onPlayerSelect?: (playerId: number) => void;
@@ -40,6 +40,7 @@ export function PlayerSelector({
 }: PlayerSelectorProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const handlePlayerSelect = (playerId: number) => {
     setSelectedPlayer(playerId);
@@ -80,12 +81,36 @@ export function PlayerSelector({
 
   // Доступность плееров
   const player1Available = Boolean(iframeUrl);
+  // Плееры 2, 3, 4 доступны если есть kpId ИЛИ если это фильм (попытаемся использовать id как kpId)
   const player2Available = Boolean(kpId);
   const player3Available = Boolean(kpId);
   const player4Available = Boolean(kpId);
 
   useEffect(() => {
-    if (selectedPlayer == null) {
+    // Если данные (kpId или iframeUrl) еще не подгрузились, ждем максимум 3 секунды
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 3000);
+
+    if (kpId || iframeUrl) {
+      setIsInitialLoading(false);
+    }
+
+    return () => clearTimeout(timer);
+  }, [kpId, iframeUrl]);
+
+  useEffect(() => {
+    // Если идет начальная загрузка, не пытаемся выбирать плеер
+    if (isInitialLoading) return;
+
+    // Если текущий выбранный плеер стал недоступен, пытаемся переключиться на другой
+    const isCurrentPlayerAvailable = 
+      (selectedPlayer === 1 && player1Available) ||
+      (selectedPlayer === 2 && player2Available) ||
+      (selectedPlayer === 3 && player3Available) ||
+      (selectedPlayer === 4 && player4Available);
+
+    if (selectedPlayer === null || !isCurrentPlayerAvailable) {
       if (player1Available) {
         handlePlayerSelect(1);
       } else if (player4Available) {
@@ -101,9 +126,8 @@ export function PlayerSelector({
     player4Available,
     player2Available,
     player3Available,
-    kpId,
-    iframeUrl,
     selectedPlayer,
+    isInitialLoading,
   ]);
 
   const getPlayerUrl = (playerId: number | null) => {
@@ -128,11 +152,79 @@ export function PlayerSelector({
     }
   };
 
+  const handleReload = () => {
+    window.location.reload();
+  };
+
   const selectedUrl = getPlayerUrl(selectedPlayer);
+
+  // Важный фикс: если URL еще нет (например, kpId не пришел), 
+  // но мы уже выключили isInitialLoading, это вызовет мерцание кнопок ошибки.
+  // Поэтому принудительно показываем загрузку, если выбранный плеер требует kpId, а его нет.
+  const isWaitingForData = 
+    !isInitialLoading && 
+    selectedPlayer !== null && 
+    selectedPlayer !== 1 && 
+    !kpId;
 
   const hasFixedStyle =
     !!videoContainerStyle &&
     (videoContainerStyle.height != null || videoContainerStyle.width != null);
+
+  const renderPlayerContent = () => {
+    if (isInitialLoading || isWaitingForData) {
+      return <div className="w-full h-full bg-black" />;
+    }
+
+    if (selectedUrl) {
+      return (
+        <>
+          {movieLogo && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 0.7, y: 0 }}
+              className="hidden md:flex absolute top-28 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none"
+            >
+              <img 
+                src={movieLogo} 
+                alt="Logo" 
+                className="h-[clamp(40px,6vh,60px)] w-auto object-contain"
+              />
+            </motion.div>
+          )}
+          <iframe
+            src={selectedUrl}
+            className="w-full h-full border-0"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="Movie Player"
+            style={{ zIndex: 1 }}
+          />
+        </>
+      );
+    }
+
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-4 bg-zinc-950/50 backdrop-blur-sm">
+        <div className="p-4 rounded-full bg-white/5 ring-1 ring-white/10">
+          <Info size={32} className="text-zinc-400" />
+        </div>
+        <div className="text-center">
+          <p className="text-lg font-medium text-zinc-200">Плеер {selectedPlayer} недоступен</p>
+          <p className="text-sm text-zinc-500 mt-1">Попробуйте выбрать другой источник (П1-П4) справа</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+          <button 
+            onClick={handleReload}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-lg transition-colors border border-white/10 flex items-center gap-2"
+          >
+            <Zap size={14} className="animate-pulse" />
+            Перезагрузить (обновить страницу)
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return floatingControls ? (
     <div className={`relative w-full h-full ${className} group/container`}>
@@ -163,7 +255,7 @@ export function PlayerSelector({
                       exit={{ opacity: 0, x: -5 }}
                       className="absolute right-full whitespace-nowrap px-2 py-1 rounded-lg bg-white text-black text-[10px] font-black uppercase tracking-tighter shadow-xl pointer-events-none z-50 mr-1"
                     >
-                      {getPlayerLabel(playerId)}
+                      {getPlayerLabel(playerId)} {disabled && "(недоступен)"}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -173,16 +265,13 @@ export function PlayerSelector({
                   onMouseEnter={() => setHoveredPlayer(playerId)}
                   onMouseLeave={() => setHoveredPlayer(null)}
                   onClick={() => {
-                    if (!disabled) handlePlayerSelect(playerId);
+                    handlePlayerSelect(playerId);
                   }}
-                  disabled={disabled}
                   className={`group relative flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-xl border transition-all duration-300 ${
-                    disabled
-                      ? "border-white/5 bg-white/5 text-white/20 cursor-not-allowed opacity-40"
-                      : isActive
+                    isActive
                       ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105 z-10"
                       : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white"
-                  }`}
+                  } ${disabled ? "opacity-40" : ""}`}
                 >
                   <span className="text-[11px] font-black uppercase">П{playerId}</span>
 
@@ -202,6 +291,15 @@ export function PlayerSelector({
         {/* Separator */}
         <div className="w-8 h-[1px] bg-white/10" />
 
+        {/* Reload Button */}
+        <button 
+          onClick={handleReload}
+          className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-blue-400 hover:bg-white/10 rounded-xl transition-all duration-300 group"
+          title="Перезагрузить плеер"
+        >
+          <Zap size={18} className="group-hover:animate-pulse" />
+        </button>
+
         {/* Close button */}
         <button 
           onClick={onClose}
@@ -218,35 +316,7 @@ export function PlayerSelector({
         } shadow-[0_30px_100px_rgba(0,0,0,0.8)] ring-1 ring-white/10 z-0 transition-all duration-700`}
         style={videoContainerStyle}
       >
-        {selectedUrl ? (
-          <>
-            {movieLogo && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 0.7, y: 0 }}
-                className="hidden md:flex absolute top-28 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none"
-              >
-                <img 
-                  src={movieLogo} 
-                  alt="Logo" 
-                  className="h-[clamp(40px,6vh,60px)] w-auto object-contain"
-                />
-              </motion.div>
-            )}
-            <iframe
-              src={selectedUrl}
-              className="w-full h-full border-0"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              title="Movie Player"
-              style={{ zIndex: 1 }}
-            />
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-500">
-            <span className="text-sm">Плеер недоступен</span>
-          </div>
-        )}
+        {renderPlayerContent()}
       </div>
     </div>
   ) : (
@@ -256,9 +326,10 @@ export function PlayerSelector({
         <Select
           value={selectedPlayer ? String(selectedPlayer) : undefined}
           onValueChange={(val) => handlePlayerSelect(Number(val))}
+          disabled={isInitialLoading}
         >
           <SelectTrigger className="w-[180px] bg-zinc-900/50 border-white/10 text-zinc-200 relative z-10">
-            <SelectValue placeholder="Выберите плеер" />
+            <SelectValue placeholder={isInitialLoading ? "Загрузка..." : "Выберите плеер"} />
           </SelectTrigger>
           <SelectContent className="z-[150]" position="popper">
             {[1, 2, 3, 4].map((playerId) => {
@@ -272,10 +343,9 @@ export function PlayerSelector({
                 <SelectItem
                   key={playerId}
                   value={String(playerId)}
-                  disabled={disabled}
                   className="cursor-pointer"
                 >
-                  Плеер {playerId}
+                  Плеер {playerId} {disabled && "(может быть недоступен)"}
                 </SelectItem>
               );
             })}
@@ -291,7 +361,9 @@ export function PlayerSelector({
         } shadow-2xl ring-1 ring-white/10 z-0`}
         style={videoContainerStyle}
       >
-        {selectedUrl ? (
+        {isInitialLoading || isWaitingForData ? (
+          <div className="w-full h-full bg-black" />
+        ) : selectedUrl ? (
           <>
             {movieLogo && (
               <motion.div 
@@ -316,8 +388,21 @@ export function PlayerSelector({
             />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-500">
-            <span className="text-sm">Плеер недоступен</span>
+          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-4 bg-zinc-950/50 backdrop-blur-sm">
+            <div className="p-4 rounded-full bg-white/5 ring-1 ring-white/10">
+              <Info size={32} className="text-zinc-400" />
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-medium text-zinc-200">Плеер {selectedPlayer} недоступен</p>
+              <p className="text-sm text-zinc-500 mt-1">Попробуйте выбрать другой источник в списке выше</p>
+            </div>
+            <button 
+              onClick={handleReload}
+              className="mt-2 px-6 py-2.5 bg-white text-black text-sm font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/90 flex items-center gap-2 shadow-lg"
+            >
+              <Zap size={16} fill="currentColor" />
+              Перезагрузить плеер (обновить страницу)
+            </button>
           </div>
         )}
       </div>

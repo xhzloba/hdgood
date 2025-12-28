@@ -133,10 +133,10 @@ const fetchMovieFullData = async (id: string) => {
     throw e;
   });
 
-  // Try to get timeline data but don't block for more than 500ms if movieData is already here
+  // Try to get timeline data but don't block for more than 1500ms if movieData is already here
   const timelineData = await Promise.race([
     timelinePromise,
-    new Promise((resolve) => setTimeout(() => resolve(null), 500)),
+    new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
   ]);
 
   if (!movieData || typeof movieData !== "object") {
@@ -146,9 +146,11 @@ const fetchMovieFullData = async (id: string) => {
   const kpId =
     timelineData?.kp_id ||
     timelineData?.data?.kp_id ||
+    timelineData?.details?.kp_id ||
     movieData?.kp_id ||
     movieData?.details?.kp_id ||
-    movieData?.details?.kinopoisk_id;
+    movieData?.details?.kinopoisk_id ||
+    movieData?.kinopoisk_id;
 
   const result = { movieData, timelineData, kpId };
 
@@ -991,11 +993,23 @@ export default function MoviePage({
           setLoading(false);
         }
 
-        const { kpId } = result;
+        let { kpId } = result;
+
+        // Если kpId нет в данных, но id из URL числовой - используем его как fallback
+        if (!kpId && id && /^\d+$/.test(id)) {
+          kpId = id;
+          console.log(`💡 Используем id из URL как fallback для kpId: ${kpId}`);
+        }
+
+        // Пытаемся получить kp_id из movieData, если он там есть
+        if (!kpId && result.movieData?.details?.kp_id) {
+          kpId = String(result.movieData.details.kp_id);
+          console.log(`💡 Используем kp_id из movieData.details: ${kpId}`);
+        }
 
         // Загружаем franchise асинхронно (не блокируем отображение страницы)
         if (kpId) {
-          setKpId(kpId); // Сохраняем kpId в состояние
+          setKpId(String(kpId)); // Сохраняем kpId в состояние
           console.log(`📡 kp_id найден: ${kpId} - начинаем загрузку franchise`);
           const franchiseStart = Date.now();
           const currentIdForFranchise = id; // Сохраняем id для проверки
