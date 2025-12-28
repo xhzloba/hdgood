@@ -2357,7 +2357,7 @@ export function DesktopHome({
         onTogglePosterColors={handlePosterColorsChange}
       />
 
-      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] h-11 max-h-11 overflow-hidden items-center px-10 gap-4 grid-cols-[1fr_auto_1fr] ml-16 lg:ml-20">
+      <div className="hidden md:grid absolute top-4 left-0 right-0 z-[60] h-11 items-center px-10 gap-4 grid-cols-[1fr_auto_1fr] ml-16 lg:ml-20">
         <div className={`flex items-center justify-start gap-4 h-full transition-all duration-700 ${showOnboarding && !onboardingPersonalizationDone ? "opacity-0 pointer-events-none translate-y-[-10px]" : "opacity-100 translate-y-0"}`}>
           {/* Categories Dropdown moved to the left */}
           <div className="flex items-center gap-1.5 h-full">
@@ -2521,9 +2521,13 @@ export function DesktopHome({
                 id="netflix-search-input"
                 value={searchQuery}
                 onChange={(e) => {
-                  setSearchQuery(e.target.value);
+                  const val = e.target.value;
+                  setSearchQuery(val);
                   setSearchPage(1);
                   if (historyOpen) setHistoryOpen(false);
+                  if (val.trim().length >= 2) {
+                    setSearchOpen(true);
+                  }
                 }}
                 onFocus={() => {
                   const q = searchQuery.trim();
@@ -2606,7 +2610,7 @@ export function DesktopHome({
             </div>
 
             {searchOpen && (
-              <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-[12px] bg-black/55 border border-white/10 backdrop-blur-md shadow-[0_18px_60px_rgba(0,0,0,0.55)] overflow-hidden">
+              <div className="absolute left-0 right-0 top-full mt-2 z-[100] rounded-[12px] bg-[#161616]/98 border border-white/10 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.65)] animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-2">
                   {historyOpen ? (
                     searchHistory.length === 0 ? (
