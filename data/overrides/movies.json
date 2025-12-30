@@ -2166,5 +2166,16 @@
     "bg_poster": {
       "backdrop": "/movies/вдухерождества.webp"
     }
+  },
+  "6951a866b20a1b17d1220df7": {
+    "trailers": {
+      "id": "HWgf3LU0s6A",
+      "name": "Свет клином"
+    },
+    "poster_logo": "/movies/logo/173.png",
+    "studio_logo": "/movies/logo/melnitsa.svg",
+    "bg_poster": {
+      "backdrop": "/movies/светклином.jpg"
+    }
   }
 }

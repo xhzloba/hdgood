@@ -5374,5 +5374,86 @@
       "about"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:21:04.018Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "studio_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:21:34.799Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "bg_poster.backdrop"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:21:35.551Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:23:46.056Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "trailers.id",
+      "trailers.name"
+    ]
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:24:45.430Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:25:22.715Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:27:06.875Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
+  },
+  {
+    "id": "6951a866b20a1b17d1220df7",
+    "timestamp": "2025-12-30T11:28:21.253Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "trailers.id"
+    ],
+    "addedPaths": []
   }
 ]
