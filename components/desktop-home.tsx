@@ -786,36 +786,32 @@ export function DesktopHome({
     };
   }, [showOnboarding, onboardingSliderRightDone, onboardingSliderLeftDone]);
 
-  // Track category switching for onboarding (Only after Slider is done)
+  // Track category switching for onboarding (Sequential Down then Up then Wheel)
   useEffect(() => {
-    if (!showOnboarding || !onboardingSliderDone) return;
+    if (!showOnboarding || !onboardingSliderDone || onboardingNavDone) return;
     
-    const handleNavKeys = (e: KeyboardEvent) => {
-      if (!onboardingNavUpDone) {
+    const handleNavInteraction = (e: KeyboardEvent | WheelEvent) => {
+      if (e instanceof KeyboardEvent) {
         if (e.key === "ArrowDown") setOnboardingNavDownDone(true);
         if (onboardingNavDownDone && e.key === "ArrowUp") setOnboardingNavUpDone(true);
-      }
-    };
-    
-    const handleNavWheel = (e: WheelEvent) => {
-      if (onboardingNavUpDone) {
-        if (e.deltaY > 10) setOnboardingNavWheelDownDone(true);
+      } else if (e instanceof WheelEvent) {
+        if (onboardingNavUpDone && e.deltaY > 10) setOnboardingNavWheelDownDone(true);
         if (onboardingNavWheelDownDone && e.deltaY < -10) setOnboardingNavWheelUpDone(true);
       }
     };
-
-    window.addEventListener("keydown", handleNavKeys);
-    window.addEventListener("wheel", handleNavWheel, { passive: true });
     
-    if (onboardingNavWheelUpDone) {
+    window.addEventListener("keydown", handleNavInteraction);
+    window.addEventListener("wheel", handleNavInteraction, { passive: true });
+    
+    if (onboardingNavDownDone && onboardingNavUpDone && onboardingNavWheelDownDone && onboardingNavWheelUpDone) {
       setOnboardingNavDone(true);
     }
     
     return () => {
-      window.removeEventListener("keydown", handleNavKeys);
-      window.removeEventListener("wheel", handleNavWheel);
+      window.removeEventListener("keydown", handleNavInteraction);
+      window.removeEventListener("wheel", handleNavInteraction);
     };
-  }, [showOnboarding, onboardingSliderDone, onboardingNavDownDone, onboardingNavUpDone, onboardingNavWheelDownDone, onboardingNavWheelUpDone]);
+  }, [showOnboarding, onboardingSliderDone, onboardingNavDone, onboardingNavDownDone, onboardingNavUpDone, onboardingNavWheelDownDone, onboardingNavWheelUpDone]);
 
   // Track fullscreen and search for onboarding
   useEffect(() => {
@@ -3142,65 +3138,7 @@ export function DesktopHome({
             )}
           </div>
         </div>
-        {/* Vertical Slider Indicators - Scrollable & Compact */}
-        <div
-          className={`absolute right-0 top-[clamp(200px,28vh,350px)] w-[clamp(160px,16vw,256px)] pointer-events-none flex flex-col items-end pr-[clamp(24px,3vw,40px)] transition-all duration-700 ${
-            activeMovie ? "opacity-100" : "opacity-0"
-          } ${showOnboarding && onboardingSliderDone && !onboardingNavDone ? "scale-105 z-[60]" : "z-40"}`}
-        >
-          {/* Neon highlight for sidebar during onboarding Step 2 */}
-          {showOnboarding && onboardingSliderDone && !onboardingNavDone && (
-            <div className="absolute inset-0 -m-4 bg-blue-500/10 border border-blue-500/40 rounded-[40px] blur-xl animate-pulse -z-10 shadow-[0_0_60px_rgba(59,130,246,0.3)]" />
-          )}
-          {/* 
-            Container height = 3 * Stride. 
-            Stride = clamp(28px, 4vh, 36px).
-            We want to show 3 items, centered.
-          */}
-          <div className="h-[calc(3*clamp(28px,4vh,36px))] w-full relative overflow-hidden mask-[linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
-            <div
-              className="absolute top-0 right-0 flex flex-col gap-[clamp(4px,0.6vh,8px)] items-end transition-transform duration-500 ease-out w-full"
-              style={{
-                // Stride * (1 - index) centers the active item (index) in the 2nd slot (1)
-                transform: `translateY(calc(clamp(28px,4vh,36px) * (1 - ${slideIndex})))`,
-              }}
-            >
-              {slides.map((slide, i) => (
-                <button
-                  key={slide.id}
-                  onClick={() => {
-                    if (i === slideIndex) return;
-                    setSlideDirection(i > slideIndex ? "next" : "prev");
-                    setSlideIndex(i);
-                  }}
-                  className="group flex items-center gap-[clamp(8px,1vh,12px)] focus:outline-none pointer-events-auto h-[calc(clamp(28px,4vh,36px)-clamp(4px,0.6vh,8px))] px-2 rounded-lg transition-all duration-300"
-                >
-                  <div className="relative flex items-center justify-center w-[clamp(24px,3vw,32px)]">
-                    <div
-                      className={`rounded-full transition-all duration-500 ${
-                        slideIndex === i
-                          ? "w-1 h-4 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)]"
-                          : "w-1 h-1 bg-white/20 group-hover:bg-white/50"
-                      }`}
-                    />
-                    {slideIndex === i && (
-                      <div className="absolute inset-0 bg-white/20 blur-md rounded-full animate-pulse" />
-                    )}
-                  </div>
-                  <span
-                    className={`font-semibold uppercase tracking-[0.2em] transition-all duration-500 text-right whitespace-nowrap ${
-                      slideIndex === i
-                        ? "text-white text-[clamp(11px,1.3vh,14px)]"
-                        : "text-zinc-500 text-[clamp(9px,1vh,11px)] group-hover:text-zinc-300"
-                    }`}
-                  >
-                    {(slide as any).navTitle || slide.title}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+
 
         <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
           <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden shadow-2xl">
