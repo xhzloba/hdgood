@@ -2209,5 +2209,24 @@
       "backdrop": "/movies/рыцарь-background.webp"
     },
     "poster_logo": "/movies/logo/178.webp"
+  },
+  "69471c66700ccb861bcd8d4c": {
+    "poster_logo": "/movies/logo/179.webp",
+    "bg_poster": {
+      "backdrop": "/movies/горничная.webp"
+    }
+  },
+  "69811ed727da293e53903e24": {
+    "poster_logo": "/movies/logo/180.webp",
+    "bg_poster": {
+      "backdrop": "/movies/трешка.webp"
+    }
+  },
+  "697a86e027da293e5376b7c0": {
+    "poster_logo": "/movies/logo/181.webp",
+    "poster": "/movies/опасныйдует.webp",
+    "bg_poster": {
+      "backdrop": "/movies/опасныйдует-backdrop.webp"
+    }
   }
 }

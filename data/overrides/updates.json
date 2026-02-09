@@ -5587,5 +5587,39 @@
       "bg_poster.backdrop",
       "poster_logo"
     ]
+  },
+  {
+    "id": "69471c66700ccb861bcd8d4c",
+    "timestamp": "2026-02-09T13:47:39.056Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "69811ed727da293e53903e24",
+    "timestamp": "2026-02-09T13:50:24.133Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "697a86e027da293e5376b7c0",
+    "timestamp": "2026-02-09T13:53:30.185Z",
+    "poster": "/movies/опасныйдует.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
   }
 ]
