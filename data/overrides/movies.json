@@ -217,38 +217,43 @@
     }
   },
   "691654e274e3057d2efdfb0f": {
-    "studio_logo": "/movies/logo/summit.svg",
+    "bg_poster": {
+      "backdrop": "/movies/obman3.webp"
+    },
     "poster_colors": {
       "dominant1": [
-        50,
-        93,
-        141
+        12,
+        68,
+        91
+      ],
+      "dominant2": [
+        172,
+        145,
+        107
       ],
       "accentTl": [
-        5,
-        24,
-        48
-      ],
-      "accentBr": [
-        38,
-        81,
-        135
-      ],
-      "accentBl": [
-        38,
-        85,
-        134
+        35,
+        23,
+        16
       ],
       "accentTr": [
         12,
-        27,
-        71
+        68,
+        91
+      ],
+      "accentBr": [
+        42,
+        28,
+        21
+      ],
+      "accentBl": [
+        33,
+        25,
+        19
       ]
     },
-    "poster_logo": "/movies/logo/obman-3-1-logo.webp",
-    "bg_poster": {
-      "backdrop": "/movies/obman-3-1.webp"
-    }
+    "studio_logo": "/movies/logo/summit.svg",
+    "poster_logo": "/movies/logo/obman-3-1-logo.webp"
   },
   "689d0ae407cc76df0455560e": {
     "poster_colors": {
@@ -2176,6 +2181,26 @@
     "studio_logo": "/movies/logo/melnitsa.svg",
     "bg_poster": {
       "backdrop": "/movies/светклином.jpg"
+    }
+  },
+  "695ae2e2eabf00bfdd62bb18": {
+    "poster_logo": "/movies/logo/174.webp",
+    "studio_logo": "/movies/logo/союз.svg"
+  },
+  "69486de2b626e996ee46e98c": {
+    "studio_logo": "/movies/logo/a24.svg",
+    "poster_logo": "/movies/logo/175.png",
+    "bg_poster": {
+      "backdrop": "/movies/marty.jpg"
+    }
+  },
+  "6979356327da293e5371471c": {
+    "poster_logo": "/movies/logo/176.webp"
+  },
+  "69617a61eabf00bfdda5a5b5": {
+    "poster_logo": "/movies/logo/177.webp",
+    "bg_poster": {
+      "backdrop": "/movies/2gren.webp"
     }
   }
 }
