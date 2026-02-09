@@ -5575,5 +5575,17 @@
       "bg_poster.backdrop"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "696e119beabf00bfdd2b6e82",
+    "timestamp": "2026-02-09T13:35:37.183Z",
+    "poster": "/movies/рыцарь.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster",
+      "bg_poster.backdrop",
+      "poster_logo"
+    ]
   }
 ]
