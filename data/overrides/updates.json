@@ -5621,5 +5621,36 @@
       "poster",
       "bg_poster.backdrop"
     ]
+  },
+  {
+    "id": "698a594e8d4c655318b18817",
+    "timestamp": "2026-02-10T10:08:45.756Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "698a594e8d4c655318b18817",
+    "timestamp": "2026-02-10T10:09:49.813Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "about"
+    ]
+  },
+  {
+    "id": "698a594e8d4c655318b18817",
+    "timestamp": "2026-02-10T10:10:18.298Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [
+      "about"
+    ],
+    "addedPaths": []
   }
 ]
