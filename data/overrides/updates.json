@@ -5652,5 +5652,91 @@
       "about"
     ],
     "addedPaths": []
+  },
+  {
+    "id": "697d29fa27da293e537f41e9",
+    "timestamp": "2026-02-12T10:34:46.050Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "698a58f44e4606b53f1c8328",
+    "timestamp": "2026-02-12T10:37:04.763Z",
+    "poster": "/movies/сайлент.webp",
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "poster",
+      "bg_poster.backdrop"
+    ]
+  },
+  {
+    "id": "698cfbeb8d4c655318c9d5c6",
+    "timestamp": "2026-02-12T10:39:27.286Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "68a796e107cc76df04c49aa6",
+    "timestamp": "2026-02-12T10:41:29.911Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo",
+      "bg_poster.backdrop",
+      "poster_colors.dominant1",
+      "poster_colors.dominant2"
+    ]
+  },
+  {
+    "id": "698a59c54e4606b53f1c9ce5",
+    "timestamp": "2026-02-12T10:43:15.234Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "65942e869f578f48cbae64b1",
+    "timestamp": "2026-02-12T10:45:23.837Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6985130827da293e539e893d",
+    "timestamp": "2026-02-12T10:47:29.383Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
+  },
+  {
+    "id": "6593f8cf8914c04deaea4421",
+    "timestamp": "2026-02-12T10:49:10.640Z",
+    "poster": null,
+    "title": null,
+    "changedPaths": [],
+    "addedPaths": [
+      "poster_logo"
+    ]
   }
 ]

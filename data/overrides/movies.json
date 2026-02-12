@@ -2241,5 +2241,51 @@
     "bg_poster": {
       "backdrop": "/movies/убежище.webp"
     }
+  },
+  "697d29fa27da293e537f41e9": {
+    "poster_logo": "/movies/logo/183.webp",
+    "bg_poster": {
+      "backdrop": "/movies/резервация.webp"
+    }
+  },
+  "698a58f44e4606b53f1c8328": {
+    "poster_logo": "/movies/logo/184.webp",
+    "poster": "/movies/сайлент.webp",
+    "bg_poster": {
+      "backdrop": "/movies/сайлент-backdrop.webp"
+    }
+  },
+  "698cfbeb8d4c655318c9d5c6": {
+    "poster_logo": "/movies/logo/185.png"
+  },
+  "68a796e107cc76df04c49aa6": {
+    "poster_logo": "/movies/logo/186.webp",
+    "bg_poster": {
+      "backdrop": "/movies/выход8.webp"
+    },
+    "poster_colors": {
+      "dominant1": [
+        255,
+        217,
+        2
+      ],
+      "dominant2": [
+        255,
+        217,
+        2
+      ]
+    }
+  },
+  "698a59c54e4606b53f1c9ce5": {
+    "poster_logo": "/movies/logo/187.webp"
+  },
+  "65942e869f578f48cbae64b1": {
+    "poster_logo": "/movies/logo/188.webp"
+  },
+  "6985130827da293e539e893d": {
+    "poster_logo": "/movies/logo/189.webp"
+  },
+  "6593f8cf8914c04deaea4421": {
+    "poster_logo": "/movies/logo/190.webp"
   }
 }
